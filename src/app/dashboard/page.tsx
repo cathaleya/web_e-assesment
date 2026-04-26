@@ -36,7 +36,6 @@ export default function UserDashboard() {
     const savedName = localStorage.getItem("userName");
     if (savedName) setUserName(savedName);
 
-    // Simulasi pengecekan status dari localStorage atau URL
     const params = new URLSearchParams(window.location.search);
     if (params.get("finished") === "true") setHasFinishedAssessment(true);
     if (params.get("survey") === "done") {
@@ -54,9 +53,8 @@ export default function UserDashboard() {
     labels: ['Information', 'Creation', 'Pedagogy', 'Ethics', 'Social'],
     datasets: [{
       label: 'Profil Kompetensi',
-      // Jika belum selesai, datanya nol semua
       data: hasFinishedAssessment ? [85, 60, 45, 70, 65] : [0, 0, 0, 0, 0],
-      backgroundColor: 'rgba(20, 184, 166, 0.3)',
+      backgroundColor: 'rgba(20, 184, 166, 0.4)',
       borderColor: 'rgba(20, 184, 166, 1)',
       pointBackgroundColor: '#fff',
       pointBorderColor: 'rgba(20, 184, 166, 1)',
@@ -69,14 +67,14 @@ export default function UserDashboard() {
   return (
     <div className="antialiased flex h-screen overflow-hidden" 
          style={{ 
-           backgroundImage: "linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('/dashboard_v2.png')",
+           backgroundImage: "linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.7)), url('/dashboard_v2.png')",
            backgroundSize: 'cover',
            backgroundPosition: 'center',
            backgroundAttachment: 'fixed'
          }}>
       
-      {/* Sidebar */}
-      <aside className="w-20 lg:w-72 flex-shrink-0 bg-green-950/80 backdrop-blur-xl border-r border-white/10 flex flex-col relative overflow-hidden">
+      {/* Sidebar - ARMY GREEN PEKAT */}
+      <aside className="w-20 lg:w-72 flex-shrink-0 bg-green-950/90 backdrop-blur-2xl border-r border-white/10 flex flex-col relative overflow-hidden">
         <div className="h-20 flex items-center justify-center lg:justify-start lg:px-8 border-b border-white/10 relative z-10">
           <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-500 to-blue-600 flex items-center justify-center shadow-lg">
             <i className="fa-solid fa-graduation-cap text-white text-xl"></i>
@@ -102,7 +100,7 @@ export default function UserDashboard() {
           </button>
         </nav>
 
-        <div className="p-5 border-t border-white/10 flex items-center bg-black/40 relative z-10">
+        <div className="p-5 border-t border-white/10 flex items-center bg-black/60 relative z-10">
           <img src={`https://ui-avatars.com/api/?name=${userName}&background=ffffff&color=166534`} alt="Profile" className="w-11 h-11 rounded-full border-2 border-green-500/50 shadow-lg" />
           <div className="hidden lg:block ml-4 text-white">
             <p className="text-sm font-black army-shadow">{userName}</p>
@@ -113,7 +111,7 @@ export default function UserDashboard() {
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col overflow-hidden relative">
-        <header className="h-24 flex items-center justify-between px-8 bg-gradient-to-r from-teal-600/80 via-teal-700/80 to-blue-800/80 backdrop-blur-md text-white shadow-xl border-b border-white/10">
+        <header className="h-24 flex items-center justify-between px-8 bg-green-900/60 backdrop-blur-xl text-white shadow-xl border-b border-white/10">
           <div><h2 className="text-2xl font-black italic uppercase drop-shadow-lg">Halo, {userName}! 👋</h2><p className="text-teal-50 text-[10px] font-bold uppercase tracking-widest opacity-80">Hybrid-Diagnostic Assessment Platform</p></div>
         </header>
 
@@ -122,8 +120,8 @@ export default function UserDashboard() {
             
             {activeTab === 'dashboard' && (
               <div className="space-y-8">
-                 {/* AI Feedback - DINAMIS SESUAI STATUS */}
-                 <div className="glass-panel rounded-[40px] p-10 bg-gradient-to-br from-green-900/60 via-emerald-950/60 to-slate-900/60 backdrop-blur-2xl text-white border border-white/20 shadow-2xl relative overflow-hidden">
+                 {/* AI Feedback - PANEL GELAP TOTAL (DARK GREEN/SLATE) */}
+                 <div className="rounded-[40px] p-10 bg-gradient-to-br from-green-900 via-emerald-950 to-slate-950 text-white border border-white/10 shadow-2xl relative overflow-hidden ai-glow">
                     <div className="relative z-10">
                       <h3 className="text-3xl font-black italic mb-6 flex items-center gap-4 uppercase"><i className="fa-solid fa-brain text-blue-400"></i> AI Diagnostic Feedback</h3>
                       <div className="bg-white/5 backdrop-blur-md rounded-3xl p-8 border border-white/10 shadow-inner">
@@ -138,8 +136,8 @@ export default function UserDashboard() {
                  </div>
 
                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    {/* Profil Kompetensi - DINAMIS */}
-                    <div className="glass-panel rounded-[40px] p-10 bg-slate-900/40 backdrop-blur-xl text-white border border-white/10 shadow-xl">
+                    {/* Profil Kompetensi - PANEL GELAP */}
+                    <div className="rounded-[40px] p-10 bg-gradient-to-b from-slate-900 to-green-950 text-white border border-white/10 shadow-xl">
                       <h3 className="text-xl font-black mb-1 italic uppercase tracking-tight">Profil Kompetensi Digital</h3>
                       <p className="text-[10px] text-green-400 font-bold uppercase tracking-[0.3em] mb-6">Framework DigCompEdu</p>
                       <div className="h-[350px] bg-white/5 rounded-3xl p-6 flex items-center justify-center border border-white/5">
@@ -147,7 +145,7 @@ export default function UserDashboard() {
                           <Radar data={radarData} options={{ 
                             responsive: true, 
                             maintainAspectRatio: false,
-                            scales: { r: { grid: { color: 'rgba(255,255,255,0.1)' }, angleLines: { color: 'rgba(255,255,255,0.1)' }, pointLabels: { color: '#fff' }, ticks: { display: false } } } 
+                            scales: { r: { grid: { color: 'rgba(255,255,255,0.1)' }, angleLines: { color: 'rgba(255,255,255,0.1)' }, pointLabels: { color: '#fff', font: { weight: 'bold' } }, ticks: { display: false } } } 
                           }} />
                         ) : (
                           <div className="text-center">
@@ -158,12 +156,12 @@ export default function UserDashboard() {
                       </div>
                     </div>
 
-                    {/* Riwayat Aktivitas - DINAMIS */}
-                    <div className="glass-panel rounded-[40px] p-10 bg-slate-900/40 backdrop-blur-xl text-white border border-white/10 shadow-xl">
+                    {/* Riwayat Aktivitas - PANEL GELAP */}
+                    <div className="rounded-[40px] p-10 bg-gradient-to-b from-slate-900 to-green-950 text-white border border-white/10 shadow-xl">
                       <h3 className="text-xl font-black mb-8 flex justify-between items-center uppercase italic tracking-tight">Riwayat Aktivitas</h3>
                       <div className="space-y-4">
                         {hasFinishedAssessment ? (
-                          <div className="flex items-center justify-between p-6 rounded-3xl bg-white/5 border border-white/5 group shadow-lg">
+                          <div className="flex items-center justify-between p-6 rounded-3xl bg-white/5 border border-white/10 group shadow-lg">
                             <div className="flex items-center gap-5">
                               <div className="w-12 h-12 rounded-2xl bg-green-500/20 text-green-400 flex items-center justify-center border border-green-500/20"><i className="fa-solid fa-check-double text-xl"></i></div>
                               <div><p className="font-bold text-white uppercase tracking-tight">Asesmen Preliminary</p><p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mt-1">Hari Ini</p></div>
@@ -184,7 +182,7 @@ export default function UserDashboard() {
 
             {activeTab === 'assessments' && (
               <div className="space-y-8 animate-in slide-in-from-bottom duration-500">
-                 <div className="relative overflow-hidden rounded-[40px] bg-white/90 backdrop-blur-xl border border-white p-12 flex flex-col md:flex-row items-center justify-between shadow-2xl">
+                 <div className="relative overflow-hidden rounded-[40px] bg-white/95 backdrop-blur-2xl border border-white p-12 flex flex-col md:flex-row items-center justify-between shadow-2xl">
                     <div className="relative z-10 max-w-2xl">
                       <span className="px-4 py-1.5 bg-teal-100 text-teal-800 text-[10px] font-black rounded-full uppercase mb-6 inline-block tracking-[0.2em] shadow-sm">PDI-DL Platform</span>
                       <h3 className="text-4xl font-black text-slate-900 mb-4 tracking-tighter uppercase italic">Preliminary Diagnostic</h3>
@@ -198,7 +196,8 @@ export default function UserDashboard() {
 
             {activeTab === 'survey' && (
               <div className="space-y-8">
-                 <div className="glass-panel rounded-[40px] p-12 bg-white/95 backdrop-blur-3xl border-white shadow-2xl relative overflow-hidden">
+                 {/* Survei Panel tetap Putih agar Kontras tapi Bersih */}
+                 <div className="rounded-[40px] p-12 bg-white/95 backdrop-blur-3xl border-white shadow-2xl relative overflow-hidden">
                     <div className="flex items-center gap-6 mb-12">
                       <div className="w-16 h-16 rounded-3xl bg-blue-600 text-white flex items-center justify-center text-3xl shadow-xl shadow-blue-500/40"><i className="fa-solid fa-chart-line"></i></div>
                       <div><h2 className="text-3xl font-black text-slate-900 italic uppercase tracking-tighter">Statistik Survey Pengguna</h2><p className="text-slate-500 font-black uppercase tracking-[0.2em] text-[10px] mt-1">Real-time Usability Performance Matrix</p></div>
