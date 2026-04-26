@@ -1,8 +1,18 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="antialiased overflow-x-hidden flex flex-col min-h-screen relative"
+         style={{ 
+           backgroundImage: "url('/campus_bg.png')",
+           backgroundSize: 'cover',
+           backgroundPosition: 'center',
+           backgroundAttachment: 'fixed'
+         }}>
+      
       {/* Top Navigation */}
       <nav className="w-full h-24 flex items-center justify-between px-8 lg:px-16 z-50 bg-white/60 backdrop-blur-md border-b border-white/50 shadow-sm fixed top-0 left-0 right-0">
         <div className="flex items-center gap-3">
@@ -24,7 +34,7 @@ export default function LandingPage() {
       </nav>
 
       {/* Main Hero Section */}
-      <main className="flex-1 flex items-center justify-center relative z-10 px-6 lg:px-16 pt-24">
+      <main className="flex-1 flex items-center justify-center relative z-10 px-6 lg:px-16 pt-32 pb-20">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 w-full max-w-7xl items-center">
           
           {/* Left Text Content */}
@@ -34,7 +44,7 @@ export default function LandingPage() {
                 Hybrid-Diagnostic Assessment Platform (HDAP)
               </span>
               <span className="text-4xl lg:text-5xl block lg:whitespace-nowrap">
-                Website E-ASSESSMEN <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-blue-400" style={{ filter: "drop-shadow(0 0 10px rgba(20,184,166,0.6))" }}>LITERASI DIGITAL</span>.
+                Website E-ASSESSMENT <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-blue-400" style={{ filter: "drop-shadow(0 0 10px rgba(20,184,166,0.6))" }}>LITERASI DIGITAL</span>.
               </span>
             </h1>
             
@@ -43,24 +53,25 @@ export default function LandingPage() {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-4">
-              <Link href="/login" className="bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white font-bold px-8 py-4 rounded-full transition-all shadow-[0_4px_15px_rgba(20,184,166,0.3)] hover:shadow-[0_6px_25px_rgba(20,184,166,0.4)] flex items-center justify-center">
+              <Link href="/login" className="bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white font-bold px-8 py-4 rounded-2xl transition-all shadow-[0_4px_15px_rgba(20,184,166,0.3)] hover:shadow-[0_6px_25px_rgba(20,184,166,0.4)] flex items-center justify-center group">
                 Mulai Ujian
-                <i className="fa-solid fa-arrow-right ml-2"></i>
+                <i className="fa-solid fa-arrow-right ml-2 transition-transform group-hover:translate-x-2"></i>
               </Link>
-              <Link href="/login" className="glass-panel hover:bg-white text-slate-800 font-bold px-8 py-4 rounded-full transition-all flex items-center justify-center border border-slate-200">
+              <Link href="/login" className="glass-panel hover:bg-white text-slate-800 font-bold px-8 py-4 rounded-2xl transition-all flex items-center justify-center border border-slate-200">
                 <i className="fa-solid fa-shield-halved mr-2 text-slate-500"></i>
                 Login LPTK / Admin
               </Link>
             </div>
             
-            <div className="pt-8 flex items-center justify-center lg:justify-start gap-6 text-slate-200 text-sm font-semibold">
-              <div className="flex items-center"><i className="fa-solid fa-check text-teal-400 mr-2"></i> Anti-Bias (DIF)</div>
-              <div className="flex items-center"><i className="fa-solid fa-check text-teal-400 mr-2"></i> Standard ISO 25010</div>
+            <div className="pt-8 flex items-center justify-center lg:justify-start gap-6 text-slate-100 text-sm font-semibold">
+              <div className="flex items-center drop-shadow-md"><i className="fa-solid fa-check text-teal-400 mr-2"></i> Anti-Bias (DIF)</div>
+              <div className="flex items-center drop-shadow-md"><i className="fa-solid fa-check text-teal-400 mr-2"></i> Standard ISO 25010</div>
             </div>
           </div>
 
+          {/* Right Side - Visual Space */}
           <div className="hidden lg:block relative">
-            {/* Right side background showcase */}
+            {/* Visual element or intentionally empty to show bg */}
           </div>
         </div>
       </main>
