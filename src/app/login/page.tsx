@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
+  const [name, setName] = useState("");
   const [loginType, setLoginType] = useState<"student" | "admin">("student");
   const [gender, setGender] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
@@ -13,14 +14,20 @@ export default function LoginPage() {
     e.preventDefault();
     setIsLoading(true);
     
-    // Simulasi login - Nanti dihubungkan ke API
+    // Simpan nama ke localStorage agar bisa dibaca di Dashboard
+    if (loginType === "student" && name) {
+      localStorage.setItem("userName", name);
+    } else if (loginType === "admin") {
+      localStorage.setItem("userName", "Administrator");
+    }
+
     setTimeout(() => {
       if (loginType === "student") {
         router.push("/dashboard");
       } else {
         router.push("/admin");
       }
-    }, 1500);
+    }, 1000);
   };
 
   return (
@@ -66,7 +73,12 @@ export default function LoginPage() {
                   <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 ml-1">Nama Lengkap</label>
                   <div className="relative group">
                     <i className="fa-solid fa-user absolute left-5 top-4 text-slate-500 group-focus-within:text-blue-400 transition-colors"></i>
-                    <input type="text" required placeholder="Masukkan nama Anda..." className="w-full bg-slate-800/50 border border-slate-700 rounded-2xl py-4 pl-14 pr-5 text-sm text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all input-glass" />
+                    <input type="text" 
+                           required 
+                           value={name}
+                           onChange={(e) => setName(e.target.value)}
+                           placeholder="Masukkan nama Anda..." 
+                           className="w-full bg-slate-800/50 border border-slate-700 rounded-2xl py-4 pl-14 pr-5 text-sm text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all input-glass" />
                   </div>
                 </div>
                 <div>

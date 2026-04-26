@@ -24,12 +24,17 @@ ChartJS.register(
 
 export default function UserDashboard() {
   const [activeTab, setActiveTab] = useState<"dashboard" | "assessments" | "survey">("dashboard");
+  const [userName, setUserName] = useState("User");
   const [showReport, setShowReport] = useState(false);
   const [surveyDone, setSurveyDone] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
+    // Ambil nama dari localStorage
+    const savedName = localStorage.getItem("userName");
+    if (savedName) setUserName(savedName);
+
     // Cek URL params seperti di Alpine.js Bapak
     const params = new URLSearchParams(window.location.search);
     if (params.get("finished") === "true" || params.get("survey") === "done") {
@@ -137,9 +142,9 @@ export default function UserDashboard() {
 
         {/* Profile Section SAMA PERSIS */}
         <div className="p-5 border-t border-white/10 flex justify-center lg:justify-start items-center bg-gradient-to-r from-green-800 to-black shadow-2xl relative z-10">
-          <img src="https://ui-avatars.com/api/?name=Budi+Santoso&background=ffffff&color=166534" alt="Profile" className="w-11 h-11 rounded-full border-2 border-green-500/50 shadow-lg" />
+          <img src={`https://ui-avatars.com/api/?name=${userName}&background=ffffff&color=166534`} alt="Profile" className="w-11 h-11 rounded-full border-2 border-green-500/50 shadow-lg" />
           <div className="hidden lg:block ml-4">
-            <p className="text-sm font-black text-white army-shadow tracking-tight">Budi Santoso</p>
+            <p className="text-sm font-black text-white army-shadow tracking-tight">{userName}</p>
             <p className="text-[10px] text-green-400 font-black uppercase tracking-[0.2em]">Mahasiswa</p>
           </div>
         </div>
@@ -149,7 +154,7 @@ export default function UserDashboard() {
       <main className="flex-1 flex flex-col overflow-hidden relative">
         <header className="h-24 flex items-center justify-between px-8 z-10 border-b border-white/20 bg-gradient-to-r from-teal-500 via-teal-600 to-blue-600 text-white shadow-xl">
           <div>
-            <h2 className="text-2xl font-black text-white drop-shadow-md uppercase italic">Welcome back, Budi! 👋</h2>
+            <h2 className="text-2xl font-black text-white drop-shadow-md uppercase italic">Welcome back, {userName}! 👋</h2>
             <p className="text-teal-50 text-sm mt-1 font-medium opacity-90 uppercase tracking-widest text-[10px]">Sistem Pemetaan Kompetensi Literasi Digital (MADEL5C)</p>
           </div>
           <div className="flex items-center gap-4">
