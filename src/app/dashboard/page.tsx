@@ -195,7 +195,7 @@ export default function UserDashboard() {
                      </div>
                      <div className="flex-1 flex items-center justify-center">
                         {hasPdi 
-                          ? <Radar data={radarData} options={{ scales: { r: { grid: { color: 'rgba(75, 83, 32, 0.1)' }, angleLines: { color: 'rgba(75, 83, 32, 0.1)' }, pointLabels: { color: '#4B5320', font: { weight: 'black', size: 11, family: 'Plus Jakarta Sans' } }, ticks: { display: false } } }, plugins: { legend: { display: false } } }} />
+                          ? <Radar data={radarData} options={{ scales: { r: { grid: { color: 'rgba(75, 83, 32, 0.1)' }, angleLines: { color: 'rgba(75, 83, 32, 0.1)' }, pointLabels: { color: '#4B5320', font: { weight: 'bold', size: 11, family: 'Plus Jakarta Sans' } }, ticks: { display: false } } }, plugins: { legend: { display: false } } }} />
                           : <div className="text-center p-12 bg-slate-50/50 rounded-[40px] border-4 border-dashed border-slate-100">
                               <i className="fa-solid fa-lock text-6xl text-slate-200 mb-6"></i>
                               <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-loose">Selesaikan Asesmen<br/>Untuk Membuka Grafik</p>
