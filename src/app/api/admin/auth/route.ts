@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
 // Admin credentials from environment variables with fallback defaults
-const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin.hdap';
+const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'Admin BIMA';
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'Faithbless21';
 
 export async function POST(req: Request) {
