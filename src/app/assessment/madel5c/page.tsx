@@ -1,11 +1,21 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 
+interface Option {
+  text: string;
+  score: number;
+}
+
+interface Question {
+  scenario: string;
+  options: Option[];
+}
+
 export default function Madel5cAssessment() {
-  const [questions, setQuestions] = useState<any[]>([]);
+  const [questions, setQuestions] = useState<Question[]>([]);
   const [currentStep, setCurrentStep] = useState(0);
   const [answers, setAnswers] = useState<Record<number, number>>({});
   const [loading, setLoading] = useState(true);
@@ -20,9 +30,7 @@ export default function Madel5cAssessment() {
     "bg-purple-50 border-purple-100 text-purple-900"
   ];
 
-  useEffect(() => { fetchQuestions(); }, []);
-
-  const shuffleArray = (array: any[]) => {
+  const shuffleArray = (array: Option[]) => {
     const shuffled = [...array];
     for (let i = shuffled.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -31,13 +39,12 @@ export default function Madel5cAssessment() {
     return shuffled;
   };
 
-  const fetchQuestions = async () => {
+  const fetchQuestions = useCallback(async () => {
     try {
       const res = await fetch('/api/questions?type=madel5c');
       const data = await res.json();
       if (Array.isArray(data)) {
-        // Shuffle options for EVERY question once at the start
-        const shuffledQuestions = data.map(q => ({
+        const shuffledQuestions = data.map((q: Question) => ({
           ...q,
           options: shuffleArray(q.options)
         }));
@@ -45,29 +52,39 @@ export default function Madel5cAssessment() {
       }
       setLoading(false);
     } catch (err) { console.error(err); setLoading(false); }
-  };
+  }, []);
 
-  const handleAnswer = (idx: number) => {
-    const selectedOption = questions[currentStep].options[idx];
-    setAnswers({ ...answers, [currentStep]: selectedOption.score });
-    setTimeout(() => {
-      if (currentStep < questions.length - 1) { setCurrentStep(currentStep + 1); window.scrollTo(0,0); }
-      else { submitAssessment(); }
-    }, 300);
-  };
+  useEffect(() => { 
+    fetchQuestions(); 
+  }, [fetchQuestions]);
 
-  const submitAssessment = async () => {
+  const submitAssessment = useCallback(async (finalAnswers: Record<number, number>) => {
     const userId = localStorage.getItem("userId");
     if (!userId) return router.push("/login");
-    const totalScore = Object.values(answers).reduce((a, b) => a + b, 0);
+    const totalScore = Object.values(finalAnswers).reduce((a, b) => a + b, 0);
     try {
       await fetch("/api/assessment", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, type: "MADEL5C", totalScore, answersJson: answers }),
+        body: JSON.stringify({ userId, type: "MADEL5C", totalScore, answersJson: finalAnswers }),
       });
       router.push("/dashboard");
     } catch (err) { console.error(err); }
+  }, [router]);
+
+  const handleAnswer = (idx: number) => {
+    const selectedOption = questions[currentStep].options[idx];
+    const newAnswers = { ...answers, [currentStep]: selectedOption.score };
+    setAnswers(newAnswers);
+    setTimeout(() => {
+      if (currentStep < questions.length - 1) { 
+        setCurrentStep(currentStep + 1); 
+        window.scrollTo(0,0); 
+      }
+      else { 
+        submitAssessment(newAnswers); 
+      }
+    }, 300);
   };
 
   if (loading) return <div className="min-h-screen bg-white flex items-center justify-center font-bold text-xs">MEMUAT...</div>;
@@ -118,10 +135,10 @@ export default function Madel5cAssessment() {
 
               <div className="bg-white p-4 rounded-2xl shadow-2xl border border-slate-200">
                 <div className="mb-5 p-4 bg-slate-50 border-l-4 border-slate-900 rounded-lg shadow-inner">
-                  <p className="text-[13px] text-black font-black leading-relaxed italic">"{questions[currentStep]?.scenario}"</p>
+                  <p className="text-[13px] text-black font-black leading-relaxed italic">&quot;{questions[currentStep]?.scenario}&quot;</p>
                 </div>
                 <div className="space-y-2">
-                  {questions[currentStep]?.options?.map((opt: any, idx: number) => (
+                  {questions[currentStep]?.options?.map((opt, idx: number) => (
                     <button key={idx} onClick={() => handleAnswer(idx)}
                       className={`w-full flex items-start gap-3 p-3 rounded-xl border-2 text-left transition-all ${
                         answers[currentStep] === opt.score ? "bg-black border-black text-white shadow-xl scale-[1.02]" : `${optionColors[idx % optionColors.length]} opacity-90`

@@ -2,6 +2,17 @@ import { NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { prisma } from '@/lib/prisma';
 
+interface AssessmentData {
+  type: string;
+  totalScore: number;
+}
+
+interface UserWithAssessments {
+  id: string;
+  name: string;
+  assessments: AssessmentData[];
+}
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const userId = searchParams.get('userId');
@@ -9,18 +20,19 @@ export async function GET(request: Request) {
   if (!userId) return NextResponse.json({ error: 'User ID required' }, { status: 400 });
 
   const apiKey = process.env.GEMINI_API_KEY || "";
-  let userData: any = null;
+  let userData: UserWithAssessments | null = null;
   
   try {
-    userData = await prisma.user.findUnique({
+    const rawUser = await prisma.user.findUnique({
       where: { id: userId },
       include: { assessments: true }
     });
 
-    if (!userData) return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    if (!rawUser) return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    userData = rawUser as unknown as UserWithAssessments;
 
-    const pdi = userData.assessments.find((a: any) => a.type === 'PDI-DL');
-    const madel = userData.assessments.find((a: any) => a.type === 'MADEL5C');
+    const pdi = userData.assessments.find((a) => a.type === 'PDI-DL');
+    const madel = userData.assessments.find((a) => a.type === 'MADEL5C');
     
     if (!apiKey) {
       return NextResponse.json({ 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Radar } from "react-chartjs-2";
 import {
@@ -15,41 +15,59 @@ import {
 
 ChartJS.register(RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
 
+interface UserData {
+  name: string;
+  campus: string;
+}
+
+interface StatsData {
+  preliminary: number;
+  surveyDone: boolean;
+  madel5c: number;
+  radar: number[];
+}
+
 export default function DashboardPage() {
-  const [user, setUser] = useState<any>(null);
-  const [stats, setStats] = useState<any>(null);
+  const [user, setUser] = useState<UserData | null>(null);
+  const [stats, setStats] = useState<StatsData | null>(null);
   const [aiMessage, setAiMessage] = useState<string>("Sedang menganalisis profil Anda...");
   const router = useRouter();
 
-  useEffect(() => {
-    const userId = localStorage.getItem("userId");
-    if (!userId) return router.push("/login");
-    fetchData(userId);
-    fetchAiFeedback(userId);
-  }, []);
-
-  const fetchData = async (userId: string) => {
+  const fetchData = useCallback(async (userId: string) => {
     try {
       const res = await fetch(`/api/user/stats?userId=${userId}`);
       const data = await res.json();
       setUser(data.user);
       setStats(data.stats);
     } catch (err) { console.error(err); }
-  };
+  }, []);
 
-  const fetchAiFeedback = async (userId: string) => {
+  const fetchAiFeedback = useCallback(async (userId: string) => {
     try {
       const res = await fetch(`/api/ai/feedback?userId=${userId}`);
       const data = await res.json();
       setAiMessage(data.message);
-    } catch (err) { setAiMessage("Selamat datang di Portal HDAP!"); }
-  };
+    } catch (err) { 
+      console.error(err);
+      setAiMessage("Selamat datang di Portal HDAP!"); 
+    }
+  }, []);
+
+  useEffect(() => {
+    const userId = localStorage.getItem("userId");
+    if (!userId) {
+      router.push("/login");
+      return;
+    }
+    fetchData(userId);
+    fetchAiFeedback(userId);
+  }, [fetchData, fetchAiFeedback, router]);
 
   if (!user) return <div className="min-h-screen bg-white flex items-center justify-center font-bold text-xs">MEMUAT...</div>;
 
-  const isPdiDone = stats?.preliminary > 0;
-  const isSurveyDone = stats?.surveyDone;
-  const isMadelDone = stats?.madel5c > 0;
+  const isPdiDone = (stats?.preliminary ?? 0) > 0;
+  const isSurveyDone = stats?.surveyDone ?? false;
+  const isMadelDone = (stats?.madel5c ?? 0) > 0;
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col md:flex-row overflow-hidden font-sans">
@@ -92,11 +110,11 @@ export default function DashboardPage() {
           {/* AI DIAGNOSTIC WELCOME CARD */}
           <div className="bg-white rounded-2xl p-5 shadow-lg border-l-8 border-blue-600">
              <div className="flex items-center gap-3 mb-2">
-                <div className="w-6 h-6 bg-blue-600 rounded-lg flex items-center justify-center text-white text-[10px]"><i className="fa-solid fa-robot"></i></div>
+                <div className="w-6 h-6 bg-blue-600 rounded-lg flex items-center justify-center text-white text-[10px]"><i className="fa-Robot text-robot"></i></div>
                 <p className="text-[8px] font-black text-blue-600 uppercase tracking-widest">AI Diagnostik UNJ</p>
              </div>
              <h3 className="text-sm font-bold text-slate-900 leading-tight">
-                "{aiMessage}"
+                &quot;{aiMessage}&quot;
              </h3>
           </div>
 
@@ -153,6 +171,7 @@ export default function DashboardPage() {
                   <Radar data={{
                     labels: ['C1', 'C2', 'C3', 'C4', 'C5'],
                     datasets: [{
+                      label: 'Kompetensi',
                       data: stats?.radar || [0,0,0,0,0],
                       backgroundColor: 'rgba(59, 130, 246, 0.2)',
                       borderColor: '#2563eb',

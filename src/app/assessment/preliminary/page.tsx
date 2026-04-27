@@ -1,51 +1,77 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 
+interface Option {
+  text: string;
+  score: number;
+}
+
+interface Question {
+  question: string;
+  dim: string;
+  options: Option[];
+}
+
 export default function PreliminaryAssessment() {
-  const [questions, setQuestions] = useState<any[]>([]);
+  const [questions, setQuestions] = useState<Question[]>([]);
   const [currentStep, setCurrentStep] = useState(0);
   const [answers, setAnswers] = useState<Record<number, number>>({});
   const [loading, setLoading] = useState(true);
   const [showInstructions, setShowInstructions] = useState(true);
   const router = useRouter();
 
-  const defaultOptions = [
-    { text: "Sangat Tidak Mampu", score: 1, color: "bg-rose-50 border-rose-100 text-rose-900" },
-    { text: "Tidak Mampu", score: 2, color: "bg-orange-50 border-orange-100 text-orange-900" },
-    { text: "Cukup Mampu", score: 3, color: "bg-amber-50 border-amber-100 text-amber-900" },
-    { text: "Mampu", score: 4, color: "bg-emerald-50 border-emerald-100 text-emerald-900" },
-    { text: "Sangat Mampu", score: 5, color: "bg-blue-50 border-blue-100 text-blue-900" }
+  const optionColors = [
+    "bg-rose-50 border-rose-100 text-rose-900",
+    "bg-amber-50 border-amber-100 text-amber-900",
+    "bg-emerald-50 border-emerald-100 text-emerald-900",
+    "bg-blue-50 border-blue-100 text-blue-900",
+    "bg-purple-50 border-purple-100 text-purple-900"
   ];
 
-  useEffect(() => { fetchQuestions(); }, []);
-
-  const fetchQuestions = async () => {
+  const fetchQuestions = useCallback(async () => {
     try {
       const res = await fetch('/api/questions?type=preliminary');
       const data = await res.json();
       setQuestions(Array.isArray(data) ? data : []);
       setLoading(false);
     } catch (err) { console.error(err); setLoading(false); }
-  };
+  }, []);
 
-  const handleAnswer = (idx: number) => { setAnswers({ ...answers, [currentStep]: idx + 1 }); };
+  useEffect(() => { 
+    fetchQuestions(); 
+  }, [fetchQuestions]);
 
-  const submitAssessment = async () => {
+  const submitAssessment = useCallback(async (finalAnswers: Record<number, number>) => {
     const userId = localStorage.getItem("userId");
     if (!userId) return router.push("/login");
-    const totalScore = Object.values(answers).reduce((a, b) => a + b, 0);
+    const totalScore = Object.values(finalAnswers).reduce((a, b) => a + b, 0);
     try {
       await fetch("/api/assessment", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, type: "PDI-DL", totalScore, answersJson: answers }),
+        body: JSON.stringify({ userId, type: "PDI-DL", totalScore, answersJson: finalAnswers }),
       });
-      // DIRECT REDIRECT TO SURVEY AS PER FLOW REQUIREMENT
+      // Redirect to survey after PDI-DL
       router.push("/survey");
     } catch (err) { console.error(err); }
+  }, [router]);
+
+  const handleAnswer = (idx: number) => {
+    const selectedOption = questions[currentStep].options[idx];
+    const newAnswers = { ...answers, [currentStep]: selectedOption.score };
+    setAnswers(newAnswers);
+    setTimeout(() => {
+      if (currentStep < questions.length - 1) { 
+        setCurrentStep(currentStep + 1); 
+        window.scrollTo(0,0); 
+      }
+      else { 
+        submitAssessment(newAnswers); 
+      }
+    }, 300);
   };
 
   if (loading) return <div className="min-h-screen bg-white flex items-center justify-center font-bold text-xs">MEMUAT...</div>;
@@ -62,7 +88,7 @@ export default function PreliminaryAssessment() {
             >
               <div className="flex items-center gap-3 mb-4 border-b pb-4">
                 <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-lg">
-                  <i className="fa-solid fa-circle-info text-xl"></i>
+                  <i className="fa-solid fa-info-circle text-xl"></i>
                 </div>
                 <h1 className="text-xl font-black text-slate-900 uppercase">Panduan PDI-DL</h1>
               </div>
@@ -71,59 +97,45 @@ export default function PreliminaryAssessment() {
                 <div className="p-3 bg-blue-50 rounded-xl border border-blue-100">
                   <h3 className="text-[10px] font-black text-blue-900 uppercase mb-1">Cara Pengisian:</h3>
                   <p className="text-[9px] font-bold text-blue-800 leading-relaxed">
-                    Pilihlah tingkat kemampuan diri Anda pada setiap pernyataan yang muncul. Tidak ada jawaban benar atau salah, mohon isi secara jujur.
+                    Pilih satu jawaban yang paling mencerminkan tingkat kemampuan Anda saat ini, dari &quot;Sangat Tidak Mampu&quot; hingga &quot;Sangat Mampu&quot;.
                   </p>
                 </div>
 
                 <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
-                  <h3 className="text-[10px] font-black text-slate-900 uppercase mb-1">Kriteria Penskoran:</h3>
-                  <div className="grid grid-cols-5 gap-1 text-center">
-                    {[
-                      { s: 1, l: "STS" }, { s: 2, l: "TS" }, { s: 3, l: "CM" }, { s: 4, l: "M" }, { s: 5, l: "SM" }
-                    ].map(k => (
-                      <div key={k.s} className="bg-white p-1 rounded border border-slate-100 shadow-sm">
-                        <p className="text-[9px] font-black text-slate-900">{k.s}</p>
-                        <p className="text-[7px] font-bold text-slate-400 uppercase">{k.l}</p>
-                      </div>
-                    ))}
-                  </div>
-                  <p className="text-[7px] text-slate-400 mt-2 italic">*STS: Sangat Tidak Mampu | SM: Sangat Mampu</p>
+                  <h3 className="text-[10px] font-black text-slate-900 uppercase mb-1">Metode Penskoran:</h3>
+                  <p className="text-[9px] font-bold text-slate-600 leading-relaxed">
+                    Setiap pilihan memiliki skor 1 sampai 5. Tidak ada jawaban benar atau salah, namun pilihlah secara jujur untuk hasil diagnosis yang akurat.
+                  </p>
                 </div>
               </div>
 
-              <button onClick={() => setShowInstructions(false)} className="w-full py-4 bg-blue-600 text-white font-black rounded-lg text-[10px] uppercase tracking-widest shadow-lg">MENGERTI & MULAI</button>
+              <button onClick={() => setShowInstructions(false)} className="w-full py-4 bg-blue-600 text-white font-black rounded-lg text-[10px] uppercase tracking-widest shadow-lg">SAYA MENGERTI & MULAI</button>
             </motion.div>
           ) : (
             <motion.div key="assessment" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
               <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-lg flex justify-between items-center">
-                <span className="text-[10px] font-black text-slate-900">ITEM #{currentStep + 1}</span>
+                <span className="text-[10px] font-black text-slate-900 uppercase tracking-widest">Pertanyaan {currentStep + 1}</span>
                 <div className="w-24 h-1.5 bg-slate-100 rounded-full overflow-hidden">
                    <div className="h-full bg-blue-600" style={{ width: `${((currentStep+1)/questions.length)*100}%` }}></div>
                 </div>
               </div>
 
               <div className="bg-white p-4 rounded-2xl shadow-2xl border border-slate-200">
-                <div className="mb-5 p-4 bg-slate-50 border-l-4 border-slate-900 rounded-lg">
-                  <p className="text-[13px] text-black font-black leading-relaxed">{questions[currentStep]?.text || questions[currentStep]?.question}</p>
+                <div className="mb-5 p-3 bg-blue-50 rounded-lg">
+                   <p className="text-[8px] font-black text-blue-600 uppercase tracking-widest mb-1">Dimensi: {questions[currentStep]?.dim}</p>
+                   <p className="text-[12px] text-slate-900 font-bold leading-relaxed italic">&quot;{questions[currentStep]?.question}&quot;</p>
                 </div>
                 <div className="space-y-2">
-                  {defaultOptions.map((opt: any, idx: number) => (
+                  {questions[currentStep]?.options?.map((opt, idx: number) => (
                     <button key={idx} onClick={() => handleAnswer(idx)}
                       className={`w-full flex items-center gap-3 p-3 rounded-xl border-2 text-left transition-all ${
-                        answers[currentStep] === idx + 1 ? "bg-black border-black text-white shadow-xl scale-[1.02]" : `${opt.color} opacity-80`
+                        answers[currentStep] === opt.score ? "bg-black border-black text-white shadow-xl scale-[1.02]" : `${optionColors[idx % optionColors.length]} opacity-90`
                       }`}
                     >
-                      <span className={`w-8 h-8 rounded-lg flex items-center justify-center font-black text-xs ${answers[currentStep] === idx + 1 ? "bg-white text-black" : "bg-white/50 border border-current opacity-60"}`}>{idx + 1}</span>
-                      <span className="text-[11px] font-black">{opt.text}</span>
+                      <span className={`w-7 h-7 rounded-lg flex items-center justify-center font-black text-[10px] shrink-0 ${answers[currentStep] === opt.score ? "bg-white text-black" : "bg-white/50 border border-current opacity-60"}`}>{opt.score}</span>
+                      <span className="text-[10px] font-black uppercase tracking-tight">{opt.text}</span>
                     </button>
                   ))}
-                </div>
-                <div className="mt-6">
-                  <button disabled={!answers[currentStep]} onClick={() => { if(currentStep < questions.length - 1) setCurrentStep(currentStep+1); else submitAssessment(); }}
-                    className={`w-full py-4 rounded-xl font-black uppercase text-[10px] tracking-widest ${answers[currentStep] ? "bg-black text-white shadow-2xl" : "bg-slate-200 text-slate-400"}`}
-                  >
-                    {currentStep === questions.length - 1 ? "Selesaikan & Lanjut ke Survey" : "Pertanyaan Berikutnya"}
-                  </button>
                 </div>
               </div>
             </motion.div>
