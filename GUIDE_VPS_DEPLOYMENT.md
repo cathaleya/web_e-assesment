@@ -82,7 +82,7 @@ exit
 cd /var/www
 # Pastikan git sudah terinstall, jika belum: sudo apt install git
 sudo git clone https://github.com/USERNAME/hdap-core-v1.git
-cd hdap-core-v1
+cd web_e-assesment
 ```
 
 ### B. Konfigurasi Environment (.env)

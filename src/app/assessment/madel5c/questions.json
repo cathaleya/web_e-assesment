@@ -1,0 +1,782 @@
+[
+  {
+    "id": 1,
+    "scenario": "Anda sedang mencari referensi jurnal untuk menyusun tugas makalah akhir. Saat mencari di Google dengan kata kunci umum, muncul ratusan ribu hasil yang bercampur antara blog opini dan artikel ilmiah. Bagaimana respons Anda?",
+    "options": [
+      {
+        "text": "Mengambil kutipan langsung dari artikel blog pertama yang muncul agar cepat selesai.",
+        "score": 1
+      },
+      {
+        "text": "Membaca judul beberapa artikel dan mengutip tanpa membaca isi utuhnya.",
+        "score": 2
+      },
+      {
+        "text": "Membaca abstrak dari beberapa PDF teratas dan merangkumnya.",
+        "score": 3
+      },
+      {
+        "text": "Menggunakan fitur *Advanced Search* atau *Boolean Operator* (AND/OR) dan memfilter hasil khusus jurnal akademik.",
+        "score": 4
+      },
+      {
+        "text": "Menggunakan *database* akademik resmi (seperti Google Scholar/SINTA), memfilter tahun terbit, dan mengevaluasi metodologi risetnya sebelum mengutip.",
+        "score": 5
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "scenario": "Anda menemukan video TikTok viral tentang 'metode kilat mengajar calistung' yang diklaim terbukti ampuh, namun tidak mencantumkan sumber rujukan akademis apa pun. Bagaimana respons Anda?",
+    "options": [
+      {
+        "text": "Langsung membagikannya ke grup WA kelas mahasiswa karena videonya menarik.",
+        "score": 1
+      },
+      {
+        "text": "Menonton videonya lalu langsung mempraktikkannya saat simulasi mengajar tanpa mengecek ulang.",
+        "score": 2
+      },
+      {
+        "text": "Membaca kolom komentar; jika banyak yang memuji, Anda akan mencoba metode tersebut.",
+        "score": 3
+      },
+      {
+        "text": "Mencari tahu validitas metode tersebut di jurnal pendidikan atau sumber resmi Kemendikbud sebelum menggunakannya.",
+        "score": 4
+      },
+      {
+        "text": "Menganalisis kesesuaian metode video tersebut dengan teori perkembangan kognitif anak dan kurikulum resmi, memodifikasinya, lalu mendokumentasikan adaptasi tersebut secara ilmiah.",
+        "score": 5
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "scenario": "Laptop Anda dipenuhi ratusan file PDF materi kuliah, tugas, dan RPP yang menumpuk di folder *Downloads*, sehingga Anda sering kesulitan saat dosen meminta tugas minggu lalu. Apa tindakan Anda?",
+    "options": [
+      {
+        "text": "Membiarkan file tetap di *Downloads* dan menggunakan fitur *search* saat butuh (meski memakan waktu).",
+        "score": 1
+      },
+      {
+        "text": "Memindahkan semua file ke satu folder baru bernama \"Tugas Kuliah\" tanpa pengelompokan lebih lanjut.",
+        "score": 2
+      },
+      {
+        "text": "Membuat folder terpisah untuk setiap mata kuliah dan memindahkan file ke dalamnya secara berkala.",
+        "score": 3
+      },
+      {
+        "text": "Membuat hierarki folder (Semester > Mata Kuliah > Topik) dan mengubah nama file menggunakan format yang standar (*Naming Convention*).",
+        "score": 4
+      },
+      {
+        "text": "Merancang arsitektur folder hierarkis yang tertata rapi dan langsung menyinkronkannya dengan *cloud storage* (seperti Google Drive/OneDrive) untuk mencegah risiko kehilangan data jika perangkat rusak.",
+        "score": 5
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "scenario": "Anda diminta merancang strategi pembelajaran untuk siswa di kelas magang Anda. Anda memiliki data hasil evaluasi nilai harian siswa dari guru pamong dalam bentuk *spreadsheet*. Apa yang Anda lakukan dengan data tersebut?",
+    "options": [
+      {
+        "text": "Mengabaikan data *spreadsheet* dan mengajar menggunakan gaya ceramah standar.",
+        "score": 1
+      },
+      {
+        "text": "Melihat sekilas siapa siswa yang nilainya paling rendah dan hanya fokus pada mereka.",
+        "score": 2
+      },
+      {
+        "text": "Menghitung rata-rata nilai kelas untuk menentukan apakah materi perlu diulang secara umum.",
+        "score": 3
+      },
+      {
+        "text": "Menggunakan fungsi sortir/filter di Excel untuk memetakan kelompok siswa yang sudah paham dan yang remidial, lalu merancang pembelajaran terdiferensiasi.",
+        "score": 4
+      },
+      {
+        "text": "Memvisualisasikan data nilai ke dalam grafik analitik untuk mengidentifikasi topik spesifik mana yang paling banyak salah, lalu merancang intervensi pembelajaran presisi pada topik tersebut.",
+        "score": 5
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "scenario": "Kelompok Anda sedang menyusun dokumen laporan PKL yang sangat penting. Laporan ini dikerjakan secara kolaboratif, namun salah satu teman mengeluh flashdisknya terkena virus. Bagaimana Anda mengelola data ini?",
+    "options": [
+      {
+        "text": "Meminta file dari flashdisk teman tersebut disalin langsung ke laptop Anda agar cepat digabung.",
+        "score": 1
+      },
+      {
+        "text": "Mengirimkan file bolak-balik melalui WhatsApp Group yang rawan tertumpuk versi lamanya.",
+        "score": 2
+      },
+      {
+        "text": "Mem-backup file ke email pribadi setiap kali selesai mengerjakan.",
+        "score": 3
+      },
+      {
+        "text": "Memindahkan proyek ke platform *cloud* (seperti Google Docs) agar tidak bergantung pada flashdisk fisik dan tidak perlu kirim-kiriman file.",
+        "score": 4
+      },
+      {
+        "text": "Menggunakan Google Docs dengan mengatur hak akses kolaborator secara spesifik (hanya kelompok yang bisa *edit*) dan memanfaatkan fitur *Version History* untuk memantau perubahan data.",
+        "score": 5
+      }
+    ]
+  },
+  {
+    "id": 6,
+    "scenario": "Dosen memberikan tugas menyusun kerangka latar belakang makalah. Anda kebingungan mencari ide dan teringat akan aplikasi ChatGPT. Bagaimana cara Anda menggunakan *tools* tersebut?",
+    "options": [
+      {
+        "text": "Menyalin (*copy-paste*) instruksi tugas ke ChatGPT, lalu mengumpulkan hasil keluarannya mentah-mentah ke dosen.",
+        "score": 1
+      },
+      {
+        "text": "Menyalin *output* ChatGPT lalu mengganti beberapa kata bersinonim agar tidak ketahuan (*paraphrasing* ringan).",
+        "score": 2
+      },
+      {
+        "text": "Menggunakan ChatGPT untuk membuat draf awal, lalu membaca dan memperbaikinya sendiri sebelum dikumpulkan.",
+        "score": 3
+      },
+      {
+        "text": "Menggunakan AI murni untuk *brainstorming* ide dan menyusun *outline* utama, lalu menulis isi paragraf dengan kalimat sendiri.",
+        "score": 4
+      },
+      {
+        "text": "Menggunakan AI untuk memetakan struktur ide pokok, lalu secara independen mencari jurnal referensi asli (*primary sources*) untuk mengonfirmasi setiap argumen AI dan menulis sintesisnya secara mandiri.",
+        "score": 5
+      }
+    ]
+  },
+  {
+    "id": 7,
+    "scenario": "Anda ingin meminta izin kepada dosen pengampu mata kuliah karena tidak bisa hadir perkuliahan daring di LMS akibat kendala kesehatan darurat. Langkah komunikasi apa yang Anda ambil?",
+    "options": [
+      {
+        "text": "Titip absen (*spam* komentar kehadiran) di grup WA kelas tanpa memberi tahu dosen.",
+        "score": 1
+      },
+      {
+        "text": "Mengirim pesan *chat* pribadi ke dosen di luar jam kerja dengan bahasa santai tanpa menyebutkan identitas kelas.",
+        "score": 2
+      },
+      {
+        "text": "Mengirim pesan *chat* ke dosen di jam kerja dengan menyebutkan nama dan alasan izin.",
+        "score": 3
+      },
+      {
+        "text": "Menghubungi dosen melalui platform resmi kampus (LMS/Email) dengan format surat izin yang baku dan melampirkan surat keterangan sakit.",
+        "score": 4
+      },
+      {
+        "text": "Memberi tahu dosen via saluran resmi (LMS/Email) beserta bukti pendukung, sekaligus menginformasikan komitmen (*follow-up*) untuk mengejar ketertinggalan materi melalui teman atau rekaman perkuliahan.",
+        "score": 5
+      }
+    ]
+  },
+  {
+    "id": 8,
+    "scenario": "Anda baru saja menyusun ringkasan materi ujian komprehensif yang sangat lengkap. Banyak rekan beda kelas yang meminta ringkasan tersebut secara digital. Apa yang Anda lakukan?",
+    "options": [
+      {
+        "text": "Menjual file PDF ringkasan tersebut di grup angkatan tanpa izin pembuat materi/dosen.",
+        "score": 1
+      },
+      {
+        "text": "Mengirimkan file langsung ke satu per satu mahasiswa via *Direct Message* (DM) yang meminta.",
+        "score": 2
+      },
+      {
+        "text": "Membagikan file tersebut di satu grup WhatsApp angkatan.",
+        "score": 3
+      },
+      {
+        "text": "Mengunggah ringkasan tersebut ke Google Drive angkatan agar tersentralisasi dan mudah diunduh semua orang kapan saja.",
+        "score": 4
+      },
+      {
+        "text": "Membagikannya di *cloud* angkatan dengan melampirkan *disclaimer* akademik (bahwa ini ringkasan mahasiswa, bukan materi mutlak dosen) dan mencantumkan sitasi sumber buku aslinya.",
+        "score": 5
+      }
+    ]
+  },
+  {
+    "id": 9,
+    "scenario": "Kelompok Anda mendapat tugas merancang RPP berkelompok dengan *deadline* singkat, namun anggota kelompok terpisah di berbagai kota berbeda (pulang kampung). Bagaimana Anda mengoordinasi kerja kelompok?",
+    "options": [
+      {
+        "text": "Satu orang mengerjakan seluruhnya lalu namanya dimasukkan agar cepat selesai.",
+        "score": 1
+      },
+      {
+        "text": "Membagi tugas di WA: \"Si A kerjakan bab 1 di Word, B bab 2, kirim ke grup nanti digabung.\"",
+        "score": 2
+      },
+      {
+        "text": "Mengadakan rapat Zoom untuk membagi tugas, lalu masing-masing mengerjakan di Word lalu digabung.",
+        "score": 3
+      },
+      {
+        "text": "Membuat *Shared Document* (Google Docs/Word Online) agar semua orang bisa mengerjakan bagiannya langsung di satu dokumen secara bersamaan.",
+        "score": 4
+      },
+      {
+        "text": "Menggunakan *Shared Document* terintegrasi dan membuat *board* manajemen tugas (seperti Trello/Notion) untuk memantau progres (To Do, In Progress, Done) secara transparan antaranggotan.",
+        "score": 5
+      }
+    ]
+  },
+  {
+    "id": 10,
+    "scenario": "Saat kegiatan PLP (Pengenalan Lapangan Persekolahan), Anda ditugaskan guru pamong untuk menginformasikan tugas mandiri kepada grup WhatsApp orang tua siswa. Bagaimana cara Anda menyampaikannya?",
+    "options": [
+      {
+        "text": "Mengirim foto papan tulis tugas tanpa teks pengantar apa pun di grup.",
+        "score": 1
+      },
+      {
+        "text": "Mengirim pesan \"Bapak/Ibu, tolong anaknya disuruh kerjakan LKS halaman 10 besok dikumpul.\"",
+        "score": 2
+      },
+      {
+        "text": "Mengirim pesan dengan sapaan standar dan menyebutkan detail tugas serta batas waktu pengumpulan.",
+        "score": 3
+      },
+      {
+        "text": "Menulis pesan terstruktur (Salam, tujuan, detail tugas, tautan pengumpulan jika ada, ucapan terima kasih) dengan bahasa Indonesia baku dan sopan.",
+        "score": 4
+      },
+      {
+        "text": "Menulis pesan terstruktur, melampirkan *flyer* digital ringkas agar orang tua mudah memahami instruksi, dan menyediakan tautan nomor Anda untuk layanan konsultasi/tanya jawab khusus orang tua.",
+        "score": 5
+      }
+    ]
+  },
+  {
+    "id": 11,
+    "scenario": "Anda bertugas sebagai moderator forum diskusi presentasi kelompok di Google Meet kelas. Salah satu peserta terus-menerus memotong pembicaraan (*interrupting*) saat peserta lain sedang mengemukakan pendapat. Tindakan Anda?",
+    "options": [
+      {
+        "text": "Membiarkan saja karena merasa bukan kapasitas mahasiswa untuk menegur teman sendiri.",
+        "score": 1
+      },
+      {
+        "text": "Langsung melakukan *Kick* (mengeluarkan) peserta yang memotong tersebut dari *room*.",
+        "score": 2
+      },
+      {
+        "text": "Mematikan *mic* (*mute*) peserta yang memotong secara sepihak tanpa penjelasan.",
+        "score": 3
+      },
+      {
+        "text": "Menegur secara verbal dengan sopan dan mengingatkan kembali *rules* diskusi yang telah disepakati di awal.",
+        "score": 4
+      },
+      {
+        "text": "Melakukan intervensi empatik dengan mengakui antusiasmenya namun secara tegas mengatur *flow*: \"Terima kasih atas semangatnya, kita simpan poin Anda, mari beri kesempatan Saudara X untuk menyelesaikan pendapatnya lebih dulu sesuai antrean *Raise Hand*.\"",
+        "score": 5
+      }
+    ]
+  },
+  {
+    "id": 12,
+    "scenario": "Anda menyadari bahwa menjadi guru yang kompeten tidak cukup hanya dengan belajar di kelas. Anda ingin memperluas wawasan pedagogik terkini dari praktisi di luar kampus Anda. Apa yang Anda lakukan?",
+    "options": [
+      {
+        "text": "Merasa ilmu dari dosen kampus sendiri sudah cukup mutlak dan tidak perlu mencari ilmu dari luar.",
+        "score": 1
+      },
+      {
+        "text": "Mengikuti (*follow*) akun artis dan *influencer* hiburan di media sosial untuk melepaskan stres kuliah.",
+        "score": 2
+      },
+      {
+        "text": "Sesekali melihat video tips mengajar di YouTube atau TikTok jika kebetulan lewat di *beranda* Anda.",
+        "score": 3
+      },
+      {
+        "text": "Bergabung secara aktif di grup Telegram/Facebook komunitas guru Indonesia untuk bertukar RPP dan berdiskusi masalah kelas.",
+        "score": 4
+      },
+      {
+        "text": "Membangun profil LinkedIn profesional secara sengaja, berkoneksi dengan para praktisi edukasi, mengikuti *webinar* lintas kampus secara berkala, dan berpartisipasi dalam diskusi *best practice* secara asinkron.",
+        "score": 5
+      }
+    ]
+  },
+  {
+    "id": 13,
+    "scenario": "Anda diminta membuat presentasi tentang \"Tata Surya\" untuk siswa SD. Waktu persiapan cukup sempit.",
+    "options": [
+      {
+        "text": "Membuka buku cetak dan menyalin teks 100% ke slide putih tanpa gambar sama sekali.",
+        "score": 1
+      },
+      {
+        "text": "Menggunakan template bawaan PPT dengan teks penuh di setiap slide.",
+        "score": 2
+      },
+      {
+        "text": "Menggunakan template Canva gratis dan memasukkan poin-poin utama beserta gambar.",
+        "score": 3
+      },
+      {
+        "text": "Merancang presentasi visual dengan poin singkat, gambar relevan beresolusi tinggi, dan menyisipkan video pendek.",
+        "score": 4
+      },
+      {
+        "text": "Merancang presentasi multimedia interaktif (seperti PearDeck/Nearpod) di mana siswa bisa menjawab kuis langsung di gawai mereka saat slide diputar.",
+        "score": 5
+      }
+    ]
+  },
+  {
+    "id": 14,
+    "scenario": "Anda menemukan video dokumenter sejarah dari YouTube yang sangat bagus, tetapi durasinya 45 menit padahal Anda hanya butuh 5 menit spesifik untuk menjelaskan satu topik inti di kelas.",
+    "options": [
+      {
+        "text": "Memutar videonya dari awal di kelas dan menyuruh siswa menebak-nebak isinya.",
+        "score": 1
+      },
+      {
+        "text": "Memberikan tautan YouTube ke siswa dan menyuruh mereka menonton sendiri di rumah tanpa panduan.",
+        "score": 2
+      },
+      {
+        "text": "Menonton bersama di kelas lalu Anda melompati (*skip*) video secara manual ke menit yang pas.",
+        "score": 3
+      },
+      {
+        "text": "Mengunduh video, memotong bagian 5 menit tersebut, lalu menampilkannya di kelas dengan penjelasan dari Anda.",
+        "score": 4
+      },
+      {
+        "text": "Menggunakan aplikasi interaktif (seperti Edpuzzle) untuk memotong bagian yang spesifik, menyisipkan rekaman suara penjelasan Anda, dan menambahkan pertanyaan panduan di tengah video.",
+        "score": 5
+      }
+    ]
+  },
+  {
+    "id": 15,
+    "scenario": "Anda ingin menambahkan lagu latar belakang untuk video *microteaching* Anda yang akan diunggah ke YouTube kampus secara publik.",
+    "options": [
+      {
+        "text": "Mengunduh lagu pop terkenal yang sedang tren dan memasukkannya penuh ke video.",
+        "score": 1
+      },
+      {
+        "text": "Mencari lagu dari YouTube lalu merekam audionya dengan *speaker* HP agar tidak ketahuan sistem.",
+        "score": 2
+      },
+      {
+        "text": "Menggunakan lagu pop yang sudah di-remix (*speed up/slowed*) untuk mengakali deteksi hak cipta algoritma.",
+        "score": 3
+      },
+      {
+        "text": "Menggunakan musik gratis dari *YouTube Audio Library* yang sudah dijamin bebas royalti.",
+        "score": 4
+      },
+      {
+        "text": "Mencari musik berlisensi *Creative Commons* (CC) dari platform legal, dan secara eksplisit mencantumkan kredit atribusi (Artis, Judul, Link Lisensi) di deskripsi video sesuai syarat CC.",
+        "score": 5
+      }
+    ]
+  },
+  {
+    "id": 16,
+    "scenario": "Beberapa siswa di kelas magang Anda lebih mudah memahami materi melalui visual (gambar), sementara yang lain auditori (suara). Dosen meminta bahan ajar Anda bersifat adaptif/inklusif.",
+    "options": [
+      {
+        "text": "Membuat modul teks panjang untuk dibaca semua siswa secara paksa karena itu paling mudah.",
+        "score": 1
+      },
+      {
+        "text": "Membuat bahan ajar berupa modul teks saja tetapi hurufnya diperbesar agar jelas.",
+        "score": 2
+      },
+      {
+        "text": "Membuat PowerPoint yang berisi teks materi dengan beberapa gambar estetik.",
+        "score": 3
+      },
+      {
+        "text": "Menyediakan materi dalam dua bentuk: dokumen ringkasan (*infografis*) dan rekaman penjelasan suara Anda.",
+        "score": 4
+      },
+      {
+        "text": "Mengembangkan *E-Modul* interaktif yang mengombinasikan teks responsif, opsi *audio-read* (suara narasi materi), dan diagram visual yang bisa di-klik (*hyperlinked*).",
+        "score": 5
+      }
+    ]
+  },
+  {
+    "id": 17,
+    "scenario": "Anda merekam video penjelasan rumus matematika. Namun, ada keluhan dari orang tua bahwa video tersebut sulit dipahami saat siswa belajar di lingkungan rumah yang bising.",
+    "options": [
+      {
+        "text": "Mengabaikan keluhan karena menganggap itu salah siswa yang belajarnya di tempat bising.",
+        "score": 1
+      },
+      {
+        "text": "Menyarankan orang tua membelikan *earphone* yang bagus untuk anaknya.",
+        "score": 2
+      },
+      {
+        "text": "Mengirimkan foto papan tulis rumus di WA sebagai pelengkap video.",
+        "score": 3
+      },
+      {
+        "text": "Merekam ulang video dengan berusaha berbicara jauh lebih keras dan lambat.",
+        "score": 4
+      },
+      {
+        "text": "Memasukkan video ke aplikasi editor (*CapCut/Premiere*) dan menambahkan takarir teks (*Closed Captions/Subtitle*) otomatis yang akurat di sepanjang video.",
+        "score": 5
+      }
+    ]
+  },
+  {
+    "id": 18,
+    "scenario": "Setelah menggunakan media pembelajaran berupa *Game Quiz* yang Anda buat sendiri selama 1 bulan, hasil belajar siswa kelas Anda ternyata tidak mengalami peningkatan.",
+    "options": [
+      {
+        "text": "Menyalahkan siswa yang malas belajar karena merasa medianya sudah dirancang sedemikian canggih.",
+        "score": 1
+      },
+      {
+        "text": "Berhenti menggunakan seluruh media digital dan kembali ke metode ceramah tradisional 100%.",
+        "score": 2
+      },
+      {
+        "text": "Tetap menggunakan *game* tersebut seperti biasa dan berharap bulan depan hasilnya membaik.",
+        "score": 3
+      },
+      {
+        "text": "Mengurangi porsi penggunaan *game* tersebut dan menambah tugas LKS kertas sebagai kompensasi.",
+        "score": 4
+      },
+      {
+        "text": "Menyebarkan angket *Google Form* singkat ke siswa untuk mengevaluasi aspek fungsionalitas media, lalu melakukan revisi iteratif (*prototyping*) berdasarkan masukan kritis siswa.",
+        "score": 5
+      }
+    ]
+  },
+  {
+    "id": 19,
+    "scenario": "Anda mendapat email peringatan dengan subjek \"Akun LMS Kampus Anda Akan Segera Diblokir!\" yang berisi tautan untuk memverifikasi ulang *password* Anda hari ini juga.",
+    "options": [
+      {
+        "text": "Karena panik, langsung mengeklik tautan tersebut dan memasukkan email serta kata sandi LMS.",
+        "score": 1
+      },
+      {
+        "text": "Membalas email tersebut dengan memohon agar admin tidak memblokir akun Anda.",
+        "score": 2
+      },
+      {
+        "text": "Mengeklik tautan, tetapi karena halamannya terlihat mencurigakan, Anda langsung menutupnya tanpa mengisi *password*.",
+        "score": 3
+      },
+      {
+        "text": "Menghubungi teman grup kelas via WA untuk bertanya apakah mereka mendapat email serupa, jika tidak ada, Anda abaikan.",
+        "score": 4
+      },
+      {
+        "text": "Mengecek alamat email pengirim (bukan sekadar nama pengirim), mendeteksinya sebagai *phishing*, melaporkan (Report Spam) email tersebut ke pusat TIK kampus, lalu memastikan *Two-Factor Authentication* (2FA) Anda aktif.",
+        "score": 5
+      }
+    ]
+  },
+  {
+    "id": 20,
+    "scenario": "Saat masa PPL (magang mengajar) di sekolah, Anda mendokumentasikan foto siswa yang menangis dan tantrum di kelas. Anda ingin mengunggahnya ke Instagram pribadi sebagai keluh kesah tantangan menjadi guru.",
+    "options": [
+      {
+        "text": "Mengunggah foto tersebut tanpa sensor wajah dengan *caption* nama asli anak yang tantrum.",
+        "score": 1
+      },
+      {
+        "text": "Mengunggah foto tersebut dengan *caption* yang menyudutkan kemampuan *parenting* orang tua siswa.",
+        "score": 2
+      },
+      {
+        "text": "Mengunggah foto tersebut di fitur *Close Friends* IG agar hanya sahabat dekat Anda yang melihatnya.",
+        "score": 3
+      },
+      {
+        "text": "Memilih untuk mengunggah foto papan tulis kosong saja sebagai latar belakang keluh kesah Anda tanpa melibatkan siswa.",
+        "score": 4
+      },
+      {
+        "text": "Secara sadar tidak mengunggah data, wajah, atau kisah spesifik siswa (terlebih dalam kondisi rentan) ke media sosial pribadi tanpa *informed consent* orang tua, demi mematuhi etika profesi dan UU Perlindungan Data Pribadi.",
+        "score": 5
+      }
+    ]
+  },
+  {
+    "id": 21,
+    "scenario": "Di grup WhatsApp angkatan tersebar *broadcast* bahwa \"Kemendikbud membagikan kuota gratis 100GB\" jika mahasiswa mengisi form yang beralamat \"bit.ly/kuota-gratis-kampus\".",
+    "options": [
+      {
+        "text": "Langsung mengisi form dengan NIK dan NIM, lalu mem-forward pesan tersebut ke grup UKM.",
+        "score": 1
+      },
+      {
+        "text": "Hanya mengisi data Anda sendiri demi mendapat kuota tanpa menyebarkannya.",
+        "score": 2
+      },
+      {
+        "text": "Mencoba mengisi dengan data palsu (nama fiktif) sekadar iseng menguji apakah kuotanya benar masuk.",
+        "score": 3
+      },
+      {
+        "text": "Mengabaikan pesan tersebut karena merasa tidak butuh kuota gratis.",
+        "score": 4
+      },
+      {
+        "text": "Mengecek *URL* mencurigakan tersebut dengan *hoax buster* atau medsos resmi Kemendikbud, lalu secara proaktif meluruskan misinformasi di grup agar mahasiswa lain tidak menjadi korban pencurian kredensial.",
+        "score": 5
+      }
+    ]
+  },
+  {
+    "id": 22,
+    "scenario": "Anda diberi tugas meresensi sebuah jurnal untuk tugas UTS. Saat *browsing*, Anda menemukan artikel blog (*WordPress*) yang isi resensinya sangat brilian dan sesuai dengan topik tugas Anda.",
+    "options": [
+      {
+        "text": "Melakukan *copy-paste* utuh 100% dan menyerahkannya sebagai tugas UTS Anda.",
+        "score": 1
+      },
+      {
+        "text": "Mengopi sekitar 80% isi teks blog, namun mengubah nama tokoh atau kata hubungnya saja.",
+        "score": 2
+      },
+      {
+        "text": "Mengopi teks tersebut, lalu memasukkannya ke *Google Translate* bolak-balik agar struktur kalimatnya berubah untuk menghindari aplikasi anti-plagiasi.",
+        "score": 3
+      },
+      {
+        "text": "Membaca blog tersebut, menutupnya, lalu menulis ulang keseluruhan gagasan dengan gaya bahasa Anda sendiri (*paraphrasing*) tanpa mencantumkan blog tersebut di daftar pustaka.",
+        "score": 4
+      },
+      {
+        "text": "Menggunakan blog tersebut murni sebagai inspirasi pembanding, mensintesisnya dengan jurnal asli yang Anda baca secara independen, dan secara jujur mencantumkan URL blog tersebut di daftar referensi (*academic integrity*).",
+        "score": 5
+      }
+    ]
+  },
+  {
+    "id": 23,
+    "scenario": "Menjelang pengumpulan laporan akhir, Anda terpaksa bekerja di depan laptop selama lebih dari 10 jam berturut-turut setiap hari. Anda mulai mengalami mata perih, sakit leher, dan siklus tidur kacau.",
+    "options": [
+      {
+        "text": "Terus memaksakan diri bekerja hingga pagi ditemani minuman berenergi agar tidak mengantuk.",
+        "score": 1
+      },
+      {
+        "text": "Berhenti sama sekali mengerjakan tugas selama berhari-hari demi balas dendam tidur.",
+        "score": 2
+      },
+      {
+        "text": "Membeli obat tetes mata dan menenggak vitamin, lalu melanjutkan rutinitas 10 jam *non-stop* tanpa istirahat layar.",
+        "score": 3
+      },
+      {
+        "text": "Mengurangi kecerahan (*brightness*) layar laptop dan baru beristirahat jika kepala sudah sangat pusing.",
+        "score": 4
+      },
+      {
+        "text": "Menerapkan strategi *Digital Wellbeing*: mengatur mode *Blue Light Filter*, menggunakan metode Pomodoro (fokus 25 menit, istirahat layar 5 menit), dan menjaga postur ergonomis duduk.",
+        "score": 5
+      }
+    ]
+  },
+  {
+    "id": 24,
+    "scenario": "Anda baru menyadari bahwa akun portal akademik (*SIAKAD*) kampus Anda sepertinya disusupi orang lain, karena ada mata kuliah penting yang terhapus dari Kartu Rencana Studi (KRS) Anda.",
+    "options": [
+      {
+        "text": "Membiarkannya berlalu dan berharap sistem akan kembali normal dengan sendirinya besok pagi.",
+        "score": 1
+      },
+      {
+        "text": "Mengeluh dan marah-marah di Twitter/X dengan *tagging* akun kampus untuk menyalahkan sistem IT rektorat yang buruk.",
+        "score": 2
+      },
+      {
+        "text": "Berusaha membuat akun mahasiswa baru (jika mungkin) agar aman dari penyusup.",
+        "score": 3
+      },
+      {
+        "text": "Bergegas membuka profil dan mengganti *password* SIAKAD Anda dengan kombinasi baru.",
+        "score": 4
+      },
+      {
+        "text": "Segera mengubah sandi dengan standar kuat (huruf, angka, simbol), *logout* dari semua sesi (*sessions*), memeriksa perangkat Anda dari potensi *keylogger/malware*, dan membuat laporan resmi ke Puskom/Admin IT agar ada investigasi log akses.",
+        "score": 5
+      }
+    ]
+  },
+  {
+    "id": 25,
+    "scenario": "Anda sedang menjadi presenter utama via Google Meet untuk sidang proposal. Tiba-tiba dosen penguji menginterupsi bahwa suara Anda sama sekali tidak terdengar, padahal ikon *mic* di layar Anda menyala (tidak *mute*).",
+    "options": [
+      {
+        "text": "Langsung mematikan laptop dan menangis karena merasa sidang sudah pasti gagal.",
+        "score": 1
+      },
+      {
+        "text": "Terus saja berbicara sambil memukul-mukul *keyboard* berharap suaranya muncul sendiri.",
+        "score": 2
+      },
+      {
+        "text": "Memanggil teman sekos Anda untuk berteriak ke mikrofon laptop agar terdengar.",
+        "score": 3
+      },
+      {
+        "text": "Mengetik di kolom *chat* untuk meminta izin keluar *meeting* sebentar (*Leave*), merestart laptop, lalu bergabung (*Re-join*) kembali.",
+        "score": 4
+      },
+      {
+        "text": "Tetap tenang, menginformasikan di *chat*, lalu secara cepat mengecek *Settings > Audio > Input Device* di Gmeet untuk mereset *driver* mic, atau dengan sigap berpindah *login* audio menggunakan *smartphone* Anda sebagai *mic* darurat.",
+        "score": 5
+      }
+    ]
+  },
+  {
+    "id": 26,
+    "scenario": "Anda ingin mengadakan kuis interaktif (seperti Kahoot) untuk *ice breaking* di sekolah pelosok tempat Anda mengajar, namun kebijakannya adalah siswa tidak diizinkan membawa HP sama sekali ke kelas.",
+    "options": [
+      {
+        "text": "Menyerah pada keadaan, membatalkan niat kuis digital, dan kembali mendiktekan soal ujian di buku tulis.",
+        "score": 1
+      },
+      {
+        "text": "Meminta siswa diam-diam menyelundupkan HP dari rumah khusus untuk jam pelajaran Anda.",
+        "score": 2
+      },
+      {
+        "text": "Membuka Kahoot di proyektor kelas lalu meminta siswa teriak-teriak menebak jawaban yang benar secara massal.",
+        "score": 3
+      },
+      {
+        "text": "Membuka kuis di proyektor lalu meminta siswa menulis pilihan jawaban (A, B, C, D) di selembar kertas kosong untuk dikumpulkan.",
+        "score": 4
+      },
+      {
+        "text": "Menggunakan platform *Plickers* atau *Paper Mode Quizizz*, di mana Anda cukup menyajikan soal di proyektor dan setiap siswa memutar kartu cetak/kertas (berpola barcode) untuk menjawab, lalu Anda men-*scan* jawaban seluruh kelas menggunakan kamera HP Anda secara serentak.",
+        "score": 5
+      }
+    ]
+  },
+  {
+    "id": 27,
+    "scenario": "Guru pamong menugaskan Anda untuk mengolah 500 baris data nilai ujian menggunakan fungsi kombinasi *VLOOKUP* di *Microsoft Excel*, padahal Anda belum pernah mempelajarinya. Batas waktunya adalah esok lusa.",
+    "options": [
+      {
+        "text": "Mengembalikan tugas tersebut kepada guru pamong dan beralasan bahwa hal itu belum diajarkan di kampus.",
+        "score": 1
+      },
+      {
+        "text": "Mencari teman jurusan IT dan menyuruhnya mengerjakan seluruh rekap nilai tersebut dari awal sampai akhir.",
+        "score": 2
+      },
+      {
+        "text": "Membuka dua jendela Excel berdampingan dan memasukkan data ribuan siswa tersebut satu per satu secara manual (*copy-paste*) sampai pagi.",
+        "score": 3
+      },
+      {
+        "text": "Menghubungi teman yang bisa Excel dan memintanya mengajari Anda via *Zoom* langkah demi langkah.",
+        "score": 4
+      },
+      {
+        "text": "Melakukan pencarian mandiri (*self-directed learning*) di YouTube dengan kata kunci spesifik \"Tutorial VLOOKUP Nilai Rapor\", mempelajarinya secara intensif, dan mengaplikasikannya sendiri pada data tersebut.",
+        "score": 5
+      }
+    ]
+  },
+  {
+    "id": 28,
+    "scenario": "Anda sangat bersemangat menerapkan pembelajaran berbasis multimedia, namun sekolah magang Anda memiliki aturan kontradiktif: \"Proyektor LCD hanya boleh dipakai oleh guru ASN/Senior\". Akibatnya, Anda tidak punya fasilitas proyektor di kelas.",
+    "options": [
+      {
+        "text": "Pasrah total, menggerutu di media sosial, dan kembali mengajar dengan berceramah menggunakan papan tulis kapur.",
+        "score": 1
+      },
+      {
+        "text": "Melabrak staf tata usaha sekolah dan memaksa memakai proyektor karena Anda merasa berhak.",
+        "score": 2
+      },
+      {
+        "text": "Menggunakan layar laptop 14 inci milik Anda dan menunjukkannya dengan berjalan keliling dari meja ke meja ke 40 siswa.",
+        "score": 3
+      },
+      {
+        "text": "Mencetak (*print*) materi visual (*slides*) tersebut berwarna dalam ukuran kertas A4, lalu menempelkannya satu per satu di papan tulis.",
+        "score": 4
+      },
+      {
+        "text": "Merancang model rotasi \"Stasiun Belajar\" (Station Rotation): membagi siswa ke kelompok kecil, meminjam 2-3 laptop tambahan dari sesama mahasiswa PPL, lalu meletakkan materi interaktif di tiap kelompok agar siswa belajar secara berkelompok tanpa butuh satu proyektor besar.",
+        "score": 5
+      }
+    ]
+  },
+  {
+    "id": 29,
+    "scenario": "Anda mengajar dalam format *hybrid* (50% siswa hadir fisik di lab, 50% *online* di Zoom). Saat Anda mendemonstrasikan aplikasi di proyektor kelas, siswa yang ada di Zoom mengeluh layar proyektornya buram dan tidak terbaca dari kamera Anda.",
+    "options": [
+      {
+        "text": "Menyuruh siswa di Zoom untuk maklum karena Anda harus mengutamakan pelayanan siswa yang hadir secara fisik.",
+        "score": 1
+      },
+      {
+        "text": "Mematikan seluruh lampu lab komputer agar proyektor bersinar jelas, meski siswa di lab jadi kegelapan mencatat.",
+        "score": 2
+      },
+      {
+        "text": "Mematikan proyektor dan hanya mengirimkan file materi PPT ke WhatsApp Group agar siswa Zoom membaca sendiri.",
+        "score": 3
+      },
+      {
+        "text": "Memutar posisi laptop Anda agar *webcam* benar-benar menempel menghadap layar proyektor dari jarak dekat.",
+        "score": 4
+      },
+      {
+        "text": "Menghubungkan kabel HDMI proyektor ke laptop Anda, melakukan *Share Screen* (*Entire Screen*) di aplikasi Zoom, lalu menyalakan mode *Duplicate Display*, sehingga audiens luring dan daring melihat presentasi digital yang sama tajamnya.",
+        "score": 5
+      }
+    ]
+  },
+  {
+    "id": 30,
+    "scenario": "Anda ditugaskan mengawasi Ujian Tengah Semester berbasis komputer (*Computer Based Test/CBT*) lokal menggunakan server sekolah. Di tengah ujian, mesin *server* lokal mengalami kerusakan dan seluruh komputer siswa terputus.",
+    "options": [
+      {
+        "text": "Langsung membubarkan siswa untuk pulang ke rumah dan menyatakan bahwa ujian dibatalkan total hari itu.",
+        "score": 1
+      },
+      {
+        "text": "Panik, duduk diam di meja pengawas, dan hanya menunggu teknisi IT datang memperbaiki tanpa menenangkan siswa.",
+        "score": 2
+      },
+      {
+        "text": "Menyuruh siswa beralih mengerjakan ujian CBT menggunakan HP dan paket data masing-masing (padahal *server* lokal mati).",
+        "score": 3
+      },
+      {
+        "text": "Mencari-cari sisa kertas buram di laci meja guru untuk mendiktekan soal dadakan ke siswa secara acak.",
+        "score": 4
+      },
+      {
+        "text": "Menenangkan siswa, langsung mengeksekusi rencana kontinjensi (*backup plan*) dengan membagikan *hardcopy* naskah soal cetak yang memang selalu Anda *print* 1-2 kelas sebelumnya sebagai cadangan darurat (*offline fallback*), lalu mencatat tambahan kompensasi waktu.",
+        "score": 5
+      }
+    ]
+  }
+]
