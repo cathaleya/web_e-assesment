@@ -45,6 +45,7 @@ export default function SurveyPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId, totalScore, answersJson: answers }),
       });
+      // Redirect to dashboard where MADEL5C is now unlocked
       router.push("/dashboard");
     } catch (err) { console.error(err); }
   };
@@ -67,67 +68,66 @@ export default function SurveyPage() {
               className="bg-white p-6 rounded-2xl shadow-2xl border border-slate-200"
             >
               <div className="flex items-center gap-3 mb-4 border-b pb-4">
-                <i className="fa-solid fa-star-half-stroke text-[#4B5320] text-xl"></i>
-                <h1 className="text-lg font-black text-slate-900 uppercase">Evaluasi Usabilitas</h1>
+                <div className="w-10 h-10 bg-[#4B5320] rounded-xl flex items-center justify-center text-white shadow-lg">
+                  <i className="fa-solid fa-star-half-stroke text-xl"></i>
+                </div>
+                <div>
+                  <h1 className="text-lg font-black text-slate-900 uppercase">Survey Usabilitas</h1>
+                  <p className="text-[7px] font-black text-slate-400 uppercase tracking-widest leading-none mt-1">Tahap 2 Penelitian</p>
+                </div>
               </div>
               
               <div className="space-y-4 mb-6">
-                <p className="p-3 bg-slate-50 rounded-xl border border-slate-100 font-bold text-xs text-slate-700 leading-relaxed italic">
-                  "Mohon berikan penilaian objektif Bapak/Ibu mengenai pengalaman penggunaan platform ini."
+                <p className="p-3 bg-amber-50 rounded-xl border border-amber-100 font-bold text-xs text-amber-900 leading-relaxed italic">
+                  "Setelah mengisi Preliminary, mohon berikan penilaian Bapak/Ibu mengenai pengalaman penggunaan sistem ini."
                 </p>
-                <div className="grid grid-cols-2 gap-2 text-[8px] font-black uppercase text-slate-500">
-                  <div className="p-2 bg-white border rounded-lg flex items-center gap-2">
-                    <i className="fa-solid fa-check text-emerald-500"></i> 10 Pertanyaan
-                  </div>
-                  <div className="p-2 bg-white border rounded-lg flex items-center gap-2">
-                    <i className="fa-solid fa-list text-blue-500"></i> Skala 1-5
-                  </div>
-                </div>
               </div>
 
-              <button onClick={() => setShowInstructions(false)} className="w-full py-3 bg-[#4B5320] text-white font-black rounded-lg text-[10px] uppercase tracking-widest shadow-lg">
-                MULAI SURVEY
+              <button onClick={() => setShowInstructions(false)} className="w-full py-4 bg-[#4B5320] text-white font-black rounded-lg text-[10px] uppercase tracking-widest shadow-xl">
+                MULAI ISI SURVEY
               </button>
             </motion.div>
           ) : (
             <motion.div key="survey" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-3">
                <div className="text-center mb-4">
-                  <h2 className="text-lg font-black text-white uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">Kuesioner SUS</h2>
+                  <h2 className="text-lg font-black text-white uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">Evaluasi Sistem (SUS)</h2>
                   <div className="w-10 h-1 bg-white mx-auto mt-1 rounded-full shadow-lg"></div>
                </div>
 
                {susQuestions.map((q, i) => (
-                 <motion.div key={i} className="bg-white border border-slate-200 p-3 rounded-xl shadow-lg">
-                   <div className="mb-3 p-3 bg-slate-50 border-l-4 border-[#4B5320] rounded-lg">
-                     <p className="text-[11px] text-slate-900 font-bold leading-tight">
-                       <span className="text-slate-300 mr-1 italic">#{i + 1}</span> {q}
+                 <motion.div key={i} className="bg-white border-2 border-slate-200 p-4 rounded-xl shadow-lg">
+                   <div className="mb-4 p-3 bg-slate-50 border-l-4 border-slate-800 rounded-lg">
+                     <p className="text-[12px] text-black font-black leading-tight">
+                       <span className="text-slate-400 mr-1 italic">#{i + 1}</span> {q}
                      </p>
                    </div>
                    
                    <div className="flex justify-between items-center gap-2">
-                     <span className="text-[7px] font-black text-slate-400 uppercase tracking-tighter">STS</span>
-                     <div className="flex justify-between gap-1 flex-1 max-w-[200px]">
+                     <span className="text-[8px] font-black text-slate-900 uppercase tracking-tighter w-12 leading-none">Tidak Setuju</span>
+                     <div className="flex justify-between gap-1.5 flex-1 max-w-[220px]">
                         {[1, 2, 3, 4, 5].map((val) => (
                           <button
                             key={val}
                             onClick={() => handleAnswer(i, val)}
-                            className={`w-8 h-8 rounded-lg font-black text-[10px] transition-all flex items-center justify-center border-2 ${
-                              answers[i] === val ? "bg-[#4B5320] border-[#4B5320] text-white" : "bg-white border-slate-100 text-slate-200"
+                            className={`w-9 h-9 rounded-lg font-black text-sm transition-all flex items-center justify-center border-2 ${
+                              answers[i] === val 
+                                ? "bg-black border-black text-white shadow-xl scale-110" 
+                                : "bg-slate-200 border-slate-300 text-slate-700 hover:bg-slate-300"
                             }`}
                           >
                             {val}
                           </button>
                         ))}
                      </div>
-                     <span className="text-[7px] font-black text-slate-400 uppercase tracking-tighter">SS</span>
+                     <span className="text-[8px] font-black text-slate-900 uppercase tracking-tighter w-12 text-right leading-none">Sangat Setuju</span>
                    </div>
                  </motion.div>
                ))}
 
-               <button disabled={!isComplete} onClick={submitSurvey} className={`w-full py-4 mt-6 rounded-xl font-black uppercase text-[10px] tracking-widest transition-all ${
-                 isComplete ? "bg-[#4B5320] text-white shadow-xl" : "bg-slate-300 text-slate-100"
+               <button disabled={!isComplete} onClick={submitSurvey} className={`w-full py-4 mt-6 rounded-xl font-black uppercase text-xs tracking-widest transition-all ${
+                 isComplete ? "bg-black text-white shadow-2xl" : "bg-slate-300 text-slate-100"
                }`}>
-                 Kirim Hasil Survey
+                 KIRIM HASIL SURVEY <i className="fa-solid fa-paper-plane ml-2"></i>
                </button>
             </motion.div>
           )}

@@ -12,6 +12,14 @@ export default function Madel5cAssessment() {
   const [showInstructions, setShowInstructions] = useState(true);
   const router = useRouter();
 
+  const optionColors = [
+    "bg-blue-50 border-blue-100 text-blue-900",
+    "bg-emerald-50 border-emerald-100 text-emerald-900",
+    "bg-amber-50 border-amber-100 text-amber-900",
+    "bg-rose-50 border-rose-100 text-rose-900",
+    "bg-purple-50 border-purple-100 text-purple-900"
+  ];
+
   useEffect(() => { fetchQuestions(); }, []);
 
   const fetchQuestions = async () => {
@@ -59,31 +67,31 @@ export default function Madel5cAssessment() {
               className="bg-white p-6 rounded-2xl shadow-2xl border border-slate-200"
             >
               <h1 className="text-xl font-black text-slate-900 uppercase mb-4 border-b pb-4">MADEL5C Instrumen</h1>
-              <p className="p-3 bg-slate-50 rounded-lg text-xs font-bold text-slate-700 italic mb-6">"Asesmen berbasis skenario situasi nyata."</p>
-              <button onClick={() => setShowInstructions(false)} className="w-full py-3 bg-[#4B5320] text-white font-black rounded-lg text-[10px] uppercase">MULAI ASESMEN</button>
+              <p className="p-3 bg-emerald-50 rounded-lg text-[10px] font-bold text-emerald-900 italic mb-6">"Tahap Akhir: Asesmen berbasis skenario situasi nyata. Tahap ini hanya terbuka bagi Anda yang sudah menyelesaikan Survey Usabilitas."</p>
+              <button onClick={() => setShowInstructions(false)} className="w-full py-4 bg-[#4B5320] text-white font-black rounded-lg text-[10px] uppercase tracking-widest shadow-lg">MULAI ASESMEN AKHIR</button>
             </motion.div>
           ) : (
             <motion.div key="assessment" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
               <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-lg flex justify-between items-center">
-                <span className="text-[10px] font-black text-slate-900">SKENARIO #{currentStep + 1}</span>
-                <div className="w-20 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                <span className="text-[10px] font-black text-slate-900 uppercase tracking-widest">Skenario #{currentStep + 1}</span>
+                <div className="w-24 h-1.5 bg-slate-100 rounded-full overflow-hidden">
                    <div className="h-full bg-[#4B5320]" style={{ width: `${((currentStep+1)/questions.length)*100}%` }}></div>
                 </div>
               </div>
 
               <div className="bg-white p-4 rounded-2xl shadow-2xl border border-slate-200">
-                <div className="mb-4 p-4 bg-slate-50 border-l-4 border-[#4B5320] rounded-lg">
-                  <p className="text-xs sm:text-sm text-slate-900 font-bold leading-relaxed italic">"{questions[currentStep]?.scenario}"</p>
+                <div className="mb-5 p-4 bg-slate-50 border-l-4 border-slate-900 rounded-lg shadow-inner">
+                  <p className="text-[13px] text-black font-black leading-relaxed italic">"{questions[currentStep]?.scenario}"</p>
                 </div>
                 <div className="space-y-2">
                   {questions[currentStep]?.options?.map((opt: any, idx: number) => (
                     <button key={idx} onClick={() => handleAnswer(idx)}
-                      className={`w-full flex items-start gap-3 p-3 rounded-lg border-2 text-left transition-all ${
-                        answers[currentStep] === opt.score ? "bg-[#4B5320] border-[#4B5320] text-white shadow-md" : "bg-white border-slate-100 text-slate-900"
+                      className={`w-full flex items-start gap-3 p-3 rounded-xl border-2 text-left transition-all ${
+                        answers[currentStep] === opt.score ? "bg-black border-black text-white shadow-xl scale-[1.02]" : `${optionColors[idx % optionColors.length]} opacity-80`
                       }`}
                     >
-                      <span className={`mt-0.5 w-6 h-6 rounded flex items-center justify-center font-black text-[10px] shrink-0 ${answers[currentStep] === opt.score ? "bg-white text-[#4B5320]" : "bg-slate-50 text-slate-300"}`}>{String.fromCharCode(65 + idx)}</span>
-                      <span className="text-[11px] font-bold leading-snug">{opt.text}</span>
+                      <span className={`mt-0.5 w-7 h-7 rounded-lg flex items-center justify-center font-black text-[10px] shrink-0 ${answers[currentStep] === opt.score ? "bg-white text-black" : "bg-white/50 border border-current opacity-60"}`}>{String.fromCharCode(65 + idx)}</span>
+                      <span className="text-[11px] font-black leading-tight">{opt.text}</span>
                     </button>
                   ))}
                 </div>

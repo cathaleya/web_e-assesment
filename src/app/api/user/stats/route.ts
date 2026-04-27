@@ -25,12 +25,13 @@ export async function GET(request: Request) {
     // Calculate specific stats
     const preliminary = user.assessments.find(a => a.type === 'PDI-DL')?.totalScore || 0;
     const madel5c = user.assessments.find(a => a.type === 'MADEL5C')?.totalScore || 0;
+    const surveyDone = user.surveys.length > 0;
     
     // Mock radar data based on actual scores
     const radar = [
       Math.min(5, (preliminary / 20) * 5), 
       Math.min(5, (madel5c / 30) * 5),
-      user.surveys.length > 0 ? 5 : 0,
+      surveyDone ? 5 : 0,
       4, // Placeholder
       3  // Placeholder
     ];
@@ -44,6 +45,7 @@ export async function GET(request: Request) {
       stats: {
         preliminary,
         madel5c,
+        surveyDone,
         radar
       }
     });

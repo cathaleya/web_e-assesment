@@ -98,7 +98,7 @@ export default function LoginPage() {
             {loginType === "student" ? (
               <div className="space-y-3">
                 <input type="text" required value={name} onChange={(e) => setName(e.target.value)} placeholder="Nama Lengkap" className="w-full bg-slate-50 border border-slate-200 rounded-lg py-3 px-4 text-xs text-slate-900 font-bold focus:border-[#4B5320] outline-none transition-all" />
-                <input type="text" required value={campus} onChange={e => setCampus(e.target.value)} placeholder="Instansi" className="w-full bg-slate-50 border border-slate-200 rounded-lg py-3 px-4 text-xs text-slate-900 font-bold focus:border-[#4B5320] outline-none transition-all" />
+                <input type="text" required value={campus} onChange={e => setCampus(e.target.value)} placeholder="Nama Kampus" className="w-full bg-slate-50 border border-slate-200 rounded-lg py-3 px-4 text-xs text-slate-900 font-bold focus:border-[#4B5320] outline-none transition-all" />
                 <div className="grid grid-cols-2 gap-2">
                   <button type="button" onClick={() => setGender("male")} className={`py-3 rounded-lg border-2 text-[9px] font-black transition-all ${gender === "male" ? "bg-[#4B5320] text-white" : "bg-white text-slate-400"}`}>LAKI-LAKI</button>
                   <button type="button" onClick={() => setGender("female")} className={`py-3 rounded-lg border-2 text-[9px] font-black transition-all ${gender === "female" ? "bg-[#4B5320] text-white" : "bg-white text-slate-400"}`}>PEREMPUAN</button>
