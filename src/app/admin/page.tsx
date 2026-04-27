@@ -208,15 +208,6 @@ export default function AdminDashboard() {
     ]
   };
 
-  // Literacy Level (Doughnut)
-  const literacyData = {
-    labels: ['Tinggi', 'Sedang', 'Rendah'],
-    datasets: [{
-      data: [45, 120, 119],
-      backgroundColor: ['#10b981', '#3b82f6', '#f59e0b'],
-      borderWidth: 0,
-    }]
-  };
 
   // DIF Plot Data (MADEL5C Item Groups)
   const difChartData = {
