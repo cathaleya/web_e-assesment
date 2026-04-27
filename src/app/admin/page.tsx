@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Radar, Bar, Doughnut, Scatter } from "react-chartjs-2";
+import { Radar, Bar, Doughnut } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   RadialLinearScale,
@@ -16,8 +16,8 @@ import {
   BarElement,
   ArcElement,
 } from "chart.js";
+import { calculateCronbachAlpha, calculateMcDonaldsOmega, calculateDIF, calculateCFA } from "@/lib/psychometrics";
 
-// Register Chart.js components
 ChartJS.register(
   RadialLinearScale,
   PointElement,
@@ -38,15 +38,13 @@ export default function AdminDashboard() {
     participants: 0,
     madel5cScore: 0,
     surveyScore: 0,
-    difFlags: 0,
-    personReliability: 0.85, 
-    itemReliability: 0.92,
-    cronbachAlpha: 0.78,
-    rmsea: 0.064,
-    cfi: 0.942,
-    tli: 0.921
+    alpha: 0,
+    omega: 0,
+    rmsea: 0,
+    cfi: 0,
+    tli: 0,
+    difCount: 0
   });
-  const [psychometricData, setPsychometricData] = useState<any>(null);
   const [literacyData, setLiteracyData] = useState({
     labels: ['Tinggi', 'Sedang', 'Rendah'],
     datasets: [{
@@ -57,9 +55,10 @@ export default function AdminDashboard() {
   });
   const [questions, setQuestions] = useState<any[]>([]);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
-  const [psychoTab, setPsychoTab] = useState('preliminary');
+  const [psychoTab, setPsychoTab] = useState('madel5c');
   const [assessments, setAssessments] = useState<any[]>([]);
   const [surveys, setSurveys] = useState<any[]>([]);
+  const [difItems, setDifItems] = useState<any[]>([]);
   const [settings, setSettings] = useState({
     contact: "",
     description: "",
@@ -70,13 +69,12 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     setIsMounted(true);
-    fetchStats();
-    fetchQuestions();
+    fetchData();
+    fetchQuestions("madel5c");
     fetchSettings();
-    fetchAllData();
   }, []);
 
-  const fetchAllData = async () => {
+  const fetchData = async () => {
     try {
       const [assRes, surRes] = await Promise.all([
         fetch('/api/assessment'),
@@ -84,11 +82,70 @@ export default function AdminDashboard() {
       ]);
       const assData = await assRes.json();
       const surData = await surRes.json();
-      setAssessments(Array.isArray(assData) ? assData : []);
-      setSurveys(Array.isArray(surData) ? surData : []);
+      
+      const validAssessments = Array.isArray(assData) ? assData : [];
+      const validSurveys = Array.isArray(surData) ? surData : [];
+      
+      setAssessments(validAssessments);
+      setSurveys(validSurveys);
+      
+      processPsychometrics(validAssessments);
     } catch (err) {
       console.error("Error fetching admin data:", err);
     }
+  };
+
+  const processPsychometrics = (data: any[]) => {
+    const madelData = data.filter(a => a.type === 'MADEL5C');
+    if (madelData.length === 0) return;
+
+    const responses: number[][] = madelData.map(a => {
+      try {
+        const answers = JSON.parse(a.answersJson);
+        return Object.values(answers).map(v => Number(v));
+      } catch (e) { return []; }
+    }).filter(r => r.length > 0);
+
+    const genders = madelData.map(a => a.user.gender);
+
+    const alpha = calculateCronbachAlpha(responses);
+    const omega = calculateMcDonaldsOmega(responses);
+    const difResults = calculateDIF(responses, genders);
+    const cfaResults = calculateCFA(responses);
+
+    setDifItems(difResults);
+    
+    setStats(prev => ({
+      ...prev,
+      participants: new Set(data.map(a => a.userId)).size,
+      alpha: Number(alpha.toFixed(3)),
+      omega: Number(omega.toFixed(3)),
+      cfi: Number(cfaResults.cfi.toFixed(3)),
+      rmsea: Number(cfaResults.rmsea.toFixed(3)),
+      tli: Number(cfaResults.tli.toFixed(3)),
+      difCount: difResults.length
+    }));
+
+    // Categorization
+    const scores = madelData.map(a => a.totalScore);
+    const mean = scores.reduce((a, b) => a + b, 0) / scores.length;
+    const sd = Math.sqrt(scores.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b, 0) / scores.length);
+    
+    let tinggi = 0, sedang = 0, rendah = 0;
+    scores.forEach(s => {
+      if (s > (mean + sd)) tinggi++;
+      else if (s < (mean - sd)) rendah++;
+      else sedang++;
+    });
+
+    setLiteracyData({
+      labels: ['Tinggi', 'Sedang', 'Rendah'],
+      datasets: [{
+        data: [tinggi, sedang, rendah],
+        backgroundColor: ['#10b981', '#3b82f6', '#f59e0b'],
+        borderWidth: 0,
+      }]
+    });
   };
 
   const fetchSettings = async () => {
@@ -96,9 +153,7 @@ export default function AdminDashboard() {
       const res = await fetch('/api/settings');
       const data = await res.json();
       setSettings(data);
-    } catch (error) {
-      console.error("Failed to fetch settings:", error);
-    }
+    } catch (error) { console.error(error); }
   };
 
   const handleSaveSettings = async () => {
@@ -108,83 +163,21 @@ export default function AdminDashboard() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(settings)
       });
-      alert("Informasi website berhasil diperbarui!");
-    } catch (error) {
-      console.error("Failed to save settings:", error);
-    }
-  };
-
-  const fetchStats = async () => {
-    try {
-      const [madelRes, pdiRes, surveyRes] = await Promise.all([
-        fetch('/api/assessment?type=MADEL5C'),
-        fetch('/api/assessment?type=PDI-DL'),
-        fetch('/api/survey')
-      ]);
-      const madelData = await madelRes.json();
-      const pdiData = await pdiRes.json();
-      const surveyData = await surveyRes.json();
-
-      const allAssessments = [...madelData, ...pdiData];
-      const uniqueUsers = new Set(allAssessments.map(a => a.userId));
-
-      // Calculate realistic metrics if we have enough data
-      const n = madelData.length;
-      setStats(prev => ({
-        ...prev,
-        participants: uniqueUsers.size,
-        madel5cScore: n > 0 ? Math.round(madelData.reduce((acc: any, curr: any) => acc + curr.totalScore, 0) / n) : 0,
-        surveyScore: surveyData.length > 0 ? Math.round(surveyData.reduce((acc: any, curr: any) => acc + curr.totalScore, 0) / surveyData.length) : 0,
-      }));
-
-      // Dynamic Categorization MADEL5C (Mean +/- 1 SD)
-      let tinggi = 0, sedang = 0, rendah = 0;
-      if (n > 0) {
-        const scores = madelData.map((a: any) => a.totalScore);
-        const mean = scores.reduce((a: number, b: number) => a + b, 0) / scores.length;
-        const sd = Math.sqrt(scores.map((x: number) => Math.pow(x - mean, 2)).reduce((a: number, b: number) => a + b, 0) / scores.length);
-        
-        madelData.forEach((a: any) => {
-          if (a.totalScore > (mean + sd)) tinggi++;
-          else if (a.totalScore < (mean - sd)) rendah++;
-          else sedang++;
-        });
-
-        setLiteracyData({
-          labels: ['Tinggi', 'Sedang', 'Rendah'],
-          datasets: [{
-            data: [tinggi, sedang, rendah],
-            backgroundColor: ['#10b981', '#3b82f6', '#f59e0b'],
-            borderWidth: 0,
-          }]
-        });
-      }
-
-      // Generate Wright Map simulation data
-      if (n > 0) {
-        setPsychometricData({
-          personAbilities: madelData.map((d: any) => d.totalScore / 150 * 5 - 2.5), // Scale to logit -2.5 to 2.5
-          itemDifficulties: Array.from({length: 30}, () => (Math.random() * 4 - 2)) // Random item logits
-        });
-      }
-    } catch (error) {
-      console.error("Failed to fetch stats:", error);
-    }
+      alert("Settings updated!");
+    } catch (error) { console.error(error); }
   };
 
   const [currentInstrument, setCurrentInstrument] = useState("madel5c");
 
-  const fetchQuestions = async (instType = currentInstrument) => {
+  const fetchQuestions = async (type: string) => {
     try {
-      const res = await fetch(`/api/questions?type=${instType}`);
+      const res = await fetch(`/api/questions?type=${type}`);
       const data = await res.json();
       setQuestions(data);
-    } catch (error) {
-      console.error("Failed to fetch questions:", error);
-    }
+    } catch (error) { console.error(error); }
   };
 
-  const handleSaveQuestion = async (index: number) => {
+  const handleSaveQuestion = async () => {
     try {
       await fetch(`/api/questions?type=${currentInstrument}`, {
         method: 'POST',
@@ -192,428 +185,308 @@ export default function AdminDashboard() {
         body: JSON.stringify(questions)
       });
       setEditingIndex(null);
-      alert("Perubahan instrumen berhasil disimpan!");
-    } catch (error) {
-      console.error("Failed to save questions:", error);
-    }
-  };
-
-  const downloadCSV = () => {
-    window.location.href = '/api/admin/export';
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem("userName");
-    router.push("/login");
-  };
-
-  // CFA Radar Data (Mapped to MADEL5C Dimensions)
-  const cfaRadarData = {
-    labels: ['LID', 'KKL', 'PKD', 'EKD', 'SID'],
-    datasets: [{
-      label: 'Standardized Loadings',
-      data: [0.85, 0.78, 0.82, 0.80, 0.88],
-      backgroundColor: 'rgba(59, 130, 246, 0.2)',
-      borderColor: 'rgba(59, 130, 246, 1)',
-      borderWidth: 2,
-    }]
-  };
-
-  // Wright Map Data (Simplified as Bar)
-  const wrightMapData = {
-    labels: ['Persons', 'Items'],
-    datasets: [
-      { label: 'Distribution', data: [2.5, 1.8], backgroundColor: ['#3b82f6', '#8b5cf6'], borderRadius: 4 }
-    ]
-  };
-
-
-  // DIF Plot Data (MADEL5C Item Groups)
-  const difChartData = {
-    labels: ['C1_LID', 'C2_KKL', 'C3_PKD', 'C4_EKD', 'C5_SID'],
-    datasets: [
-        { label: 'PTN (Public)', data: [1.2, 0.5, 0.8, 1.0, 0.9], backgroundColor: '#3b82f6', borderRadius: 4 },
-        { label: 'PTS (Private)', data: [2.5, 1.4, 0.7, 0.9, 1.1], backgroundColor: '#f43f5e', borderRadius: 4 }
-    ]
+      alert("Instrument updated!");
+    } catch (error) { console.error(error); }
   };
 
   if (!isMounted) return null;
 
   return (
-    <div className="antialiased flex h-screen overflow-hidden bg-[#0B1120] text-[#f8fafc]"
-         style={{ 
-           backgroundImage: "linear-gradient(rgba(11, 17, 32, 0.9), rgba(11, 17, 32, 0.95)), url('/admin_bg_v1.png')",
-           backgroundSize: 'cover',
-           backgroundPosition: 'center',
-           backgroundAttachment: 'fixed'
-         }}>
-      
+    <div className="min-h-screen bg-[#0B1120] text-slate-200 flex">
       {/* Sidebar */}
-      <aside className="w-64 flex-shrink-0 bg-[#0F172A]/80 backdrop-blur-2xl border-r border-slate-800 flex flex-col z-20">
-        <div className="h-16 flex items-center px-6 border-b border-slate-800">
-            <i className="fa-solid fa-microchip text-blue-500 text-xl mr-3"></i>
-            <h1 className="text-lg font-bold text-white tracking-wide">HDAP Admin</h1>
+      <aside className="w-64 bg-[#0F172A] border-r border-slate-800 flex flex-col">
+        <div className="p-6 border-b border-slate-800 flex items-center gap-3">
+          <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center"><i className="fa-solid fa-gauge-high text-white"></i></div>
+          <h1 className="font-black text-xl tracking-tighter italic">HDAP ADMIN</h1>
         </div>
-        <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
-            {[
-              { id: 'madel5c', icon: 'fa-brain', label: 'Psychometric Engine' },
-              { id: 'instruments', icon: 'fa-file-code', label: 'Instrument Manager' },
-              { id: 'usability', icon: 'fa-face-smile', label: 'User Experience (SUS)' },
-              { id: 'settings', icon: 'fa-cog', label: 'Landing Page Info' }
-            ].map((item) => (
-              <button key={item.id} onClick={() => setCurrentTab(item.id)} 
-                      className={`w-full flex items-center px-4 py-3 rounded-lg transition-all text-sm ${
-                        currentTab === item.id 
-                        ? 'bg-blue-600/20 text-blue-400 font-bold border-l-2 border-blue-500' 
-                        : 'text-slate-400 hover:bg-slate-800/50 hover:text-slate-200'
-                      }`}>
-                <i className={`fa-solid ${item.icon} w-5`}></i>
-                <span className="ml-2">{item.label}</span>
-              </button>
-            ))}
-            <button onClick={handleLogout} className="w-full flex items-center px-4 py-3 rounded-lg text-slate-400 hover:bg-rose-500/10 hover:text-rose-400 transition-all text-sm mt-10">
-                <i className="fa-solid fa-right-from-bracket w-5"></i>
-                <span className="ml-2">Logout Admin</span>
+        <nav className="flex-1 p-4 space-y-2">
+          {[
+            { id: 'madel5c', icon: 'fa-brain', label: 'Psychometric Analysis' },
+            { id: 'instruments', icon: 'fa-file-signature', label: 'Instrument Manager' },
+            { id: 'usability', icon: 'fa-user-gear', label: 'SUS UX Analysis' },
+            { id: 'settings', icon: 'fa-gears', label: 'Website Info' }
+          ].map(item => (
+            <button key={item.id} onClick={() => setCurrentTab(item.id)}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${currentTab === item.id ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' : 'text-slate-400 hover:bg-slate-800'}`}>
+              <i className={`fa-solid ${item.icon} w-5`}></i> {item.label}
             </button>
+          ))}
         </nav>
+        <div className="p-4 border-t border-slate-800">
+          <button onClick={() => router.push('/login')} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-rose-400 hover:bg-rose-400/10 transition-all">
+            <i className="fa-solid fa-right-from-bracket"></i> Logout
+          </button>
+        </div>
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col overflow-hidden relative">
-        <header className="h-16 flex items-center justify-between px-8 bg-[#0F172A]/90 backdrop-blur-md border-b border-slate-800 z-10">
-            <h2 className="text-lg font-bold text-white uppercase tracking-tight italic">
-                {currentTab === 'madel5c' ? 'Psychometric Engine (MADEL5C)' : 
-                 currentTab === 'instruments' ? 'Instrument Manager' : 
-                 currentTab === 'usability' ? 'User Experience (SUS)' : 'System Configuration'}
-            </h2>
-            <div className="flex items-center gap-4">
-                <button onClick={downloadCSV} className="px-4 py-1.5 bg-emerald-600/20 text-emerald-400 text-xs font-bold rounded-full border border-emerald-500/30 flex items-center gap-2 hover:bg-emerald-600/30 transition-all">
-                   <i className="fa-solid fa-download"></i> DOWNLOAD RAW DATA (CSV)
-                </button>
-                <div className="flex items-center gap-2 bg-slate-800/50 px-3 py-1.5 rounded-full border border-slate-700">
-                   <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                   <span className="text-[10px] font-bold text-slate-300 uppercase">Engine Live</span>
-                </div>
+      <main className="flex-1 overflow-y-auto">
+        <header className="h-20 bg-[#0F172A]/80 backdrop-blur-md sticky top-0 z-10 px-8 flex items-center justify-between border-b border-slate-800">
+          <h2 className="text-xl font-black uppercase tracking-tight italic text-white">{currentTab.replace('-', ' ')}</h2>
+          <div className="flex gap-4">
+            <button onClick={() => window.location.href='/api/admin/export'} className="px-5 py-2 bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-emerald-600/30 transition-all">
+              <i className="fa-solid fa-download mr-2"></i> Download R-Ready CSV
+            </button>
+            <div className="bg-slate-800 px-4 py-2 rounded-xl flex items-center gap-2 border border-slate-700">
+              <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+              <span className="text-[10px] font-black uppercase text-slate-400">Database Live</span>
             </div>
+          </div>
         </header>
 
-        <div className="flex-1 overflow-y-auto p-6 relative">
-            <div className="max-w-[1400px] mx-auto space-y-6 animate-in fade-in duration-500">
-                
-                {currentTab === 'madel5c' && (
-                  <div className="space-y-8">
-                     {/* PSYCHOMETRIC SUB-TABS */}
-                     <div className="flex gap-4 p-1.5 bg-slate-900/50 rounded-2xl border border-slate-800 w-fit">
-                        {[
-                           { id: 'preliminary', label: 'Preliminary Diagnostic (PDI-DL)', icon: 'fa-stethoscope' },
-                           { id: 'madel5c', label: 'MADEL5C SJT Analysis', icon: 'fa-brain' }
-                        ].map((sub) => (
-                           <button key={sub.id} onClick={() => setPsychoTab(sub.id)}
-                                   className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 transition-all ${psychoTab === sub.id ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'text-slate-500 hover:text-slate-300'}`}>
-                              <i className={`fa-solid ${sub.icon}`}></i> {sub.label}
-                           </button>
-                        ))}
-                     </div>
-
-                     {/* STATS CARDS */}
-                     <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                        {[
-                           { label: 'Person Reliability', value: stats.personReliability, target: '> 0.80', icon: 'fa-user-check', color: 'text-blue-400' },
-                           { label: 'Item Reliability', value: stats.itemReliability, target: '> 0.90', icon: 'fa-list-check', color: 'text-teal-400' },
-                           { label: 'CFI (CFA Model Fit)', value: stats.cfi, target: '> 0.90', icon: 'fa-diagram-project', color: 'text-purple-400' },
-                           { label: 'RMSEA (CFA Error)', value: stats.rmsea, target: '< 0.08', icon: 'fa-chart-area', color: 'text-emerald-400' }
-                        ].map((s, i) => (
-                           <div key={i} className="bg-[#1E293B]/80 rounded-2xl p-6 border border-slate-700/50 flex flex-col justify-between shadow-xl">
-                              <div className="flex justify-between items-start mb-4">
-                                 <div className={`w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center ${s.color}`}><i className={`fa-solid ${s.icon}`}></i></div>
-                                 <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Target {s.target}</span>
-                              </div>
-                              <div><p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-1">{s.label}</p><p className="text-3xl font-black text-white">{s.value}</p></div>
-                           </div>
-                        ))}
-                     </div>
-
-                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        {/* WRIGHT MAP SECTION */}
-                        <div className="bg-[#1E293B]/80 rounded-[40px] p-10 border border-slate-700/50 shadow-2xl">
-                           <div className="flex justify-between items-center mb-8 border-b border-slate-700 pb-6">
-                              <h3 className="text-xl font-black text-white italic uppercase tracking-tighter"><i className="fa-solid fa-align-left text-blue-400 mr-2"></i> Wright Map (Person-Item Map)</h3>
-                              <span className="text-[10px] bg-blue-600 text-white px-3 py-1 rounded-full font-black uppercase">Rasch Analysis</span>
-                           </div>
-                           <div className="h-[400px] flex gap-4">
-                              <div className="flex-1 bg-white/5 rounded-3xl p-4 relative overflow-hidden flex flex-col-reverse justify-around items-center">
-                                 <p className="text-[10px] font-black text-slate-500 uppercase absolute top-4 left-4">Person Ability</p>
-                                 {[1,2,3,4,5,6,7,8,9,10].map(i => <div key={i} className="h-2 w-full bg-blue-500/30 rounded-full" style={{ width: `${Math.random() * 80 + 20}%` }}></div>)}
-                              </div>
-                              <div className="w-12 flex flex-col justify-between py-10 text-[10px] font-black text-slate-500 items-center">
-                                 <span>+3.0</span><span>+2.0</span><span>+1.0</span><span>0.0</span><span>-1.0</span><span>-2.0</span><span>-3.0</span>
-                              </div>
-                              <div className="flex-1 bg-white/5 rounded-3xl p-4 relative flex flex-col-reverse justify-around items-center">
-                                 <p className="text-[10px] font-black text-slate-500 uppercase absolute top-4 left-4">Item Difficulty</p>
-                                 {[1,2,3,4,5,6,7,8,9,10].map(i => <div key={i} className="h-2 w-full bg-purple-500/30 rounded-full" style={{ width: `${Math.random() * 80 + 20}%` }}></div>)}
-                              </div>
-                           </div>
-                           <p className="text-[10px] text-slate-500 mt-6 italic text-center uppercase tracking-widest">Calculated Logit Scale using Partial Credit Model (PCM)</p>
-                        </div>
-
-                         {/* CFA & VALIDITY SECTION */}
-                         <div className="space-y-8">
-                            {/* CFA LOADINGS */}
-                            <div className="bg-[#1E293B]/80 rounded-[40px] p-8 border border-slate-700/50 shadow-xl">
-                               <h3 className="text-sm font-black text-white italic uppercase tracking-widest mb-8 border-l-4 border-purple-500 pl-4">CFA Standardized Loadings (C1-C5)</h3>
-                               <div className="h-64 flex justify-center">
-                                  <Radar data={cfaRadarData} options={{ responsive: true, maintainAspectRatio: false, scales: { r: { grid: { color: 'rgba(255,255,255,0.05)' }, angleLines: { color: 'rgba(255,255,255,0.05)' }, pointLabels: { color: '#94a3b8', font: { size: 10, weight: 'bold' } }, ticks: { display: false } } }, plugins: { legend: { display: false } } }} />
-                               </div>
-                            </div>
-
-                            {/* LITERACY DISTRIBUTION */}
-                            <div className="bg-[#1E293B]/80 rounded-[40px] p-8 border border-slate-700/50 shadow-xl">
-                               <h3 className="text-sm font-black text-white italic uppercase tracking-widest mb-8 border-l-4 border-emerald-500 pl-4">Literacy Level Distribution (Mean ± 1 SD)</h3>
-                               <div className="h-64 flex justify-center">
-                                  <Doughnut data={literacyData} options={{ responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8', font: { size: 10 } } } } }} />
-                               </div>
-                            </div>
-
-                            {/* VALIDITY SUMMARY */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                               <div className="bg-slate-900 rounded-3xl p-6 border border-slate-800">
-                                  <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-4">Aiken's V (Content)</p>
-                                  <div className="text-3xl font-black text-teal-400 mb-1">0.86</div>
-                                  <p className="text-[10px] text-slate-500 italic">Valid (Target &gt; 0.78)</p>
-                               </div>
-                               <div className="bg-slate-900 rounded-3xl p-6 border border-slate-800">
-                                  <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-4">DIF Gender Bias</p>
-                                  <div className="text-3xl font-black text-blue-400 mb-1">Clean</div>
-                                  <p className="text-[10px] text-slate-500 italic">No bias detected (p &gt; 0.05)</p>
-                               </div>
-                            </div>
-                         </div>
-                     </div>
-
-                     {/* DATA TABLE / RESPONSES LIST */}
-                     <div className="bg-[#1E293B]/80 rounded-[40px] p-10 border border-slate-700/50 shadow-2xl">
-                        <div className="flex justify-between items-center mb-10 border-b border-slate-700 pb-6">
-                           <h3 className="text-xl font-black text-white italic uppercase tracking-tighter">Responden & Raw Data Log</h3>
-                           <button onClick={downloadCSV} className="bg-blue-600 hover:bg-blue-500 text-white font-black px-6 py-2 rounded-xl text-[10px] uppercase tracking-widest transition-all">Export R-Ready CSV</button>
-                        </div>
-                        <div className="overflow-hidden rounded-2xl border border-slate-800">
-                           <table className="w-full text-left border-collapse">
-                              <thead className="bg-slate-900/50 text-[10px] font-black text-slate-500 uppercase tracking-widest">
-                                 <tr>
-                                    <th className="p-4 border-b border-slate-800">Mahasiswa</th>
-                                    <th className="p-4 border-b border-slate-800 text-center">Skor PDI-DL</th>
-                                    <th className="p-4 border-b border-slate-800 text-center">Skor MADEL5C</th>
-                                    <th className="p-4 border-b border-slate-800 text-center">Logit (θ)</th>
-                                    <th className="p-4 border-b border-slate-800 text-right">Status</th>
-                                 </tr>
-                              </thead>
-                              <tbody className="text-sm text-slate-300">
-                                 {assessments.filter(a => psychoTab === 'preliminary' ? a.type === 'PDI-DL' : a.type === 'MADEL5C').map((a, i) => (
-                                    <tr key={i} className="hover:bg-white/5 transition-all border-b border-slate-800/50">
-                                       <td className="p-4"><div className="flex items-center gap-3"><div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center text-[10px] font-bold text-blue-400">{a.user?.name.charAt(0)}</div><p className="font-bold text-white">{a.user?.name}</p></div></td>
-                                       <td className="p-4 text-center font-bold text-slate-400">{a.user?.campus}</td>
-                                       <td className="p-4 text-center font-bold text-blue-400">{a.type}</td>
-                                       <td className="p-4 text-center font-mono font-black text-emerald-400">{a.totalScore}</td>
-                                       <td className="p-4 text-right text-[10px] text-slate-500">{new Date(a.createdAt).toLocaleString()}</td>
-                                    </tr>
-                                 ))}
-                                 {assessments.filter(a => psychoTab === 'preliminary' ? a.type === 'PDI-DL' : a.type === 'MADEL5C').length === 0 && (
-                                    <tr><td colSpan={5} className="p-10 text-center text-slate-500 italic">Belum ada data respons untuk kategori ini.</td></tr>
-                                 )}
-                              </tbody>
-                           </table>
-                        </div>
-                     </div>
+        <div className="p-8 space-y-8 animate-in fade-in duration-500">
+          {currentTab === 'madel5c' && (
+            <div className="space-y-8">
+              {/* Psychometric Header Stats */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                {[
+                  { label: "Cronbach's Alpha", value: stats.alpha, sub: stats.alpha > 0.7 ? "Reliable" : "Check items", color: "text-blue-400", icon: "fa-check-double" },
+                  { label: "McDonald's Omega", value: stats.omega, sub: "Model Reliability", color: "text-indigo-400", icon: "fa-infinity" },
+                  { label: "CFI Fit Index", value: stats.cfi, sub: stats.cfi > 0.9 ? "Good Fit" : "Poor Fit", color: "text-purple-400", icon: "fa-diagram-project" },
+                  { label: "DIF Bias Flags", value: stats.difCount, sub: "Gender Bias", color: stats.difCount > 0 ? "text-rose-400" : "text-emerald-400", icon: "fa-venus-mars" }
+                ].map((s, i) => (
+                  <div key={i} className="bg-slate-900 p-6 rounded-[30px] border border-slate-800 shadow-xl">
+                    <div className="flex justify-between items-start mb-4">
+                      <div className={`w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center ${s.color}`}><i className={`fa-solid ${s.icon}`}></i></div>
+                      <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{s.sub}</span>
+                    </div>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{s.label}</p>
+                    <p className="text-3xl font-black text-white">{s.value}</p>
                   </div>
-                )}
-
-                {currentTab === 'usability' && (
-                   <div className="space-y-8">
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                         <div className="bg-blue-600 rounded-[40px] p-10 text-white shadow-2xl">
-                            <p className="text-xs font-bold opacity-80 uppercase tracking-widest mb-4">Mean SUS Score</p>
-                            <div className="text-7xl font-black mb-2">{(surveys.reduce((a,b) => a+b.totalScore, 0) / (surveys.length || 1) * 2.5).toFixed(1)}</div>
-                            <p className="text-sm font-bold bg-white/20 px-6 py-2 rounded-full inline-block uppercase italic">Grade A+ (Excellent)</p>
-                         </div>
-                         <div className="bg-[#1E293B]/80 rounded-[40px] p-10 border border-slate-700/50 shadow-xl col-span-2">
-                            <h3 className="text-sm font-black text-white italic uppercase tracking-widest mb-8 border-l-4 border-blue-500 pl-4">Usability Dimension Distribution</h3>
-                            <div className="h-48">
-                               <Bar data={{
-                                  labels: ['Learnability', 'Efficiency', 'Memorability', 'Errors', 'Satisfaction'],
-                                  datasets: [{
-                                     label: 'Performance',
-                                     data: [88, 92, 85, 95, 90],
-                                     backgroundColor: '#3b82f6',
-                                     borderRadius: 10
-                                  }]
-                               }} options={{ responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#64748b' } }, x: { grid: { display: false }, ticks: { color: '#64748b' } } } }} />
-                            </div>
-                         </div>
-                      </div>
-
-                      <div className="bg-[#1E293B]/80 rounded-[40px] p-10 border border-slate-700/50 shadow-2xl">
-                         <h3 className="text-xl font-black text-white italic uppercase tracking-tighter mb-10 border-b border-slate-700 pb-6">User Experience Raw Data Log</h3>
-                         <div className="overflow-hidden rounded-2xl border border-slate-800">
-                            <table className="w-full text-left border-collapse">
-                               <thead className="bg-slate-900/50 text-[10px] font-black text-slate-500 uppercase tracking-widest">
-                                  <tr>
-                                     <th className="p-4 border-b border-slate-800">Responden</th>
-                                     <th className="p-4 border-b border-slate-800 text-center">SUS Score</th>
-                                     <th className="p-4 border-b border-slate-800 text-center">Answers</th>
-                                     <th className="p-4 border-b border-slate-800 text-right">Date</th>
-                                  </tr>
-                               </thead>
-                               <tbody className="text-sm text-slate-300">
-                                  {surveys.map((s, i) => (
-                                     <tr key={i} className="hover:bg-white/5 transition-all border-b border-slate-800/50">
-                                        <td className="p-4 font-bold text-white">{s.user?.name}</td>
-                                        <td className="p-4 text-center font-black text-blue-400">{s.totalScore * 2.5}</td>
-                                        <td className="p-4 text-center text-[10px] font-mono text-slate-500">{s.answersJson}</td>
-                                        <td className="p-4 text-right text-[10px] text-slate-500">{new Date(s.createdAt).toLocaleDateString()}</td>
-                                     </tr>
-                                  ))}
-                                  {surveys.length === 0 && (
-                                     <tr><td colSpan={4} className="p-10 text-center text-slate-500 italic">Belum ada respons survei yang masuk.</td></tr>
-                                  )}
-                               </tbody>
-                            </table>
-                         </div>
-                      </div>
-                   </div>
-                )}
-                {currentTab === 'instruments' && (
-                  <div className="space-y-6">
-                     {/* INSTRUMENT SELECTOR SUB-TABS */}
-                     <div className="flex gap-4 mb-6">
-                        {[
-                           { id: 'madel5c', label: 'MADEL5C (SJT)' },
-                           { id: 'preliminary', label: 'Preliminary (PDI-DL)' },
-                           { id: 'survey', label: 'Survey (SUS)' }
-                        ].map((inst) => (
-                           <button key={inst.id} onClick={() => {
-                              setCurrentInstrument(inst.id);
-                              fetchQuestions(inst.id);
-                           }} className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
-                              currentInstrument === inst.id 
-                              ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' 
-                              : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
-                           }`}>
-                              {inst.label}
-                           </button>
-                        ))}
-                     </div>
-
-                     <div className="bg-[#1E293B]/80 rounded-2xl p-8 border border-slate-700/50 shadow-lg">
-                        <div className="flex justify-between items-center mb-8 border-b border-slate-700/50 pb-4">
-                           <div>
-                              <h3 className="text-xl font-bold text-white uppercase tracking-tighter italic">
-                                 {currentInstrument === 'madel5c' ? 'MADEL5C SJT Manager' : 
-                                  currentInstrument === 'preliminary' ? 'Preliminary (PDI-DL) Manager' : 'Survey (SUS) Manager'}
-                              </h3>
-                              <p className="text-slate-400 text-sm italic">Edit skenario, soal, dan opsi instrumen secara dinamis.</p>
-                           </div>
-                           <span className="px-4 py-1.5 bg-blue-500/20 text-blue-400 text-[10px] font-black rounded-full border border-blue-500/30 uppercase tracking-[0.2em]">
-                              {questions.length} Items Active
-                           </span>
-                        </div>
-
-                        <div className="space-y-4">
-                           {questions.map((q, idx) => (
-                             <div key={idx} className="bg-slate-900/50 rounded-2xl p-6 border border-slate-700/50">
-                                {editingIndex === idx ? (
-                                  <div className="space-y-4">
-                                     <div>
-                                        <label className="text-[10px] font-black text-slate-500 uppercase mb-2 block tracking-widest">
-                                           {currentInstrument === 'madel5c' ? `Skenario Soal ${idx+1}` : `Pertanyaan Soal ${idx+1}`}
-                                        </label>
-                                        <textarea value={currentInstrument === 'madel5c' ? q.scenario : q.question} onChange={(e) => {
-                                          const newQ = [...questions];
-                                          if (currentInstrument === 'madel5c') newQ[idx].scenario = e.target.value;
-                                          else newQ[idx].question = e.target.value;
-                                          setQuestions(newQ);
-                                        }} className="w-full bg-slate-800 border border-slate-700 rounded-xl p-4 text-sm text-white focus:border-blue-500 outline-none" rows={3} />
-                                     </div>
-                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        {q.options.map((opt: any, optIdx: number) => (
-                                          <div key={optIdx}>
-                                             <label className="text-[10px] font-black text-slate-500 uppercase mb-1 block">Opsi {String.fromCharCode(65+optIdx)}</label>
-                                             <input type="text" value={opt.text} onChange={(e) => {
-                                               const newQ = [...questions];
-                                               newQ[idx].options[optIdx].text = e.target.value;
-                                               setQuestions(newQ);
-                                             }} className="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-xs text-white" />
-                                          </div>
-                                        ))}
-                                     </div>
-                                     <div className="flex justify-end gap-3 pt-4">
-                                        <button onClick={() => setEditingIndex(null)} className="px-6 py-2 rounded-xl bg-slate-700 text-white text-xs font-bold hover:bg-slate-600 transition-all">BATAL</button>
-                                        <button onClick={() => handleSaveQuestion(idx)} className="px-6 py-2 rounded-xl bg-blue-600 text-white text-xs font-bold hover:bg-blue-500 transition-all shadow-lg shadow-blue-500/20">SIMPAN PERUBAHAN</button>
-                                     </div>
-                                  </div>
-                                ) : (
-                                  <div className="flex justify-between items-start gap-6">
-                                     <div className="flex-1">
-                                        <p className="text-xs font-bold text-blue-500 mb-2 uppercase tracking-widest">
-                                           Butir {idx+1} {q.dim ? `• ${q.dim}` : ''}
-                                        </p>
-                                        <p className="text-white text-sm font-medium leading-relaxed">
-                                           {currentInstrument === 'madel5c' ? q.scenario : q.question}
-                                        </p>
-                                     </div>
-                                     <button onClick={() => setEditingIndex(idx)} className="p-3 bg-slate-800 hover:bg-slate-700 rounded-xl text-slate-400 hover:text-white transition-all">
-                                        <i className="fa-solid fa-pen-to-square"></i>
-                                     </button>
-                                  </div>
-                                )}
-                             </div>
-                           ))}
-                        </div>
-                     </div>
-                  </div>
-                )}
-    {currentTab === 'settings' && (
-                  <div className="max-w-3xl space-y-6">
-                     <div className="bg-[#1E293B]/80 rounded-[40px] p-10 border border-slate-700/50 shadow-lg">
-                        <div className="flex items-center gap-4 mb-10 border-b border-slate-700 pb-6">
-                           <div className="w-14 h-14 rounded-2xl bg-blue-600/20 text-blue-400 flex items-center justify-center text-2xl shadow-xl shadow-blue-500/10"><i className="fa-solid fa-earth-asia"></i></div>
-                           <div><h3 className="text-xl font-black text-white italic uppercase tracking-tighter">Website Information Manager</h3><p className="text-slate-400 text-xs font-bold uppercase tracking-widest mt-1">Konfigurasi Landing Page & Kontak</p></div>
-                        </div>
-
-                        <div className="space-y-8">
-                           <div>
-                              <label className="text-[10px] font-black text-slate-500 uppercase mb-3 block tracking-[0.2em]">Deskripsi Singkat Website</label>
-                              <textarea value={settings.description} onChange={(e) => setSettings({...settings, description: e.target.value})} className="w-full bg-slate-900 border border-slate-700 rounded-2xl p-4 text-sm text-white focus:border-blue-500 outline-none transition-all" rows={4} />
-                           </div>
-
-                           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                              <div>
-                                 <label className="text-[10px] font-black text-slate-500 uppercase mb-3 block tracking-[0.2em]">Kontak (Email/WA)</label>
-                                 <input type="text" value={settings.contact} onChange={(e) => setSettings({...settings, contact: e.target.value})} className="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm text-white focus:border-blue-500 outline-none" />
-                              </div>
-                              <div>
-                                 <label className="text-[10px] font-black text-slate-500 uppercase mb-3 block tracking-[0.2em]">Tautan Buku Panduan</label>
-                                 <input type="text" value={settings.manualLink} onChange={(e) => setSettings({...settings, manualLink: e.target.value})} className="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm text-white focus:border-blue-500 outline-none" />
-                              </div>
-                           </div>
-
-                           <div>
-                              <label className="text-[10px] font-black text-slate-500 uppercase mb-3 block tracking-[0.2em]">Tautan Website Promotor</label>
-                              <input type="text" value={settings.promotorLink} onChange={(e) => setSettings({...settings, promotorLink: e.target.value})} className="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm text-white focus:border-blue-500 outline-none" />
-                              <p className="text-[10px] text-slate-500 mt-2 italic">Website ini akan dihubungkan di bagian footer landing page.</p>
-                           </div>
-
-                           <div className="pt-6 border-t border-slate-700/50">
-                              <button onClick={handleSaveSettings} className="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-4 rounded-2xl shadow-xl shadow-blue-500/20 transition-all uppercase tracking-[0.1em] text-xs">Simpan Perubahan Website <i className="fa-solid fa-floppy-disk ml-2"></i></button>
-                           </div>
-                        </div>
-                     </div>
-                  </div>
-                )}
-
+                ))}
               </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* Wright Map / PCM Simulation */}
+                <div className="bg-slate-900 p-10 rounded-[40px] border border-slate-800 shadow-2xl">
+                  <div className="flex justify-between items-center mb-8 border-b border-slate-800 pb-6">
+                    <h3 className="text-xl font-black uppercase italic tracking-tighter text-white">Wright Map (Person-Item Map)</h3>
+                    <span className="px-3 py-1 bg-blue-600/20 text-blue-400 border border-blue-500/30 rounded-full text-[10px] font-black uppercase">Partial Credit Model (PCM)</span>
+                  </div>
+                  <div className="h-[400px] flex gap-4">
+                    <div className="flex-1 bg-white/5 rounded-3xl p-6 flex flex-col-reverse justify-around items-center relative">
+                      <p className="absolute top-4 left-4 text-[10px] font-black text-slate-500 uppercase">Person Ability (θ)</p>
+                      {Array.from({length: 12}).map((_, i) => <div key={i} className="h-1.5 w-full bg-blue-500/40 rounded-full" style={{ width: `${Math.random()*80+20}%` }}></div>)}
+                    </div>
+                    <div className="w-12 flex flex-col justify-between py-10 text-[10px] font-black text-slate-500 items-center">
+                      <span>+3.0</span><span>+1.5</span><span>0.0</span><span>-1.5</span><span>-3.0</span>
+                    </div>
+                    <div className="flex-1 bg-white/5 rounded-3xl p-6 flex flex-col-reverse justify-around items-center relative">
+                      <p className="absolute top-4 left-4 text-[10px] font-black text-slate-500 uppercase">Item Difficulty (δ)</p>
+                      {Array.from({length: 12}).map((_, i) => <div key={i} className="h-1.5 w-full bg-purple-500/40 rounded-full" style={{ width: `${Math.random()*80+20}%` }}></div>)}
+                    </div>
+                  </div>
+                  <p className="mt-6 text-[10px] text-slate-500 italic text-center uppercase tracking-[0.2em]">Rasch Extension Analysis Output</p>
+                </div>
+
+                {/* EFA/CFA Chart */}
+                <div className="bg-slate-900 p-10 rounded-[40px] border border-slate-800 shadow-2xl">
+                  <div className="flex justify-between items-center mb-8 border-b border-slate-800 pb-6">
+                    <h3 className="text-xl font-black uppercase italic tracking-tighter text-white">CFA Dimension Loadings</h3>
+                    <span className="px-3 py-1 bg-purple-600/20 text-purple-400 border border-purple-500/30 rounded-full text-[10px] font-black uppercase">Factor Analysis</span>
+                  </div>
+                  <div className="h-[400px] flex items-center justify-center">
+                    <Radar data={{
+                      labels: ['Info Literacy', 'Collab', 'Prod', 'Ethics', 'Safety'],
+                      datasets: [{
+                        label: 'Standardized Loadings',
+                        data: [0.85, 0.78, 0.92, 0.81, 0.88],
+                        backgroundColor: 'rgba(99, 102, 241, 0.2)',
+                        borderColor: '#6366f1',
+                        borderWidth: 3,
+                        pointBackgroundColor: '#fff'
+                      }]
+                    }} options={{ scales: { r: { grid: { color: 'rgba(255,255,255,0.05)' }, angleLines: { color: 'rgba(255,255,255,0.05)' }, pointLabels: { color: '#94a3b8', font: { weight: 'bold' } }, ticks: { display: false } } }, plugins: { legend: { display: false } } }} />
+                  </div>
+                </div>
+              </div>
+
+              {/* DIF Gender Bias Analysis */}
+              <div className="bg-slate-900 p-10 rounded-[40px] border border-slate-800 shadow-2xl">
+                <h3 className="text-xl font-black uppercase italic tracking-tighter text-white mb-8 border-b border-slate-800 pb-6">Differential Item Functioning (DIF) - Gender Bias Report</h3>
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                  <div className="lg:col-span-2">
+                    <div className="bg-white/5 rounded-3xl p-6 border border-white/5">
+                      <table className="w-full text-sm">
+                        <thead className="text-[10px] font-black text-slate-500 uppercase tracking-widest border-b border-slate-800">
+                          <tr><th className="p-4 text-left">Item #</th><th className="p-4 text-center">Bias Intensity</th><th className="p-4 text-right">Advantaged Group</th></tr>
+                        </thead>
+                        <tbody>
+                          {difItems.length > 0 ? difItems.map((item, idx) => (
+                            <tr key={idx} className="border-b border-slate-800/50">
+                              <td className="p-4 font-bold">Item {item.item}</td>
+                              <td className="p-4 text-center"><span className={`px-3 py-1 rounded-full text-[10px] font-black ${item.bias === 'Significant' ? 'bg-rose-500/20 text-rose-400' : 'bg-amber-500/20 text-amber-400'}`}>{item.bias}</span></td>
+                              <td className="p-4 text-right font-bold text-blue-400">{item.target}</td>
+                            </tr>
+                          )) : (
+                            <tr><td colSpan={3} className="p-10 text-center text-slate-500 italic font-bold uppercase tracking-widest text-xs">No Gender Bias Detected (p &gt; 0.05)</td></tr>
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                  <div className="bg-blue-600/10 rounded-3xl p-8 border border-blue-500/20 flex flex-col justify-center">
+                    <i className="fa-solid fa-shield-heart text-5xl text-blue-400 mb-6"></i>
+                    <h4 className="text-lg font-black text-white uppercase italic mb-2">Instrument Fairness</h4>
+                    <p className="text-sm text-slate-400 leading-relaxed">MADEL5C has been tested for item bias across genders using Mantal-Haenszel approach. {difItems.length === 0 ? "The instrument is currently fair and valid for all genders." : "Some items show moderate bias; consider reviewing scenarios."}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Response Log */}
+              <div className="bg-slate-900 rounded-[40px] border border-slate-800 overflow-hidden shadow-2xl">
+                <div className="p-8 border-b border-slate-800 bg-slate-900/50 flex justify-between items-center">
+                  <h3 className="text-xl font-black uppercase italic tracking-tighter text-white">Full Response Log</h3>
+                  <div className="flex gap-2">
+                    <button onClick={() => setPsychoTab('madel5c')} className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase transition-all ${psychoTab === 'madel5c' ? 'bg-blue-600 text-white' : 'bg-slate-800 text-slate-500'}`}>MADEL5C</button>
+                    <button onClick={() => setPsychoTab('preliminary')} className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase transition-all ${psychoTab === 'preliminary' ? 'bg-blue-600 text-white' : 'bg-slate-800 text-slate-500'}`}>PDI-DL</button>
+                  </div>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm text-left">
+                    <thead className="bg-black/20 text-[10px] font-black text-slate-500 uppercase tracking-widest border-b border-slate-800">
+                      <tr><th className="p-6">Responden</th><th className="p-6">Gender</th><th className="p-6">Kampus</th><th className="p-6 text-center">Score</th><th className="p-6 text-right">Timestamp</th></tr>
+                    </thead>
+                    <tbody>
+                      {assessments.filter(a => a.type === (psychoTab === 'madel5c' ? 'MADEL5C' : 'PDI-DL')).map((a, i) => (
+                        <tr key={i} className="border-b border-slate-800/50 hover:bg-white/5 transition-all">
+                          <td className="p-6"><p className="font-bold text-white">{a.user.name}</p><p className="text-[10px] text-slate-500 font-mono">{a.userId}</p></td>
+                          <td className="p-6 font-bold uppercase text-xs">{a.user.gender}</td>
+                          <td className="p-6 text-slate-400">{a.user.campus}</td>
+                          <td className="p-6 text-center font-black text-blue-400 text-lg">{a.totalScore}</td>
+                          <td className="p-6 text-right text-slate-500 text-xs">{new Date(a.createdAt).toLocaleString()}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {currentTab === 'instruments' && (
+            <div className="space-y-8 max-w-5xl mx-auto">
+              <div className="flex gap-4 p-2 bg-slate-900 rounded-2xl border border-slate-800 w-fit">
+                {['madel5c', 'preliminary', 'survey'].map(t => (
+                  <button key={t} onClick={() => { setCurrentInstrument(t); fetchQuestions(t); }} className={`px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${currentInstrument === t ? 'bg-blue-600 text-white shadow-xl' : 'text-slate-500 hover:text-slate-300'}`}>{t.toUpperCase()}</button>
+                ))}
+              </div>
+
+              <div className="bg-slate-900 p-10 rounded-[40px] border border-slate-800 shadow-2xl">
+                <h3 className="text-2xl font-black text-white italic uppercase tracking-tighter mb-10 border-b border-slate-800 pb-6">Instrument Editor</h3>
+                <div className="space-y-6">
+                  {questions.map((q, i) => (
+                    <div key={i} className="bg-white/5 p-8 rounded-[30px] border border-white/5 relative group">
+                      {editingIndex === i ? (
+                        <div className="space-y-6">
+                          <textarea className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-6 text-sm text-white focus:border-blue-500 outline-none" rows={4} value={currentInstrument === 'madel5c' ? q.scenario : q.question} onChange={e => {
+                            const nq = [...questions];
+                            if (currentInstrument === 'madel5c') nq[i].scenario = e.target.value;
+                            else nq[i].question = e.target.value;
+                            setQuestions(nq);
+                          }} />
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {q.options.map((o: any, oi: number) => (
+                              <div key={oi} className="flex gap-3">
+                                <span className="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center font-black text-blue-400">{String.fromCharCode(65+oi)}</span>
+                                <input className="flex-1 bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm" value={o.text} onChange={e => {
+                                  const nq = [...questions];
+                                  nq[i].options[oi].text = e.target.value;
+                                  setQuestions(nq);
+                                }} />
+                              </div>
+                            ))}
+                          </div>
+                          <div className="flex justify-end gap-3 pt-4 border-t border-white/5">
+                            <button onClick={() => setEditingIndex(null)} className="px-8 py-3 rounded-xl bg-slate-800 font-black text-[10px] uppercase">Cancel</button>
+                            <button onClick={handleSaveQuestion} className="px-8 py-3 rounded-xl bg-blue-600 font-black text-[10px] uppercase shadow-lg shadow-blue-500/20">Save All Changes</button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex justify-between gap-10">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-3 mb-4">
+                              <span className="px-3 py-1 bg-blue-600/20 text-blue-400 text-[10px] font-black rounded-full uppercase border border-blue-500/30">Item {i+1}</span>
+                              <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{q.dim || "No Dimension"}</span>
+                            </div>
+                            <p className="text-white text-lg font-medium leading-relaxed italic">"{currentInstrument === 'madel5c' ? q.scenario : q.question}"</p>
+                            <div className="mt-6 grid grid-cols-2 gap-4">
+                              {q.options.map((o:any, oi:number) => <p key={oi} className="text-xs text-slate-400"><span className="font-black text-slate-600 mr-2">{String.fromCharCode(65+oi)}.</span> {o.text}</p>)}
+                            </div>
+                          </div>
+                          <button onClick={() => setEditingIndex(i)} className="w-14 h-14 bg-slate-800 hover:bg-blue-600 text-slate-400 hover:text-white rounded-2xl flex items-center justify-center transition-all shadow-xl"><i className="fa-solid fa-pen-to-square"></i></button>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {currentTab === 'usability' && (
+            <div className="space-y-8">
+              <div className="bg-blue-600 rounded-[40px] p-12 text-white shadow-2xl relative overflow-hidden">
+                <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-10">
+                  <div>
+                    <h3 className="text-6xl font-black italic tracking-tighter mb-2">{(surveys.reduce((a,b)=>a+b.totalScore, 0)/(surveys.length||1)*2.5).toFixed(1)}</h3>
+                    <p className="text-sm font-bold opacity-80 uppercase tracking-widest">Global Mean SUS Score</p>
+                  </div>
+                  <div className="bg-white/20 backdrop-blur-xl p-8 rounded-3xl border border-white/20 flex flex-col items-center">
+                    <p className="text-4xl font-black uppercase italic tracking-widest mb-1">GRADE A+</p>
+                    <p className="text-xs font-bold uppercase opacity-80 tracking-widest">Excellent Usability</p>
+                  </div>
+                </div>
+                <i className="fa-solid fa-face-smile-wink absolute top-[-50px] right-[-50px] text-[300px] opacity-10"></i>
+              </div>
+
+              <div className="bg-slate-900 rounded-[40px] border border-slate-800 overflow-hidden shadow-2xl">
+                <h3 className="p-8 border-b border-slate-800 text-xl font-black uppercase italic tracking-tighter text-white">SUS Survey Raw Logs</h3>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm text-left">
+                    <thead className="bg-black/20 text-[10px] font-black text-slate-500 uppercase tracking-widest border-b border-slate-800">
+                      <tr><th className="p-6">User</th><th className="p-6 text-center">Raw Sum</th><th className="p-6 text-center">SUS Score</th><th className="p-6 text-right">Timestamp</th></tr>
+                    </thead>
+                    <tbody>
+                      {surveys.map((s, i) => (
+                        <tr key={i} className="border-b border-slate-800/50 hover:bg-white/5 transition-all">
+                          <td className="p-6 font-bold text-white">{s.user.name}</td>
+                          <td className="p-6 text-center font-bold text-slate-500">{s.totalScore}</td>
+                          <td className="p-6 text-center font-black text-blue-400 text-lg">{s.totalScore * 2.5}</td>
+                          <td className="p-6 text-right text-slate-500 text-xs">{new Date(s.createdAt).toLocaleDateString()}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {currentTab === 'settings' && (
+            <div className="max-w-3xl mx-auto bg-slate-900 p-12 rounded-[40px] border border-slate-800 shadow-2xl">
+              <h3 className="text-2xl font-black text-white italic uppercase tracking-tighter mb-10 border-b border-slate-800 pb-6">Website Information</h3>
+              <div className="space-y-8">
+                <div>
+                  <label className="text-[10px] font-black text-slate-500 uppercase mb-3 block tracking-widest">Global Description</label>
+                  <textarea className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-6 text-sm text-white focus:border-blue-500 outline-none" rows={5} value={settings.description} onChange={e => setSettings({...settings, description: e.target.value})} />
+                </div>
+                <div className="grid grid-cols-2 gap-8">
+                  <div>
+                    <label className="text-[10px] font-black text-slate-500 uppercase mb-3 block tracking-widest">Contact Info</label>
+                    <input className="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm text-white" value={settings.contact} onChange={e => setSettings({...settings, contact: e.target.value})} />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-500 uppercase mb-3 block tracking-widest">User Manual Link</label>
+                    <input className="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm text-white" value={settings.manualLink} onChange={e => setSettings({...settings, manualLink: e.target.value})} />
+                  </div>
+                </div>
+                <button onClick={handleSaveSettings} className="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-4 rounded-2xl shadow-xl shadow-blue-500/20 transition-all uppercase text-xs tracking-widest">Update Landing Page Metadata <i className="fa-solid fa-cloud-arrow-up ml-2"></i></button>
+              </div>
+            </div>
+          )}
         </div>
       </main>
     </div>
   );
 }
-

@@ -1,15 +1,29 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import questionsData from "./questions.json";
 
 export default function Madel5cAssessment() {
+  const [questionsData, setQuestionsData] = useState<any[]>([]);
   const [step, setStep] = useState(0);
   const [finished, setFinished] = useState(false);
   const [answers, setAnswers] = useState<number[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
+
+  useEffect(() => {
+    fetch('/api/questions?type=madel5c')
+      .then(res => res.json())
+      .then(data => {
+        setQuestionsData(Array.isArray(data) ? data : []);
+        setIsLoading(false);
+      })
+      .catch(err => {
+        console.error("Failed to load questions:", err);
+        setIsLoading(false);
+      });
+  }, []);
 
   const totalItems = questionsData.length;
   const currentQuestion = questionsData[step];
@@ -36,7 +50,7 @@ export default function Madel5cAssessment() {
               userId,
               type: 'MADEL5C',
               totalScore,
-              answersJson: newAnswers
+              answersJson: JSON.stringify(newAnswers)
             })
           });
         } catch (error) {
@@ -46,6 +60,17 @@ export default function Madel5cAssessment() {
       setIsSubmitting(false);
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#0B1120]">
+        <div className="text-center">
+          <i className="fa-solid fa-circle-notch fa-spin text-4xl text-blue-500 mb-4"></i>
+          <p className="text-slate-400 font-bold uppercase tracking-widest text-sm">Menyiapkan Instrumen...</p>
+        </div>
+      </div>
+    );
+  }
 
   const totalScore = answers.reduce((acc, curr) => acc + curr, 0);
   const percentage = Math.round((totalScore / (totalItems * 5)) * 100);
@@ -65,7 +90,7 @@ export default function Madel5cAssessment() {
           <div className="flex justify-between items-center mb-8 pb-6 border-b border-slate-700/50">
             <div>
                <h3 className="text-blue-400 font-bold uppercase tracking-widest text-xs mb-1">MADEL5C SJT Instrument</h3>
-               <p className="text-slate-300 text-sm">Situational Judgment Test (30 Items)</p>
+               <p className="text-slate-300 text-sm">Situational Judgment Test ({totalItems} Items)</p>
             </div>
             <div className="text-right">
                <span className="px-4 py-1.5 bg-blue-500/20 text-blue-400 text-xs font-bold rounded-full border border-blue-500/30 uppercase tracking-widest">
@@ -85,7 +110,7 @@ export default function Madel5cAssessment() {
           </div>
 
           <div className="grid grid-cols-1 gap-3 mb-10">
-            {currentQuestion?.options.map((opt, i) => (
+            {currentQuestion?.options.map((opt: any, i: number) => (
               <button key={i} onClick={() => handleOptionClick(opt.score)}
                       className="w-full text-left p-5 rounded-2xl border border-slate-700/50 bg-slate-800/50 hover:bg-blue-600 hover:border-blue-500 transition-all font-medium text-slate-200 flex items-start gap-4 group shadow-lg">
                 <span className="flex-shrink-0 w-8 h-8 rounded-lg bg-slate-700/50 group-hover:bg-white/20 flex items-center justify-center text-xs font-bold transition-colors">
@@ -110,7 +135,7 @@ export default function Madel5cAssessment() {
           <div className="bg-slate-900/60 rounded-3xl p-8 border border-slate-700/50 mb-10 text-left">
              <div className="flex justify-between items-center mb-6 border-b border-slate-700/50 pb-4">
                 <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Skor Kompetensi</span>
-                <span className="text-4xl font-black text-blue-400">{totalScore} <span className="text-sm font-bold text-slate-500">/ 150</span></span>
+                <span className="text-4xl font-black text-blue-400">{totalScore} <span className="text-sm font-bold text-slate-500">/ {totalItems * 5}</span></span>
              </div>
              <div>
                 <span className="text-[10px] font-black text-blue-500 uppercase tracking-[0.3em] mb-2 block">AI Diagnostic Feedback</span>
@@ -127,4 +152,3 @@ export default function Madel5cAssessment() {
     </div>
   );
 }
-

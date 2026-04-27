@@ -2,7 +2,7 @@
   {
     "id": 1,
     "dim": "C1 - LID",
-    "scenario": "Anda sedang mencari referensi jurnal untuk menyusun tugas makalah akhir. Saat mencari di Google dengan kata kunci umum, muncul ratusan ribu hasil yang bercampur antara blog opini dan artikel ilmiah. Bagaimana respons Anda?",
+    "scenario": "Anda sedang mencari referensi jurnal untuk menyusun tugas makalah akhir semester. Saat mencari di Google dengan kata kunci umum, muncul ratusan ribu hasil yang bercampur antara blog opini dan artikel ilmiah. Bagaimana respons Anda?",
     "options": [
       {
         "text": "Mengambil kutipan langsung dari artikel blog pertama yang muncul agar cepat selesai.",
