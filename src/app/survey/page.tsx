@@ -69,32 +69,43 @@ export default function SurveyPage() {
           {showInstructions ? (
             <motion.div 
               key="instructions"
-              initial={{ opacity: 0, scale: 0.98 }}
+              initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, y: -20 }}
-              className={`${creamBg}/95 backdrop-blur-2xl border-4 border-white p-10 lg:p-16 rounded-[60px] shadow-2xl`}
+              className="bg-white/95 backdrop-blur-3xl border-[6px] border-white p-10 lg:p-16 rounded-[60px] shadow-[0_50px_100px_rgba(0,0,0,0.2)]"
             >
-              <div className="w-20 h-20 bg-[#4B5320] rounded-[30px] flex items-center justify-center mb-10 shadow-2xl shadow-[#4B5320]/30">
-                <i className="fa-solid fa-star-half-stroke text-3xl text-white"></i>
+              <div className="w-24 h-24 bg-[#4B5320] rounded-[35px] flex items-center justify-center mb-12 shadow-2xl shadow-[#4B5320]/40">
+                <i className="fa-solid fa-star-half-stroke text-4xl text-white"></i>
               </div>
-              <h1 className="text-4xl font-black text-[#4B5320] tracking-tighter uppercase italic mb-3 leading-none">Evaluasi Usabilitas</h1>
-              <p className="text-[#4B5320]/60 font-black uppercase tracking-[0.4em] text-[11px] mb-12 italic">System Usability Scale (SUS)</p>
               
-              <div className="space-y-10 text-[#4B5320] leading-relaxed text-lg mb-14">
-                <div className="p-10 bg-white/60 rounded-[40px] border border-white shadow-inner italic font-bold text-2xl leading-snug">
-                  "Dimohon untuk memberikan penilaian jujur mengenai pengalaman Bapak/Ibu dalam menggunakan platform ini."
+              <h1 className="text-4xl lg:text-6xl font-black text-[#4B5320] tracking-tighter uppercase italic mb-3 leading-none drop-shadow-[0_2px_10px_rgba(255,255,255,1)]">
+                Evaluasi Usabilitas
+              </h1>
+              <p className="text-[#4B5320]/70 font-black uppercase tracking-[0.5em] text-[12px] mb-14 italic drop-shadow-[0_2px_5px_rgba(255,255,255,1)]">
+                System Usability Scale (SUS)
+              </p>
+              
+              <div className="space-y-10 mb-16">
+                <div className="p-10 bg-[#FAF9F6] rounded-[40px] border-2 border-[#4B5320]/10 shadow-inner italic font-bold text-2xl lg:text-3xl text-[#4B5320] leading-relaxed">
+                  "Mohon berikan penilaian objektif Bapak/Ibu mengenai pengalaman penggunaan platform HDAP ini."
                 </div>
-                <ul className="space-y-6">
-                  <li className="flex gap-6"><i className="fa-solid fa-check-circle text-[#4B5320] text-2xl mt-1"></i> <span className="font-bold italic">Terdapat 10 pernyataan mengenai kualitas sistem.</span></li>
-                  <li className="flex gap-6"><i className="fa-solid fa-check-circle text-[#4B5320] text-2xl mt-1"></i> <span className="font-bold italic">Skala 1 (Sangat Tidak Setuju) hingga 5 (Sangat Setuju).</span></li>
-                </ul>
+                <div className="space-y-6 px-4">
+                  <div className="flex items-center gap-8 group">
+                    <div className="w-12 h-12 bg-[#4B5320] rounded-2xl flex items-center justify-center text-white shadow-lg shrink-0"><i className="fa-solid fa-check text-xl"></i></div>
+                    <span className="font-black text-[#4B5320] uppercase tracking-widest text-sm lg:text-lg">Terdapat 10 Pernyataan Kualitas Sistem</span>
+                  </div>
+                  <div className="flex items-center gap-8 group">
+                    <div className="w-12 h-12 bg-[#4B5320] rounded-2xl flex items-center justify-center text-white shadow-lg shrink-0"><i className="fa-solid fa-list-ol text-xl"></i></div>
+                    <span className="font-black text-[#4B5320] uppercase tracking-widest text-sm lg:text-lg">Skala 1 (Sangat Tidak Setuju) - 5 (Sangat Setuju)</span>
+                  </div>
+                </div>
               </div>
 
               <button 
                 onClick={() => setShowInstructions(false)}
-                className="w-full lg:w-fit px-16 py-6 bg-[#4B5320] hover:bg-[#354B37] text-white font-black rounded-[30px] transition-all shadow-2xl shadow-[#4B5320]/40 uppercase tracking-[0.4em] text-xs"
+                className="w-full lg:w-auto px-20 py-8 bg-[#4B5320] hover:bg-[#354B37] text-white font-black rounded-[35px] transition-all shadow-[0_20px_50px_rgba(75,83,32,0.4)] hover:shadow-[0_10px_30px_rgba(75,83,32,0.6)] uppercase tracking-[0.5em] text-xs flex items-center justify-center gap-6"
               >
-                Lanjutkan Survey &rarr;
+                LANJUTKAN SURVEY <i className="fa-solid fa-arrow-right-long text-lg"></i>
               </button>
             </motion.div>
           ) : (
@@ -104,61 +115,61 @@ export default function SurveyPage() {
               animate={{ opacity: 1 }}
               className="space-y-10 sm:space-y-16"
             >
-               <div className="text-center mb-16 drop-shadow-[0_2px_10px_rgba(255,255,255,1)]">
-                  <h2 className="text-4xl sm:text-5xl font-black text-[#4B5320] tracking-tighter uppercase italic">Kuesioner Usabilitas</h2>
-                  <div className="w-24 h-2 bg-[#4B5320] mx-auto mt-6 rounded-full"></div>
+               <div className="text-center mb-16 drop-shadow-[0_2px_20px_rgba(255,255,255,1)]">
+                  <h2 className="text-4xl sm:text-6xl font-black text-[#4B5320] tracking-tighter uppercase italic leading-none">Kuesioner Usabilitas</h2>
+                  <div className="w-32 h-2.5 bg-[#4B5320] mx-auto mt-8 rounded-full shadow-lg"></div>
                </div>
 
-               <div className="space-y-8 lg:space-y-12">
+               <div className="space-y-10">
                   {susQuestions.map((q, i) => (
                     <motion.div 
                       key={i}
                       initial={{ opacity: 0, y: 30 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: i * 0.05 }}
-                      className={`${creamBg}/95 backdrop-blur-2xl border-4 border-white p-6 sm:p-12 rounded-[40px] sm:rounded-[60px] shadow-2xl`}
+                      className="bg-white/95 backdrop-blur-2xl border-[5px] border-white p-8 lg:p-14 rounded-[50px] lg:rounded-[70px] shadow-2xl"
                     >
-                      <div className="mb-10 p-6 sm:p-10 bg-white/60 border-l-[10px] border-[#4B5320] rounded-[25px] sm:rounded-[35px] shadow-inner">
-                        <p className="text-lg sm:text-xl text-[#4B5320] font-bold leading-relaxed drop-shadow-[0_2px_4px_rgba(255,255,255,1)]">
-                          <span className="text-[#4B5320]/30 font-black mr-3 italic">#{i + 1}</span> {q}
+                      <div className="mb-10 p-8 sm:p-12 bg-[#FAF9F6] border-l-[12px] border-[#4B5320] rounded-[30px] sm:rounded-[45px] shadow-inner">
+                        <p className="text-xl sm:text-2xl text-[#4B5320] font-black leading-relaxed drop-shadow-[0_1px_2px_rgba(255,255,255,1)]">
+                          <span className="text-[#4B5320]/30 font-black mr-4 italic">#{i + 1}</span> {q}
                         </p>
                       </div>
                       
-                      <div className="flex flex-col md:flex-row justify-between items-center gap-6 sm:gap-10">
-                        <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest order-last md:order-first w-full md:w-auto text-center md:text-left">Sangat Tidak Setuju</span>
+                      <div className="flex flex-col md:flex-row justify-between items-center gap-8 sm:gap-14">
+                        <span className="text-[11px] font-black uppercase text-[#4B5320]/50 tracking-[0.3em] order-last md:order-first w-full md:w-auto text-center md:text-left drop-shadow-[0_2px_5px_rgba(255,255,255,1)]">Sangat Tidak Setuju</span>
                         <div className="flex justify-between gap-2 sm:gap-6 flex-1 w-full max-w-lg mx-auto">
                            {[1, 2, 3, 4, 5].map((val) => (
                              <button
                                key={val}
                                onClick={() => handleAnswer(i, val)}
-                               className={`w-12 h-12 sm:w-16 sm:h-16 rounded-2xl font-black text-lg sm:text-2xl transition-all flex items-center justify-center border-4 ${
+                               className={`w-14 h-14 sm:w-20 sm:h-20 rounded-[28px] font-black text-xl sm:text-3xl transition-all flex items-center justify-center border-[5px] ${
                                  answers[i] === val
                                    ? "bg-[#4B5320] border-[#4B5320] text-white shadow-2xl scale-110"
-                                   : "bg-white/70 border-white text-slate-300 hover:border-[#4B5320]/20"
+                                   : "bg-white border-slate-100 text-[#4B5320]/30 hover:border-[#4B5320]/20"
                                }`}
                              >
                                {val}
                              </button>
                            ))}
                         </div>
-                        <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest w-full md:w-auto text-center md:text-right">Sangat Setuju</span>
+                        <span className="text-[11px] font-black uppercase text-[#4B5320]/50 tracking-[0.3em] w-full md:w-auto text-center md:text-right drop-shadow-[0_2px_5px_rgba(255,255,255,1)]">Sangat Setuju</span>
                       </div>
                     </motion.div>
                   ))}
                </div>
 
-               <div className="flex justify-center pt-10">
+               <div className="flex justify-center pt-20">
                   <button
                     disabled={!isComplete}
                     onClick={submitSurvey}
-                    className={`w-full sm:w-fit px-20 py-7 rounded-[40px] font-black uppercase tracking-[0.5em] text-xs transition-all flex items-center justify-center gap-6 ${
+                    className={`w-full sm:w-auto px-24 py-10 rounded-[45px] font-black uppercase tracking-[0.6em] text-sm transition-all flex items-center justify-center gap-8 ${
                       isComplete
-                        ? "bg-[#4B5320] hover:bg-[#354B37] text-white shadow-2xl shadow-[#4B5320]/40"
-                        : "bg-slate-100 text-slate-300 cursor-not-allowed shadow-inner"
+                        ? "bg-[#4B5320] hover:bg-[#354B37] text-white shadow-[0_30px_60px_rgba(75,83,32,0.4)]"
+                        : "bg-slate-200 text-slate-400 cursor-not-allowed shadow-inner"
                     }`}
                   >
-                    Submit Hasil Survey
-                    <i className="fa-solid fa-paper-plane text-xs"></i>
+                    Kirim Hasil Survey
+                    <i className="fa-solid fa-paper-plane text-xl"></i>
                   </button>
                </div>
             </motion.div>
