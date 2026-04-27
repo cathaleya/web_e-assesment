@@ -122,14 +122,14 @@ export default function SurveyPage() {
                         <span className="text-[#4B5320]/40 font-black mr-4 italic">#{i + 1}</span> {q}
                       </p>
                       
-                      <div className="flex flex-col md:flex-row justify-between items-center gap-10">
+                      <div className="flex flex-col md:flex-row justify-between items-center gap-6 sm:gap-10">
                         <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest order-last md:order-first w-full md:w-auto text-center md:text-left">Sangat Tidak Setuju</span>
-                        <div className="flex justify-between gap-3 sm:gap-6 flex-1 w-full max-w-lg mx-auto">
+                        <div className="flex justify-between gap-2 sm:gap-6 flex-1 w-full max-w-lg mx-auto">
                            {[1, 2, 3, 4, 5].map((val) => (
                              <button
                                key={val}
                                onClick={() => handleAnswer(i, val)}
-                               className={`w-14 h-14 sm:w-20 sm:h-20 rounded-[25px] font-black text-xl sm:text-2xl transition-all flex items-center justify-center border-4 ${
+                               className={`w-12 h-12 sm:w-16 sm:h-16 rounded-2xl font-black text-lg sm:text-2xl transition-all flex items-center justify-center border-4 ${
                                  answers[i] === val
                                    ? "bg-[#4B5320] border-[#4B5320] text-white shadow-2xl scale-110"
                                    : "bg-white/70 border-white text-slate-300 hover:border-[#4B5320]/20"

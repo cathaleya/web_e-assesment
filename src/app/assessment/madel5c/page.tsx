@@ -169,24 +169,24 @@ export default function Madel5cAssessment() {
 
                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.5em] mb-10 text-center drop-shadow-[0_2px_4px_rgba(255,255,255,1)]">Pilihlah Tindakan Yang Paling Tepat</p>
 
-                 <div className="grid grid-cols-1 gap-6">
+                 <div className="grid grid-cols-1 gap-4 sm:gap-5">
                     {questions[currentStep]?.options?.map((opt: any, idx: number) => (
                       <button
                         key={idx}
                         onClick={() => handleAnswer(idx)}
-                        className={`group flex items-start gap-8 p-8 lg:p-10 rounded-[45px] border-4 transition-all text-left ${
+                        className={`group flex items-start gap-4 sm:gap-6 p-5 sm:p-7 rounded-[35px] border-4 transition-all text-left ${
                           answers[currentStep] === idx + 1
                             ? "bg-[#4B5320] border-[#4B5320] text-white shadow-2xl scale-[1.01]"
                             : "bg-white/70 border-white text-[#4B5320] hover:border-[#4B5320]/30 shadow-md"
                         }`}
                       >
-                        <span className={`mt-1 w-14 h-14 lg:w-20 lg:h-20 rounded-[25px] flex items-center justify-center font-black text-xl lg:text-3xl transition-all shrink-0 ${
+                        <span className={`mt-1 w-10 h-10 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center font-black text-sm sm:text-xl transition-all shrink-0 ${
                           answers[currentStep] === idx + 1 ? "bg-white text-[#4B5320] shadow-xl" : "bg-slate-50 text-slate-400"
                         }`}>
                           {String.fromCharCode(65 + idx)}
                         </span>
-                        <div className="flex-1 pt-2 lg:pt-4">
-                          <span className="font-bold text-lg lg:text-2xl leading-relaxed">{opt?.text || ""}</span>
+                        <div className="flex-1 pt-1 sm:pt-3">
+                          <span className="font-bold text-sm sm:text-lg leading-relaxed">{opt?.text || ""}</span>
                         </div>
                       </button>
                     ))}

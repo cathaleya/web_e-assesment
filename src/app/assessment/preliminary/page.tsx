@@ -161,24 +161,24 @@ export default function PreliminaryAssessment() {
                   </p>
                 </div>
 
-                <div className="grid grid-cols-1 gap-4">
+                <div className="grid grid-cols-1 gap-3 sm:gap-4">
                   {(questions[currentStep]?.options || defaultOptions).map((opt: any, idx: number) => (
                     <button
                       key={idx}
                       onClick={() => handleAnswer(idx)}
-                      className={`group flex items-center gap-6 p-6 lg:p-8 rounded-[35px] border-4 transition-all text-left ${
+                      className={`group flex items-center gap-4 sm:gap-6 p-4 sm:p-5 rounded-[25px] border-4 transition-all text-left ${
                         answers[currentStep] === idx + 1
-                          ? "bg-[#4B5320] border-[#4B5320] text-white shadow-2xl scale-[1.02]"
+                          ? "bg-[#4B5320] border-[#4B5320] text-white shadow-2xl scale-[1.01]"
                           : "bg-white/70 border-white text-[#4B5320] hover:border-[#4B5320]/30 shadow-md"
                       }`}
                     >
-                      <span className={`w-12 h-12 lg:w-16 lg:h-16 rounded-2xl flex items-center justify-center font-black text-lg transition-all shrink-0 ${
+                      <span className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center font-black text-sm transition-all shrink-0 ${
                         answers[currentStep] === idx + 1 ? "bg-white text-[#4B5320] shadow-xl" : "bg-slate-50 text-slate-400"
                       }`}>
                         {idx + 1}
                       </span>
-                      <span className="flex-1 font-bold text-lg lg:text-xl leading-snug">{opt?.text || ""}</span>
-                      {answers[currentStep] === idx + 1 && <i className="fa-solid fa-circle-check text-white text-2xl"></i>}
+                      <span className="flex-1 font-bold text-sm sm:text-lg leading-snug">{opt?.text || ""}</span>
+                      {answers[currentStep] === idx + 1 && <i className="fa-solid fa-circle-check text-white text-xl"></i>}
                     </button>
                   ))}
                 </div>
