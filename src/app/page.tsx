@@ -33,7 +33,7 @@ export default function LandingPage() {
       {/* Hero Section with Bright Background */}
       <div className="min-h-screen relative flex flex-col"
            style={{ 
-             backgroundImage: "linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7)), url('/unj_bg.png')",
+             backgroundImage: "url('/unj_bg.png')",
              backgroundSize: 'cover',
              backgroundPosition: 'center',
              backgroundAttachment: 'fixed'
