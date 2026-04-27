@@ -60,11 +60,13 @@ export default function LandingPage() {
         <main className="flex-1 flex items-center justify-center relative z-10 px-6 lg:px-16 pt-32 pb-20">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 w-full max-w-7xl items-center">
             <div className="text-center lg:text-left space-y-8 animate-in slide-in-from-left duration-700">
-              <h1 className="font-black text-slate-900 leading-tight">
-                <span className="block text-3xl lg:text-4xl mb-4 italic uppercase tracking-tighter text-blue-700" style={{ textShadow: "0 1px 2px rgba(255,255,255,0.8)" }}>
+              <h1 className="font-black leading-tight">
+                <span className="block text-3xl lg:text-4xl mb-4 italic uppercase tracking-tighter text-indigo-900" 
+                      style={{ textShadow: "0 0 20px rgba(255,255,255,1), 0 0 10px rgba(255,255,255,1)" }}>
                   Hybrid-Diagnostic Assessment Platform (HDAP)
                 </span>
-                <span className="text-5xl lg:text-7xl block font-black uppercase tracking-tighter text-slate-900" style={{ textShadow: "0 2px 10px rgba(0,0,0,0.1)" }}>
+                <span className="text-5xl lg:text-7xl block font-black uppercase tracking-tighter text-slate-900" 
+                      style={{ textShadow: "0 0 20px rgba(255,255,255,1), 0 0 10px rgba(255,255,255,1)" }}>
                   Website E-ASSESSMEN <br/>LITERASI DIGITAL.
                 </span>
               </h1>
