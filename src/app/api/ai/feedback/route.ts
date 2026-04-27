@@ -8,7 +8,7 @@ export async function GET(request: Request) {
 
   if (!userId) return NextResponse.json({ error: 'User ID required' }, { status: 400 });
 
-  const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY || "";
+  const apiKey = process.env.GEMINI_API_KEY || "";
   
   try {
     const user = await prisma.user.findUnique({
