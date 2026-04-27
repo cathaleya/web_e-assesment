@@ -9,23 +9,22 @@ export async function GET(request: Request) {
   if (!userId) return NextResponse.json({ error: 'User ID required' }, { status: 400 });
 
   const apiKey = process.env.GEMINI_API_KEY || "";
+  let userData: any = null;
   
   try {
-    const user = await prisma.user.findUnique({
+    userData = await prisma.user.findUnique({
       where: { id: userId },
       include: { assessments: true }
     });
 
-    if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    if (!userData) return NextResponse.json({ error: 'User not found' }, { status: 404 });
 
-    // Status check
-    const pdi = user.assessments.find(a => a.type === 'PDI-DL');
-    const madel = user.assessments.find(a => a.type === 'MADEL5C');
+    const pdi = userData.assessments.find((a: any) => a.type === 'PDI-DL');
+    const madel = userData.assessments.find((a: any) => a.type === 'MADEL5C');
     
-    // Fallback if API key is missing
     if (!apiKey) {
       return NextResponse.json({ 
-        message: `Selamat datang, ${user.name}! Silakan selesaikan instrumen PDI-DL untuk melihat hasil diagnosis literasi digital Anda.` 
+        message: `Selamat datang, ${userData.name}! Silakan selesaikan instrumen PDI-DL untuk melihat hasil diagnosis literasi digital Anda.` 
       });
     }
 
@@ -34,7 +33,7 @@ export async function GET(request: Request) {
 
     const prompt = `
       Anda adalah Asisten Pakar Diagnostik Literasi Digital UNJ. 
-      Berikan pesan selamat datang yang sangat singkat (maksimal 2 kalimat) untuk user bernama ${user.name}.
+      Berikan pesan selamat datang yang sangat singkat (maksimal 2 kalimat) untuk user bernama ${userData.name}.
       
       Konteks Progres:
       - PDI-DL: ${pdi ? `Selesai dengan skor ${pdi.totalScore}` : 'Belum dikerjakan'}
@@ -52,7 +51,7 @@ export async function GET(request: Request) {
   } catch (error) {
     console.error('AI Error:', error);
     return NextResponse.json({ 
-      message: `Selamat datang kembali, ${user?.name || 'User'}! Mari lanjutkan perjalanan literasi digital Anda hari ini.` 
+      message: `Selamat datang kembali, ${userData?.name || 'User'}! Mari lanjutkan perjalanan literasi digital Anda hari ini.` 
     });
   }
 }
