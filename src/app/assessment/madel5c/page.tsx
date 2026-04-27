@@ -82,8 +82,29 @@ export default function Madel5cAssessment() {
             <motion.div key="instructions" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               className="bg-white p-6 rounded-2xl shadow-2xl border border-slate-200"
             >
-              <h1 className="text-xl font-black text-slate-900 uppercase mb-4 border-b pb-4">MADEL5C Instrumen</h1>
-              <p className="p-3 bg-emerald-50 rounded-lg text-[10px] font-bold text-emerald-900 italic mb-6">"Tahap Akhir: Asesmen berbasis skenario situasi nyata. Pilihan jawaban telah diacak untuk menjaga objektivitas penilaian."</p>
+              <div className="flex items-center gap-3 mb-4 border-b pb-4">
+                <div className="w-10 h-10 bg-emerald-600 rounded-xl flex items-center justify-center text-white shadow-lg">
+                  <i className="fa-solid fa-list-check text-xl"></i>
+                </div>
+                <h1 className="text-xl font-black text-slate-900 uppercase">Panduan MADEL5C</h1>
+              </div>
+
+              <div className="space-y-4 mb-6">
+                <div className="p-3 bg-emerald-50 rounded-xl border border-emerald-100">
+                  <h3 className="text-[10px] font-black text-emerald-900 uppercase mb-1">Cara Pengisian:</h3>
+                  <p className="text-[9px] font-bold text-emerald-800 leading-relaxed">
+                    Baca skenario situasi yang muncul, lalu pilih satu tindakan yang menurut Anda paling tepat dan efektif untuk dilakukan.
+                  </p>
+                </div>
+
+                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                  <h3 className="text-[10px] font-black text-slate-900 uppercase mb-1">Metode Penskoran (SJT):</h3>
+                  <p className="text-[9px] font-bold text-slate-600 leading-relaxed">
+                    Setiap pilihan jawaban memiliki bobot skor 1-5 berdasarkan tingkat efektivitas tindakan tersebut dalam literasi digital.
+                  </p>
+                </div>
+              </div>
+
               <button onClick={() => setShowInstructions(false)} className="w-full py-4 bg-[#4B5320] text-white font-black rounded-lg text-[10px] uppercase tracking-widest shadow-lg">MULAI ASESMEN AKHIR</button>
             </motion.div>
           ) : (

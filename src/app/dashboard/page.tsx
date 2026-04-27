@@ -18,12 +18,14 @@ ChartJS.register(RadialLinearScale, PointElement, LineElement, Filler, Tooltip, 
 export default function DashboardPage() {
   const [user, setUser] = useState<any>(null);
   const [stats, setStats] = useState<any>(null);
+  const [aiMessage, setAiMessage] = useState<string>("Sedang menganalisis profil Anda...");
   const router = useRouter();
 
   useEffect(() => {
     const userId = localStorage.getItem("userId");
     if (!userId) return router.push("/login");
     fetchData(userId);
+    fetchAiFeedback(userId);
   }, []);
 
   const fetchData = async (userId: string) => {
@@ -33,6 +35,14 @@ export default function DashboardPage() {
       setUser(data.user);
       setStats(data.stats);
     } catch (err) { console.error(err); }
+  };
+
+  const fetchAiFeedback = async (userId: string) => {
+    try {
+      const res = await fetch(`/api/ai/feedback?userId=${userId}`);
+      const data = await res.json();
+      setAiMessage(data.message);
+    } catch (err) { setAiMessage("Selamat datang di Portal HDAP!"); }
   };
 
   if (!user) return <div className="min-h-screen bg-white flex items-center justify-center font-bold text-xs">MEMUAT...</div>;
@@ -79,10 +89,19 @@ export default function DashboardPage() {
         </header>
 
         <div className="p-4 space-y-4 max-w-4xl">
-          {/* PROGRESS CARDS - SEQUENTIAL FLOW */}
+          {/* AI DIAGNOSTIC WELCOME CARD */}
+          <div className="bg-white rounded-2xl p-5 shadow-lg border-l-8 border-blue-600">
+             <div className="flex items-center gap-3 mb-2">
+                <div className="w-6 h-6 bg-blue-600 rounded-lg flex items-center justify-center text-white text-[10px]"><i className="fa-solid fa-robot"></i></div>
+                <p className="text-[8px] font-black text-blue-600 uppercase tracking-widest">AI Diagnostik UNJ</p>
+             </div>
+             <h3 className="text-sm font-bold text-slate-900 leading-tight">
+                "{aiMessage}"
+             </h3>
+          </div>
+
+          {/* PROGRESS CARDS */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            
-            {/* STEP 1: PDI-DL */}
             <div className="bg-white p-4 rounded-xl border-2 border-slate-200 shadow-md flex flex-col justify-between">
                <div>
                   <div className="flex justify-between items-start mb-2">
@@ -90,109 +109,78 @@ export default function DashboardPage() {
                      {isPdiDone && <i className="fa-solid fa-circle-check text-emerald-500"></i>}
                   </div>
                   <h4 className="text-[10px] font-black text-slate-900 uppercase leading-none">Instrumen PDI-DL</h4>
-                  <p className="text-[7px] font-bold text-slate-400 mt-1 uppercase">Pemetaan Profil Awal</p>
                </div>
-               <button 
-                  onClick={() => router.push("/assessment/preliminary")}
-                  className={`mt-4 py-2 rounded-lg text-[8px] font-black uppercase tracking-widest transition-all ${
-                    isPdiDone ? "bg-emerald-50 text-emerald-600 border border-emerald-100" : "bg-blue-600 text-white shadow-lg shadow-blue-200"
-                  }`}
-               >
-                  {isPdiDone ? "Selesai diisi" : "Mulai Mengisi"}
+               <button onClick={() => router.push("/assessment/preliminary")}
+                  className={`mt-4 py-2 rounded-lg text-[8px] font-black uppercase transition-all ${isPdiDone ? "bg-emerald-50 text-emerald-600" : "bg-blue-600 text-white shadow-lg"}`}>
+                  {isPdiDone ? "Selesai" : "Mulai"}
                </button>
             </div>
 
-            {/* STEP 2: SURVEY (Unlocked by PDI-DL) */}
-            <div className={`bg-white p-4 rounded-xl border-2 shadow-md flex flex-col justify-between transition-all ${!isPdiDone ? 'opacity-50 grayscale bg-slate-50' : 'border-amber-200'}`}>
+            <div className={`bg-white p-4 rounded-xl border-2 shadow-md flex flex-col justify-between transition-all ${!isPdiDone ? 'opacity-50 grayscale' : 'border-amber-200'}`}>
                <div>
                   <div className="flex justify-between items-start mb-2">
                      <p className="text-[8px] font-black text-amber-600 uppercase tracking-widest">Tahap 2</p>
-                     {!isPdiDone && <i className="fa-solid fa-lock text-slate-300"></i>}
                      {isSurveyDone && <i className="fa-solid fa-circle-check text-emerald-500"></i>}
                   </div>
                   <h4 className="text-[10px] font-black text-slate-900 uppercase leading-none">Survey Usabilitas</h4>
-                  <p className="text-[7px] font-bold text-slate-400 mt-1 uppercase">Evaluasi Sistem (SUS)</p>
                </div>
-               <button 
-                  disabled={!isPdiDone}
-                  onClick={() => router.push("/survey")}
-                  className={`mt-4 py-2 rounded-lg text-[8px] font-black uppercase tracking-widest transition-all ${
-                    !isPdiDone ? "bg-slate-100 text-slate-400 cursor-not-allowed" : 
-                    isSurveyDone ? "bg-emerald-50 text-emerald-600 border border-emerald-100" : "bg-amber-500 text-white shadow-lg shadow-amber-200"
-                  }`}
-               >
-                  {isSurveyDone ? "Selesai diisi" : "Isi Survey"}
+               <button disabled={!isPdiDone} onClick={() => router.push("/survey")}
+                  className={`mt-4 py-2 rounded-lg text-[8px] font-black uppercase transition-all ${!isPdiDone ? "bg-slate-100 text-slate-400" : isSurveyDone ? "bg-emerald-50 text-emerald-600" : "bg-amber-500 text-white shadow-lg"}`}>
+                  {isSurveyDone ? "Selesai" : "Isi Survey"}
                </button>
             </div>
 
-            {/* STEP 3: MADEL5C (Unlocked by Survey) */}
-            <div className={`bg-white p-4 rounded-xl border-2 shadow-md flex flex-col justify-between transition-all ${!isSurveyDone ? 'opacity-50 grayscale bg-slate-50' : 'border-[#4B5320]/30'}`}>
+            <div className={`bg-white p-4 rounded-xl border-2 shadow-md flex flex-col justify-between transition-all ${!isSurveyDone ? 'opacity-50 grayscale' : 'border-[#4B5320]/30'}`}>
                <div>
                   <div className="flex justify-between items-start mb-2">
                      <p className="text-[8px] font-black text-[#4B5320] uppercase tracking-widest">Tahap 3</p>
-                     {!isSurveyDone && <i className="fa-solid fa-lock text-slate-300"></i>}
                      {isMadelDone && <i className="fa-solid fa-circle-check text-emerald-500"></i>}
                   </div>
                   <h4 className="text-[10px] font-black text-slate-900 uppercase leading-none">Instrumen MADEL5C</h4>
-                  <p className="text-[7px] font-bold text-slate-400 mt-1 uppercase">Skenario Situasi</p>
                </div>
-               <button 
-                  disabled={!isSurveyDone}
-                  onClick={() => router.push("/assessment/madel5c")}
-                  className={`mt-4 py-2 rounded-lg text-[8px] font-black uppercase tracking-widest transition-all ${
-                    !isSurveyDone ? "bg-slate-100 text-slate-400 cursor-not-allowed" : 
-                    isMadelDone ? "bg-emerald-50 text-emerald-600 border border-emerald-100" : "bg-[#4B5320] text-white shadow-lg shadow-[#4B5320]/20"
-                  }`}
-               >
-                  {isMadelDone ? "Selesai diisi" : "Mulai MADEL5C"}
+               <button disabled={!isSurveyDone} onClick={() => router.push("/assessment/madel5c")}
+                  className={`mt-4 py-2 rounded-lg text-[8px] font-black uppercase transition-all ${!isSurveyDone ? "bg-slate-100 text-slate-400" : isMadelDone ? "bg-emerald-50 text-emerald-600" : "bg-[#4B5320] text-white shadow-lg"}`}>
+                  {isMadelDone ? "Selesai" : "Mulai"}
                </button>
             </div>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-             {/* INFO CARD */}
-             <div className="bg-white rounded-2xl p-4 shadow-lg border border-slate-200">
-                <h3 className="text-xs font-black text-slate-900 mb-2">Panduan Urutan Pengisian:</h3>
-                <ul className="space-y-2">
-                  <li className="flex items-center gap-2 text-[9px] font-bold text-slate-600">
-                    <div className="w-4 h-4 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-black">1</div>
-                    Isi instrumen Preliminary PDI-DL sampai selesai.
-                  </li>
-                  <li className="flex items-center gap-2 text-[9px] font-bold text-slate-600">
-                    <div className="w-4 h-4 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center font-black">2</div>
-                    Lanjutkan mengisi kuesioner Survey Usabilitas sistem.
-                  </li>
-                  <li className="flex items-center gap-2 text-[9px] font-bold text-slate-600">
-                    <div className="w-4 h-4 bg-green-100 text-green-600 rounded-full flex items-center justify-center font-black">3</div>
-                    Selesaikan tahap akhir instrumen MADEL5C.
-                  </li>
-                </ul>
-             </div>
-
-             {/* RADAR CHART - SMALL */}
-             <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-md flex flex-col items-center justify-center">
-                <p className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-4">MAPPING PROFIL AKHIR</p>
-                <div className="w-full max-w-[180px]">
+             {/* RADAR CHART */}
+             <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-lg flex flex-col items-center">
+                <p className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-4">Mapping Kompetensi</p>
+                <div className="w-full max-w-[200px]">
                   <Radar data={{
                     labels: ['C1', 'C2', 'C3', 'C4', 'C5'],
                     datasets: [{
                       data: stats?.radar || [0,0,0,0,0],
-                      backgroundColor: 'rgba(75, 83, 32, 0.2)',
-                      borderColor: '#4B5320',
-                      borderWidth: 1.5,
-                      pointRadius: 2
+                      backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                      borderColor: '#2563eb',
+                      borderWidth: 2,
+                      pointRadius: 3
                     }]
                   }} options={{
-                    scales: {
-                      r: {
-                        suggestedMin: 0,
-                        suggestedMax: 5,
-                        pointLabels: { font: { size: 8, weight: 'bold' }, color: '#000' },
-                        ticks: { display: false }
-                      }
-                    },
+                    scales: { r: { suggestedMin: 0, suggestedMax: 5, pointLabels: { font: { size: 9, weight: 'bold' } }, ticks: { display: false } } },
                     plugins: { legend: { display: false } }
                   }} />
+                </div>
+             </div>
+
+             <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-lg">
+                <h3 className="text-xs font-black text-slate-900 uppercase tracking-widest mb-4">Info Pengisian:</h3>
+                <div className="space-y-3">
+                  <div className="p-3 bg-blue-50 rounded-xl border border-blue-100">
+                    <p className="text-[9px] font-black text-blue-900 uppercase">Tahap 1: PDI-DL</p>
+                    <p className="text-[8px] font-bold text-blue-700">Diagnosis awal tingkat literasi digital secara mandiri.</p>
+                  </div>
+                  <div className="p-3 bg-amber-50 rounded-xl border border-amber-100">
+                    <p className="text-[9px] font-black text-amber-900 uppercase">Tahap 2: Survey</p>
+                    <p className="text-[8px] font-bold text-amber-700">Evaluasi pengalaman Anda menggunakan platform HDAP.</p>
+                  </div>
+                  <div className="p-3 bg-emerald-50 rounded-xl border border-emerald-100">
+                    <p className="text-[9px] font-black text-emerald-900 uppercase">Tahap 3: MADEL5C</p>
+                    <p className="text-[8px] font-bold text-emerald-700">Asesmen berbasis skenario situasi dunia nyata.</p>
+                  </div>
                 </div>
              </div>
           </div>

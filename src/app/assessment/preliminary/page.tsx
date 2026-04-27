@@ -60,9 +60,38 @@ export default function PreliminaryAssessment() {
             <motion.div key="instructions" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               className="bg-white p-6 rounded-2xl shadow-2xl border border-slate-200"
             >
-              <h1 className="text-xl font-black text-slate-900 uppercase mb-4 border-b pb-4">PDI-DL Panduan</h1>
-              <p className="p-3 bg-blue-50 rounded-lg text-[10px] font-bold text-blue-900 italic mb-6">"Tahap 1: Pemetaan profil awal literasi digital Bapak/Ibu. Setelah selesai, Anda akan langsung diarahkan mengisi Survey Usabilitas."</p>
-              <button onClick={() => setShowInstructions(false)} className="w-full py-4 bg-blue-600 text-white font-black rounded-lg text-[10px] uppercase tracking-widest shadow-lg">MULAI TAHAP 1</button>
+              <div className="flex items-center gap-3 mb-4 border-b pb-4">
+                <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-lg">
+                  <i className="fa-solid fa-circle-info text-xl"></i>
+                </div>
+                <h1 className="text-xl font-black text-slate-900 uppercase">Panduan PDI-DL</h1>
+              </div>
+
+              <div className="space-y-4 mb-6">
+                <div className="p-3 bg-blue-50 rounded-xl border border-blue-100">
+                  <h3 className="text-[10px] font-black text-blue-900 uppercase mb-1">Cara Pengisian:</h3>
+                  <p className="text-[9px] font-bold text-blue-800 leading-relaxed">
+                    Pilihlah tingkat kemampuan diri Anda pada setiap pernyataan yang muncul. Tidak ada jawaban benar atau salah, mohon isi secara jujur.
+                  </p>
+                </div>
+
+                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                  <h3 className="text-[10px] font-black text-slate-900 uppercase mb-1">Kriteria Penskoran:</h3>
+                  <div className="grid grid-cols-5 gap-1 text-center">
+                    {[
+                      { s: 1, l: "STS" }, { s: 2, l: "TS" }, { s: 3, l: "CM" }, { s: 4, l: "M" }, { s: 5, l: "SM" }
+                    ].map(k => (
+                      <div key={k.s} className="bg-white p-1 rounded border border-slate-100 shadow-sm">
+                        <p className="text-[9px] font-black text-slate-900">{k.s}</p>
+                        <p className="text-[7px] font-bold text-slate-400 uppercase">{k.l}</p>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-[7px] text-slate-400 mt-2 italic">*STS: Sangat Tidak Mampu | SM: Sangat Mampu</p>
+                </div>
+              </div>
+
+              <button onClick={() => setShowInstructions(false)} className="w-full py-4 bg-blue-600 text-white font-black rounded-lg text-[10px] uppercase tracking-widest shadow-lg">MENGERTI & MULAI</button>
             </motion.div>
           ) : (
             <motion.div key="assessment" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">

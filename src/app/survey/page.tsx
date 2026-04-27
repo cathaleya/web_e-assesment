@@ -68,24 +68,31 @@ export default function SurveyPage() {
               className="bg-white p-6 rounded-2xl shadow-2xl border border-slate-200"
             >
               <div className="flex items-center gap-3 mb-4 border-b pb-4">
-                <div className="w-10 h-10 bg-[#4B5320] rounded-xl flex items-center justify-center text-white shadow-lg">
-                  <i className="fa-solid fa-star-half-stroke text-xl"></i>
+                <div className="w-10 h-10 bg-amber-500 rounded-xl flex items-center justify-center text-white shadow-lg">
+                  <i className="fa-solid fa-wand-magic-sparkles text-xl"></i>
                 </div>
                 <div>
-                  <h1 className="text-lg font-black text-slate-900 uppercase">Survey Usabilitas</h1>
-                  <p className="text-[7px] font-black text-slate-400 uppercase tracking-widest leading-none mt-1">Tahap 2 Penelitian</p>
+                  <h1 className="text-xl font-black text-slate-900 uppercase">Panduan Survey</h1>
                 </div>
               </div>
               
               <div className="space-y-4 mb-6">
-                <p className="p-3 bg-amber-50 rounded-xl border border-amber-100 font-bold text-xs text-amber-900 leading-relaxed italic">
-                  "Setelah mengisi Preliminary, mohon berikan penilaian Bapak/Ibu mengenai pengalaman penggunaan sistem ini."
-                </p>
+                <div className="p-3 bg-amber-50 rounded-xl border border-amber-100">
+                  <h3 className="text-[10px] font-black text-amber-900 uppercase mb-1">Cara Pengisian:</h3>
+                  <p className="text-[9px] font-bold text-amber-800 leading-relaxed">
+                    Berikan penilaian subjektif Anda mengenai kemudahan penggunaan sistem ini. Pilih angka 1 (Sangat Tidak Setuju) sampai 5 (Sangat Setuju).
+                  </p>
+                </div>
+
+                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                  <h3 className="text-[10px] font-black text-slate-900 uppercase mb-1">Metode Penskoran (SUS):</h3>
+                  <p className="text-[9px] font-bold text-slate-600 leading-relaxed">
+                    Setiap jawaban akan dikonversi menggunakan algoritma SUS (System Usability Scale) untuk menghasilkan indeks kenyamanan 0-100.
+                  </p>
+                </div>
               </div>
 
-              <button onClick={() => setShowInstructions(false)} className="w-full py-4 bg-[#4B5320] text-white font-black rounded-lg text-[10px] uppercase tracking-widest shadow-xl">
-                MULAI ISI SURVEY
-              </button>
+              <button onClick={() => setShowInstructions(false)} className="w-full py-4 bg-[#4B5320] text-white font-black rounded-lg text-[10px] uppercase tracking-widest shadow-lg">LANJUTKAN KE SURVEY</button>
             </motion.div>
           ) : (
             <motion.div key="survey" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-3">
