@@ -58,7 +58,7 @@ export default function SurveyPage() {
   return (
     <div className="min-h-screen relative overflow-hidden pb-24"
          style={{ 
-           backgroundImage: "linear-gradient(rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0.55)), url('/unj_bg_v2.png')",
+           backgroundImage: "url('/unj_bg_v2.png')",
            backgroundSize: 'cover',
            backgroundPosition: 'center',
            backgroundAttachment: 'fixed'
