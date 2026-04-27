@@ -10,6 +10,7 @@ export default function LandingPage() {
     manualLink: "#",
     promotorLink: "https://e-assessment.id/"
   });
+  const [stats, setStats] = useState<any>(null);
 
   useEffect(() => {
     fetch('/api/settings')
@@ -19,6 +20,11 @@ export default function LandingPage() {
         contact: data.contact || "ruslina.irianty@mhs.unj.ac.id"
       })))
       .catch(err => console.error("Failed to fetch settings:", err));
+    
+    fetch('/api/stats')
+      .then(res => res.json())
+      .then(data => setStats(data))
+      .catch(err => console.error("Failed to fetch stats:", err));
   }, []);
 
   return (
@@ -85,7 +91,6 @@ export default function LandingPage() {
         </main>
       </div>
 
-      {/* Second Section: Informasi Website */}
       <section id="info" className="py-32 px-6 lg:px-16 relative overflow-hidden"
                style={{ 
                  backgroundImage: "url('/tech_bg.png')",
@@ -112,6 +117,43 @@ export default function LandingPage() {
                   <i className="fa-solid fa-envelope text-3xl text-emerald-500 mb-4 block"></i>
                   <h4 className="text-sm font-black uppercase tracking-widest text-slate-900 mb-2">Hubungi Kami</h4>
                   <p className="text-xs font-bold text-emerald-600 truncate">ruslina.irianty@mhs.unj.ac.id</p>
+                </div>
+              </div>
+
+              {/* LIVE STATS WIDGET */}
+              <div className="bg-slate-900 rounded-[40px] p-8 text-white">
+                <div className="flex items-center gap-3 mb-6">
+                  <span className="w-2.5 h-2.5 bg-green-400 rounded-full animate-pulse"></span>
+                  <h4 className="text-xs font-black uppercase tracking-widest text-slate-300">Statistik Platform Real-time</h4>
+                </div>
+                <div className="grid grid-cols-3 gap-4 mb-8">
+                  <div className="text-center">
+                    <div className="text-3xl font-black text-blue-400">{stats?.totalUsers ?? '—'}</div>
+                    <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-1">Total Pengguna</p>
+                  </div>
+                  <div className="text-center border-x border-white/10">
+                    <div className="text-3xl font-black text-teal-400">{stats?.totalAssessments ?? '—'}</div>
+                    <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-1">Asesmen Selesai</p>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-3xl font-black text-purple-400">{stats?.totalSurveys ?? '—'}</div>
+                    <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-1">Survey Diisi</p>
+                  </div>
+                </div>
+                <div>
+                  <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-4">Pendaftar 7 Hari Terakhir</p>
+                  <div className="flex items-end gap-1.5 h-16">
+                    {(stats?.daily ?? Array(7).fill({ date: '', count: 0 })).map((d: any, i: number) => {
+                      const max = Math.max(...(stats?.daily ?? []).map((x: any) => x.count), 1);
+                      const pct = (d.count / max) * 100;
+                      return (
+                        <div key={i} className="flex-1 flex flex-col items-center justify-end gap-1">
+                          <div className="w-full bg-blue-500 rounded-t-md transition-all" style={{ height: `${Math.max(pct, 4)}%` }}></div>
+                          <span className="text-[7px] text-slate-500 font-bold">{d.date ? d.date.slice(5) : '—'}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
             </div>

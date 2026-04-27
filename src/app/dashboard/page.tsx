@@ -32,7 +32,7 @@ ChartJS.register(
 );
 
 export default function UserDashboard() {
-  const [activeTab, setActiveTab] = useState<"dashboard" | "assessments" | "survey">("dashboard");
+  const [activeTab, setActiveTab] = useState<"dashboard" | "assessments">("dashboard");
   const [userName, setUserName] = useState("User");
   const [userGender, setUserGender] = useState("");
   const [hasFinishedAssessment, setHasFinishedAssessment] = useState(false);
@@ -60,6 +60,7 @@ export default function UserDashboard() {
           const results = Array.isArray(data) ? data : [];
           setUserResults(results);
           if (results.some((r: any) => r.type === 'PDI-DL')) setHasFinishedAssessment(true);
+          if (results.some((r: any) => r.type === 'MADEL5C')) setHasFinishedSurvey(true); // unlock after PDI-DL submitted + survey
         });
       
       // Fetch Survey
@@ -130,8 +131,7 @@ export default function UserDashboard() {
         <nav className="flex-1 py-8 space-y-4 px-4">
           {[
             { id: 'dashboard', icon: 'fa-border-all', label: 'My Dashboard' },
-            { id: 'assessments', icon: 'fa-laptop-code', label: 'Assessments' },
-            { id: 'survey', icon: 'fa-square-poll-vertical', label: 'Survei Pengguna' }
+            { id: 'assessments', icon: 'fa-laptop-code', label: 'Assessments' }
           ].map((item) => (
             <button key={item.id} onClick={() => setActiveTab(item.id as any)} 
                     className={`w-full flex items-center px-5 py-4 rounded-2xl transition-all border font-black group text-white ${activeTab === item.id ? 'bg-gradient-to-r from-green-700 to-green-900 shadow-xl border-white/20' : 'bg-white/5 text-green-100 hover:bg-white/10 border-transparent'}`}>
@@ -264,7 +264,8 @@ export default function UserDashboard() {
                  </div>
 
                  {/* MADEL5C Card (Conditional Lock) */}
-                 {hasFinishedSurvey ? (
+                 {/* Requires: Preliminary (PDI-DL) done AND Survey (SUS) done */}
+                 {(hasFinishedAssessment && hasFinishedSurvey) ? (
                    <div className="relative overflow-hidden rounded-[40px] bg-[#1E293B]/95 backdrop-blur-2xl border border-blue-500/30 p-12 flex flex-col items-start justify-between shadow-2xl">
                       <div className="relative z-10 w-full">
                         <span className="px-4 py-1.5 bg-blue-500/20 text-blue-300 text-[10px] font-black rounded-full uppercase mb-6 inline-block tracking-[0.2em] shadow-sm">Main Instrument</span>
@@ -279,7 +280,11 @@ export default function UserDashboard() {
                       <div className="relative z-10 w-full opacity-50">
                         <span className="px-4 py-1.5 bg-slate-700 text-slate-400 text-[10px] font-black rounded-full uppercase mb-6 inline-block tracking-[0.2em]">Locked</span>
                         <h3 className="text-3xl font-black text-slate-500 mb-4 tracking-tighter uppercase italic">MADEL5C SJT</h3>
-                        <p className="text-slate-500 mb-8 font-medium italic leading-relaxed">Selesaikan PDI-DL dan Survey untuk membuka akses.</p>
+                        <p className="text-slate-500 mb-8 font-medium italic leading-relaxed">
+                          {!hasFinishedAssessment && !hasFinishedSurvey && 'Langkah 1: Selesaikan PDI-DL → Langkah 2: Isi Survey SUS → Langkah 3: MADEL5C Terbuka.'}
+                          {hasFinishedAssessment && !hasFinishedSurvey && '✅ PDI-DL Selesai! Sekarang isi Survey Pengguna (SUS) untuk membuka MADEL5C.'}
+                          {!hasFinishedAssessment && hasFinishedSurvey && 'Selesaikan PDI-DL terlebih dahulu.'}
+                        </p>
                         <button disabled className="w-full justify-center bg-slate-700 text-slate-500 font-black px-8 py-4 rounded-2xl flex items-center gap-3 cursor-not-allowed uppercase"><i className="fa-solid fa-lock"></i> Terkunci</button>
                       </div>
                       <i className="fa-solid fa-lock text-[120px] text-slate-600 opacity-10 absolute bottom-[-20px] right-[-20px] transform -rotate-12"></i>
