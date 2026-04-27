@@ -56,7 +56,7 @@ export default function SurveyPage() {
     <div className="min-h-screen bg-[#F9FAFB] text-slate-800 font-sans pb-24">
       <div className="fixed inset-0 bg-[radial-gradient(at_top_right,_var(--tw-gradient-stops))] from-emerald-50 via-transparent to-transparent pointer-events-none"></div>
 
-      <main className="relative z-10 max-w-4xl mx-auto px-6 py-12 lg:py-16">
+      <main className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 py-10 lg:py-16">
         <AnimatePresence mode="wait">
           {showInstructions ? (
             <motion.div 
@@ -64,34 +64,27 @@ export default function SurveyPage() {
               initial={{ opacity: 0, scale: 0.98 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, y: -20 }}
-              className="bg-white border border-slate-100 p-8 lg:p-14 rounded-[50px] shadow-2xl shadow-emerald-900/5"
+              className="bg-white border border-slate-100 p-8 lg:p-14 rounded-[40px] lg:rounded-[50px] shadow-2xl shadow-emerald-900/5"
             >
-              <div className="w-20 h-20 bg-emerald-600 rounded-[30px] flex items-center justify-center mb-10 shadow-2xl shadow-emerald-600/30">
-                <i className="fa-solid fa-star-half-stroke text-3xl text-white"></i>
+              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-emerald-600 rounded-[25px] sm:rounded-[30px] flex items-center justify-center mb-10 shadow-2xl shadow-emerald-600/30">
+                <i className="fa-solid fa-star-half-stroke text-2xl sm:text-3xl text-white"></i>
               </div>
-              <h1 className="text-4xl font-black text-slate-900 tracking-tight mb-4">Panduan Survey</h1>
-              <p className="text-emerald-600 font-black uppercase tracking-[0.3em] text-xs mb-10">System Usability Scale (SUS)</p>
+              <h1 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight mb-4">Panduan Survey</h1>
+              <p className="text-emerald-600 font-black uppercase tracking-[0.3em] text-[10px] sm:text-xs mb-10">System Usability Scale (SUS)</p>
               
-              <div className="space-y-8 text-slate-600 leading-relaxed text-lg mb-12">
-                <div className="p-8 bg-emerald-50 rounded-[35px] border border-emerald-100/50">
-                  <p className="font-semibold text-emerald-900 leading-relaxed">Tahap ini adalah evaluasi terhadap platform HDAP yang baru saja Anda gunakan. Penilaian Anda sangat berharga bagi kami.</p>
+              <div className="space-y-6 sm:space-y-8 text-slate-600 leading-relaxed text-base sm:text-lg mb-12">
+                <div className="p-6 sm:p-8 bg-emerald-50 rounded-[30px] border border-emerald-100/50">
+                  <p className="font-bold text-emerald-900">Evaluasi pengalaman Anda menggunakan platform HDAP.</p>
                 </div>
-                
-                <div className="space-y-4">
-                  <div className="flex gap-5 items-center">
-                    <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0"><i className="fa-solid fa-1"></i></div>
-                    <p className="font-bold text-slate-800">10 Pernyataan singkat mengenai pengalaman sistem.</p>
-                  </div>
-                  <div className="flex gap-5 items-center">
-                    <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0"><i className="fa-solid fa-2"></i></div>
-                    <p className="font-bold text-slate-800">Skala 1 (Sangat Tidak Setuju) s/d 5 (Sangat Setuju).</p>
-                  </div>
-                </div>
+                <ul className="space-y-4">
+                  <li className="flex gap-4"><i className="fa-solid fa-circle-check text-emerald-500 mt-1"></i> <span>Terdapat 10 pernyataan singkat.</span></li>
+                  <li className="flex gap-4"><i className="fa-solid fa-circle-check text-emerald-500 mt-1"></i> <span>Pilih 1 (Sangat Tidak Setuju) sampai 5 (Sangat Setuju).</span></li>
+                </ul>
               </div>
 
               <button 
                 onClick={() => setShowInstructions(false)}
-                className="w-full lg:w-fit px-16 py-6 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-2xl transition-all shadow-xl shadow-emerald-600/20 uppercase tracking-widest text-sm"
+                className="w-full lg:w-fit px-12 sm:px-16 py-5 sm:py-6 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-2xl transition-all shadow-xl shadow-emerald-600/20 uppercase tracking-widest text-xs sm:text-sm"
               >
                 Lanjutkan <i className="fa-solid fa-circle-arrow-right ml-2"></i>
               </button>
@@ -101,38 +94,37 @@ export default function SurveyPage() {
               key="survey"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="space-y-12"
+              className="space-y-8 sm:space-y-12"
             >
-               <div className="text-center mb-16">
-                  <span className="px-6 py-2 bg-emerald-100 text-emerald-800 text-[10px] font-black rounded-full uppercase tracking-[0.3em]">User Feedback</span>
-                  <h2 className="text-4xl font-black text-slate-900 tracking-tight mt-6">Evaluasi Pengguna</h2>
-                  <div className="w-20 h-1.5 bg-emerald-600 mx-auto mt-4 rounded-full"></div>
+               <div className="text-center mb-10 sm:mb-16">
+                  <h2 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">Evaluasi Sistem</h2>
+                  <div className="w-16 h-1.5 bg-emerald-600 mx-auto mt-4 rounded-full"></div>
                </div>
 
-               <div className="space-y-8">
+               <div className="space-y-6 sm:space-y-8">
                   {susQuestions.map((q, i) => (
                     <motion.div 
                       key={i}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: i * 0.05 }}
-                      className="bg-white border border-slate-100 p-8 lg:p-12 rounded-[45px] shadow-xl shadow-slate-200/50"
+                      className="bg-white border border-slate-100 p-6 sm:p-12 rounded-[30px] sm:rounded-[45px] shadow-xl shadow-slate-200/50"
                     >
-                      <p className="text-xl lg:text-2xl text-slate-800 font-bold leading-relaxed mb-10">
-                        <span className="text-emerald-500 font-black mr-4 italic">#{i + 1}</span> {q}
+                      <p className="text-lg sm:text-2xl text-slate-800 font-bold leading-relaxed mb-10">
+                        <span className="text-emerald-500 font-black mr-3 italic">#{i + 1}</span> {q}
                       </p>
                       
-                      <div className="flex flex-col md:flex-row justify-between items-center gap-10">
+                      <div className="flex flex-col md:flex-row justify-between items-center gap-8">
                         <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest order-last md:order-first w-full md:w-auto text-center md:text-left">Sangat Tidak Setuju</span>
-                        <div className="flex justify-between gap-4 flex-1 max-w-md mx-auto">
+                        <div className="flex justify-between gap-2 sm:gap-4 flex-1 w-full max-w-md mx-auto">
                            {[1, 2, 3, 4, 5].map((val) => (
                              <button
                                key={val}
                                onClick={() => handleAnswer(i, val)}
-                               className={`w-12 h-12 lg:w-16 lg:h-16 rounded-[22px] font-black text-xl transition-all flex items-center justify-center border-2 ${
+                               className={`w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-[22px] font-black text-base sm:text-xl transition-all flex items-center justify-center border-2 ${
                                  answers[i] === val
-                                   ? "bg-emerald-600 border-emerald-500 text-white shadow-xl shadow-emerald-600/30 scale-110"
-                                   : "bg-slate-50 border-slate-100 text-slate-400 hover:border-emerald-200 hover:bg-emerald-50/50"
+                                   ? "bg-emerald-600 border-emerald-500 text-white shadow-xl scale-110"
+                                   : "bg-slate-50 border-slate-100 text-slate-400"
                                }`}
                              >
                                {val}
@@ -145,17 +137,17 @@ export default function SurveyPage() {
                   ))}
                </div>
 
-               <div className="flex justify-center pt-10">
+               <div className="flex justify-center pt-8 sm:pt-10">
                   <button
                     disabled={!isComplete}
                     onClick={submitSurvey}
-                    className={`px-24 py-7 rounded-[35px] font-black uppercase tracking-widest text-sm transition-all flex items-center gap-4 ${
+                    className={`w-full sm:w-fit px-16 sm:px-24 py-6 sm:py-7 rounded-2xl sm:rounded-[35px] font-black uppercase tracking-widest text-xs sm:text-sm transition-all flex items-center justify-center gap-4 ${
                       isComplete
-                        ? "bg-slate-900 hover:bg-black text-white shadow-2xl shadow-black/20 scale-105"
+                        ? "bg-slate-900 hover:bg-black text-white shadow-2xl"
                         : "bg-slate-100 text-slate-300 cursor-not-allowed"
                     }`}
                   >
-                    Kirim Respon Saya
+                    Kirim Respon
                     <i className="fa-solid fa-paper-plane text-xs"></i>
                   </button>
                </div>

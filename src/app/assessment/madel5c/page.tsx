@@ -64,65 +64,67 @@ export default function Madel5cAssessment() {
   };
 
   if (loading) return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-      <div className="w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+    <div className="min-h-screen bg-white flex items-center justify-center p-6">
+      <div className="flex flex-col items-center gap-4">
+        <div className="w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Menyiapkan Skenario...</p>
+      </div>
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-[#FDFEFF] text-slate-800 font-sans">
+    <div className="min-h-screen bg-[#FDFEFF] text-slate-800 font-sans pb-10">
       <div className="fixed inset-0 bg-[radial-gradient(at_bottom_right,_var(--tw-gradient-stops))] from-indigo-50 via-transparent to-transparent pointer-events-none"></div>
 
-      <main className="relative z-10 max-w-5xl mx-auto px-6 py-12 lg:py-16">
+      <main className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-12 lg:py-16">
         <AnimatePresence mode="wait">
           {showInstructions ? (
             <motion.div 
               key="instructions"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
-              className="bg-white border border-slate-100 p-8 lg:p-16 rounded-[60px] shadow-2xl shadow-indigo-900/5 relative overflow-hidden"
+              className="bg-white border border-slate-100 p-6 sm:p-10 lg:p-16 rounded-[40px] sm:rounded-[60px] shadow-2xl shadow-indigo-900/5 relative overflow-hidden"
             >
-              <div className="absolute top-0 right-0 p-10 opacity-[0.03]">
+              <div className="absolute top-0 right-0 p-10 opacity-[0.03] hidden md:block">
                 <i className="fa-solid fa-brain text-[250px] text-indigo-900"></i>
               </div>
               
               <div className="relative z-10">
-                <div className="w-24 h-24 bg-gradient-to-br from-indigo-600 to-blue-600 rounded-[35px] flex items-center justify-center mb-10 shadow-2xl shadow-indigo-600/30">
-                  <i className="fa-solid fa-shield-halved text-4xl text-white"></i>
+                <div className="w-16 h-16 sm:w-24 sm:h-24 bg-gradient-to-br from-indigo-600 to-blue-600 rounded-[25px] sm:rounded-[35px] flex items-center justify-center mb-8 sm:mb-10 shadow-2xl shadow-indigo-600/30">
+                  <i className="fa-solid fa-shield-halved text-3xl sm:text-4xl text-white"></i>
                 </div>
                 
-                <h1 className="text-5xl font-black text-slate-900 tracking-tight mb-4">Panduan MADEL5C</h1>
-                <p className="text-indigo-600 font-black uppercase tracking-[0.4em] text-xs mb-12">Situational Judgment Test (SJT)</p>
+                <h1 className="text-3xl sm:text-5xl font-black text-slate-900 tracking-tight mb-2">Panduan MADEL5C</h1>
+                <p className="text-indigo-600 font-black uppercase tracking-[0.3em] text-[10px] sm:text-xs mb-8 sm:mb-12">Situational Judgment Test (SJT)</p>
 
-                <div className="space-y-8 text-slate-600 text-lg leading-relaxed mb-14 max-w-4xl">
-                   <p className="font-semibold text-slate-900">Selamat datang di instrumen utama. Anda akan menghadapi serangkaian skenario dunia nyata untuk mengukur kesiapan aksi digital Anda.</p>
+                <div className="space-y-6 sm:space-y-8 text-slate-600 text-base sm:text-lg leading-relaxed mb-10 sm:mb-14">
+                   <p className="font-bold text-slate-900">Asesmen utama ini berisi skenario dunia nyata untuk mengukur tingkat kompetensi literasi digital Bapak/Ibu.</p>
                    
-                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                      <div className="p-8 bg-indigo-50/50 rounded-[40px] border border-indigo-100/50">
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8">
+                      <div className="p-6 sm:p-8 bg-indigo-50/50 rounded-[30px] sm:rounded-[40px] border border-indigo-100/50">
                         <div className="flex items-center gap-4 mb-4">
-                          <div className="w-10 h-10 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-lg"><i className="fa-solid fa-layer-group"></i></div>
-                          <p className="font-black text-indigo-950 uppercase tracking-widest text-xs">Struktur Instrumen</p>
+                          <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-lg"><i className="fa-solid fa-layer-group text-sm"></i></div>
+                          <p className="font-black text-indigo-950 uppercase tracking-widest text-[10px]">Struktur</p>
                         </div>
-                        <p className="text-sm leading-relaxed">Terdapat <b>30 skenario kasus</b>. Setiap kasus memiliki 4 pilihan tindakan dengan tingkat efektivitas berbeda.</p>
+                        <p className="text-xs sm:text-sm leading-relaxed">Terdapat <b>30 skenario kasus</b> dengan pilihan tindakan yang harus Bapak/Ibu nilai.</p>
                       </div>
 
-                      <div className="p-8 bg-indigo-50/50 rounded-[40px] border border-indigo-100/50">
+                      <div className="p-6 sm:p-8 bg-indigo-50/50 rounded-[30px] sm:rounded-[40px] border border-indigo-100/50">
                         <div className="flex items-center gap-4 mb-4">
-                          <div className="w-10 h-10 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-lg"><i className="fa-solid fa-star"></i></div>
-                          <p className="font-black text-indigo-950 uppercase tracking-widest text-xs">Sistem Penilaian</p>
+                          <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-lg"><i className="fa-solid fa-star text-sm"></i></div>
+                          <p className="font-black text-indigo-950 uppercase tracking-widest text-[10px]">Penilaian</p>
                         </div>
-                        <p className="text-sm leading-relaxed">Skor diberikan <b>1 sampai 5 poin</b> per soal. Semakin bijak pilihan Anda, semakin tinggi poin yang didapat.</p>
+                        <p className="text-xs sm:text-sm leading-relaxed">Setiap pilihan memiliki bobot <b>1 sampai 5 poin</b> berdasarkan keefektifan tindakan.</p>
                       </div>
                    </div>
                 </div>
 
                 <button 
                   onClick={() => setShowInstructions(false)}
-                  className="group relative px-16 py-6 bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-3xl transition-all shadow-2xl shadow-indigo-600/30 uppercase tracking-widest text-sm overflow-hidden"
+                  className="w-full sm:w-fit px-12 sm:px-16 py-5 sm:py-6 bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-2xl sm:rounded-3xl transition-all shadow-2xl shadow-indigo-600/30 uppercase tracking-widest text-xs sm:text-sm"
                 >
-                  <span className="relative z-10 flex items-center gap-4">Lanjutkan <i className="fa-solid fa-play text-xs"></i></span>
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-all duration-1000"></div>
+                  Lanjutkan <i className="fa-solid fa-play ml-3 text-[10px]"></i>
                 </button>
               </div>
             </motion.div>
@@ -131,69 +133,64 @@ export default function Madel5cAssessment() {
               key="assessment"
               initial={{ opacity: 0, x: 40 }}
               animate={{ opacity: 1, x: 0 }}
-              className="space-y-8"
+              className="space-y-6 sm:space-y-8"
             >
-              <div className="flex flex-col md:flex-row justify-between items-center bg-white p-8 rounded-[40px] border border-slate-100 shadow-xl shadow-slate-200/50 gap-6">
-                 <div className="flex items-center gap-6">
-                    <div className="w-16 h-16 bg-indigo-600 rounded-[24px] flex items-center justify-center text-2xl font-black text-white shadow-2xl shadow-indigo-600/30 italic">{currentStep + 1}</div>
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white p-6 sm:p-8 rounded-[30px] sm:rounded-[40px] border border-slate-100 shadow-xl gap-4">
+                 <div className="flex items-center gap-4 sm:gap-6">
+                    <div className="w-12 h-12 sm:w-16 sm:h-16 bg-indigo-600 rounded-xl sm:rounded-[24px] flex items-center justify-center text-xl sm:text-2xl font-black text-white shadow-2xl italic">{currentStep + 1}</div>
                     <div>
-                       <h3 className="text-2xl font-black text-slate-900 tracking-tight">Skenario Kasus</h3>
-                       <p className="text-xs font-bold text-indigo-600 uppercase tracking-[0.3em] mt-1">{questions[currentStep]?.dim || "Asesmen Digital"}</p>
+                       <h3 className="text-lg sm:text-2xl font-black text-slate-900 tracking-tight">Skenario Kasus</h3>
+                       <p className="text-[10px] font-bold text-indigo-600 uppercase tracking-[0.3em] mt-1">{questions[currentStep]?.dim || "Asesmen Digital"}</p>
                     </div>
                  </div>
-                 <div className="flex items-center gap-8 bg-slate-50 px-8 py-4 rounded-3xl border border-slate-100">
+                 <div className="w-full sm:w-fit flex items-center gap-6 sm:gap-8 bg-slate-50 px-6 sm:px-8 py-3 sm:py-4 rounded-2xl sm:rounded-3xl border border-slate-100">
                     <div className="text-center">
-                       <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Progress</p>
-                       <p className="text-xl font-black text-indigo-600">{Math.round(((currentStep + 1) / questions.length) * 100)}%</p>
+                       <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Progress</p>
+                       <p className="text-base sm:text-xl font-black text-indigo-600">{Math.round(((currentStep + 1) / questions.length) * 100)}%</p>
                     </div>
-                    <div className="w-32 h-2.5 bg-slate-200 rounded-full overflow-hidden">
+                    <div className="flex-1 sm:w-32 h-2 sm:h-2.5 bg-slate-200 rounded-full overflow-hidden">
                        <div className="h-full bg-indigo-600 transition-all duration-700" style={{ width: `${((currentStep + 1) / questions.length) * 100}%` }}></div>
                     </div>
                  </div>
               </div>
 
-              <div className="bg-white border border-slate-100 p-8 lg:p-16 rounded-[60px] shadow-2xl shadow-slate-200/50">
-                 <div className="mb-14 p-10 bg-slate-50 border-l-8 border-indigo-600 rounded-[35px] shadow-inner">
-                    <p className="text-2xl lg:text-3xl text-slate-800 font-bold leading-snug italic">
+              <div className="bg-white border border-slate-100 p-6 sm:p-10 lg:p-16 rounded-[35px] sm:rounded-[60px] shadow-2xl shadow-slate-200/50">
+                 <div className="mb-8 sm:mb-14 p-6 sm:p-10 bg-slate-50 border-l-8 border-indigo-600 rounded-[25px] sm:rounded-[35px]">
+                    <p className="text-lg sm:text-2xl lg:text-3xl text-slate-800 font-bold leading-snug italic">
                       "{questions[currentStep]?.scenario}"
                     </p>
                  </div>
 
-                 <p className="text-xs font-black text-slate-400 uppercase tracking-[0.4em] mb-8 text-center">Pilihlah Tindakan Terbaik Anda</p>
+                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] mb-6 sm:mb-8 text-center">Pilihlah Tindakan Terbaik</p>
 
-                 <div className="grid grid-cols-1 gap-5">
+                 <div className="grid grid-cols-1 gap-4 sm:gap-5">
                     {questions[currentStep]?.options.map((opt: any, idx: number) => (
                       <button
                         key={idx}
                         onClick={() => handleAnswer(idx)}
-                        className={`group flex items-start gap-8 p-8 rounded-[40px] border-2 transition-all text-left relative overflow-hidden ${
+                        className={`group flex items-start gap-4 sm:gap-8 p-5 sm:p-8 rounded-[25px] sm:rounded-[40px] border-2 transition-all text-left ${
                           answers[currentStep] === idx + 1
-                            ? "bg-indigo-50 border-indigo-500 text-indigo-900 shadow-xl"
-                            : "bg-white border-slate-100 text-slate-500 hover:border-indigo-200 hover:bg-indigo-50/20"
+                            ? "bg-indigo-50 border-indigo-500 text-indigo-900 shadow-xl scale-[1.01]"
+                            : "bg-white border-slate-100 text-slate-500 hover:border-indigo-200"
                         }`}
                       >
-                        <span className={`mt-1 w-14 h-14 rounded-[22px] flex items-center justify-center font-black text-lg transition-all shrink-0 ${
+                        <span className={`mt-1 w-10 h-10 sm:w-14 sm:h-14 rounded-xl sm:rounded-[22px] flex items-center justify-center font-black text-sm sm:text-lg transition-all shrink-0 ${
                           answers[currentStep] === idx + 1 ? "bg-indigo-600 text-white shadow-lg" : "bg-slate-100 text-slate-400 group-hover:bg-indigo-600 group-hover:text-white"
                         }`}>
                           {String.fromCharCode(65 + idx)}
                         </span>
-                        <div className="flex-1 pt-2">
-                          <span className="font-bold text-xl leading-relaxed">{opt.text}</span>
+                        <div className="flex-1 pt-1 sm:pt-2">
+                          <span className="font-bold text-base sm:text-xl leading-relaxed">{opt.text}</span>
                         </div>
-                        {answers[currentStep] === idx + 1 && (
-                          <div className="absolute right-10 top-1/2 -translate-y-1/2 text-indigo-600">
-                            <i className="fa-solid fa-circle-check text-4xl animate-bounce"></i>
-                          </div>
-                        )}
                       </button>
                     ))}
                  </div>
 
-                 <div className="mt-16 flex justify-between items-center">
+                 <div className="mt-10 sm:mt-16 flex flex-col sm:flex-row justify-between items-center gap-6">
                     <button 
                        onClick={() => currentStep > 0 && setCurrentStep(currentStep - 1)}
                        disabled={currentStep === 0}
-                       className={`px-10 py-5 rounded-2xl font-black uppercase tracking-widest text-xs transition-all ${currentStep === 0 ? 'opacity-0' : 'text-slate-400 hover:text-indigo-600'}`}
+                       className={`w-full sm:w-fit px-10 py-5 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all ${currentStep === 0 ? 'hidden' : 'text-slate-400 hover:text-indigo-600'}`}
                     >
                        <i className="fa-solid fa-arrow-left mr-3"></i> Kembali
                     </button>
@@ -201,13 +198,13 @@ export default function Madel5cAssessment() {
                     <button
                       disabled={!answers[currentStep]}
                       onClick={nextQuestion}
-                      className={`px-16 py-6 rounded-3xl font-black uppercase tracking-widest text-sm transition-all flex items-center gap-4 ${
+                      className={`w-full sm:w-fit px-12 sm:px-16 py-5 sm:py-6 rounded-2xl sm:rounded-3xl font-black uppercase tracking-widest text-xs sm:text-sm transition-all flex items-center justify-center gap-4 ${
                         answers[currentStep]
-                          ? "bg-slate-900 hover:bg-black text-white shadow-2xl shadow-black/20 scale-105"
+                          ? "bg-slate-900 hover:bg-black text-white shadow-2xl shadow-black/20"
                           : "bg-slate-100 text-slate-400 cursor-not-allowed"
                       }`}
                     >
-                      {currentStep === questions.length - 1 ? "Kirim Hasil Asesmen" : "Lanjutkan Skenario"}
+                      {currentStep === questions.length - 1 ? "Kirim Hasil" : "Lanjutkan"}
                       <i className="fa-solid fa-chevron-right text-xs"></i>
                     </button>
                  </div>
