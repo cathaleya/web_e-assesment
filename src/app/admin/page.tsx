@@ -44,23 +44,59 @@ export default function AdminDashboard() {
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const router = useRouter();
 
+  const [settings, setSettings] = useState({
+    contact: "",
+    description: "",
+    manualLink: "",
+    promotorLink: ""
+  });
+
   useEffect(() => {
     setIsMounted(true);
     fetchStats();
     fetchQuestions();
+    fetchSettings();
   }, []);
+
+  const fetchSettings = async () => {
+    try {
+      const res = await fetch('/api/settings');
+      const data = await res.json();
+      setSettings(data);
+    } catch (error) {
+      console.error("Failed to fetch settings:", error);
+    }
+  };
+
+  const handleSaveSettings = async () => {
+    try {
+      await fetch('/api/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(settings)
+      });
+      alert("Informasi website berhasil diperbarui!");
+    } catch (error) {
+      console.error("Failed to save settings:", error);
+    }
+  };
 
   const fetchStats = async () => {
     try {
-      const [madelRes, surveyRes] = await Promise.all([
+      const [madelRes, pdiRes, surveyRes] = await Promise.all([
         fetch('/api/assessment?type=MADEL5C'),
+        fetch('/api/assessment?type=PDI-DL'),
         fetch('/api/survey')
       ]);
       const madelData = await madelRes.json();
+      const pdiData = await pdiRes.json();
       const surveyData = await surveyRes.json();
 
+      const allAssessments = [...madelData, ...pdiData];
+      const uniqueUsers = new Set(allAssessments.map(a => a.userId));
+
       setStats({
-        participants: madelData.length,
+        participants: uniqueUsers.size,
         madel5cScore: madelData.length > 0 ? Math.round(madelData.reduce((acc: any, curr: any) => acc + curr.totalScore, 0) / madelData.length) : 0,
         surveyScore: surveyData.length > 0 ? Math.round(surveyData.reduce((acc: any, curr: any) => acc + curr.totalScore, 0) / surveyData.length) : 0,
         difFlags: 2 // Simulated for now
@@ -303,6 +339,43 @@ export default function AdminDashboard() {
                                 )}
                              </div>
                            ))}
+                        </div>
+                     </div>
+                  </div>
+                {currentTab === 'settings' && (
+                  <div className="max-w-3xl space-y-6">
+                     <div className="bg-[#1E293B]/80 rounded-[40px] p-10 border border-slate-700/50 shadow-lg">
+                        <div className="flex items-center gap-4 mb-10 border-b border-slate-700 pb-6">
+                           <div className="w-14 h-14 rounded-2xl bg-blue-600/20 text-blue-400 flex items-center justify-center text-2xl shadow-xl shadow-blue-500/10"><i className="fa-solid fa-earth-asia"></i></div>
+                           <div><h3 className="text-xl font-black text-white italic uppercase tracking-tighter">Website Information Manager</h3><p className="text-slate-400 text-xs font-bold uppercase tracking-widest mt-1">Konfigurasi Landing Page & Kontak</p></div>
+                        </div>
+
+                        <div className="space-y-8">
+                           <div>
+                              <label className="text-[10px] font-black text-slate-500 uppercase mb-3 block tracking-[0.2em]">Deskripsi Singkat Website</label>
+                              <textarea value={settings.description} onChange={(e) => setSettings({...settings, description: e.target.value})} className="w-full bg-slate-900 border border-slate-700 rounded-2xl p-4 text-sm text-white focus:border-blue-500 outline-none transition-all" rows={4} />
+                           </div>
+
+                           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                              <div>
+                                 <label className="text-[10px] font-black text-slate-500 uppercase mb-3 block tracking-[0.2em]">Kontak (Email/WA)</label>
+                                 <input type="text" value={settings.contact} onChange={(e) => setSettings({...settings, contact: e.target.value})} className="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm text-white focus:border-blue-500 outline-none" />
+                              </div>
+                              <div>
+                                 <label className="text-[10px] font-black text-slate-500 uppercase mb-3 block tracking-[0.2em]">Tautan Buku Panduan</label>
+                                 <input type="text" value={settings.manualLink} onChange={(e) => setSettings({...settings, manualLink: e.target.value})} className="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm text-white focus:border-blue-500 outline-none" />
+                              </div>
+                           </div>
+
+                           <div>
+                              <label className="text-[10px] font-black text-slate-500 uppercase mb-3 block tracking-[0.2em]">Tautan Website Promotor</label>
+                              <input type="text" value={settings.promotorLink} onChange={(e) => setSettings({...settings, promotorLink: e.target.value})} className="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm text-white focus:border-blue-500 outline-none" />
+                              <p className="text-[10px] text-slate-500 mt-2 italic">Website ini akan dihubungkan di bagian footer landing page.</p>
+                           </div>
+
+                           <div className="pt-6 border-t border-slate-700/50">
+                              <button onClick={handleSaveSettings} className="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-4 rounded-2xl shadow-xl shadow-blue-500/20 transition-all uppercase tracking-[0.1em] text-xs">Simpan Perubahan Website <i className="fa-solid fa-floppy-disk ml-2"></i></button>
+                           </div>
                         </div>
                      </div>
                   </div>
