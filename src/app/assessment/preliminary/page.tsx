@@ -3,16 +3,26 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
+import questionsData from "./questions.json";
+
 export default function PreliminaryAssessment() {
   const [step, setStep] = useState(1);
   const [finished, setFinished] = useState(false);
+  const [answers, setAnswers] = useState<Record<number, number>>({});
   const router = useRouter();
 
-  // Simulasi 20 Pertanyaan
-  const totalItems = 20;
+  const totalItems = questionsData.length;
+  const currentQuestion = questionsData[step - 1];
 
-  const handleFinish = () => {
-    setFinished(true);
+  const handleNext = (score: number) => {
+    setAnswers({ ...answers, [step]: score });
+    setTimeout(() => {
+      if (step < totalItems) {
+        setStep(step + 1);
+      } else {
+        setFinished(true);
+      }
+    }, 300);
   };
 
   return (
@@ -33,26 +43,26 @@ export default function PreliminaryAssessment() {
 
           <div className="mb-12">
             <h2 className="text-3xl font-black text-white mb-4 leading-tight italic uppercase tracking-tight">
-              {step}. Bagaimana strategi Anda dalam mengevaluasi kredibilitas sumber informasi digital yang baru Anda temukan?
+              {step}. {currentQuestion?.text}
             </h2>
-            <p className="text-slate-400 text-sm italic font-medium">Pilih satu jawaban yang paling mencerminkan kebiasaan Anda.</p>
+            <p className="text-slate-400 text-sm italic font-medium">Pilih tingkat kesesuaian yang paling mencerminkan kondisi Anda.</p>
           </div>
 
           <div className="grid grid-cols-1 gap-4 mb-12">
             {[
-              'Memeriksa otoritas penulis dan tanggal publikasi secara mendalam',
-              'Membandingkan dengan minimal 3 sumber terpercaya lainnya',
-              'Hanya mempercayai situs dengan domain .gov atau .edu',
-              'Membaca sekilas tanpa melakukan verifikasi lebih lanjut',
-              'Tidak pernah melakukan pengecekan sumber'
+              { text: 'Sangat Sesuai (SS)', score: 5 },
+              { text: 'Sesuai (S)', score: 4 },
+              { text: 'Cukup Sesuai (CS)', score: 3 },
+              { text: 'Tidak Sesuai (TS)', score: 2 },
+              { text: 'Sangat Tidak Sesuai (STS)', score: 1 }
             ].map((opt, i) => (
-              <button key={i} onClick={() => step < totalItems ? setStep(step + 1) : handleFinish()}
-                      className="w-full text-left p-6 rounded-2xl border border-white/5 bg-white/5 hover:bg-teal-600 hover:border-teal-400 transition-all font-bold text-slate-200 flex justify-between items-center group shadow-lg">
+              <button key={i} onClick={() => handleNext(opt.score)}
+                      className={`w-full text-left p-6 rounded-2xl border transition-all font-bold text-slate-200 flex justify-between items-center group shadow-lg ${answers[step] === opt.score ? 'bg-teal-600 border-teal-400' : 'border-white/5 bg-white/5 hover:bg-teal-600/50 hover:border-teal-400/50'}`}>
                 <span className="flex items-center gap-4">
-                   <span className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-xs group-hover:bg-white/20 transition-colors">{String.fromCharCode(65 + i)}</span>
-                   {opt}
+                   <span className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-xs group-hover:bg-white/20 transition-colors">{opt.score}</span>
+                   {opt.text}
                 </span>
-                <i className="fa-solid fa-circle-check opacity-0 group-hover:opacity-100 transition-all text-white"></i>
+                <i className={`fa-solid fa-circle-check transition-all text-white ${answers[step] === opt.score ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}></i>
               </button>
             ))}
           </div>

@@ -196,16 +196,28 @@ export default function UserDashboard() {
                     <i className="fa-solid fa-file-signature text-[120px] text-teal-500 opacity-10 absolute bottom-[-20px] right-[-20px] transform -rotate-12"></i>
                  </div>
 
-                 {/* MADEL5C Card (Unlocked) */}
-                 <div className="relative overflow-hidden rounded-[40px] bg-[#1E293B]/95 backdrop-blur-2xl border border-blue-500/30 p-12 flex flex-col items-start justify-between shadow-2xl">
-                    <div className="relative z-10 w-full">
-                      <span className="px-4 py-1.5 bg-blue-500/20 text-blue-300 text-[10px] font-black rounded-full uppercase mb-6 inline-block tracking-[0.2em] shadow-sm">Main Instrument</span>
-                      <h3 className="text-3xl font-black text-white mb-4 tracking-tighter uppercase italic">MADEL5C SJT</h3>
-                      <p className="text-slate-400 mb-8 font-medium italic leading-relaxed">Asesmen komprehensif 30 butir skenario Situational Judgment Test.</p>
-                      <button onClick={() => router.push('/assessment/madel5c')} className="w-full justify-center bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-black px-8 py-4 rounded-2xl shadow-xl shadow-blue-500/40 flex items-center gap-3 transition-all uppercase">Mulai MADEL5C <i className="fa-solid fa-play"></i></button>
-                    </div>
-                    <i className="fa-solid fa-brain text-[120px] text-blue-500 opacity-10 absolute bottom-[-20px] right-[-20px] transform -rotate-12"></i>
-                 </div>
+                 {/* MADEL5C Card (Conditional Lock) */}
+                 {hasFinishedSurvey ? (
+                   <div className="relative overflow-hidden rounded-[40px] bg-[#1E293B]/95 backdrop-blur-2xl border border-blue-500/30 p-12 flex flex-col items-start justify-between shadow-2xl">
+                      <div className="relative z-10 w-full">
+                        <span className="px-4 py-1.5 bg-blue-500/20 text-blue-300 text-[10px] font-black rounded-full uppercase mb-6 inline-block tracking-[0.2em] shadow-sm">Main Instrument</span>
+                        <h3 className="text-3xl font-black text-white mb-4 tracking-tighter uppercase italic">MADEL5C SJT</h3>
+                        <p className="text-slate-400 mb-8 font-medium italic leading-relaxed">Asesmen komprehensif 30 butir skenario Situational Judgment Test.</p>
+                        <button onClick={() => router.push('/assessment/madel5c')} className="w-full justify-center bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-black px-8 py-4 rounded-2xl shadow-xl shadow-blue-500/40 flex items-center gap-3 transition-all uppercase">Mulai MADEL5C <i className="fa-solid fa-play"></i></button>
+                      </div>
+                      <i className="fa-solid fa-brain text-[120px] text-blue-500 opacity-10 absolute bottom-[-20px] right-[-20px] transform -rotate-12"></i>
+                   </div>
+                 ) : (
+                   <div className="relative overflow-hidden rounded-[40px] bg-slate-800/50 backdrop-blur-md border border-slate-700 p-12 flex flex-col items-start justify-between shadow-inner">
+                      <div className="relative z-10 w-full opacity-50">
+                        <span className="px-4 py-1.5 bg-slate-700 text-slate-400 text-[10px] font-black rounded-full uppercase mb-6 inline-block tracking-[0.2em]">Locked</span>
+                        <h3 className="text-3xl font-black text-slate-500 mb-4 tracking-tighter uppercase italic">MADEL5C SJT</h3>
+                        <p className="text-slate-500 mb-8 font-medium italic leading-relaxed">Selesaikan PDI-DL dan Survey untuk membuka akses.</p>
+                        <button disabled className="w-full justify-center bg-slate-700 text-slate-500 font-black px-8 py-4 rounded-2xl flex items-center gap-3 cursor-not-allowed uppercase"><i className="fa-solid fa-lock"></i> Terkunci</button>
+                      </div>
+                      <i className="fa-solid fa-lock text-[120px] text-slate-600 opacity-10 absolute bottom-[-20px] right-[-20px] transform -rotate-12"></i>
+                   </div>
+                 )}
               </div>
             )}
 

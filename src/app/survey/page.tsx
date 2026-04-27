@@ -3,27 +3,24 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
+import questionsData from "./questions.json";
+
 export default function SurveyPage() {
   const [submitted, setSubmitted] = useState(false);
+  const [answers, setAnswers] = useState<Record<number, number>>({});
   const router = useRouter();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (Object.keys(answers).length < questionsData.length) return;
     setSubmitted(true);
   };
 
-  const susQuestions = [
-    "Saya berpikir akan menggunakan sistem ini lagi.",
-    "Saya merasa sistem ini rumit untuk digunakan.",
-    "Saya merasa sistem ini mudah digunakan.",
-    "Saya membutuhkan bantuan dari orang teknis untuk bisa menggunakan sistem ini.",
-    "Saya menemukan berbagai fungsi dalam sistem ini terintegrasi dengan baik.",
-    "Saya merasa ada banyak hal yang tidak konsisten dalam sistem ini.",
-    "Saya merasa orang lain akan memahami cara menggunakan sistem ini dengan cepat.",
-    "Saya merasa sistem ini sangat membingungkan.",
-    "Saya merasa percaya diri saat menggunakan sistem ini.",
-    "Saya harus belajar banyak hal sebelum saya bisa menggunakan sistem ini."
-  ];
+  const handleSelect = (qIndex: number, val: number) => {
+    setAnswers({ ...answers, [qIndex]: val });
+  };
+
+  const isFormValid = Object.keys(answers).length === questionsData.length;
 
   return (
     <div className="min-h-screen bg-[#0B1120] flex flex-col items-center justify-center p-6"
@@ -42,12 +39,13 @@ export default function SurveyPage() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-             {susQuestions.map((q, i) => (
-               <div key={i} className="bg-slate-900/50 p-6 rounded-2xl border border-slate-700/50 hover:border-blue-500/50 transition-colors">
-                  <p className="text-slate-200 font-medium mb-4">{i+1}. {q}</p>
+             {questionsData.map((q, i) => (
+               <div key={i} className={`bg-slate-900/50 p-6 rounded-2xl border transition-colors ${answers[i] ? 'border-blue-500/50' : 'border-slate-700/50 hover:border-slate-500/50'}`}>
+                  <p className="text-slate-200 font-medium mb-4">{i+1}. {q.text}</p>
                   <div className="flex justify-between gap-2">
                     {[1, 2, 3, 4, 5].map((val) => (
-                      <button type="button" key={val} className="flex-1 py-3 rounded-lg bg-slate-800/80 border border-slate-700 text-slate-300 hover:bg-blue-600 hover:border-blue-500 hover:text-white transition-all font-bold text-sm">
+                      <button type="button" key={val} onClick={() => handleSelect(i, val)}
+                              className={`flex-1 py-3 rounded-lg border transition-all font-bold text-sm ${answers[i] === val ? 'bg-blue-600 border-blue-500 text-white shadow-[0_0_10px_rgba(37,99,235,0.5)]' : 'bg-slate-800/80 border-slate-700 text-slate-300 hover:bg-slate-700 hover:border-slate-600'}`}>
                         {val}
                       </button>
                     ))}
@@ -60,10 +58,11 @@ export default function SurveyPage() {
              ))}
 
              <div className="pt-6">
-                <button type="submit" 
-                        className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-5 rounded-2xl shadow-[0_0_20px_rgba(37,99,235,0.3)] transition-all text-sm uppercase tracking-widest flex items-center justify-center gap-3">
+                <button type="submit" disabled={!isFormValid}
+                        className={`w-full font-bold py-5 rounded-2xl transition-all text-sm uppercase tracking-widest flex items-center justify-center gap-3 ${isFormValid ? 'bg-blue-600 hover:bg-blue-500 text-white shadow-[0_0_20px_rgba(37,99,235,0.3)]' : 'bg-slate-700 text-slate-500 cursor-not-allowed'}`}>
                   <i className="fa-solid fa-paper-plane"></i> KIRIM SURVEI & LIHAT HASIL
                 </button>
+                {!isFormValid && <p className="text-center text-xs text-rose-400 mt-3 font-bold uppercase tracking-widest">Lengkapi semua {questionsData.length} pertanyaan</p>}
              </div>
           </form>
         </div>
