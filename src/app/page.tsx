@@ -77,7 +77,7 @@ export default function LandingPage() {
                 </span>
                 <span className="text-3xl md:text-5xl lg:text-7xl block font-black uppercase tracking-tighter text-slate-900 leading-[1.1] md:leading-[1.2]" 
                       style={{ textShadow: "0 0 20px rgba(255,255,255,1), 0 0 10px rgba(255,255,255,1)" }}>
-                  <span className="block md:whitespace-nowrap">Website E-ASSESSMEN</span>
+                  <span className="block md:whitespace-nowrap">Website <span className="italic tracking-wider">E-ASSESSMEN</span></span>
                   <span className="block md:whitespace-nowrap text-blue-600">LITERASI DIGITAL.</span>
                 </span>
               </h1>
