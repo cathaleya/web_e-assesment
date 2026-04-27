@@ -14,7 +14,7 @@ export async function GET(request: Request) {
       where: { id: userId },
       include: {
         assessments: true,
-        survey: true,
+        surveys: true,
       }
     });
 
@@ -26,13 +26,13 @@ export async function GET(request: Request) {
     const preliminary = user.assessments.find(a => a.type === 'PDI-DL')?.totalScore || 0;
     const madel5c = user.assessments.find(a => a.type === 'MADEL5C')?.totalScore || 0;
     
-    // Mock radar data for now based on scores
+    // Mock radar data based on actual scores
     const radar = [
-      Math.min(5, (preliminary / 20)), 
-      Math.min(5, (madel5c / 30)),
-      user.survey ? 5 : 0,
-      4, // Placeholder for other metrics
-      3  // Placeholder for other metrics
+      Math.min(5, (preliminary / 20) * 5), 
+      Math.min(5, (madel5c / 30) * 5),
+      user.surveys.length > 0 ? 5 : 0,
+      4, // Placeholder
+      3  // Placeholder
     ];
 
     return NextResponse.json({
