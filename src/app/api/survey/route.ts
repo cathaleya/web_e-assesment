@@ -14,8 +14,25 @@ export async function POST(req: Request) {
         userId,
         totalScore,
         answersJson: JSON.stringify(answersJson)
-      }
+      },
+      include: { user: true }
     });
+
+    // Real-time sync to Google Sheets
+    try {
+      const { syncToGoogleSheets } = await import('@/lib/googleSync');
+      await syncToGoogleSheets({
+        userId: result.userId,
+        name: result.user.name,
+        type: "SURVEY-SUS",
+        score: result.totalScore,
+        gender: result.user.gender,
+        campus: result.user.campus,
+        answers: answersJson
+      });
+    } catch (e) {
+      console.error("Google Sheets sync failed:", e);
+    }
 
     return NextResponse.json(result, { status: 200 });
   } catch (error) {

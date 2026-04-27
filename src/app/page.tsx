@@ -75,9 +75,10 @@ export default function LandingPage() {
                       style={{ textShadow: "0 0 20px rgba(255,255,255,1), 0 0 10px rgba(255,255,255,1)" }}>
                   Hybrid-Diagnostic Assessment Platform (HDAP)
                 </span>
-                <span className="text-5xl lg:text-8xl block font-black uppercase tracking-tighter text-slate-900 leading-[0.9]" 
+                <span className="text-5xl lg:text-7xl block font-black uppercase tracking-tighter text-slate-900 leading-[1.2]" 
                       style={{ textShadow: "0 0 20px rgba(255,255,255,1), 0 0 10px rgba(255,255,255,1)" }}>
-                  Website E-ASSESSMEN <br/>LITERASI DIGITAL.
+                  <span className="block whitespace-nowrap">Website E-ASSESSMEN</span>
+                  <span className="block whitespace-nowrap text-blue-600">LITERASI DIGITAL.</span>
                 </span>
               </h1>
               
