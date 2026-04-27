@@ -48,7 +48,7 @@ export default function LandingPage() {
           <div className="hidden md:flex gap-8 text-[10px] font-black text-slate-600 uppercase tracking-widest">
             <Link href="#info" className="hover:text-blue-600 transition">Tentang Platform</Link>
             <Link href={settings.manualLink} target="_blank" className="hover:text-blue-600 transition">Buku Panduan</Link>
-            <Link href={settings.promotorLink} target="_blank" className="hover:text-blue-600 transition">Website Payung Riset</Link>
+            <a href="https://e-assessment.id/" target="_blank" className="hover:text-blue-600 transition">Website Payung Riset</a>
           </div>
           
           <Link href="/login" className="bg-blue-600 text-white px-8 py-3 rounded-2xl font-black transition-all shadow-xl shadow-blue-500/20 text-xs uppercase tracking-widest hover:bg-blue-700">
@@ -61,10 +61,10 @@ export default function LandingPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 w-full max-w-7xl items-center">
             <div className="text-center lg:text-left space-y-8 animate-in slide-in-from-left duration-700">
               <h1 className="font-black text-slate-900 leading-tight">
-                <span className="block text-3xl lg:text-4xl mb-4 italic uppercase tracking-tighter text-blue-600">
+                <span className="block text-3xl lg:text-4xl mb-4 italic uppercase tracking-tighter text-blue-700" style={{ textShadow: "0 1px 2px rgba(255,255,255,0.8)" }}>
                   Hybrid-Diagnostic Assessment Platform (HDAP)
                 </span>
-                <span className="text-5xl lg:text-7xl block font-black uppercase tracking-tighter text-slate-900 drop-shadow-sm">
+                <span className="text-5xl lg:text-7xl block font-black uppercase tracking-tighter text-slate-900" style={{ textShadow: "0 2px 10px rgba(0,0,0,0.1)" }}>
                   Website E-ASSESSMEN <br/>LITERASI DIGITAL.
                 </span>
               </h1>
@@ -105,7 +105,7 @@ export default function LandingPage() {
                 <div className="p-8 bg-white rounded-[40px] border border-slate-100 shadow-sm">
                   <i className="fa-solid fa-envelope text-3xl text-emerald-500 mb-4 block"></i>
                   <h4 className="text-sm font-black uppercase tracking-widest text-slate-900 mb-2">Hubungi Kami</h4>
-                  <p className="text-xs font-bold text-emerald-600 truncate">{settings.contact}</p>
+                  <p className="text-xs font-bold text-emerald-600 truncate">ruslina.irianty@mhs.unj.ac.id</p>
                 </div>
               </div>
             </div>
@@ -132,7 +132,7 @@ export default function LandingPage() {
           </div>
           
           <div className="flex gap-12 text-[10px] font-black uppercase tracking-widest text-slate-400">
-            <Link href={settings.promotorLink} target="_blank" className="hover:text-white transition underline decoration-blue-500 decoration-2 underline-offset-8">Website Payung Riset</Link>
+            <a href="https://e-assessment.id/" target="_blank" className="hover:text-white transition underline decoration-blue-500 decoration-2 underline-offset-8">Website Payung Riset</a>
             <Link href="/login" className="hover:text-white transition underline decoration-teal-500 decoration-2 underline-offset-8">Portal Admin</Link>
           </div>
         </div>
