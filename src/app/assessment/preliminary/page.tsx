@@ -12,10 +12,6 @@ export default function PreliminaryAssessment() {
   const [showInstructions, setShowInstructions] = useState(true);
   const router = useRouter();
 
-  // High contrast Army Green
-  const armyGreen = "#2D3410"; 
-  const solidCream = "bg-[#FAF9F6]";
-
   const defaultOptions = [
     { text: "Sangat Tidak Mampu", score: 1 },
     { text: "Tidak Mampu", score: 2 },
@@ -24,9 +20,7 @@ export default function PreliminaryAssessment() {
     { text: "Sangat Mampu", score: 5 }
   ];
 
-  useEffect(() => {
-    fetchQuestions();
-  }, []);
+  useEffect(() => { fetchQuestions(); }, []);
 
   const fetchQuestions = async () => {
     try {
@@ -34,170 +28,71 @@ export default function PreliminaryAssessment() {
       const data = await res.json();
       setQuestions(Array.isArray(data) ? data : []);
       setLoading(false);
-    } catch (err) {
-      console.error(err);
-      setLoading(false);
-    }
+    } catch (err) { console.error(err); setLoading(false); }
   };
 
-  const handleAnswer = (optionIndex: number) => {
-    setAnswers({ ...answers, [currentStep]: optionIndex + 1 });
-  };
-
-  const nextQuestion = () => {
-    if (questions.length > 0 && currentStep < questions.length - 1) {
-      setCurrentStep(currentStep + 1);
-    } else {
-      submitAssessment();
-    }
-  };
+  const handleAnswer = (idx: number) => { setAnswers({ ...answers, [currentStep]: idx + 1 }); };
 
   const submitAssessment = async () => {
     const userId = localStorage.getItem("userId");
     if (!userId) return router.push("/login");
-
     const totalScore = Object.values(answers).reduce((a, b) => a + b, 0);
-
     try {
       await fetch("/api/assessment", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userId,
-          type: "PDI-DL",
-          totalScore,
-          answersJson: answers,
-        }),
+        body: JSON.stringify({ userId, type: "PDI-DL", totalScore, answersJson: answers }),
       });
       router.push("/dashboard");
-    } catch (err) {
-      console.error(err);
-    }
+    } catch (err) { console.error(err); }
   };
 
-  if (loading) return (
-    <div className="min-h-screen bg-white flex items-center justify-center p-6">
-      <div className="flex flex-col items-center gap-2 text-[#2D3410]">
-        <div className="w-10 h-10 border-4 border-[#2D3410] border-t-transparent rounded-full animate-spin"></div>
-        <p className="text-[10px] font-black uppercase tracking-widest">MEMUAT...</p>
-      </div>
-    </div>
-  );
+  if (loading) return <div className="min-h-screen bg-white flex items-center justify-center font-bold text-xs">MEMUAT...</div>;
 
   return (
-    <div className="min-h-screen relative overflow-hidden"
-         style={{ 
-           backgroundImage: "linear-gradient(rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.4)), url('/unj_bg_v2.png')",
-           backgroundSize: 'cover',
-           backgroundPosition: 'center',
-           backgroundAttachment: 'fixed'
-         }}>
+    <div className="min-h-screen relative"
+         style={{ backgroundImage: "url('/unj_bg_v2.png')", backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}>
 
-      <main className="relative z-10 max-w-4xl mx-auto px-4 py-8">
+      <main className="relative z-10 max-w-lg mx-auto px-4 py-6">
         <AnimatePresence mode="wait">
           {showInstructions ? (
-            <motion.div 
-              key="instructions"
-              initial={{ opacity: 0, scale: 0.98 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="bg-white border-[6px] border-white p-8 sm:p-12 rounded-[40px] shadow-2xl max-w-2xl mx-auto"
+            <motion.div key="instructions" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="bg-white p-6 rounded-2xl shadow-2xl border border-slate-200"
             >
-              <div className="flex items-center gap-6 mb-8 border-b-2 border-slate-100 pb-8">
-                <div className="w-16 h-16 bg-[#2D3410] rounded-2xl flex items-center justify-center shadow-lg shrink-0">
-                  <i className="fa-solid fa-file-invoice text-3xl text-white"></i>
-                </div>
-                <div>
-                  <h1 className="text-2xl sm:text-4xl font-black text-[#2D3410] tracking-tighter uppercase italic leading-none">Panduan PDI-DL</h1>
-                  <p className="text-[#2D3410]/60 font-bold uppercase tracking-widest text-[10px] mt-2">Preliminary Assessment</p>
-                </div>
-              </div>
-              
-              <div className="space-y-8 mb-12">
-                <div className="p-6 bg-[#FAF9F6] rounded-3xl border-2 border-[#2D3410]/5 font-bold text-lg sm:text-xl text-[#2D3410] leading-relaxed shadow-inner italic">
-                  "Pemetaan profil awal literasi digital untuk mengukur kesiapan Bapak/Ibu sebelum tahap utama MADEL5C."
-                </div>
-                
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="flex items-center gap-4 p-4 bg-white border-2 border-slate-100 rounded-2xl shadow-sm">
-                    <div className="w-10 h-10 rounded-xl bg-[#2D3410] text-white flex items-center justify-center font-black text-sm">20</div>
-                    <p className="font-black text-[#2D3410] uppercase tracking-wider text-[10px]">Butir Pernyataan</p>
-                  </div>
-                  <div className="flex items-center gap-4 p-4 bg-white border-2 border-slate-100 rounded-2xl shadow-sm">
-                    <div className="w-10 h-10 rounded-xl bg-[#2D3410] text-white flex items-center justify-center font-black text-sm">5</div>
-                    <p className="font-black text-[#2D3410] uppercase tracking-wider text-[10px]">Skala Penilaian</p>
-                  </div>
-                </div>
-              </div>
-
-              <button 
-                onClick={() => setShowInstructions(false)}
-                className="w-full py-6 bg-[#2D3410] hover:bg-black text-white font-black rounded-2xl transition-all shadow-xl uppercase tracking-[0.4em] text-xs flex items-center justify-center gap-4"
-              >
-                MULAI SEKARANG <i className="fa-solid fa-chevron-right text-[10px]"></i>
-              </button>
+              <h1 className="text-xl font-black text-slate-900 uppercase mb-4 border-b pb-4">PDI-DL Panduan</h1>
+              <p className="p-3 bg-slate-50 rounded-lg text-xs font-bold text-slate-700 italic mb-6">"Pemetaan profil awal literasi digital Bapak/Ibu."</p>
+              <button onClick={() => setShowInstructions(false)} className="w-full py-3 bg-[#4B5320] text-white font-black rounded-lg text-[10px] uppercase">MULAI SEKARANG</button>
             </motion.div>
           ) : (
-            <motion.div 
-              key="assessment"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="space-y-6 max-w-2xl mx-auto"
-            >
-              <div className="bg-white flex justify-between items-center p-6 rounded-[30px] border-4 border-white shadow-xl">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-[#2D3410] rounded-2xl flex items-center justify-center font-black text-white text-lg shadow-lg italic">{currentStep + 1}</div>
-                  <div>
-                    <h3 className="font-black text-[#2D3410] uppercase text-xs tracking-widest leading-none">Pernyataan #{currentStep + 1}</h3>
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Selesai: {currentStep + 1} / {questions.length}</p>
-                  </div>
-                </div>
-                <div className="w-32 h-2.5 bg-slate-100 rounded-full overflow-hidden border-2 border-slate-200">
-                   <div className="h-full bg-[#2D3410] transition-all duration-700" style={{ width: `${((currentStep + 1) / (questions.length || 1)) * 100}%` }}></div>
+            <motion.div key="assessment" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
+              <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-lg flex justify-between items-center">
+                <span className="text-[10px] font-black text-slate-900">ITEM #{currentStep + 1}</span>
+                <div className="w-20 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                   <div className="h-full bg-[#4B5320]" style={{ width: `${((currentStep+1)/questions.length)*100}%` }}></div>
                 </div>
               </div>
 
-              <div className="bg-white border-[6px] border-white p-6 sm:p-10 rounded-[40px] shadow-2xl">
-                <div className="mb-8 p-6 sm:p-10 bg-[#FAF9F6] border-l-[12px] border-[#2D3410] rounded-3xl shadow-inner">
-                  <p className="text-lg sm:text-xl text-[#2D3410] font-black leading-relaxed">
-                    {questions[currentStep]?.text || questions[currentStep]?.question}
-                  </p>
+              <div className="bg-white p-4 rounded-2xl shadow-2xl border border-slate-200">
+                <div className="mb-4 p-4 bg-slate-50 border-l-4 border-[#4B5320] rounded-lg">
+                  <p className="text-xs sm:text-sm text-slate-900 font-bold leading-relaxed">{questions[currentStep]?.text || questions[currentStep]?.question}</p>
                 </div>
-
-                <div className="grid grid-cols-1 gap-3">
+                <div className="space-y-2">
                   {(questions[currentStep]?.options || defaultOptions).map((opt: any, idx: number) => (
-                    <button
-                      key={idx}
-                      onClick={() => handleAnswer(idx)}
-                      className={`group flex items-center gap-5 p-4 sm:p-6 rounded-[25px] border-2 transition-all text-left ${
-                        answers[currentStep] === idx + 1
-                          ? "bg-[#2D3410] border-[#2D3410] text-white shadow-xl scale-[1.01]"
-                          : "bg-white border-slate-200 text-[#2D3410] hover:border-[#2D3410]/30 shadow-sm"
+                    <button key={idx} onClick={() => handleAnswer(idx)}
+                      className={`w-full flex items-center gap-3 p-3 rounded-lg border-2 text-left transition-all ${
+                        answers[currentStep] === idx + 1 ? "bg-[#4B5320] border-[#4B5320] text-white" : "bg-white border-slate-100 text-slate-900"
                       }`}
                     >
-                      <span className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center font-black text-sm transition-all shrink-0 ${
-                        answers[currentStep] === idx + 1 ? "bg-white text-[#2D3410]" : "bg-slate-50 text-slate-400"
-                      }`}>
-                        {idx + 1}
-                      </span>
-                      <span className="flex-1 font-black text-sm sm:text-base leading-tight">{opt?.text || ""}</span>
-                      {answers[currentStep] === idx + 1 && <i className="fa-solid fa-check-circle text-white text-xl"></i>}
+                      <span className={`w-7 h-7 rounded flex items-center justify-center font-black text-[10px] ${answers[currentStep] === idx + 1 ? "bg-white text-[#4B5320]" : "bg-slate-50 text-slate-400"}`}>{idx + 1}</span>
+                      <span className="text-[11px] font-bold">{opt.text}</span>
                     </button>
                   ))}
                 </div>
-
-                <div className="mt-10 flex justify-end">
-                  <button
-                    disabled={!answers[currentStep]}
-                    onClick={nextQuestion}
-                    className={`w-full sm:w-auto px-12 py-5 rounded-2xl font-black uppercase tracking-[0.4em] text-xs transition-all flex items-center justify-center gap-4 ${
-                      answers[currentStep]
-                        ? "bg-[#2D3410] hover:bg-black text-white shadow-xl"
-                        : "bg-slate-100 text-slate-300 cursor-not-allowed shadow-inner"
-                    }`}
+                <div className="mt-6 flex justify-end">
+                  <button disabled={!answers[currentStep]} onClick={() => { if(currentStep < questions.length - 1) setCurrentStep(currentStep+1); else submitAssessment(); }}
+                    className={`w-full py-3 rounded-lg font-black uppercase text-[10px] ${answers[currentStep] ? "bg-[#4B5320] text-white shadow-lg" : "bg-slate-200 text-slate-400"}`}
                   >
                     {currentStep === questions.length - 1 ? "Simpan Hasil" : "Lanjutkan"}
-                    <i className="fa-solid fa-chevron-right text-[10px]"></i>
                   </button>
                 </div>
               </div>

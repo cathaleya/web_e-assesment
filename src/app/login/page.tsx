@@ -14,9 +14,6 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const router = useRouter();
 
-  // Deeper, high-contrast Army Green
-  const armyGreen = "#2D3410"; 
-
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -29,13 +26,11 @@ export default function LoginPage() {
            setIsLoading(false);
            return;
         }
-
         const res = await fetch('/api/auth', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ name, campus, gender })
         });
-        
         if (res.ok) {
            const data = await res.json();
            localStorage.setItem("userId", data.userId);
@@ -45,12 +40,12 @@ export default function LoginPage() {
            router.push("/dashboard");
         } else {
           const errData = await res.json().catch(() => ({}));
-          setError(errData.error || "Gagal terhubung ke server.");
+          setError(errData.error || "Gagal terhubung.");
           setIsLoading(false);
         }
       } else {
         if (!adminUsername || !adminPassword) {
-          setError("Masukkan username dan password admin.");
+          setError("Masukkan username dan password.");
           setIsLoading(false);
           return;
         }
@@ -64,102 +59,62 @@ export default function LoginPage() {
           localStorage.setItem("isAdmin", "true");
           router.push("/admin");
         } else {
-          const data = await res.json().catch(() => ({}));
-          setError(data.error || "Akses ditolak.");
+          setError("Akses ditolak.");
           setIsLoading(false);
         }
       }
     } catch (error) {
       console.error(error);
-      setError("Terjadi kesalahan jaringan.");
+      setError("Kesalahan jaringan.");
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center relative bg-slate-100"
-         style={{ 
-           backgroundImage: "linear-gradient(rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.4)), url('/unj_bg.png')",
-           backgroundSize: 'cover',
-           backgroundPosition: 'center',
-           backgroundAttachment: 'fixed'
-         }}>
+    <div className="min-h-screen flex items-center justify-center relative"
+         style={{ backgroundImage: "url('/unj_bg.png')", backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}>
       
-      <div className="w-full max-w-md px-4 sm:px-6 relative z-10 py-6">
-        <div className="text-center mb-6">
-          <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-xl border-2 border-[#2D3410]">
-            <i className="fa-solid fa-graduation-cap text-[#2D3410] text-3xl sm:text-4xl"></i>
+      <div className="w-full max-w-sm px-4 relative z-10">
+        <div className="text-center mb-4">
+          <div className="w-16 h-16 bg-white rounded-xl flex items-center justify-center mx-auto mb-2 shadow-xl border border-slate-200">
+            <i className="fa-solid fa-graduation-cap text-[#4B5320] text-3xl"></i>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-[900] text-[#2D3410] tracking-tighter uppercase italic leading-none drop-shadow-sm">HDAP Portal</h1>
-          <p className="text-[#2D3410] text-[10px] sm:text-[11px] font-black uppercase tracking-[0.3em] mt-2">S3 UNJ Dissertation Research</p>
+          <h1 className="text-2xl font-black text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] uppercase italic">HDAP Portal</h1>
         </div>
 
-        {/* SOLID WHITE CARD - NO TRANSPARENCY FOR MAXIMUM READABILITY */}
-        <div className="bg-white rounded-[35px] p-6 sm:p-10 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25)] border-2 border-slate-100">
-          <div className="flex bg-slate-100 p-1.5 rounded-2xl mb-8 border border-slate-200">
+        <div className="bg-white rounded-2xl p-6 shadow-2xl border border-slate-200">
+          <div className="flex bg-slate-50 p-1 rounded-xl mb-6 border">
             <button onClick={() => setLoginType("student")} 
-                    className={`flex-1 py-3 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ${loginType === "student" ? "bg-[#2D3410] text-white shadow-lg" : "text-[#2D3410]/50"}`}>
+                    className={`flex-1 py-2 text-[9px] font-black uppercase rounded-lg transition-all ${loginType === "student" ? "bg-[#4B5320] text-white shadow-md" : "text-slate-400"}`}>
               RESPONDEN
             </button>
             <button onClick={() => setLoginType("admin")} 
-                    className={`flex-1 py-3 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ${loginType === "admin" ? "bg-[#2D3410] text-white shadow-lg" : "text-[#2D3410]/50"}`}>
+                    className={`flex-1 py-2 text-[9px] font-black uppercase rounded-lg transition-all ${loginType === "admin" ? "bg-[#4B5320] text-white shadow-md" : "text-slate-400"}`}>
               ADMIN
             </button>
           </div>
 
-          <form onSubmit={handleLogin} className="space-y-5">
+          <form onSubmit={handleLogin} className="space-y-4">
             {loginType === "student" ? (
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-[10px] font-black text-[#2D3410] uppercase tracking-widest mb-2 ml-1">Nama Lengkap</label>
-                  <div className="relative">
-                    <i className="fa-solid fa-user absolute left-5 top-3.5 text-[#2D3410]/30 text-sm"></i>
-                    <input type="text" required value={name} onChange={(e) => setName(e.target.value)} placeholder="Masukkan Nama..." className="w-full bg-slate-50 border-2 border-slate-200 rounded-2xl py-3 pl-12 pr-4 text-sm text-[#2D3410] font-bold focus:border-[#2D3410] outline-none transition-all" />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-[10px] font-black text-[#2D3410] uppercase tracking-widest mb-2 ml-1">Kampus / Instansi</label>
-                  <div className="relative">
-                    <i className="fa-solid fa-university absolute left-5 top-3.5 text-[#2D3410]/30 text-sm"></i>
-                    <input type="text" required value={campus} onChange={e => setCampus(e.target.value)} placeholder="Masukkan Kampus..." className="w-full bg-slate-50 border-2 border-slate-200 rounded-2xl py-3 pl-12 pr-4 text-sm text-[#2D3410] font-bold focus:border-[#2D3410] outline-none transition-all" />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-[10px] font-black text-[#2D3410] uppercase tracking-widest mb-2 ml-1">Jenis Kelamin</label>
-                  <div className="grid grid-cols-2 gap-3">
-                    <button type="button" onClick={() => setGender("male")} className={`flex items-center justify-center gap-2 py-3 rounded-xl border-2 text-[10px] font-black transition-all ${gender === "male" ? "bg-[#2D3410] border-[#2D3410] text-white shadow-md" : "bg-white border-slate-200 text-[#2D3410]/40"}`}>
-                      <i className="fa-solid fa-mars text-sm"></i> LAKI-LAKI
-                    </button>
-                    <button type="button" onClick={() => setGender("female")} className={`flex items-center justify-center gap-2 py-3 rounded-xl border-2 text-[10px] font-black transition-all ${gender === "female" ? "bg-[#2D3410] border-[#2D3410] text-white shadow-md" : "bg-white border-slate-200 text-[#2D3410]/40"}`}>
-                      <i className="fa-solid fa-venus text-sm"></i> PEREMPUAN
-                    </button>
-                  </div>
+              <div className="space-y-3">
+                <input type="text" required value={name} onChange={(e) => setName(e.target.value)} placeholder="Nama Lengkap" className="w-full bg-slate-50 border border-slate-200 rounded-lg py-3 px-4 text-xs text-slate-900 font-bold focus:border-[#4B5320] outline-none transition-all" />
+                <input type="text" required value={campus} onChange={e => setCampus(e.target.value)} placeholder="Instansi" className="w-full bg-slate-50 border border-slate-200 rounded-lg py-3 px-4 text-xs text-slate-900 font-bold focus:border-[#4B5320] outline-none transition-all" />
+                <div className="grid grid-cols-2 gap-2">
+                  <button type="button" onClick={() => setGender("male")} className={`py-3 rounded-lg border-2 text-[9px] font-black transition-all ${gender === "male" ? "bg-[#4B5320] text-white" : "bg-white text-slate-400"}`}>LAKI-LAKI</button>
+                  <button type="button" onClick={() => setGender("female")} className={`py-3 rounded-lg border-2 text-[9px] font-black transition-all ${gender === "female" ? "bg-[#4B5320] text-white" : "bg-white text-slate-400"}`}>PEREMPUAN</button>
                 </div>
               </div>
             ) : (
-              <div className="space-y-4">
-                <div className="relative">
-                  <i className="fa-solid fa-shield-halved absolute left-5 top-3.5 text-[#2D3410]/30 text-sm"></i>
-                  <input type="text" required value={adminUsername} onChange={e => setAdminUsername(e.target.value)} placeholder="Username Admin" className="w-full bg-slate-50 border-2 border-slate-200 rounded-2xl py-3 pl-12 pr-4 text-sm text-[#2D3410] font-bold focus:border-[#2D3410] outline-none transition-all" />
-                </div>
-                <div className="relative">
-                  <i className="fa-solid fa-lock absolute left-5 top-3.5 text-[#2D3410]/30 text-sm"></i>
-                  <input type="password" required value={adminPassword} onChange={e => setAdminPassword(e.target.value)} placeholder="Password Admin" className="w-full bg-slate-50 border-2 border-slate-200 rounded-2xl py-3 pl-12 pr-4 text-sm text-[#2D3410] font-bold focus:border-[#2D3410] outline-none transition-all" />
-                </div>
+              <div className="space-y-3">
+                <input type="text" required value={adminUsername} onChange={e => setAdminUsername(e.target.value)} placeholder="Username" className="w-full bg-slate-50 border border-slate-200 rounded-lg py-3 px-4 text-xs text-slate-900 font-bold focus:border-[#4B5320] outline-none transition-all" />
+                <input type="password" required value={adminPassword} onChange={e => setAdminPassword(e.target.value)} placeholder="Password" className="w-full bg-slate-50 border border-slate-200 rounded-lg py-3 px-4 text-xs text-slate-900 font-bold focus:border-[#4B5320] outline-none transition-all" />
               </div>
             )}
-
-            {error && <div className="p-3 bg-red-50 text-red-600 text-xs font-black rounded-xl border border-red-200 text-center">{error}</div>}
-
-            <button type="submit" disabled={isLoading} className="w-full font-black py-4.5 rounded-2xl bg-[#2D3410] hover:bg-black text-white shadow-xl transition-all uppercase tracking-widest text-xs flex items-center justify-center gap-3 mt-4">
-              <span>{isLoading ? "PROSES..." : "MASUK KE DASHBOARD"}</span>
-              <i className="fa-solid fa-arrow-right-to-bracket"></i>
+            {error && <div className="p-2 text-rose-500 text-[10px] font-black text-center">{error}</div>}
+            <button type="submit" disabled={isLoading} className="w-full font-black py-4 rounded-xl bg-[#4B5320] text-white shadow-lg uppercase text-[10px] tracking-widest mt-4">
+              {isLoading ? "PROSES..." : "MASUK"}
             </button>
           </form>
-        </div>
-
-        <div className="text-center mt-8">
-          <p className="text-[#2D3410] text-[9px] font-black uppercase tracking-[0.4em] drop-shadow-sm">&copy; 2026 Riset Disertasi BIMA UNJ</p>
         </div>
       </div>
     </div>
