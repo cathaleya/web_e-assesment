@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Radar } from "react-chartjs-2";
+import { Radar, Bar, Doughnut } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   RadialLinearScale,
@@ -11,6 +11,10 @@ import {
   Filler,
   Tooltip,
   Legend,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  ArcElement,
 } from "chart.js";
 
 // Register Chart.js components
@@ -20,7 +24,11 @@ ChartJS.register(
   LineElement,
   Filler,
   Tooltip,
-  Legend
+  Legend,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  ArcElement
 );
 
 export default function UserDashboard() {
@@ -32,19 +40,44 @@ export default function UserDashboard() {
   const [isMounted, setIsMounted] = useState(false);
   const router = useRouter();
 
+  const [userResults, setUserResults] = useState<any[]>([]);
+  const [surveyData, setSurveyData] = useState<any>(null);
+
   useEffect(() => {
     setIsMounted(true);
     const savedName = localStorage.getItem("userName");
     const savedGender = localStorage.getItem("userGender");
+    const userId = localStorage.getItem("userId");
+    
     if (savedName) setUserName(savedName);
     if (savedGender) setUserGender(savedGender);
 
+    if (userId) {
+      fetch(`/api/assessment?userId=${userId}`)
+        .then(res => res.json())
+        .then(data => {
+          const results = Array.isArray(data) ? data.filter((r: any) => r.userId === userId) : [];
+          setUserResults(results);
+          if (results.some((r: any) => r.type === 'PDI-DL')) setHasFinishedAssessment(true);
+          if (results.some((r: any) => r.type === 'MADEL5C')) {
+             // If MADEL5C is done, we assume survey is also done if it follows the flow
+          }
+        });
+      
+      fetch(`/api/survey`)
+        .then(res => res.json())
+        .then(data => {
+          const userSurvey = Array.isArray(data) ? data.find((s: any) => s.userId === userId) : null;
+          if (userSurvey) {
+            setHasFinishedSurvey(true);
+            setSurveyData(userSurvey);
+          }
+        });
+    }
+
     const params = new URLSearchParams(window.location.search);
     if (params.get("finished") === "true") setHasFinishedAssessment(true);
-    if (params.get("survey") === "done") {
-        setHasFinishedAssessment(true);
-        setHasFinishedSurvey(true);
-    }
+    if (params.get("survey") === "done") setHasFinishedSurvey(true);
   }, []);
 
   const handleLogout = () => {
@@ -138,46 +171,71 @@ export default function UserDashboard() {
                     <i className="fa-solid fa-wand-magic-sparkles absolute top-0 right-0 text-[180px] opacity-10"></i>
                  </div>
 
-                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Profil Kompetensi - PANEL GELAP */}
-                    <div className="rounded-[40px] p-10 bg-gradient-to-b from-slate-900 to-green-950 text-white border border-white/10 shadow-xl">
-                      <h3 className="text-xl font-black mb-1 italic uppercase tracking-tight">Profil Kompetensi Digital</h3>
-                      <p className="text-[10px] text-green-400 font-bold uppercase tracking-[0.3em] mb-6">Framework DigCompEdu</p>
-                      <div className="h-[350px] bg-white/5 rounded-3xl p-6 flex items-center justify-center border border-white/5">
+                    <div className="lg:col-span-1 rounded-[40px] p-8 bg-gradient-to-b from-slate-900 to-green-950 text-white border border-white/10 shadow-xl">
+                      <h3 className="text-sm font-black mb-1 italic uppercase tracking-tight">Profil Kompetensi Digital</h3>
+                      <p className="text-[10px] text-green-400 font-bold uppercase tracking-[0.3em] mb-4">DigCompEdu</p>
+                      <div className="h-[250px] bg-white/5 rounded-3xl p-4 flex items-center justify-center border border-white/5">
                         {hasFinishedAssessment ? (
                           <Radar data={radarData} options={{ 
                             responsive: true, 
                             maintainAspectRatio: false,
-                            scales: { r: { grid: { color: 'rgba(255,255,255,0.1)' }, angleLines: { color: 'rgba(255,255,255,0.1)' }, pointLabels: { color: '#fff', font: { weight: 'bold' } }, ticks: { display: false } } } 
+                            scales: { r: { grid: { color: 'rgba(255,255,255,0.05)' }, angleLines: { color: 'rgba(255,255,255,0.05)' }, pointLabels: { color: '#fff', font: { size: 8 } }, ticks: { display: false } } },
+                            plugins: { legend: { display: false } }
                           }} />
                         ) : (
-                          <div className="text-center">
-                            <i className="fa-solid fa-chart-area text-5xl text-slate-700 mb-4"></i>
-                            <p className="text-slate-500 font-black uppercase text-xs">Belum Ada Data Asesmen</p>
+                          <div className="text-center opacity-30">
+                            <i className="fa-solid fa-chart-area text-4xl mb-3"></i>
+                            <p className="font-black uppercase text-[10px]">No Data</p>
                           </div>
                         )}
                       </div>
                     </div>
 
-                    {/* Riwayat Aktivitas - PANEL GELAP */}
-                    <div className="rounded-[40px] p-10 bg-gradient-to-b from-slate-900 to-green-950 text-white border border-white/10 shadow-xl">
-                      <h3 className="text-xl font-black mb-8 flex justify-between items-center uppercase italic tracking-tight">Riwayat Aktivitas</h3>
-                      <div className="space-y-4">
-                        {hasFinishedAssessment ? (
-                          <div className="flex items-center justify-between p-6 rounded-3xl bg-white/5 border border-white/10 group shadow-lg">
-                            <div className="flex items-center gap-5">
-                              <div className="w-12 h-12 rounded-2xl bg-green-500/20 text-green-400 flex items-center justify-center border border-green-500/20"><i className="fa-solid fa-check-double text-xl"></i></div>
-                              <div><p className="font-bold text-white uppercase tracking-tight">Asesmen Preliminary</p><p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mt-1">Hari Ini</p></div>
-                            </div>
-                            <div className="text-right"><p className="text-xl font-black text-white">SUCCESS</p></div>
+                    {/* STATISTIK HASIL - NEW */}
+                    <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+                       {/* Card PDI-DL */}
+                       <div className="rounded-[40px] p-8 bg-white/5 backdrop-blur-xl border border-white/10 flex flex-col justify-between group hover:bg-white/10 transition-all">
+                          <div>
+                             <div className="flex justify-between items-start mb-4">
+                                <div className="w-12 h-12 rounded-2xl bg-teal-500/20 text-teal-400 flex items-center justify-center border border-teal-500/30"><i className="fa-solid fa-stethoscope"></i></div>
+                                <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Validitas Prediktif</span>
+                             </div>
+                             <h4 className="text-lg font-black text-white italic uppercase tracking-tighter">Hasil PDI-DL</h4>
+                             <p className="text-xs text-slate-400 mt-2 italic">Pemetaan profil awal literasi digital.</p>
                           </div>
-                        ) : (
-                          <div className="text-center py-20">
-                             <i className="fa-solid fa-clock-rotate-left text-slate-700 text-4xl mb-4"></i>
-                             <p className="text-slate-500 font-black uppercase text-xs">Belum Ada Riwayat Aktivitas</p>
+                          <div className="mt-8 flex items-end justify-between">
+                             <div className="text-4xl font-black text-teal-400">{userResults.find(r => r.type === 'PDI-DL')?.totalScore || 0} <span className="text-xs text-slate-500">/ 100</span></div>
+                             <div className="w-12 h-1.5 bg-slate-800 rounded-full overflow-hidden"><div className="h-full bg-teal-500" style={{ width: `${userResults.find(r => r.type === 'PDI-DL')?.totalScore || 0}%` }}></div></div>
                           </div>
-                        )}
-                      </div>
+                       </div>
+
+                       {/* Card MADEL5C */}
+                       <div className="rounded-[40px] p-8 bg-white/5 backdrop-blur-xl border border-white/10 flex flex-col justify-between group hover:bg-white/10 transition-all">
+                          <div>
+                             <div className="flex justify-between items-start mb-4">
+                                <div className="w-12 h-12 rounded-2xl bg-blue-500/20 text-blue-400 flex items-center justify-center border border-blue-500/30"><i className="fa-solid fa-brain"></i></div>
+                                <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Digital Mastery</span>
+                             </div>
+                             <h4 className="text-lg font-black text-white italic uppercase tracking-tighter">Hasil MADEL5C</h4>
+                             <p className="text-xs text-slate-400 mt-2 italic">Skor instrumen utama SJT (30 Butir).</p>
+                          </div>
+                          <div className="mt-8 flex items-end justify-between">
+                             <div className="text-4xl font-black text-blue-400">{userResults.find(r => r.type === 'MADEL5C')?.totalScore || 0} <span className="text-xs text-slate-500">/ 150</span></div>
+                             <div className="w-12 h-1.5 bg-slate-800 rounded-full overflow-hidden"><div className="h-full bg-blue-500" style={{ width: `${(userResults.find(r => r.type === 'MADEL5C')?.totalScore || 0)/150*100}%` }}></div></div>
+                          </div>
+                       </div>
+                       
+                       {/* Riwayat Aktivitas - Compacted */}
+                       <div className="md:col-span-2 rounded-[40px] p-6 bg-slate-900/80 border border-white/5 flex items-center justify-between">
+                          <div className="flex items-center gap-4">
+                             <i className="fa-solid fa-clock-rotate-left text-slate-600"></i>
+                             <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Riwayat Terakhir:</span>
+                             <span className="text-xs font-bold text-white italic">{hasFinishedAssessment ? 'Asesmen Preliminary Selesai' : 'Belum memulai asesmen'}</span>
+                          </div>
+                          <span className="text-[9px] bg-white/5 text-slate-500 px-3 py-1 rounded-full font-black uppercase">Real-time DB Sync</span>
+                       </div>
                     </div>
                  </div>
               </div>
@@ -231,10 +289,42 @@ export default function UserDashboard() {
                     </div>
                     
                     {hasFinishedSurvey ? (
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-                        <div className="bg-blue-600 rounded-[35px] p-10 text-white shadow-2xl shadow-blue-900/40"><p className="text-xs font-bold opacity-80 uppercase mb-2">System Usability Score</p><div className="text-7xl font-black mb-2">88.5</div><p className="text-xs font-bold bg-white/20 rounded-full px-5 py-2 inline-block uppercase tracking-widest">Excellent Grade</p></div>
-                        <div className="bg-slate-50 rounded-[35px] p-10 border border-slate-100 shadow-inner"><p className="text-xs font-bold text-slate-400 uppercase mb-2">User Satisfaction</p><div className="text-7xl font-black text-slate-900 mb-2">94%</div><p className="text-xs font-bold text-blue-600 uppercase tracking-widest">Highly Positive</p></div>
-                        <div className="bg-slate-50 rounded-[35px] p-10 border border-slate-100 shadow-inner"><p className="text-xs font-bold text-slate-400 uppercase mb-2">Platform Efficiency</p><div className="text-7xl font-black text-slate-900 mb-2">FAST</div><p className="text-xs font-bold text-blue-600 uppercase tracking-widest">Optimized Cache</p></div>
+                      <div className="space-y-12">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                          <div className="bg-blue-600 rounded-[35px] p-10 text-white shadow-2xl shadow-blue-900/40"><p className="text-xs font-bold opacity-80 uppercase mb-2">SUS Score</p><div className="text-7xl font-black mb-2">{surveyData?.totalScore || '0'}</div><p className="text-xs font-bold bg-white/20 rounded-full px-5 py-2 inline-block uppercase tracking-widest">Calculated Grade</p></div>
+                          <div className="bg-slate-50 rounded-[35px] p-10 border border-slate-100 shadow-inner flex flex-col justify-center">
+                             <p className="text-xs font-bold text-slate-400 uppercase mb-6 text-center">Achievement Graph</p>
+                             <div className="h-24">
+                                <Bar data={{
+                                  labels: ['Usability', 'UX', 'Satisfaction'],
+                                  datasets: [{
+                                    data: [85, 92, 88],
+                                    backgroundColor: '#2563eb',
+                                    borderRadius: 5
+                                  }]
+                                }} options={{ responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { display: false } } }} />
+                             </div>
+                          </div>
+                          <div className="bg-slate-50 rounded-[35px] p-10 border border-slate-100 shadow-inner flex flex-col justify-center items-center text-center">
+                             <p className="text-xs font-bold text-slate-400 uppercase mb-2">Platform Rank</p>
+                             <div className="text-5xl font-black text-slate-900">A+</div>
+                             <p className="text-[10px] font-bold text-blue-600 uppercase tracking-widest mt-2">Top Performer</p>
+                          </div>
+                        </div>
+
+                        <div className="bg-slate-900 rounded-[40px] p-10 text-white border border-white/5">
+                           <h4 className="text-sm font-black italic uppercase mb-8 border-l-4 border-blue-500 pl-4 tracking-widest">Usability Breakdown</h4>
+                           <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                              <div>
+                                 <p className="text-xs text-slate-400 mb-4 font-bold uppercase">System Efficiency</p>
+                                 <div className="w-full h-3 bg-white/5 rounded-full overflow-hidden"><div className="h-full bg-blue-500" style={{ width: '90%' }}></div></div>
+                              </div>
+                              <div>
+                                 <p className="text-xs text-slate-400 mb-4 font-bold uppercase">Learning Curve</p>
+                                 <div className="w-full h-3 bg-white/5 rounded-full overflow-hidden"><div className="h-full bg-teal-500" style={{ width: '95%' }}></div></div>
+                              </div>
+                           </div>
+                        </div>
                       </div>
                     ) : (
                       <div className="text-center py-24 bg-slate-50 rounded-[40px] border border-dashed border-slate-200">
