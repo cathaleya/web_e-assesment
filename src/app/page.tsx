@@ -76,7 +76,7 @@ export default function LandingPage() {
               </h1>
               
               <p className="text-lg text-slate-700 max-w-xl mx-auto lg:mx-0 leading-relaxed font-medium bg-white/60 backdrop-blur-md px-8 py-6 rounded-[30px] border border-slate-200 shadow-xl">
-                Menggabungkan ketepatan Item Response Theory dengan kecerdasan Generative AI untuk memetakan kompetensi Literasi Digital secara objektif.
+                Menggabungkan Analisis Item Response Theory dengan kecerdasan Generative AI untuk memetakan kompetensi Literasi Digital secara objektif.
               </p>
               
               {/* Button removed as per user request */}
@@ -100,7 +100,7 @@ export default function LandingPage() {
                 Membangun <span className="text-blue-600">Kecakapan</span> Digital Masa Depan.
               </h2>
               <p className="text-lg text-slate-600 leading-relaxed font-medium italic">
-                Menggabungkan ketepatan Item Response Theory dengan kecerdasan Generative AI untuk memetakan kompetensi Literasi Digital secara objektif.
+                Menggabungkan Analisis Item Response Theory dengan kecerdasan Generative AI untuk memetakan kompetensi Literasi Digital secara objektif.
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 pt-8">
                 <div className="p-8 bg-white rounded-[40px] border border-slate-100 shadow-sm">
