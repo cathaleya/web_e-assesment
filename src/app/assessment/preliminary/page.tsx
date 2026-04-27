@@ -15,6 +15,15 @@ export default function PreliminaryAssessment() {
   const armyGreen = "#4B5320";
   const creamBg = "bg-[#FAF9F6]";
 
+  // Default Likert Scale for PDI-DL (Preliminary)
+  const defaultOptions = [
+    { text: "Sangat Tidak Mampu", score: 1 },
+    { text: "Tidak Mampu", score: 2 },
+    { text: "Cukup Mampu", score: 3 },
+    { text: "Mampu", score: 4 },
+    { text: "Sangat Mampu", score: 5 }
+  ];
+
   useEffect(() => {
     fetchQuestions();
   }, []);
@@ -148,12 +157,12 @@ export default function PreliminaryAssessment() {
               <div className={`${creamBg}/95 backdrop-blur-2xl border-4 border-white p-8 lg:p-14 rounded-[50px] shadow-2xl`}>
                 <div className="mb-14 p-10 bg-white/60 border-l-[12px] border-[#4B5320] rounded-[35px] shadow-inner">
                   <p className="text-2xl lg:text-3xl text-[#4B5320] font-black leading-tight drop-shadow-[0_2px_4px_rgba(255,255,255,1)]">
-                    {questions[currentStep]?.question}
+                    {questions[currentStep]?.text || questions[currentStep]?.question}
                   </p>
                 </div>
 
                 <div className="grid grid-cols-1 gap-4">
-                  {questions[currentStep]?.options?.map((opt: any, idx: number) => (
+                  {(questions[currentStep]?.options || defaultOptions).map((opt: any, idx: number) => (
                     <button
                       key={idx}
                       onClick={() => handleAnswer(idx)}
@@ -166,7 +175,7 @@ export default function PreliminaryAssessment() {
                       <span className={`w-12 h-12 lg:w-16 lg:h-16 rounded-2xl flex items-center justify-center font-black text-lg transition-all shrink-0 ${
                         answers[currentStep] === idx + 1 ? "bg-white text-[#4B5320] shadow-xl" : "bg-slate-50 text-slate-400"
                       }`}>
-                        {String.fromCharCode(65 + idx)}
+                        {idx + 1}
                       </span>
                       <span className="flex-1 font-bold text-lg lg:text-xl leading-snug">{opt?.text || ""}</span>
                       {answers[currentStep] === idx + 1 && <i className="fa-solid fa-circle-check text-white text-2xl"></i>}
