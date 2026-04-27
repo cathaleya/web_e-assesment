@@ -61,23 +61,19 @@ export default function LandingPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 w-full max-w-7xl items-center">
             <div className="text-center lg:text-left space-y-8 animate-in slide-in-from-left duration-700">
               <h1 className="font-black text-slate-900 leading-tight">
-                <span className="block text-4xl lg:text-5xl mb-4 italic uppercase tracking-tighter text-blue-600">
-                  MADEL5C
+                <span className="block text-3xl lg:text-4xl mb-4 italic uppercase tracking-tighter text-blue-600">
+                  Hybrid-Diagnostic Assessment Platform (HDAP)
                 </span>
                 <span className="text-5xl lg:text-7xl block font-black uppercase tracking-tighter text-slate-900 drop-shadow-sm">
-                  E-ASSESSMENT <br/>LITERASI DIGITAL
+                  Website E-ASSESSMEN <br/>LITERASI DIGITAL.
                 </span>
               </h1>
               
               <p className="text-lg text-slate-700 max-w-xl mx-auto lg:mx-0 leading-relaxed font-medium bg-white/60 backdrop-blur-md px-8 py-6 rounded-[30px] border border-slate-200 shadow-xl">
-                {settings.description || "Platform asesmen digital terintegrasi untuk mengukur dan memetakan kompetensi literasi digital mahasiswa calon guru secara objektif dan akurat."}
+                Menggabungkan ketepatan Item Response Theory dengan kecerdasan Generative AI untuk memetakan kompetensi Literasi Digital secara objektif.
               </p>
               
-              <div className="flex justify-center lg:justify-start pt-4">
-                <Link href="/login" className="bg-blue-600 hover:bg-blue-700 text-white font-black px-12 py-5 rounded-2xl transition-all shadow-2xl shadow-blue-500/30 flex items-center justify-center group uppercase tracking-widest text-sm">
-                  MULAI SEKARANG <i className="fa-solid fa-arrow-right ml-3 text-xs group-hover:translate-x-1 transition-transform"></i>
-                </Link>
-              </div>
+              {/* Button removed as per user request */}
             </div>
           </div>
         </main>
@@ -98,7 +94,7 @@ export default function LandingPage() {
                 Membangun <span className="text-blue-600">Kecakapan</span> Digital Masa Depan.
               </h2>
               <p className="text-lg text-slate-600 leading-relaxed font-medium italic">
-                {settings.description || "Dikembangkan sebagai instrumen penelitian disertasi untuk mengukur literasi digital mahasiswa melalui pendekatan Situational Judgment Test (SJT)."}
+                Menggabungkan ketepatan Item Response Theory dengan kecerdasan Generative AI untuk memetakan kompetensi Literasi Digital secara objektif.
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 pt-8">
                 <div className="p-8 bg-white rounded-[40px] border border-slate-100 shadow-sm">
