@@ -60,12 +60,16 @@ export default function LandingPage() {
         <main className="flex-1 flex items-center justify-center relative z-10 px-6 lg:px-16 pt-32 pb-20">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 w-full max-w-7xl items-center">
             <div className="text-center lg:text-left space-y-8 animate-in slide-in-from-left duration-700">
-              <h1 className="font-black leading-tight">
-                <span className="block text-3xl lg:text-4xl mb-4 italic uppercase tracking-tighter text-indigo-900" 
+              <style jsx global>{`
+                @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
+                h1 { font-family: 'Plus Jakarta Sans', sans-serif; }
+              `}</style>
+              <h1 className="font-extrabold leading-tight">
+                <span className="block text-2xl lg:text-3xl mb-6 italic uppercase tracking-widest text-indigo-900 whitespace-nowrap" 
                       style={{ textShadow: "0 0 20px rgba(255,255,255,1), 0 0 10px rgba(255,255,255,1)" }}>
                   Hybrid-Diagnostic Assessment Platform (HDAP)
                 </span>
-                <span className="text-5xl lg:text-7xl block font-black uppercase tracking-tighter text-slate-900" 
+                <span className="text-5xl lg:text-8xl block font-black uppercase tracking-tighter text-slate-900 leading-[0.9]" 
                       style={{ textShadow: "0 0 20px rgba(255,255,255,1), 0 0 10px rgba(255,255,255,1)" }}>
                   Website E-ASSESSMEN <br/>LITERASI DIGITAL.
                 </span>
