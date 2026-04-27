@@ -79,11 +79,13 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-slate-50">
-      
-      {/* Background Ornaments (Soft & Bright) */}
-      <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] bg-blue-100/50 rounded-full blur-[120px] pointer-events-none"></div>
-      <div className="absolute bottom-[-10%] right-[-10%] w-[400px] h-[400px] bg-indigo-100/50 rounded-full blur-[100px] pointer-events-none"></div>
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-slate-50"
+         style={{ 
+           backgroundImage: "linear-gradient(rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.4)), url('/unj_bg.png')",
+           backgroundSize: 'cover',
+           backgroundPosition: 'center',
+           backgroundAttachment: 'fixed'
+         }}>
 
       <div className="w-full max-w-lg px-6 relative z-10">
         {/* Logo Section */}
