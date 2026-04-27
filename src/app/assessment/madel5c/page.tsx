@@ -32,15 +32,17 @@ export default function Madel5cAssessment() {
   };
 
   const handleAnswer = (optionIndex: number) => {
-    setAnswers({ ...answers, [currentStep]: optionIndex + 1 });
-  };
-
-  const nextQuestion = () => {
-    if (questions.length > 0 && currentStep < questions.length - 1) {
-      setCurrentStep(currentStep + 1);
-    } else {
-      submitAssessment();
-    }
+    const selectedOption = questions[currentStep].options[optionIndex];
+    setAnswers({ ...answers, [currentStep]: selectedOption.score });
+    
+    setTimeout(() => {
+      if (currentStep < questions.length - 1) {
+        setCurrentStep(currentStep + 1);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        submitAssessment();
+      }
+    }, 400);
   };
 
   const submitAssessment = async () => {
@@ -68,9 +70,9 @@ export default function Madel5cAssessment() {
 
   if (loading) return (
     <div className="min-h-screen bg-white flex items-center justify-center p-6">
-      <div className="flex flex-col items-center gap-4 text-[#4B5320]">
-        <div className="w-12 h-12 border-4 border-[#4B5320] border-t-transparent rounded-full animate-spin"></div>
-        <p className="text-[10px] font-black uppercase tracking-widest italic">Menyiapkan Skenario Psikometri...</p>
+      <div className="flex flex-col items-center gap-2 text-[#4B5320]">
+        <div className="w-8 h-8 border-4 border-[#4B5320] border-t-transparent rounded-full animate-spin"></div>
+        <p className="text-[8px] font-black uppercase tracking-widest">Memuat...</p>
       </div>
     </div>
   );
@@ -84,137 +86,101 @@ export default function Madel5cAssessment() {
            backgroundAttachment: 'fixed'
          }}>
 
-      <main className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 py-8 lg:py-16">
+      <main className="relative z-10 max-w-4xl mx-auto px-4 py-6 sm:py-10">
         <AnimatePresence mode="wait">
           {showInstructions ? (
             <motion.div 
               key="instructions"
               initial={{ opacity: 0, scale: 0.98 }}
               animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              className={`${creamBg}/95 backdrop-blur-2xl border-4 border-white p-10 lg:p-16 rounded-[60px] shadow-2xl relative overflow-hidden`}
+              exit={{ opacity: 0, y: -20 }}
+              className="bg-white/95 backdrop-blur-xl border-4 border-white p-6 sm:p-10 rounded-[35px] shadow-2xl max-w-2xl mx-auto"
             >
-              <div className="relative z-10">
-                <div className="w-24 h-24 bg-[#4B5320] rounded-[35px] flex items-center justify-center mb-10 shadow-2xl shadow-[#4B5320]/30">
-                  <i className="fa-solid fa-shield-halved text-4xl text-white"></i>
+              <div className="flex items-center gap-5 mb-6 border-b border-slate-100 pb-5">
+                <div className="w-12 h-12 bg-[#4B5320] rounded-xl flex items-center justify-center shadow-lg shrink-0">
+                  <i className="fa-solid fa-brain text-xl text-white"></i>
                 </div>
-                
-                <h1 className="text-4xl lg:text-6xl font-black text-[#4B5320] tracking-tighter uppercase italic mb-2 leading-none">Panduan MADEL5C</h1>
-                <p className="text-[#4B5320]/60 font-black uppercase tracking-[0.4em] text-xs mb-14 italic">Situational Judgment Test (SJT)</p>
-
-                <div className="space-y-10 text-[#4B5320] text-xl leading-relaxed mb-16">
-                   <div className="p-10 bg-white/60 rounded-[40px] border border-white shadow-inner font-bold italic text-2xl lg:text-3xl">
-                      "Asesmen utama ini menggunakan skenario kasus nyata untuk memetakan tingkat kompetensi aksi digital strategis Bapak/Ibu."
-                   </div>
-                   
-                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                      <div className="p-8 bg-white/80 rounded-[40px] border border-white shadow-sm">
-                        <div className="flex items-center gap-5 mb-6">
-                          <div className="w-12 h-12 bg-[#4B5320] rounded-2xl flex items-center justify-center text-white shadow-lg"><i className="fa-solid fa-layer-group text-lg"></i></div>
-                          <p className="font-black text-[#4B5320] uppercase tracking-widest text-xs">Struktur Instrumen</p>
-                        </div>
-                        <p className="text-base font-bold opacity-80 italic">Terdapat <b>30 skenario kasus</b> yang diadaptasi dari situasi riil di dunia pendidikan digital.</p>
-                      </div>
-
-                      <div className="p-8 bg-white/80 rounded-[40px] border border-white shadow-sm">
-                        <div className="flex items-center gap-5 mb-6">
-                          <div className="w-12 h-12 bg-[#4B5320] rounded-2xl flex items-center justify-center text-white shadow-lg"><i className="fa-solid fa-star text-lg"></i></div>
-                          <p className="font-black text-[#4B5320] uppercase tracking-widest text-xs">Metode Penilaian</p>
-                        </div>
-                        <p className="text-base font-bold opacity-80 italic">Setiap pilihan memiliki bobot <b>1-5 poin</b> berdasarkan standar efektivitas aksi digital.</p>
-                      </div>
-                   </div>
+                <div>
+                  <h1 className="text-xl sm:text-3xl font-black text-[#4B5320] tracking-tighter uppercase italic leading-none">Instrumen MADEL5C</h1>
+                  <p className="text-[#4B5320]/60 font-bold uppercase tracking-widest text-[9px] mt-1">Situational Judgment Test</p>
                 </div>
-
-                <button 
-                  onClick={() => setShowInstructions(false)}
-                  className="w-full lg:w-fit px-16 py-6 bg-[#4B5320] hover:bg-[#354B37] text-white font-black rounded-[30px] transition-all shadow-2xl shadow-[#4B5320]/40 uppercase tracking-[0.4em] text-xs"
-                >
-                  Mulai Asesmen Utama <i className="fa-solid fa-play ml-4 text-[10px]"></i>
-                </button>
               </div>
+              
+              <div className="space-y-6 mb-10">
+                <div className="p-5 bg-[#FAF9F6] rounded-2xl border border-[#4B5320]/10 font-medium text-sm sm:text-base text-[#4B5320] leading-relaxed shadow-sm italic">
+                  "Tahap utama asesmen menggunakan skenario situasi nyata untuk mengukur kompetensi literasi digital Bapak/Ibu secara mendalam."
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex items-center gap-3 p-3 bg-white border border-slate-100 rounded-xl">
+                    <div className="w-8 h-8 rounded-lg bg-[#4B5320] text-white flex items-center justify-center font-black text-xs">30</div>
+                    <p className="font-bold text-[#4B5320] uppercase tracking-wider text-[9px]">Skenario Situasi</p>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 bg-white border border-slate-100 rounded-xl">
+                    <div className="w-8 h-8 rounded-lg bg-[#4B5320] text-white flex items-center justify-center font-black text-xs">5</div>
+                    <p className="font-bold text-[#4B5320] uppercase tracking-wider text-[9px]">Opsi Tindakan</p>
+                  </div>
+                </div>
+              </div>
+
+              <button 
+                onClick={() => setShowInstructions(false)}
+                className="w-full py-4 bg-[#4B5320] hover:bg-[#354B37] text-white font-black rounded-xl transition-all shadow-xl uppercase tracking-[0.4em] text-[10px] flex items-center justify-center gap-4"
+              >
+                MULAI ASESMEN <i className="fa-solid fa-chevron-right text-[9px]"></i>
+              </button>
             </motion.div>
           ) : (
             <motion.div 
               key="assessment"
-              initial={{ opacity: 0, x: 40 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="space-y-10"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="space-y-4 max-w-3xl mx-auto"
             >
-              <div className={`${creamBg}/90 backdrop-blur-xl flex flex-col sm:flex-row justify-between items-center p-8 rounded-[40px] border-4 border-white shadow-2xl gap-8`}>
-                 <div className="flex items-center gap-8">
-                    <div className="w-20 h-20 bg-[#4B5320] rounded-[30px] flex items-center justify-center text-4xl font-black text-white shadow-2xl italic">{currentStep + 1}</div>
+               <div className="bg-white/95 backdrop-blur-xl flex justify-between items-center p-4 sm:p-6 rounded-[25px] border-2 border-white shadow-xl">
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 bg-[#4B5320] rounded-xl flex items-center justify-center font-black text-white text-sm shadow-lg italic">{currentStep + 1}</div>
                     <div>
-                       <h3 className="text-3xl font-black text-[#4B5320] tracking-tighter uppercase italic leading-none">Skenario Utama</h3>
-                       <p className="text-[11px] font-black text-[#4B5320]/60 uppercase tracking-[0.4em] mt-3">{questions[currentStep]?.dim || "Asesmen Kompetensi Digital"}</p>
+                      <h3 className="font-black text-[#4B5320] uppercase text-[9px] tracking-widest leading-none">Skenario Ke-{currentStep + 1}</h3>
+                      <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-1">Kemajuan: {currentStep + 1} / {questions.length}</p>
                     </div>
-                 </div>
-                 <div className="w-full sm:w-fit flex items-center gap-10 bg-white/60 px-8 py-5 rounded-[30px] border border-white shadow-inner">
-                    <div className="text-center">
-                       <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">PROGRES</p>
-                       <p className="text-2xl font-black text-[#4B5320]">{Math.round(((currentStep + 1) / (questions.length || 1)) * 100)}%</p>
-                    </div>
-                    <div className="flex-1 sm:w-40 h-3 bg-slate-100 rounded-full overflow-hidden p-0.5 border border-[#4B5320]/10">
-                       <div className="h-full bg-[#4B5320] rounded-full transition-all duration-700 shadow-md" style={{ width: `${((currentStep + 1) / (questions.length || 1)) * 100}%` }}></div>
-                    </div>
-                 </div>
-              </div>
+                  </div>
+                  <div className="flex-1 max-w-[150px] h-2 bg-slate-100 rounded-full overflow-hidden border border-slate-200 ml-4">
+                     <div className="h-full bg-[#4B5320] transition-all duration-700" style={{ width: `${((currentStep + 1) / (questions.length || 1)) * 100}%` }}></div>
+                  </div>
+               </div>
 
-              <div className={`${creamBg}/95 backdrop-blur-2xl border-4 border-white p-10 lg:p-16 rounded-[60px] shadow-2xl`}>
-                 <div className="mb-14 p-12 bg-white/60 border-l-[15px] border-[#4B5320] rounded-[40px] shadow-inner drop-shadow-[0_5px_15px_rgba(255,255,255,0.8)]">
-                    <p className="text-2xl lg:text-4xl text-[#4B5320] font-black leading-snug italic">
+               <div className="bg-white/95 backdrop-blur-xl border-4 border-white p-5 sm:p-8 rounded-[35px] shadow-2xl relative overflow-hidden">
+                 <div className="mb-6 p-5 sm:p-8 bg-[#FAF9F6] border-l-[8px] border-[#4B5320] rounded-2xl shadow-inner relative z-10">
+                    <p className="text-xs sm:text-lg text-[#4B5320] font-bold leading-relaxed italic">
                       "{questions[currentStep]?.scenario}"
                     </p>
                  </div>
 
-                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.5em] mb-10 text-center drop-shadow-[0_2px_4px_rgba(255,255,255,1)]">Pilihlah Tindakan Yang Paling Tepat</p>
+                 <p className="text-[8px] font-black text-slate-400 uppercase tracking-[0.4em] mb-6 text-center">Pilihlah Tindakan Yang Paling Tepat</p>
 
-                 <div className="grid grid-cols-1 gap-4 sm:gap-5">
+                 <div className="grid grid-cols-1 gap-3">
                     {questions[currentStep]?.options?.map((opt: any, idx: number) => (
                       <button
                         key={idx}
                         onClick={() => handleAnswer(idx)}
-                        className={`group flex items-start gap-4 sm:gap-6 p-5 sm:p-7 rounded-[35px] border-4 transition-all text-left ${
-                          answers[currentStep] === idx + 1
-                            ? "bg-[#4B5320] border-[#4B5320] text-white shadow-2xl scale-[1.01]"
-                            : "bg-white/70 border-white text-[#4B5320] hover:border-[#4B5320]/30 shadow-md"
+                        className={`group flex items-start gap-4 p-4 sm:p-5 rounded-2xl border-2 transition-all text-left ${
+                          answers[currentStep] === opt.score
+                            ? "bg-[#4B5320] border-[#4B5320] text-white shadow-lg scale-[1.01]"
+                            : "bg-white border-slate-100 text-[#4B5320] hover:border-[#4B5320]/20 shadow-sm"
                         }`}
                       >
-                        <span className={`mt-1 w-10 h-10 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center font-black text-sm sm:text-xl transition-all shrink-0 ${
-                          answers[currentStep] === idx + 1 ? "bg-white text-[#4B5320] shadow-xl" : "bg-slate-50 text-slate-400"
+                        <span className={`mt-0.5 w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center font-black text-xs sm:text-sm transition-all shrink-0 ${
+                          answers[currentStep] === opt.score ? "bg-white text-[#4B5320]" : "bg-slate-50 text-slate-300"
                         }`}>
                           {String.fromCharCode(65 + idx)}
                         </span>
-                        <div className="flex-1 pt-1 sm:pt-3">
-                          <span className="font-bold text-sm sm:text-lg leading-relaxed">{opt?.text || ""}</span>
+                        <div className="flex-1 pt-1">
+                          <span className="font-bold text-xs sm:text-sm leading-relaxed">{opt?.text || ""}</span>
                         </div>
                       </button>
                     ))}
                  </div>
-
-                 <div className="mt-16 flex flex-col sm:flex-row justify-between items-center gap-8">
-                    <button 
-                       onClick={() => currentStep > 0 && setCurrentStep(currentStep - 1)}
-                       disabled={currentStep === 0}
-                       className={`w-full sm:w-fit px-12 py-6 rounded-[30px] font-black uppercase tracking-widest text-[11px] transition-all ${currentStep === 0 ? 'invisible' : 'text-[#4B5320]/40 hover:text-[#4B5320]'}`}
-                    >
-                       <i className="fa-solid fa-arrow-left mr-4"></i> Sebelumnya
-                    </button>
-                    
-                    <button
-                      disabled={!answers[currentStep]}
-                      onClick={nextQuestion}
-                      className={`w-full sm:w-fit px-16 py-7 rounded-[35px] font-black uppercase tracking-[0.4em] text-xs transition-all flex items-center justify-center gap-5 ${
-                        answers[currentStep]
-                          ? "bg-[#4B5320] hover:bg-[#354B37] text-white shadow-2xl shadow-[#4B5320]/40"
-                          : "bg-slate-100 text-slate-300 cursor-not-allowed shadow-inner"
-                      }`}
-                    >
-                      {currentStep === questions.length - 1 ? "Simpan Jawaban" : "Lanjutkan"}
-                      <i className="fa-solid fa-chevron-right text-xs"></i>
-                    </button>
-                 </div>
-              </div>
+               </div>
             </motion.div>
           )}
         </AnimatePresence>
