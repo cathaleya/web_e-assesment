@@ -8,6 +8,8 @@ export default function LoginPage() {
   const [campus, setCampus] = useState("");
   const [loginType, setLoginType] = useState<"student" | "admin">("student");
   const [gender, setGender] = useState<string>("");
+  const [adminUsername, setAdminUsername] = useState("");
+  const [adminPassword, setAdminPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
@@ -49,8 +51,26 @@ export default function LoginPage() {
           setIsLoading(false);
         }
       } else {
-        localStorage.setItem("userName", "Administrator");
-        router.push("/admin");
+        // Admin login — validate against server
+        if (!adminUsername || !adminPassword) {
+          setError("Masukkan username dan password admin.");
+          setIsLoading(false);
+          return;
+        }
+        const res = await fetch('/api/admin/auth', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: adminUsername, password: adminPassword })
+        });
+        if (res.ok) {
+          localStorage.setItem("userName", "Administrator");
+          localStorage.setItem("isAdmin", "true");
+          router.push("/admin");
+        } else {
+          const data = await res.json().catch(() => ({}));
+          setError(data.error || "Akses ditolak. Periksa username dan password.");
+          setIsLoading(false);
+        }
       }
     } catch (error) {
       console.error(error);
@@ -135,14 +155,14 @@ export default function LoginPage() {
                   <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 ml-1">Admin Username</label>
                   <div className="relative group">
                     <i className="fa-solid fa-shield-halved absolute left-5 top-4 text-slate-500 group-focus-within:text-indigo-400 transition-colors"></i>
-                    <input type="text" required placeholder="Username admin..." className="w-full bg-slate-800/50 border border-slate-700 rounded-2xl py-4 pl-14 pr-5 text-sm text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all input-glass" />
+                    <input type="text" required value={adminUsername} onChange={e => setAdminUsername(e.target.value)} placeholder="Username admin..." className="w-full bg-slate-800/50 border border-slate-700 rounded-2xl py-4 pl-14 pr-5 text-sm text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all input-glass" />
                   </div>
                 </div>
                 <div>
                   <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 ml-1">Password</label>
                   <div className="relative group">
                     <i className="fa-solid fa-lock absolute left-5 top-4 text-slate-500 group-focus-within:text-indigo-400 transition-colors"></i>
-                    <input type="password" required placeholder="••••••••" className="w-full bg-slate-800/50 border border-slate-700 rounded-2xl py-4 pl-14 pr-5 text-sm text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all input-glass" />
+                    <input type="password" required value={adminPassword} onChange={e => setAdminPassword(e.target.value)} placeholder="••••••••" className="w-full bg-slate-800/50 border border-slate-700 rounded-2xl py-4 pl-14 pr-5 text-sm text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all input-glass" />
                   </div>
                 </div>
               </div>
