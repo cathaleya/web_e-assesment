@@ -293,63 +293,6 @@ export default function UserDashboard() {
               </div>
             )}
 
-            {activeTab === 'survey' && (
-              <div className="space-y-8">
-                 {/* Survei Panel tetap Putih agar Kontras tapi Bersih */}
-                 <div className="rounded-[40px] p-12 bg-white/95 backdrop-blur-3xl border-white shadow-2xl relative overflow-hidden">
-                    <div className="flex items-center gap-6 mb-12">
-                      <div className="w-16 h-16 rounded-3xl bg-blue-600 text-white flex items-center justify-center text-3xl shadow-xl shadow-blue-500/40"><i className="fa-solid fa-chart-line"></i></div>
-                      <div><h2 className="text-3xl font-black text-slate-900 italic uppercase tracking-tighter">Statistik Survey Pengguna</h2><p className="text-slate-500 font-black uppercase tracking-[0.2em] text-[10px] mt-1">Real-time Usability Performance Matrix</p></div>
-                    </div>
-                    
-                    {hasFinishedSurvey ? (
-                      <div className="space-y-12">
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                          <div className="bg-blue-600 rounded-[35px] p-10 text-white shadow-2xl shadow-blue-900/40"><p className="text-xs font-bold opacity-80 uppercase mb-2">SUS Score</p><div className="text-7xl font-black mb-2">{surveyData?.totalScore || '0'}</div><p className="text-xs font-bold bg-white/20 rounded-full px-5 py-2 inline-block uppercase tracking-widest">Calculated Grade</p></div>
-                          <div className="bg-slate-50 rounded-[35px] p-10 border border-slate-100 shadow-inner flex flex-col justify-center">
-                             <p className="text-xs font-bold text-slate-400 uppercase mb-6 text-center">Achievement Graph</p>
-                             <div className="h-24">
-                                <Bar data={{
-                                  labels: ['Usability', 'UX', 'Satisfaction'],
-                                  datasets: [{
-                                    data: [85, 92, 88],
-                                    backgroundColor: '#2563eb',
-                                    borderRadius: 5
-                                  }]
-                                }} options={{ responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { display: false } } }} />
-                             </div>
-                          </div>
-                          <div className="bg-slate-50 rounded-[35px] p-10 border border-slate-100 shadow-inner flex flex-col justify-center items-center text-center">
-                             <p className="text-xs font-bold text-slate-400 uppercase mb-2">Platform Rank</p>
-                             <div className="text-5xl font-black text-slate-900">A+</div>
-                             <p className="text-[10px] font-bold text-blue-600 uppercase tracking-widest mt-2">Top Performer</p>
-                          </div>
-                        </div>
-
-                        <div className="bg-slate-900 rounded-[40px] p-10 text-white border border-white/5">
-                           <h4 className="text-sm font-black italic uppercase mb-8 border-l-4 border-blue-500 pl-4 tracking-widest">Usability Breakdown</h4>
-                           <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                              <div>
-                                 <p className="text-xs text-slate-400 mb-4 font-bold uppercase">System Efficiency</p>
-                                 <div className="w-full h-3 bg-white/5 rounded-full overflow-hidden"><div className="h-full bg-blue-500" style={{ width: '90%' }}></div></div>
-                              </div>
-                              <div>
-                                 <p className="text-xs text-slate-400 mb-4 font-bold uppercase">Learning Curve</p>
-                                 <div className="w-full h-3 bg-white/5 rounded-full overflow-hidden"><div className="h-full bg-teal-500" style={{ width: '95%' }}></div></div>
-                              </div>
-                           </div>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="text-center py-24 bg-slate-50 rounded-[40px] border border-dashed border-slate-200">
-                         <i className="fa-solid fa-clipboard-list text-slate-300 text-6xl mb-6"></i>
-                         <h4 className="text-xl font-black text-slate-400 uppercase italic">Survei Belum Diisi</h4>
-                         <p className="text-slate-400 text-sm mt-2">Silakan selesaikan Asesmen terlebih dahulu untuk mengisi survei.</p>
-                      </div>
-                    )}
-                 </div>
-              </div>
-            )}
 
           </div>
         </div>
