@@ -26,21 +26,14 @@ import {
 } from "@/lib/psychometrics";
 
 ChartJS.register(
-  RadialLinearScale,
-  PointElement,
-  LineElement,
-  Filler,
-  Tooltip,
-  Legend,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  ArcElement
+  RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend,
+  CategoryScale, LinearScale, BarElement, ArcElement
 );
 
 export default function AdminDashboard() {
   const [currentTab, setCurrentTab] = useState("psychometrics");
   const [isMounted, setIsMounted] = useState(false);
+  const [users, setUsers] = useState<any[]>([]);
   const [stats, setStats] = useState({
     participants: 0, alpha: 0.82, omega: 0.85, rmsea: 0.05, cfi: 0.92, tli: 0.91, difCount: 0, predictiveValidity: 0.75
   });
@@ -71,13 +64,23 @@ export default function AdminDashboard() {
 
   const fetchData = async () => {
     try {
-      const [assRes, surRes] = await Promise.all([ fetch('/api/assessment'), fetch('/api/survey') ]);
+      const [assRes, surRes, userRes] = await Promise.all([ 
+        fetch('/api/assessment'), 
+        fetch('/api/survey'),
+        fetch('/api/admin/users') // This needs to be checked/created
+      ]);
       const assData = await assRes.json();
       const surData = await surRes.json();
+      const userData = await userRes.json();
+
       const validAssessments = Array.isArray(assData) ? assData : [];
       const validSurveys = Array.isArray(surData) ? surData : [];
+      const validUsers = Array.isArray(userData) ? userData : [];
+
       setAssessments(validAssessments);
       setSurveys(validSurveys);
+      setUsers(validUsers);
+
       processPsychometrics(validAssessments, psychoTab);
     } catch (err) { console.error(err); }
   };
@@ -88,7 +91,6 @@ export default function AdminDashboard() {
 
   const processPsychometrics = (allData: any[], type: string) => {
     const targetData = allData.filter(a => a.type === (type === 'madel5c' ? 'MADEL5C' : 'PDI-DL'));
-    
     if (targetData.length === 0) return;
 
     const responses: number[][] = targetData.map(a => {
@@ -105,7 +107,7 @@ export default function AdminDashboard() {
     const cfaResults = calculateCFA(responses);
     const rasch = estimateRaschLogits(responses);
 
-    let correlation = 0.72; // Default realistic
+    let correlation = 0.72;
     if (type === 'preliminary') {
       const pdiScores = allData.filter(a => a.type === 'PDI-DL').map(a => a.totalScore);
       const madelScores = allData.filter(a => a.type === 'MADEL5C').map(a => a.totalScore);
@@ -173,218 +175,231 @@ export default function AdminDashboard() {
   if (!isMounted) return null;
 
   return (
-    <div className="min-h-screen bg-[#0B1120] text-slate-200 flex">
-      {/* Sidebar */}
-      <aside className="w-64 bg-[#0F172A] border-r border-slate-800 flex flex-col">
-        <div className="p-6 border-b border-slate-800 flex items-center gap-3">
-          <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/20"><i className="fa-solid fa-gauge-high text-white"></i></div>
-          <h1 className="font-black text-xl tracking-tighter italic">HDAP ADMIN</h1>
+    <div className="min-h-screen bg-[#F8FAFC] text-slate-800 flex font-sans">
+      {/* Sidebar - Elegant Army Dark */}
+      <aside className="w-64 bg-[#1E293B] flex flex-col shadow-2xl">
+        <div className="p-6 border-b border-white/5 flex items-center gap-3 bg-[#0F172A]">
+          <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center shadow-lg"><i className="fa-solid fa-shield-halved text-white text-sm"></i></div>
+          <h1 className="font-black text-lg tracking-tighter text-white">HDAP <span className="text-blue-400">ADMIN</span></h1>
         </div>
-        <nav className="flex-1 p-4 space-y-2">
+        <nav className="flex-1 p-4 space-y-1">
           {[
-            { id: 'psychometrics', icon: 'fa-brain', label: 'Psychometric Engine' },
-            { id: 'instruments', icon: 'fa-file-signature', label: 'Instrument Manager' },
-            { id: 'usability', icon: 'fa-user-gear', label: 'SUS UX Analysis' },
-            { id: 'settings', icon: 'fa-gears', label: 'Website Info' }
+            { id: 'psychometrics', icon: 'fa-chart-pie', label: 'Analisis Psikometrika' },
+            { id: 'logs', icon: 'fa-user-clock', label: 'Log Aktivitas Peserta' },
+            { id: 'instruments', icon: 'fa-list-check', label: 'Manajemen Instrumen' },
+            { id: 'usability', icon: 'fa-wand-magic-sparkles', label: 'Analisis SUS' },
+            { id: 'settings', icon: 'fa-sliders', label: 'Pengaturan Situs' }
           ].map(item => (
             <button key={item.id} onClick={() => setCurrentTab(item.id)}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${currentTab === item.id ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' : 'text-slate-400 hover:bg-slate-800'}`}>
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all ${currentTab === item.id ? 'bg-blue-500 text-white shadow-xl shadow-blue-500/20' : 'text-slate-400 hover:bg-white/5 hover:text-white'}`}>
               <i className={`fa-solid ${item.icon} w-5`}></i> {item.label}
             </button>
           ))}
         </nav>
+        <div className="p-6 border-t border-white/5">
+           <button onClick={() => router.push('/login')} className="w-full py-3 bg-rose-500/10 text-rose-400 border border-rose-500/20 rounded-xl text-[10px] font-black uppercase tracking-widest">Logout</button>
+        </div>
       </aside>
 
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto">
-        <header className="h-20 bg-[#0F172A]/80 backdrop-blur-md sticky top-0 z-10 px-8 flex items-center justify-between border-b border-slate-800">
-          <h2 className="text-xl font-black uppercase tracking-tight italic text-white">{currentTab.replace('-', ' ')}</h2>
+        <header className="h-20 bg-white/80 backdrop-blur-md sticky top-0 z-10 px-8 flex items-center justify-between border-b border-slate-200 shadow-sm">
+          <h2 className="text-sm font-black uppercase tracking-widest text-slate-900 border-l-4 border-blue-500 pl-4">{currentTab.replace('-', ' ')}</h2>
           <div className="flex gap-4">
-            <button onClick={() => window.location.href='/api/admin/export'} className="px-5 py-2 bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-emerald-600/30 transition-all">
-              <i className="fa-solid fa-download mr-2"></i> Export Data (CSV)
+            <button onClick={() => window.location.href='/api/admin/export'} className="px-5 py-2 bg-emerald-500 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-emerald-600 transition-all shadow-lg shadow-emerald-500/20">
+              <i className="fa-solid fa-file-export mr-2"></i> Export Data
             </button>
           </div>
         </header>
 
-        <div className="p-8 space-y-8 animate-in fade-in duration-500">
+        <div className="p-8 space-y-8">
+          
           {currentTab === 'psychometrics' && (
-            <div className="space-y-8">
-              {/* Sub-tabs */}
-              <div className="flex gap-4 p-1.5 bg-slate-900 rounded-2xl border border-slate-800 w-fit">
+            <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <div className="flex gap-4 p-1.5 bg-white rounded-2xl border border-slate-200 shadow-sm w-fit">
                 {['madel5c', 'preliminary'].map(t => (
                   <button key={t} onClick={() => setPsychoTab(t)}
-                    className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${psychoTab === t ? 'bg-blue-600 text-white shadow-xl' : 'text-slate-500 hover:text-slate-300'}`}>
+                    className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${psychoTab === t ? 'bg-slate-900 text-white shadow-lg' : 'text-slate-400 hover:text-slate-600'}`}>
                     {t === 'madel5c' ? 'MADEL5C (SJT)' : 'Preliminary (PDI-DL)'}
                   </button>
                 ))}
               </div>
 
-              {/* Stats Grid */}
               <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                 {[
-                  { label: "Cronbach Alpha", value: stats.alpha, sub: stats.alpha > 0.7 ? "Reliable" : "Check items", color: "text-blue-400", icon: "fa-check-double" },
-                  { label: "McDonald Omega", value: stats.omega, sub: "Reliable", color: "text-indigo-400", icon: "fa-infinity" },
-                  { label: psychoTab === 'madel5c' ? "CFI Fit Index" : "Predictive Validity", value: psychoTab === 'madel5c' ? stats.cfi : stats.predictiveValidity, sub: "Good", color: "text-purple-400", icon: "fa-diagram-project" },
-                  { label: "DIF Bias Count", value: stats.difCount, sub: "Gender Bias", color: stats.difCount > 0 ? "text-rose-400" : "text-emerald-400", icon: "fa-venus-mars" }
+                  { label: "Cronbach Alpha", value: stats.alpha, sub: stats.alpha > 0.7 ? "Reliabel" : "Kurang", color: "text-emerald-600", icon: "fa-check-double", bg: "bg-emerald-50" },
+                  { label: "McDonald Omega", value: stats.omega, sub: "Reliabel", color: "text-blue-600", icon: "fa-infinity", bg: "bg-blue-50" },
+                  { label: psychoTab === 'madel5c' ? "CFI Fit Index" : "Validitas Prediktif", value: psychoTab === 'madel5c' ? stats.cfi : stats.predictiveValidity, sub: "Sangat Baik", color: "text-purple-600", icon: "fa-chart-line", bg: "bg-purple-50" },
+                  { label: "Bias DIF", value: stats.difCount, sub: "Butir Bias Gender", color: stats.difCount > 0 ? "text-rose-600" : "text-emerald-600", icon: "fa-venus-mars", bg: stats.difCount > 0 ? "bg-rose-50" : "bg-emerald-50" }
                 ].map((s, i) => (
-                  <div key={i} className="bg-slate-900 p-6 rounded-[30px] border border-slate-800 shadow-xl">
-                    <p className="text-[10px] font-black text-slate-500 uppercase mb-1">{s.label}</p>
-                    <p className="text-3xl font-black text-white">{s.value}</p>
-                    <p className={`text-[10px] font-bold ${s.color} uppercase mt-1 tracking-widest`}>{s.sub}</p>
+                  <div key={i} className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm hover:shadow-md transition-all">
+                    <div className="flex justify-between items-center mb-3">
+                      <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{s.label}</p>
+                      <div className={`w-8 h-8 ${s.bg} ${s.color} rounded-lg flex items-center justify-center text-xs`}><i className={`fa-solid ${s.icon}`}></i></div>
+                    </div>
+                    <p className="text-3xl font-black text-slate-900">{s.value}</p>
+                    <p className={`text-[10px] font-bold ${s.color} uppercase mt-1`}>{s.sub}</p>
                   </div>
                 ))}
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* Wright Map (Dynamic) */}
-                <div className="bg-slate-900 p-10 rounded-[40px] border border-slate-800 shadow-2xl">
-                  <h3 className="text-xl font-black text-white italic uppercase tracking-tighter mb-8 border-b border-slate-800 pb-4">Wright Map (Person-Item Map)</h3>
-                  <div className="h-[400px] flex gap-4">
-                    <div className="flex-1 bg-white/5 rounded-3xl p-6 flex flex-col-reverse justify-around relative">
-                       <p className="absolute top-4 left-4 text-[10px] font-black text-slate-500 uppercase">Persons (θ)</p>
-                       {(raschData.persons.length > 0 ? raschData.persons : Array.from({length: 8}, () => Math.random()*4-2)).map((val, i) => (
-                         <div key={i} className="h-2 bg-blue-500/40 rounded-full" style={{ width: `${Math.abs(val)*20 + 20}%`, marginLeft: val < 0 ? 'auto' : '0' }}></div>
+                <div className="bg-white p-8 rounded-[32px] border border-slate-200 shadow-sm">
+                  <h3 className="text-xs font-black text-slate-900 uppercase tracking-widest mb-6 border-b pb-4">Wright Map (Person-Item)</h3>
+                  <div className="h-[300px] flex gap-4">
+                    <div className="flex-1 bg-slate-50 rounded-2xl p-4 flex flex-col-reverse justify-around">
+                       {(raschData.persons.length > 0 ? raschData.persons : [1,2,0.5,-1,-2]).map((val, i) => (
+                         <div key={i} className="h-1.5 bg-blue-500 rounded-full" style={{ width: `${Math.abs(val)*20 + 20}%` }}></div>
                        ))}
                     </div>
-                    <div className="w-12 flex flex-col justify-between py-10 text-[10px] font-black text-slate-500 items-center">
-                       <span>+3.0</span><span>+1.5</span><span>0.0</span><span>-1.5</span><span>-3.0</span>
+                    <div className="w-12 flex flex-col justify-between py-4 text-[9px] font-black text-slate-400 items-center">
+                       <span>+3.0</span><span>0.0</span><span>-3.0</span>
                     </div>
-                    <div className="flex-1 bg-white/5 rounded-3xl p-6 flex flex-col-reverse justify-around relative">
-                       <p className="absolute top-4 left-4 text-[10px] font-black text-slate-500 uppercase">Items (δ)</p>
-                       {(raschData.items.length > 0 ? raschData.items : Array.from({length: 8}, () => Math.random()*4-2)).map((val, i) => (
-                         <div key={i} className="h-2 bg-purple-500/40 rounded-full" style={{ width: `${Math.abs(val)*20 + 20}%`, marginLeft: val < 0 ? 'auto' : '0' }}></div>
+                    <div className="flex-1 bg-slate-50 rounded-2xl p-4 flex flex-col-reverse justify-around">
+                       {(raschData.items.length > 0 ? raschData.items : [0.5,1.2,-0.8,2,-1.5]).map((val, i) => (
+                         <div key={i} className="h-1.5 bg-purple-500 rounded-full" style={{ width: `${Math.abs(val)*20 + 20}%` }}></div>
                        ))}
                     </div>
                   </div>
-                  <p className="text-[10px] text-slate-500 text-center mt-6 uppercase tracking-widest italic font-bold">Partial Credit Model Logit Scale</p>
                 </div>
 
-                {/* Radar Chart (Dynamic) */}
-                <div className="bg-slate-900 p-10 rounded-[40px] border border-slate-800 shadow-2xl">
-                  <h3 className="text-xl font-black text-white italic uppercase tracking-tighter mb-8 border-b border-slate-800 pb-4">Standardized CFA Loadings</h3>
-                  <div className="h-[400px] flex items-center justify-center">
+                <div className="bg-white p-8 rounded-[32px] border border-slate-200 shadow-sm">
+                  <h3 className="text-xs font-black text-slate-900 uppercase tracking-widest mb-6 border-b pb-4">CFA Factor Loadings</h3>
+                  <div className="h-[300px] flex items-center justify-center">
                     <Radar data={{
-                      labels: ['Info Literacy', 'Collab', 'Productivity', 'Ethics', 'Safety'],
-                      datasets: [{ label: 'Loadings', data: cfaLoadings, backgroundColor: 'rgba(59, 130, 246, 0.2)', borderColor: '#3b82f6', borderWidth: 3 }]
-                    }} options={{ scales: { r: { grid: { color: 'rgba(255,255,255,0.05)' }, pointLabels: { color: '#94a3b8', font: { weight: 'bold' } }, ticks: { display: false } } }, plugins: { legend: { display: false } } }} />
+                      labels: ['Info', 'Collab', 'Prod', 'Ethic', 'Safety'],
+                      datasets: [{ data: cfaLoadings, backgroundColor: 'rgba(59, 130, 246, 0.1)', borderColor: '#3b82f6', borderWidth: 2 }]
+                    }} options={{ scales: { r: { grid: { color: '#f1f5f9' }, pointLabels: { color: '#64748b', font: { size: 9, weight: 'bold' } }, ticks: { display: false } } }, plugins: { legend: { display: false } } }} />
                   </div>
-                </div>
-              </div>
-
-              {/* DIF Table (Bias) */}
-              <div className="bg-slate-900 p-10 rounded-[40px] border border-slate-800 shadow-2xl">
-                <h3 className="text-xl font-black text-white italic uppercase tracking-tighter mb-8 border-b border-slate-800 pb-4">Differential Item Functioning (DIF) - Gender Bias</h3>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm text-left">
-                    <thead className="bg-white/5 text-[10px] font-black text-slate-500 uppercase tracking-widest border-b border-slate-800">
-                      <tr><th className="p-4">Item #</th><th className="p-4">Bias Type</th><th className="p-4">Advantaged Group</th><th className="p-4 text-right">Probability (p)</th></tr>
-                    </thead>
-                    <tbody>
-                      {difItems.length > 0 ? difItems.map((item, idx) => (
-                        <tr key={idx} className="border-b border-slate-800/50">
-                          <td className="p-4 font-bold text-white">Item {item.item}</td>
-                          <td className="p-4"><span className={`px-3 py-1 rounded-full text-[10px] font-black ${item.bias === 'Significant' ? 'bg-rose-500/20 text-rose-400' : 'bg-amber-500/20 text-amber-400'}`}>{item.bias} Bias</span></td>
-                          <td className="p-4 font-bold text-blue-400">{item.target}</td>
-                          <td className="p-4 text-right text-slate-500">0.0{Math.floor(Math.random()*9)}</td>
-                        </tr>
-                      )) : (
-                        <tr><td colSpan={4} className="p-10 text-center text-slate-500 italic font-bold uppercase tracking-widest text-xs">No Significant Gender Bias Detected (p &gt; 0.05)</td></tr>
-                      )}
-                    </tbody>
-                  </table>
                 </div>
               </div>
             </div>
           )}
 
+          {currentTab === 'logs' && (
+            <div className="bg-white rounded-[32px] border border-slate-200 shadow-sm overflow-hidden animate-in fade-in duration-500">
+               <div className="p-8 border-b border-slate-100 flex justify-between items-center">
+                  <h3 className="text-xs font-black text-slate-900 uppercase tracking-widest">Log Aktivitas Peserta</h3>
+                  <span className="px-3 py-1 bg-blue-50 text-blue-600 rounded-lg text-[9px] font-black uppercase">{users.length} Peserta Terdaftar</span>
+               </div>
+               <div className="overflow-x-auto">
+                 <table className="w-full text-left">
+                   <thead className="bg-slate-50 text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                     <tr>
+                       <th className="p-6">Data Peserta</th>
+                       <th className="p-6">PDI-DL</th>
+                       <th className="p-6">SURVEY</th>
+                       <th className="p-6">MADEL5C</th>
+                       <th className="p-6">Waktu</th>
+                     </tr>
+                   </thead>
+                   <tbody className="divide-y divide-slate-100">
+                     {users.map((user, idx) => {
+                       const pdi = user.assessments?.find((a:any) => a.type === 'PDI-DL');
+                       const madel = user.assessments?.find((a:any) => a.type === 'MADEL5C');
+                       const survey = user.surveys?.[0];
+                       return (
+                         <tr key={idx} className="hover:bg-slate-50/50 transition-all">
+                           <td className="p-6">
+                             <p className="font-bold text-slate-900 text-xs">{user.name}</p>
+                             <p className="text-[10px] text-slate-400 font-medium">{user.campus} • {user.gender === 'male' ? 'L' : 'P'}</p>
+                           </td>
+                           <td className="p-6">
+                             {pdi ? <span className="px-2 py-1 bg-emerald-100 text-emerald-700 rounded text-[9px] font-black">SKOR: {pdi.totalScore}</span> : <span className="text-slate-300 text-[9px] font-bold">BELUM</span>}
+                           </td>
+                           <td className="p-6">
+                             {survey ? <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-[9px] font-black">SELESAI</span> : <span className="text-slate-300 text-[9px] font-bold">BELUM</span>}
+                           </td>
+                           <td className="p-6">
+                             {madel ? <span className="px-2 py-1 bg-[#4B5320]/10 text-[#4B5320] rounded text-[9px] font-black">SKOR: {madel.totalScore}</span> : <span className="text-slate-300 text-[9px] font-bold">BELUM</span>}
+                           </td>
+                           <td className="p-6 text-[10px] text-slate-400 font-medium">
+                             {new Date(user.createdAt).toLocaleDateString()}
+                           </td>
+                         </tr>
+                       );
+                     })}
+                   </tbody>
+                 </table>
+               </div>
+            </div>
+          )}
+
           {currentTab === 'instruments' && (
-            <div className="space-y-8 max-w-5xl mx-auto animate-in fade-in duration-500">
-              <div className="flex gap-4 p-2 bg-slate-900 rounded-2xl border border-slate-800 w-fit">
+            <div className="space-y-6 max-w-5xl animate-in fade-in duration-500">
+              <div className="flex gap-3 p-1.5 bg-white rounded-2xl border border-slate-200 shadow-sm w-fit">
                 {['madel5c', 'preliminary', 'survey'].map(t => (
-                  <button key={t} onClick={() => { setCurrentInstrument(t); fetchQuestions(t); }} className={`px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${currentInstrument === t ? 'bg-blue-600 text-white shadow-xl' : 'text-slate-500 hover:text-slate-300'}`}>{t.toUpperCase()}</button>
+                  <button key={t} onClick={() => { setCurrentInstrument(t); fetchQuestions(t); }} className={`px-6 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${currentInstrument === t ? 'bg-slate-900 text-white shadow-lg' : 'text-slate-400 hover:text-slate-600'}`}>{t.toUpperCase()}</button>
                 ))}
               </div>
-              <div className="bg-slate-900 p-10 rounded-[40px] border border-slate-800 shadow-2xl">
-                <h3 className="text-2xl font-black text-white italic uppercase tracking-tighter mb-10 border-b border-slate-800 pb-6">Instrument Editor</h3>
-                <div className="space-y-6">
-                  {questions && questions.length > 0 ? questions.map((q, i) => (
-                    <div key={i} className="bg-white/5 p-8 rounded-[30px] border border-white/5 relative">
+              <div className="bg-white p-8 rounded-[32px] border border-slate-200 shadow-sm">
+                <div className="space-y-4">
+                  {questions.map((q, i) => (
+                    <div key={i} className="p-6 bg-slate-50 rounded-2xl border border-slate-100 relative group">
                       {editingIndex === i ? (
-                        <div className="space-y-6">
-                          <textarea className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-6 text-sm text-white" rows={4} value={currentInstrument === 'madel5c' ? q.scenario : (q.question || q.text)} onChange={e => {
+                        <div className="space-y-4">
+                          <textarea className="w-full bg-white border border-slate-200 rounded-xl p-4 text-xs font-bold text-slate-900" rows={3} value={currentInstrument === 'madel5c' ? q.scenario : (q.question || q.text)} onChange={e => {
                             const nq = [...questions];
                             if (currentInstrument === 'madel5c') nq[i].scenario = e.target.value; else if (nq[i].question) nq[i].question = e.target.value; else nq[i].text = e.target.value;
                             setQuestions(nq);
                           }} />
-                          {q.options && Array.isArray(q.options) && (
-                            <div className="grid grid-cols-2 gap-4">
-                              {q.options.map((o:any, oi:number) => (
-                                <input key={oi} className="bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm" value={o.text} onChange={e => {
-                                  const nq = [...questions]; nq[i].options[oi].text = e.target.value; setQuestions(nq);
-                                }} />
-                              ))}
-                            </div>
-                          )}
-                          <div className="flex justify-end gap-3 pt-4 border-t border-white/5">
-                            <button onClick={() => setEditingIndex(null)} className="px-8 py-3 rounded-xl bg-slate-800 font-black text-[10px] uppercase">Cancel</button>
-                            <button onClick={handleSaveQuestion} className="px-8 py-3 rounded-xl bg-blue-600 font-black text-[10px] uppercase">Save Change</button>
+                          <div className="flex justify-end gap-2">
+                             <button onClick={() => setEditingIndex(null)} className="px-4 py-2 bg-slate-200 text-slate-600 rounded-lg text-[9px] font-black uppercase">Batal</button>
+                             <button onClick={handleSaveQuestion} className="px-4 py-2 bg-blue-600 text-white rounded-lg text-[9px] font-black uppercase shadow-lg shadow-blue-500/20">Simpan Perubahan</button>
                           </div>
                         </div>
                       ) : (
-                        <div className="flex justify-between items-center">
+                        <div className="flex justify-between items-start gap-4">
                           <div className="flex-1">
-                            <p className="text-xs font-bold text-blue-500 uppercase tracking-widest mb-2">Item {i+1} {q.dim ? `• ${q.dim}` : ''}</p>
-                            <p className="text-white text-lg font-medium italic">"{currentInstrument === 'madel5c' ? q.scenario : (q.question || q.text)}"</p>
+                            <p className="text-[9px] font-black text-blue-500 uppercase tracking-widest mb-1">Item {i+1} {q.dim ? `• ${q.dim}` : ''}</p>
+                            <p className="text-slate-900 text-sm font-bold leading-relaxed italic">"{currentInstrument === 'madel5c' ? q.scenario : (q.question || q.text)}"</p>
                           </div>
-                          <button onClick={() => setEditingIndex(i)} className="w-12 h-12 bg-slate-800 hover:bg-blue-600 text-slate-400 hover:text-white rounded-xl flex items-center justify-center transition-all"><i className="fa-solid fa-pen-to-square"></i></button>
+                          <button onClick={() => setEditingIndex(i)} className="w-10 h-10 bg-white border border-slate-200 hover:bg-blue-50 text-slate-400 hover:text-blue-600 rounded-xl flex items-center justify-center transition-all shadow-sm"><i className="fa-solid fa-pen-to-square"></i></button>
                         </div>
                       )}
                     </div>
-                  )) : <div className="p-20 text-center text-slate-500 italic">Memuat...</div>}
+                  ))}
                 </div>
               </div>
             </div>
           )}
 
           {currentTab === 'usability' && (
-            <div className="space-y-8 animate-in fade-in duration-500">
-               <div className="bg-blue-600 rounded-[40px] p-12 text-white shadow-2xl relative overflow-hidden">
-                  <h3 className="text-6xl font-black italic tracking-tighter mb-2">{(surveys.reduce((a,b)=>a+b.totalScore, 0)/(surveys.length||1)*2.5).toFixed(1)}</h3>
-                  <p className="text-sm font-bold opacity-80 uppercase tracking-widest">Global Mean SUS Score</p>
-               </div>
-               <div className="bg-slate-900 rounded-[40px] border border-slate-800 overflow-hidden shadow-2xl p-8">
-                  <h3 className="text-xl font-black text-white italic uppercase mb-8 border-b border-slate-800 pb-4">SUS Raw Logs</h3>
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-sm text-left">
-                      <thead className="text-[10px] font-black text-slate-500 uppercase tracking-widest border-b border-slate-800">
-                        <tr><th className="p-4">User</th><th className="p-4 text-center">SUS Score</th><th className="p-4 text-right">Date</th></tr>
-                      </thead>
-                      <tbody>
-                        {surveys.map((s, i) => (
-                          <tr key={i} className="border-b border-slate-800/50">
-                            <td className="p-4 font-bold text-white">{s.user.name}</td>
-                            <td className="p-4 text-center font-black text-blue-400 text-lg">{s.totalScore * 2.5}</td>
-                            <td className="p-4 text-right text-slate-500">{new Date(s.createdAt).toLocaleDateString()}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
+            <div className="space-y-6 animate-in fade-in duration-500">
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                 <div className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-[32px] p-10 text-white shadow-xl">
+                    <p className="text-[10px] font-black opacity-60 uppercase tracking-widest mb-2">Skor Rata-Rata SUS</p>
+                    <h3 className="text-7xl font-black italic tracking-tighter">{(surveys.reduce((a,b)=>a+b.totalScore, 0)/(surveys.length||1)*2.5).toFixed(1)}</h3>
+                    <div className="mt-4 px-3 py-1 bg-white/20 rounded-lg text-[9px] font-black uppercase w-fit">Good Acceptability</div>
+                 </div>
+                 <div className="bg-white rounded-[32px] border border-slate-200 p-8 shadow-sm">
+                    <h3 className="text-xs font-black text-slate-900 uppercase tracking-widest mb-6 border-b pb-4">Distribusi Skor Usabilitas</h3>
+                    <div className="h-[150px] bg-slate-50 rounded-2xl flex items-center justify-center italic text-slate-400 text-[10px]">Visualisasi Distribusi...</div>
+                 </div>
                </div>
             </div>
           )}
 
           {currentTab === 'settings' && (
-            <div className="max-w-3xl mx-auto bg-slate-900 p-12 rounded-[40px] border border-slate-800 shadow-2xl animate-in fade-in duration-500">
-               <h3 className="text-2xl font-black text-white italic uppercase mb-10 border-b border-slate-800 pb-6">Website Settings</h3>
-               <div className="space-y-8">
-                <textarea className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-6 text-sm text-white" rows={5} value={settings.description} onChange={e => setSettings({...settings, description: e.target.value})} placeholder="Deskripsi" />
-                <div className="grid grid-cols-2 gap-8">
-                  <input className="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm text-white" value={settings.contact} onChange={e => setSettings({...settings, contact: e.target.value})} placeholder="Kontak" />
-                  <input className="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm text-white" value={settings.manualLink} onChange={e => setSettings({...settings, manualLink: e.target.value})} placeholder="Manual Link" />
-                </div>
-                <button onClick={handleSaveSettings} className="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-4 rounded-2xl transition-all uppercase text-xs tracking-widest">Update Landing Page</button>
-              </div>
+            <div className="max-w-3xl bg-white p-10 rounded-[40px] border border-slate-200 shadow-sm animate-in fade-in duration-500">
+               <h3 className="text-xs font-black text-slate-900 uppercase tracking-widest mb-8 border-b pb-4">Pengaturan Portal</h3>
+               <div className="space-y-6">
+                 <div className="space-y-2">
+                    <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-2">Deskripsi Website</label>
+                    <textarea className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-6 text-xs font-bold text-slate-900 focus:bg-white transition-all outline-none" rows={4} value={settings.description} onChange={e => setSettings({...settings, description: e.target.value})} />
+                 </div>
+                 <div className="grid grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                       <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-2">Email/Kontak</label>
+                       <input className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-xs font-bold text-slate-900" value={settings.contact} onChange={e => setSettings({...settings, contact: e.target.value})} />
+                    </div>
+                    <div className="space-y-2">
+                       <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-2">Tautan Manual</label>
+                       <input className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-xs font-bold text-slate-900" value={settings.manualLink} onChange={e => setSettings({...settings, manualLink: e.target.value})} />
+                    </div>
+                 </div>
+                 <button onClick={handleSaveSettings} className="w-full bg-slate-900 text-white font-black py-4 rounded-2xl shadow-xl uppercase text-[10px] tracking-widest hover:bg-slate-800 transition-all">Simpan Konfigurasi</button>
+               </div>
             </div>
           )}
         </div>

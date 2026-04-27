@@ -22,11 +22,27 @@ export default function Madel5cAssessment() {
 
   useEffect(() => { fetchQuestions(); }, []);
 
+  const shuffleArray = (array: any[]) => {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  };
+
   const fetchQuestions = async () => {
     try {
       const res = await fetch('/api/questions?type=madel5c');
       const data = await res.json();
-      setQuestions(Array.isArray(data) ? data : []);
+      if (Array.isArray(data)) {
+        // Shuffle options for EVERY question once at the start
+        const shuffledQuestions = data.map(q => ({
+          ...q,
+          options: shuffleArray(q.options)
+        }));
+        setQuestions(shuffledQuestions);
+      }
       setLoading(false);
     } catch (err) { console.error(err); setLoading(false); }
   };
@@ -67,7 +83,7 @@ export default function Madel5cAssessment() {
               className="bg-white p-6 rounded-2xl shadow-2xl border border-slate-200"
             >
               <h1 className="text-xl font-black text-slate-900 uppercase mb-4 border-b pb-4">MADEL5C Instrumen</h1>
-              <p className="p-3 bg-emerald-50 rounded-lg text-[10px] font-bold text-emerald-900 italic mb-6">"Tahap Akhir: Asesmen berbasis skenario situasi nyata. Tahap ini hanya terbuka bagi Anda yang sudah menyelesaikan Survey Usabilitas."</p>
+              <p className="p-3 bg-emerald-50 rounded-lg text-[10px] font-bold text-emerald-900 italic mb-6">"Tahap Akhir: Asesmen berbasis skenario situasi nyata. Pilihan jawaban telah diacak untuk menjaga objektivitas penilaian."</p>
               <button onClick={() => setShowInstructions(false)} className="w-full py-4 bg-[#4B5320] text-white font-black rounded-lg text-[10px] uppercase tracking-widest shadow-lg">MULAI ASESMEN AKHIR</button>
             </motion.div>
           ) : (
@@ -87,7 +103,7 @@ export default function Madel5cAssessment() {
                   {questions[currentStep]?.options?.map((opt: any, idx: number) => (
                     <button key={idx} onClick={() => handleAnswer(idx)}
                       className={`w-full flex items-start gap-3 p-3 rounded-xl border-2 text-left transition-all ${
-                        answers[currentStep] === opt.score ? "bg-black border-black text-white shadow-xl scale-[1.02]" : `${optionColors[idx % optionColors.length]} opacity-80`
+                        answers[currentStep] === opt.score ? "bg-black border-black text-white shadow-xl scale-[1.02]" : `${optionColors[idx % optionColors.length]} opacity-90`
                       }`}
                     >
                       <span className={`mt-0.5 w-7 h-7 rounded-lg flex items-center justify-center font-black text-[10px] shrink-0 ${answers[currentStep] === opt.score ? "bg-white text-black" : "bg-white/50 border border-current opacity-60"}`}>{String.fromCharCode(65 + idx)}</span>
