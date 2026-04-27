@@ -117,8 +117,8 @@ export default function LandingPage() {
             </div>
             
             <div className="relative group">
-              <div className="aspect-square bg-blue-600/10 rounded-[60px] absolute -inset-4 blur-2xl group-hover:bg-blue-600/20 transition-all"></div>
-              <img src="/platform_mockup.png" alt="Platform Preview" className="relative z-10 rounded-[50px] shadow-2xl border-4 border-white object-cover w-full h-[600px] transform group-hover:scale-[1.02] transition-transform duration-500" />
+              <div className="aspect-square bg-indigo-600/10 rounded-[60px] absolute -inset-4 blur-2xl group-hover:bg-indigo-600/20 transition-all"></div>
+              <img src="/admin_preview.png" alt="Admin Psychometric Analysis Preview" className="relative z-10 rounded-[50px] shadow-2xl border-4 border-slate-800 object-cover w-full h-[600px] transform group-hover:scale-[1.02] transition-transform duration-500" />
             </div>
           </div>
         </div>
