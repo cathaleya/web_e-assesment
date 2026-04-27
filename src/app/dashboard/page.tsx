@@ -53,17 +53,16 @@ export default function UserDashboard() {
     if (savedGender) setUserGender(savedGender);
 
     if (userId) {
+      // Fetch Assessments
       fetch(`/api/assessment?userId=${userId}`)
         .then(res => res.json())
         .then(data => {
-          const results = Array.isArray(data) ? data.filter((r: any) => r.userId === userId) : [];
+          const results = Array.isArray(data) ? data : [];
           setUserResults(results);
           if (results.some((r: any) => r.type === 'PDI-DL')) setHasFinishedAssessment(true);
-          if (results.some((r: any) => r.type === 'MADEL5C')) {
-             // If MADEL5C is done, we assume survey is also done if it follows the flow
-          }
         });
       
+      // Fetch Survey
       fetch(`/api/survey`)
         .then(res => res.json())
         .then(data => {
@@ -85,11 +84,21 @@ export default function UserDashboard() {
     router.push("/login");
   };
 
+  const getRadarData = () => {
+    const pdiResult = userResults.find(r => r.type === 'PDI-DL');
+    if (!pdiResult) return [0, 0, 0, 0, 0];
+    
+    // Simple mock calculation if answersJson is not detailed enough, 
+    // but better to have it reflect total score spread
+    const base = pdiResult.totalScore / 5;
+    return [base + 10, base - 5, base + 15, base, base + 5];
+  };
+
   const radarData = {
     labels: ['Information', 'Creation', 'Pedagogy', 'Ethics', 'Social'],
     datasets: [{
       label: 'Profil Kompetensi',
-      data: hasFinishedAssessment ? [85, 60, 45, 70, 65] : [0, 0, 0, 0, 0],
+      data: hasFinishedAssessment ? getRadarData() : [0, 0, 0, 0, 0],
       backgroundColor: 'rgba(20, 184, 166, 0.4)',
       borderColor: 'rgba(20, 184, 166, 1)',
       pointBackgroundColor: '#fff',

@@ -14,15 +14,34 @@ export default function PreliminaryAssessment() {
   const totalItems = questionsData.length;
   const currentQuestion = questionsData[step - 1];
 
-  const handleNext = (score: number) => {
-    setAnswers({ ...answers, [step]: score });
-    setTimeout(() => {
-      if (step < totalItems) {
-        setStep(step + 1);
-      } else {
-        setFinished(true);
+  const handleNext = async (score: number) => {
+    const newAnswers = { ...answers, [step]: score };
+    setAnswers(newAnswers);
+    
+    if (step < totalItems) {
+      setTimeout(() => setStep(step + 1), 300);
+    } else {
+      setFinished(true);
+      const userId = localStorage.getItem("userId");
+      const totalScore = Object.values(newAnswers).reduce((a, b) => a + b, 0);
+      
+      if (userId) {
+        try {
+          await fetch('/api/assessment', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              userId,
+              type: 'PDI-DL',
+              totalScore,
+              answersJson: newAnswers
+            })
+          });
+        } catch (error) {
+          console.error("Failed to save preliminary result:", error);
+        }
       }
-    }, 300);
+    }
   };
 
   return (

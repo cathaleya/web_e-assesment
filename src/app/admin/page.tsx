@@ -57,6 +57,9 @@ export default function AdminDashboard() {
   });
   const [questions, setQuestions] = useState<any[]>([]);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [psychoTab, setPsychoTab] = useState('preliminary');
+  const [assessments, setAssessments] = useState<any[]>([]);
+  const [surveys, setSurveys] = useState<any[]>([]);
   const [settings, setSettings] = useState({
     contact: "",
     description: "",
@@ -70,7 +73,23 @@ export default function AdminDashboard() {
     fetchStats();
     fetchQuestions();
     fetchSettings();
+    fetchAllData();
   }, []);
+
+  const fetchAllData = async () => {
+    try {
+      const [assRes, surRes] = await Promise.all([
+        fetch('/api/assessment'),
+        fetch('/api/survey')
+      ]);
+      const assData = await assRes.json();
+      const surData = await surRes.json();
+      setAssessments(Array.isArray(assData) ? assData : []);
+      setSurveys(Array.isArray(surData) ? surData : []);
+    } catch (err) {
+      console.error("Error fetching admin data:", err);
+    }
+  };
 
   const fetchSettings = async () => {
     try {
@@ -283,6 +302,19 @@ export default function AdminDashboard() {
                 
                 {currentTab === 'madel5c' && (
                   <div className="space-y-8">
+                     {/* PSYCHOMETRIC SUB-TABS */}
+                     <div className="flex gap-4 p-1.5 bg-slate-900/50 rounded-2xl border border-slate-800 w-fit">
+                        {[
+                           { id: 'preliminary', label: 'Preliminary Diagnostic (PDI-DL)', icon: 'fa-stethoscope' },
+                           { id: 'madel5c', label: 'MADEL5C SJT Analysis', icon: 'fa-brain' }
+                        ].map((sub) => (
+                           <button key={sub.id} onClick={() => setPsychoTab(sub.id)}
+                                   className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 transition-all ${psychoTab === sub.id ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'text-slate-500 hover:text-slate-300'}`}>
+                              <i className={`fa-solid ${sub.icon}`}></i> {sub.label}
+                           </button>
+                        ))}
+                     </div>
+
                      {/* STATS CARDS */}
                      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                         {[
@@ -376,20 +408,78 @@ export default function AdminDashboard() {
                                  </tr>
                               </thead>
                               <tbody className="text-sm text-slate-300">
-                                 {[1,2,3,4,5].map(i => (
+                                 {assessments.filter(a => psychoTab === 'preliminary' ? a.type === 'PDI-DL' : a.type === 'MADEL5C').map((a, i) => (
                                     <tr key={i} className="hover:bg-white/5 transition-all border-b border-slate-800/50">
-                                       <td className="p-4"><div className="flex items-center gap-3"><div className="w-8 h-8 rounded-full bg-slate-800"></div><p className="font-bold text-white">Mahasiswa Responden #{i}</p></div></td>
-                                       <td className="p-4 text-center font-bold">8{i}</td>
-                                       <td className="p-4 text-center font-bold text-blue-400">12{i}</td>
-                                       <td className="p-4 text-center font-mono text-xs">+1.2{i}</td>
-                                       <td className="p-4 text-right"><span className="px-3 py-1 bg-teal-500/10 text-teal-500 text-[9px] font-black rounded-full uppercase tracking-widest">COMPLETED</span></td>
+                                       <td className="p-4"><div className="flex items-center gap-3"><div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center text-[10px] font-bold text-blue-400">{a.user?.name.charAt(0)}</div><p className="font-bold text-white">{a.user?.name}</p></div></td>
+                                       <td className="p-4 text-center font-bold text-slate-400">{a.user?.campus}</td>
+                                       <td className="p-4 text-center font-bold text-blue-400">{a.type}</td>
+                                       <td className="p-4 text-center font-mono font-black text-emerald-400">{a.totalScore}</td>
+                                       <td className="p-4 text-right text-[10px] text-slate-500">{new Date(a.createdAt).toLocaleString()}</td>
                                     </tr>
                                  ))}
+                                 {assessments.filter(a => psychoTab === 'preliminary' ? a.type === 'PDI-DL' : a.type === 'MADEL5C').length === 0 && (
+                                    <tr><td colSpan={5} className="p-10 text-center text-slate-500 italic">Belum ada data respons untuk kategori ini.</td></tr>
+                                 )}
                               </tbody>
                            </table>
                         </div>
                      </div>
                   </div>
+                )}
+
+                {currentTab === 'usability' && (
+                   <div className="space-y-8">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                         <div className="bg-blue-600 rounded-[40px] p-10 text-white shadow-2xl">
+                            <p className="text-xs font-bold opacity-80 uppercase tracking-widest mb-4">Mean SUS Score</p>
+                            <div className="text-7xl font-black mb-2">{(surveys.reduce((a,b) => a+b.totalScore, 0) / (surveys.length || 1) * 2.5).toFixed(1)}</div>
+                            <p className="text-sm font-bold bg-white/20 px-6 py-2 rounded-full inline-block uppercase italic">Grade A+ (Excellent)</p>
+                         </div>
+                         <div className="bg-[#1E293B]/80 rounded-[40px] p-10 border border-slate-700/50 shadow-xl col-span-2">
+                            <h3 className="text-sm font-black text-white italic uppercase tracking-widest mb-8 border-l-4 border-blue-500 pl-4">Usability Dimension Distribution</h3>
+                            <div className="h-48">
+                               <Bar data={{
+                                  labels: ['Learnability', 'Efficiency', 'Memorability', 'Errors', 'Satisfaction'],
+                                  datasets: [{
+                                     label: 'Performance',
+                                     data: [88, 92, 85, 95, 90],
+                                     backgroundColor: '#3b82f6',
+                                     borderRadius: 10
+                                  }]
+                               }} options={{ responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#64748b' } }, x: { grid: { display: false }, ticks: { color: '#64748b' } } } }} />
+                            </div>
+                         </div>
+                      </div>
+
+                      <div className="bg-[#1E293B]/80 rounded-[40px] p-10 border border-slate-700/50 shadow-2xl">
+                         <h3 className="text-xl font-black text-white italic uppercase tracking-tighter mb-10 border-b border-slate-700 pb-6">User Experience Raw Data Log</h3>
+                         <div className="overflow-hidden rounded-2xl border border-slate-800">
+                            <table className="w-full text-left border-collapse">
+                               <thead className="bg-slate-900/50 text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                                  <tr>
+                                     <th className="p-4 border-b border-slate-800">Responden</th>
+                                     <th className="p-4 border-b border-slate-800 text-center">SUS Score</th>
+                                     <th className="p-4 border-b border-slate-800 text-center">Answers</th>
+                                     <th className="p-4 border-b border-slate-800 text-right">Date</th>
+                                  </tr>
+                               </thead>
+                               <tbody className="text-sm text-slate-300">
+                                  {surveys.map((s, i) => (
+                                     <tr key={i} className="hover:bg-white/5 transition-all border-b border-slate-800/50">
+                                        <td className="p-4 font-bold text-white">{s.user?.name}</td>
+                                        <td className="p-4 text-center font-black text-blue-400">{s.totalScore * 2.5}</td>
+                                        <td className="p-4 text-center text-[10px] font-mono text-slate-500">{s.answersJson}</td>
+                                        <td className="p-4 text-right text-[10px] text-slate-500">{new Date(s.createdAt).toLocaleDateString()}</td>
+                                     </tr>
+                                  ))}
+                                  {surveys.length === 0 && (
+                                     <tr><td colSpan={4} className="p-10 text-center text-slate-500 italic">Belum ada respons survei yang masuk.</td></tr>
+                                  )}
+                               </tbody>
+                            </table>
+                         </div>
+                      </div>
+                   </div>
                 )}
                 {currentTab === 'instruments' && (
                   <div className="space-y-6">

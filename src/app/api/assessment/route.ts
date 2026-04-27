@@ -28,10 +28,11 @@ export async function POST(req: Request) {
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const type = searchParams.get('type');
+  const userId = searchParams.get('userId');
 
   try {
     const results = await prisma.assessment.findMany({
-      where: type ? { type } : {},
+      where: userId ? { userId } : (type ? { type } : {}),
       include: {
         user: true
       },
