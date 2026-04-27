@@ -123,7 +123,7 @@ export default function AdminDashboard() {
       if (n > 0) {
         const scores = madelData.map((a: any) => a.totalScore);
         const mean = scores.reduce((a: number, b: number) => a + b, 0) / scores.length;
-        const sd = Math.sqrt(scores.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b, 0) / scores.length);
+        const sd = Math.sqrt(scores.map((x: number) => Math.pow(x - mean, 2)).reduce((a: number, b: number) => a + b, 0) / scores.length);
         
         madelData.forEach((a: any) => {
           if (a.totalScore > (mean + sd)) tinggi++;
