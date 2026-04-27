@@ -1,6 +1,7 @@
 [
   {
     "id": 1,
+    "dim": "C1 - LID",
     "scenario": "Anda sedang mencari referensi jurnal untuk menyusun tugas makalah akhir. Saat mencari di Google dengan kata kunci umum, muncul ratusan ribu hasil yang bercampur antara blog opini dan artikel ilmiah. Bagaimana respons Anda?",
     "options": [
       {
@@ -27,6 +28,7 @@
   },
   {
     "id": 2,
+    "dim": "C1 - LID",
     "scenario": "Anda menemukan video TikTok viral tentang 'metode kilat mengajar calistung' yang diklaim terbukti ampuh, namun tidak mencantumkan sumber rujukan akademis apa pun. Bagaimana respons Anda?",
     "options": [
       {
@@ -53,6 +55,7 @@
   },
   {
     "id": 3,
+    "dim": "C1 - LID",
     "scenario": "Laptop Anda dipenuhi ratusan file PDF materi kuliah, tugas, dan RPP yang menumpuk di folder *Downloads*, sehingga Anda sering kesulitan saat dosen meminta tugas minggu lalu. Apa tindakan Anda?",
     "options": [
       {
@@ -79,6 +82,7 @@
   },
   {
     "id": 4,
+    "dim": "C1 - LID",
     "scenario": "Anda diminta merancang strategi pembelajaran untuk siswa di kelas magang Anda. Anda memiliki data hasil evaluasi nilai harian siswa dari guru pamong dalam bentuk *spreadsheet*. Apa yang Anda lakukan dengan data tersebut?",
     "options": [
       {
@@ -105,6 +109,7 @@
   },
   {
     "id": 5,
+    "dim": "C1 - LID",
     "scenario": "Kelompok Anda sedang menyusun dokumen laporan PKL yang sangat penting. Laporan ini dikerjakan secara kolaboratif, namun salah satu teman mengeluh flashdisknya terkena virus. Bagaimana Anda mengelola data ini?",
     "options": [
       {
@@ -131,6 +136,7 @@
   },
   {
     "id": 6,
+    "dim": "C1 - LID",
     "scenario": "Dosen memberikan tugas menyusun kerangka latar belakang makalah. Anda kebingungan mencari ide dan teringat akan aplikasi ChatGPT. Bagaimana cara Anda menggunakan *tools* tersebut?",
     "options": [
       {
@@ -157,6 +163,7 @@
   },
   {
     "id": 7,
+    "dim": "C2 - KKL",
     "scenario": "Anda ingin meminta izin kepada dosen pengampu mata kuliah karena tidak bisa hadir perkuliahan daring di LMS akibat kendala kesehatan darurat. Langkah komunikasi apa yang Anda ambil?",
     "options": [
       {
@@ -183,6 +190,7 @@
   },
   {
     "id": 8,
+    "dim": "C2 - KKL",
     "scenario": "Anda baru saja menyusun ringkasan materi ujian komprehensif yang sangat lengkap. Banyak rekan beda kelas yang meminta ringkasan tersebut secara digital. Apa yang Anda lakukan?",
     "options": [
       {
@@ -209,6 +217,7 @@
   },
   {
     "id": 9,
+    "dim": "C2 - KKL",
     "scenario": "Kelompok Anda mendapat tugas merancang RPP berkelompok dengan *deadline* singkat, namun anggota kelompok terpisah di berbagai kota berbeda (pulang kampung). Bagaimana Anda mengoordinasi kerja kelompok?",
     "options": [
       {
@@ -235,6 +244,7 @@
   },
   {
     "id": 10,
+    "dim": "C2 - KKL",
     "scenario": "Saat kegiatan PLP (Pengenalan Lapangan Persekolahan), Anda ditugaskan guru pamong untuk menginformasikan tugas mandiri kepada grup WhatsApp orang tua siswa. Bagaimana cara Anda menyampaikannya?",
     "options": [
       {
@@ -261,6 +271,7 @@
   },
   {
     "id": 11,
+    "dim": "C2 - KKL",
     "scenario": "Anda bertugas sebagai moderator forum diskusi presentasi kelompok di Google Meet kelas. Salah satu peserta terus-menerus memotong pembicaraan (*interrupting*) saat peserta lain sedang mengemukakan pendapat. Tindakan Anda?",
     "options": [
       {
@@ -287,6 +298,7 @@
   },
   {
     "id": 12,
+    "dim": "C2 - KKL",
     "scenario": "Anda menyadari bahwa menjadi guru yang kompeten tidak cukup hanya dengan belajar di kelas. Anda ingin memperluas wawasan pedagogik terkini dari praktisi di luar kampus Anda. Apa yang Anda lakukan?",
     "options": [
       {
@@ -313,6 +325,7 @@
   },
   {
     "id": 13,
+    "dim": "C3 - PKD",
     "scenario": "Anda diminta membuat presentasi tentang \"Tata Surya\" untuk siswa SD. Waktu persiapan cukup sempit.",
     "options": [
       {
@@ -339,6 +352,7 @@
   },
   {
     "id": 14,
+    "dim": "C3 - PKD",
     "scenario": "Anda menemukan video dokumenter sejarah dari YouTube yang sangat bagus, tetapi durasinya 45 menit padahal Anda hanya butuh 5 menit spesifik untuk menjelaskan satu topik inti di kelas.",
     "options": [
       {
@@ -365,6 +379,7 @@
   },
   {
     "id": 15,
+    "dim": "C3 - PKD",
     "scenario": "Anda ingin menambahkan lagu latar belakang untuk video *microteaching* Anda yang akan diunggah ke YouTube kampus secara publik.",
     "options": [
       {
@@ -391,6 +406,7 @@
   },
   {
     "id": 16,
+    "dim": "C3 - PKD",
     "scenario": "Beberapa siswa di kelas magang Anda lebih mudah memahami materi melalui visual (gambar), sementara yang lain auditori (suara). Dosen meminta bahan ajar Anda bersifat adaptif/inklusif.",
     "options": [
       {
@@ -417,6 +433,7 @@
   },
   {
     "id": 17,
+    "dim": "C3 - PKD",
     "scenario": "Anda merekam video penjelasan rumus matematika. Namun, ada keluhan dari orang tua bahwa video tersebut sulit dipahami saat siswa belajar di lingkungan rumah yang bising.",
     "options": [
       {
@@ -436,13 +453,14 @@
         "score": 4
       },
       {
-        "text": "Memasukkan video ke aplikasi editor (*CapCut/Premiere*) dan menambahkan takarir teks (*Closed Captions/Subtitle*) otomatis yang akurat di sepanjang video.",
+        "text": "Memasukkan video ke aplikasi editor (*CapCut/Premiere*) and menambahkan takarir teks (*Closed Captions/Subtitle*) otomatis yang akurat di sepanjang video.",
         "score": 5
       }
     ]
   },
   {
     "id": 18,
+    "dim": "C3 - PKD",
     "scenario": "Setelah menggunakan media pembelajaran berupa *Game Quiz* yang Anda buat sendiri selama 1 bulan, hasil belajar siswa kelas Anda ternyata tidak mengalami peningkatan.",
     "options": [
       {
@@ -469,10 +487,11 @@
   },
   {
     "id": 19,
+    "dim": "C4 - EKD",
     "scenario": "Anda mendapat email peringatan dengan subjek \"Akun LMS Kampus Anda Akan Segera Diblokir!\" yang berisi tautan untuk memverifikasi ulang *password* Anda hari ini juga.",
     "options": [
       {
-        "text": "Karena panik, langsung mengeklik tautan tersebut dan memasukkan email serta kata sandi LMS.",
+        "text": "Karena panik, langsung mengeklik tautan tersebut and memasukkan email serta kata sandi LMS.",
         "score": 1
       },
       {
@@ -495,6 +514,7 @@
   },
   {
     "id": 20,
+    "dim": "C4 - EKD",
     "scenario": "Saat masa PPL (magang mengajar) di sekolah, Anda mendokumentasikan foto siswa yang menangis dan tantrum di kelas. Anda ingin mengunggahnya ke Instagram pribadi sebagai keluh kesah tantangan menjadi guru.",
     "options": [
       {
@@ -521,6 +541,7 @@
   },
   {
     "id": 21,
+    "dim": "C4 - EKD",
     "scenario": "Di grup WhatsApp angkatan tersebar *broadcast* bahwa \"Kemendikbud membagikan kuota gratis 100GB\" jika mahasiswa mengisi form yang beralamat \"bit.ly/kuota-gratis-kampus\".",
     "options": [
       {
@@ -547,6 +568,7 @@
   },
   {
     "id": 22,
+    "dim": "C4 - EKD",
     "scenario": "Anda diberi tugas meresensi sebuah jurnal untuk tugas UTS. Saat *browsing*, Anda menemukan artikel blog (*WordPress*) yang isi resensinya sangat brilian dan sesuai dengan topik tugas Anda.",
     "options": [
       {
@@ -566,13 +588,14 @@
         "score": 4
       },
       {
-        "text": "Menggunakan blog tersebut murni sebagai inspirasi pembanding, mensintesisnya dengan jurnal asli yang Anda baca secara independen, dan secara jujur mencantumkan URL blog tersebut di daftar referensi (*academic integrity*).",
+        "text": "Menggunakan blog tersebut murni sebagai inspirasi pembanding, mensintesisnya dengan jurnal asli yang Anda baca secara independen, and secara jujur mencantumkan URL blog tersebut di daftar referensi (*academic integrity*).",
         "score": 5
       }
     ]
   },
   {
     "id": 23,
+    "dim": "C4 - EKD",
     "scenario": "Menjelang pengumpulan laporan akhir, Anda terpaksa bekerja di depan laptop selama lebih dari 10 jam berturut-turut setiap hari. Anda mulai mengalami mata perih, sakit leher, dan siklus tidur kacau.",
     "options": [
       {
@@ -599,6 +622,7 @@
   },
   {
     "id": 24,
+    "dim": "C4 - EKD",
     "scenario": "Anda baru menyadari bahwa akun portal akademik (*SIAKAD*) kampus Anda sepertinya disusupi orang lain, karena ada mata kuliah penting yang terhapus dari Kartu Rencana Studi (KRS) Anda.",
     "options": [
       {
@@ -625,6 +649,7 @@
   },
   {
     "id": 25,
+    "dim": "C5 - SID",
     "scenario": "Anda sedang menjadi presenter utama via Google Meet untuk sidang proposal. Tiba-tiba dosen penguji menginterupsi bahwa suara Anda sama sekali tidak terdengar, padahal ikon *mic* di layar Anda menyala (tidak *mute*).",
     "options": [
       {
@@ -651,6 +676,7 @@
   },
   {
     "id": 26,
+    "dim": "C5 - SID",
     "scenario": "Anda ingin mengadakan kuis interaktif (seperti Kahoot) untuk *ice breaking* di sekolah pelosok tempat Anda mengajar, namun kebijakannya adalah siswa tidak diizinkan membawa HP sama sekali ke kelas.",
     "options": [
       {
@@ -677,6 +703,7 @@
   },
   {
     "id": 27,
+    "dim": "C5 - SID",
     "scenario": "Guru pamong menugaskan Anda untuk mengolah 500 baris data nilai ujian menggunakan fungsi kombinasi *VLOOKUP* di *Microsoft Excel*, padahal Anda belum pernah mempelajarinya. Batas waktunya adalah esok lusa.",
     "options": [
       {
@@ -703,6 +730,7 @@
   },
   {
     "id": 28,
+    "dim": "C5 - SID",
     "scenario": "Anda sangat bersemangat menerapkan pembelajaran berbasis multimedia, namun sekolah magang Anda memiliki aturan kontradiktif: \"Proyektor LCD hanya boleh dipakai oleh guru ASN/Senior\". Akibatnya, Anda tidak punya fasilitas proyektor di kelas.",
     "options": [
       {
@@ -729,6 +757,7 @@
   },
   {
     "id": 29,
+    "dim": "C5 - SID",
     "scenario": "Anda mengajar dalam format *hybrid* (50% siswa hadir fisik di lab, 50% *online* di Zoom). Saat Anda mendemonstrasikan aplikasi di proyektor kelas, siswa yang ada di Zoom mengeluh layar proyektornya buram dan tidak terbaca dari kamera Anda.",
     "options": [
       {
@@ -748,13 +777,14 @@
         "score": 4
       },
       {
-        "text": "Menghubungkan kabel HDMI proyektor ke laptop Anda, melakukan *Share Screen* (*Entire Screen*) di aplikasi Zoom, lalu menyalakan mode *Duplicate Display*, sehingga audiens luring dan daring melihat presentasi digital yang sama tajamnya.",
+        "text": "Menghubungkan kabel HDMI proyektor ke laptop Anda, melakukan *Share Screen* (*Entire Screen*) di aplikasi Zoom, lalu menyalakan mode *Duplicate Display*, sehingga audiens luring and daring melihat presentasi digital yang sama tajamnya.",
         "score": 5
       }
     ]
   },
   {
     "id": 30,
+    "dim": "C5 - SID",
     "scenario": "Anda ditugaskan mengawasi Ujian Tengah Semester berbasis komputer (*Computer Based Test/CBT*) lokal menggunakan server sekolah. Di tengah ujian, mesin *server* lokal mengalami kerusakan dan seluruh komputer siswa terputus.",
     "options": [
       {
