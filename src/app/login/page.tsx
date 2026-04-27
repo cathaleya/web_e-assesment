@@ -17,6 +17,7 @@ export default function LoginPage() {
     // Simpan nama ke localStorage agar bisa dibaca di Dashboard
     if (loginType === "student" && name) {
       localStorage.setItem("userName", name);
+      localStorage.setItem("userGender", gender);
     } else if (loginType === "admin") {
       localStorage.setItem("userName", "Administrator");
     }

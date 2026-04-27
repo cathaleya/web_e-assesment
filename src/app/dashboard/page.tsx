@@ -26,6 +26,7 @@ ChartJS.register(
 export default function UserDashboard() {
   const [activeTab, setActiveTab] = useState<"dashboard" | "assessments" | "survey">("dashboard");
   const [userName, setUserName] = useState("User");
+  const [userGender, setUserGender] = useState("");
   const [hasFinishedAssessment, setHasFinishedAssessment] = useState(false);
   const [hasFinishedSurvey, setHasFinishedSurvey] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
@@ -34,7 +35,9 @@ export default function UserDashboard() {
   useEffect(() => {
     setIsMounted(true);
     const savedName = localStorage.getItem("userName");
+    const savedGender = localStorage.getItem("userGender");
     if (savedName) setUserName(savedName);
+    if (savedGender) setUserGender(savedGender);
 
     const params = new URLSearchParams(window.location.search);
     if (params.get("finished") === "true") setHasFinishedAssessment(true);
@@ -127,7 +130,7 @@ export default function UserDashboard() {
                       <div className="bg-white/5 backdrop-blur-md rounded-3xl p-8 border border-white/10 shadow-inner">
                         <p className="text-xl leading-relaxed italic font-medium">
                           {hasFinishedAssessment 
-                            ? `"Bapak ${userName}, berdasarkan hasil pengerjaan Anda, kemampuan Literasi Informasi Anda sangat memuaskan. Fokus selanjutnya adalah pada Pedagogi Digital."`
+                            ? `"${userGender === 'female' ? 'Ibu' : 'Bapak'} ${userName}, berdasarkan hasil pengerjaan Anda, kemampuan Literasi Informasi Anda sangat memuaskan. Fokus selanjutnya adalah pada Pedagogi Digital."`
                             : `"Selamat datang, ${userName}. Silakan selesaikan Asesmen Preliminary untuk mendapatkan diagnosa kompetensi literasi digital Anda dari AI."`}
                         </p>
                       </div>
