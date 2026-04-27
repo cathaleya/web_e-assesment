@@ -5,19 +5,22 @@ import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const [name, setName] = useState("");
+  const [campus, setCampus] = useState("");
   const [loginType, setLoginType] = useState<"student" | "admin">("student");
   const [gender, setGender] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
   const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError("");
     
     try {
       if (loginType === "student") {
-        if (!name || !gender) {
-           alert("Mohon lengkapi semua data identitas!");
+        if (!name || !gender || !campus) {
+           setError("Mohon lengkapi semua data identitas (Nama, Kampus, dan Jenis Kelamin)!");
            setIsLoading(false);
            return;
         }
@@ -25,15 +28,25 @@ export default function LoginPage() {
         const res = await fetch('/api/auth', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, campus: "Univ. Negeri Jakarta", gender }) // hardcoded campus for mockup if empty, but we can capture it. Actually wait, there is an input for campus. Let's capture it.
+          body: JSON.stringify({ name, campus, gender })
         });
         
         if (res.ok) {
            const data = await res.json();
+           if (!data.userId) {
+             setError("Gagal mendaftarkan sesi. Coba lagi.");
+             setIsLoading(false);
+             return;
+           }
            localStorage.setItem("userId", data.userId);
            localStorage.setItem("userName", name);
            localStorage.setItem("userGender", gender);
+           localStorage.setItem("userCampus", campus);
            router.push("/dashboard");
+        } else {
+          const errData = await res.json().catch(() => ({}));
+          setError(errData.error || "Gagal terhubung ke server. Periksa koneksi.");
+          setIsLoading(false);
         }
       } else {
         localStorage.setItem("userName", "Administrator");
@@ -41,6 +54,8 @@ export default function LoginPage() {
       }
     } catch (error) {
       console.error(error);
+      setError("Terjadi kesalahan jaringan. Pastikan server berjalan.");
+      setIsLoading(false);
     }
   };
 
@@ -99,7 +114,7 @@ export default function LoginPage() {
                   <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 ml-1">Nama Kampus / Instansi</label>
                   <div className="relative group">
                     <i className="fa-solid fa-university absolute left-5 top-4 text-slate-500 group-focus-within:text-blue-400 transition-colors"></i>
-                    <input type="text" required placeholder="Contoh: Univ. Negeri Jakarta" className="w-full bg-slate-800/50 border border-slate-700 rounded-2xl py-4 pl-14 pr-5 text-sm text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all input-glass" />
+                    <input type="text" required value={campus} onChange={e => setCampus(e.target.value)} placeholder="Contoh: Univ. Negeri Jakarta" className="w-full bg-slate-800/50 border border-slate-700 rounded-2xl py-4 pl-14 pr-5 text-sm text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all input-glass" />
                   </div>
                 </div>
                 <div>
@@ -137,6 +152,11 @@ export default function LoginPage() {
               <span>{isLoading ? "PROSES..." : (loginType === "student" ? "MULAI ASESMEN" : "MASUK DASHBOARD")}</span>
               {isLoading ? <i className="fa-solid fa-circle-notch fa-spin"></i> : <i className={`fa-solid ${loginType === "student" ? "fa-arrow-right" : "fa-lock-open"}`}></i>}
             </button>
+            {error && (
+              <div className="bg-red-500/20 border border-red-500/30 rounded-2xl px-5 py-4 text-xs text-red-300 font-bold text-center">
+                <i className="fa-solid fa-triangle-exclamation mr-2"></i>{error}
+              </div>
+            )}
           </form>
         </div>
 
