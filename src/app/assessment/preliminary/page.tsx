@@ -23,7 +23,7 @@ export default function PreliminaryAssessment() {
     try {
       const res = await fetch('/api/questions?type=preliminary');
       const data = await res.json();
-      setQuestions(data);
+      setQuestions(Array.isArray(data) ? data : []);
       setLoading(false);
     } catch (err) {
       console.error(err);
@@ -36,7 +36,7 @@ export default function PreliminaryAssessment() {
   };
 
   const nextQuestion = () => {
-    if (currentStep < questions.length - 1) {
+    if (questions.length > 0 && currentStep < questions.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
       submitAssessment();
@@ -120,7 +120,7 @@ export default function PreliminaryAssessment() {
 
               <button 
                 onClick={() => setShowInstructions(false)}
-                className="w-full lg:w-fit px-16 py-6 bg-[#4B5320] hover:bg-[#354B37] text-white font-black rounded-3xl transition-all shadow-2xl shadow-[#4B5320]/40 uppercase tracking-[0.3em] text-xs"
+                className="w-full lg:w-fit px-16 py-6 bg-[#4B5320] hover:bg-[#354B37] text-white font-black rounded-3xl transition-all shadow-2xl shadow-[#4B5320]/40 uppercase tracking-[0.4em] text-xs"
               >
                 Lanjutkan <i className="fa-solid fa-circle-play ml-4"></i>
               </button>
@@ -141,7 +141,7 @@ export default function PreliminaryAssessment() {
                   </div>
                 </div>
                 <div className="flex-1 w-full max-w-[200px] h-3 bg-white rounded-full overflow-hidden p-0.5 border border-[#4B5320]/10 shadow-inner">
-                   <div className="h-full bg-[#4B5320] rounded-full transition-all duration-700 shadow-md" style={{ width: `${((currentStep + 1) / questions.length) * 100}%` }}></div>
+                   <div className="h-full bg-[#4B5320] rounded-full transition-all duration-700 shadow-md" style={{ width: `${((currentStep + 1) / (questions.length || 1)) * 100}%` }}></div>
                 </div>
               </div>
 
@@ -153,7 +153,7 @@ export default function PreliminaryAssessment() {
                 </div>
 
                 <div className="grid grid-cols-1 gap-4">
-                  {questions[currentStep]?.options.map((opt: any, idx: number) => (
+                  {questions[currentStep]?.options?.map((opt: any, idx: number) => (
                     <button
                       key={idx}
                       onClick={() => handleAnswer(idx)}
@@ -168,8 +168,8 @@ export default function PreliminaryAssessment() {
                       }`}>
                         {String.fromCharCode(65 + idx)}
                       </span>
-                      <span className="flex-1 font-bold text-lg lg:text-xl leading-snug">{opt.text}</span>
-                      {answers[currentStep] === idx + 1 && <i className="fa-solid fa-check-circle text-2xl"></i>}
+                      <span className="flex-1 font-bold text-lg lg:text-xl leading-snug">{opt?.text || ""}</span>
+                      {answers[currentStep] === idx + 1 && <i className="fa-solid fa-circle-check text-white text-2xl"></i>}
                     </button>
                   ))}
                 </div>

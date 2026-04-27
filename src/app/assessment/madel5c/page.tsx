@@ -23,7 +23,7 @@ export default function Madel5cAssessment() {
     try {
       const res = await fetch('/api/questions?type=madel5c');
       const data = await res.json();
-      setQuestions(data);
+      setQuestions(Array.isArray(data) ? data : []);
       setLoading(false);
     } catch (err) {
       console.error(err);
@@ -36,7 +36,7 @@ export default function Madel5cAssessment() {
   };
 
   const nextQuestion = () => {
-    if (currentStep < questions.length - 1) {
+    if (questions.length > 0 && currentStep < questions.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
       submitAssessment();
@@ -152,10 +152,10 @@ export default function Madel5cAssessment() {
                  <div className="w-full sm:w-fit flex items-center gap-10 bg-white/60 px-8 py-5 rounded-[30px] border border-white shadow-inner">
                     <div className="text-center">
                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">PROGRES</p>
-                       <p className="text-2xl font-black text-[#4B5320]">{Math.round(((currentStep + 1) / questions.length) * 100)}%</p>
+                       <p className="text-2xl font-black text-[#4B5320]">{Math.round(((currentStep + 1) / (questions.length || 1)) * 100)}%</p>
                     </div>
                     <div className="flex-1 sm:w-40 h-3 bg-slate-100 rounded-full overflow-hidden p-0.5 border border-[#4B5320]/10">
-                       <div className="h-full bg-[#4B5320] rounded-full transition-all duration-700 shadow-md" style={{ width: `${((currentStep + 1) / questions.length) * 100}%` }}></div>
+                       <div className="h-full bg-[#4B5320] rounded-full transition-all duration-700 shadow-md" style={{ width: `${((currentStep + 1) / (questions.length || 1)) * 100}%` }}></div>
                     </div>
                  </div>
               </div>
@@ -170,7 +170,7 @@ export default function Madel5cAssessment() {
                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.5em] mb-10 text-center drop-shadow-[0_2px_4px_rgba(255,255,255,1)]">Pilihlah Tindakan Yang Paling Tepat</p>
 
                  <div className="grid grid-cols-1 gap-6">
-                    {questions[currentStep]?.options.map((opt: any, idx: number) => (
+                    {questions[currentStep]?.options?.map((opt: any, idx: number) => (
                       <button
                         key={idx}
                         onClick={() => handleAnswer(idx)}
@@ -186,7 +186,7 @@ export default function Madel5cAssessment() {
                           {String.fromCharCode(65 + idx)}
                         </span>
                         <div className="flex-1 pt-2 lg:pt-4">
-                          <span className="font-bold text-lg lg:text-2xl leading-relaxed">{opt.text}</span>
+                          <span className="font-bold text-lg lg:text-2xl leading-relaxed">{opt?.text || ""}</span>
                         </div>
                       </button>
                     ))}
