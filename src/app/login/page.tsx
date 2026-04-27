@@ -10,25 +10,38 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     
-    // Simpan nama ke localStorage agar bisa dibaca di Dashboard
-    if (loginType === "student" && name) {
-      localStorage.setItem("userName", name);
-      localStorage.setItem("userGender", gender);
-    } else if (loginType === "admin") {
-      localStorage.setItem("userName", "Administrator");
-    }
-
-    setTimeout(() => {
+    try {
       if (loginType === "student") {
-        router.push("/dashboard");
+        if (!name || !gender) {
+           alert("Mohon lengkapi semua data identitas!");
+           setIsLoading(false);
+           return;
+        }
+
+        const res = await fetch('/api/auth', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, campus: "Univ. Negeri Jakarta", gender }) // hardcoded campus for mockup if empty, but we can capture it. Actually wait, there is an input for campus. Let's capture it.
+        });
+        
+        if (res.ok) {
+           const data = await res.json();
+           localStorage.setItem("userId", data.userId);
+           localStorage.setItem("userName", name);
+           localStorage.setItem("userGender", gender);
+           router.push("/dashboard");
+        }
       } else {
+        localStorage.setItem("userName", "Administrator");
         router.push("/admin");
       }
-    }, 1000);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (

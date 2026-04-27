@@ -7,13 +7,37 @@ import questionsData from "./questions.json";
 
 export default function SurveyPage() {
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [answers, setAnswers] = useState<Record<number, number>>({});
   const router = useRouter();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (Object.keys(answers).length < questionsData.length) return;
+    const qCount = questionsData.length;
+    if (Object.keys(answers).length < qCount) return;
+    
+    setIsSubmitting(true);
+    const userId = localStorage.getItem("userId");
+    const totalScore = Object.values(answers).reduce((acc, curr) => acc + curr, 0);
+
+    if (userId) {
+      try {
+        await fetch('/api/survey', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId,
+            totalScore,
+            answersJson: answers
+          })
+        });
+      } catch (error) {
+        console.error("Failed to submit survey:", error);
+      }
+    }
+    
     setSubmitted(true);
+    setIsSubmitting(false);
   };
 
   const handleSelect = (qIndex: number, val: number) => {
@@ -58,9 +82,9 @@ export default function SurveyPage() {
              ))}
 
              <div className="pt-6">
-                <button type="submit" disabled={!isFormValid}
-                        className={`w-full font-bold py-5 rounded-2xl transition-all text-sm uppercase tracking-widest flex items-center justify-center gap-3 ${isFormValid ? 'bg-blue-600 hover:bg-blue-500 text-white shadow-[0_0_20px_rgba(37,99,235,0.3)]' : 'bg-slate-700 text-slate-500 cursor-not-allowed'}`}>
-                  <i className="fa-solid fa-paper-plane"></i> KIRIM SURVEI & LIHAT HASIL
+                <button type="submit" disabled={!isFormValid || isSubmitting}
+                        className={`w-full font-bold py-5 rounded-2xl transition-all text-sm uppercase tracking-widest flex items-center justify-center gap-3 ${isFormValid && !isSubmitting ? 'bg-blue-600 hover:bg-blue-500 text-white shadow-[0_0_20px_rgba(37,99,235,0.3)]' : 'bg-slate-700 text-slate-500 cursor-not-allowed'}`}>
+                  {isSubmitting ? <i className="fa-solid fa-circle-notch fa-spin"></i> : <i className="fa-solid fa-paper-plane"></i>} KIRIM SURVEI & LIHAT HASIL
                 </button>
                 {!isFormValid && <p className="text-center text-xs text-rose-400 mt-3 font-bold uppercase tracking-widest">Lengkapi semua {questionsData.length} pertanyaan</p>}
              </div>

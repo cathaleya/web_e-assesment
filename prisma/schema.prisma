@@ -3,64 +3,36 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
 model User {
-  id              String     @id @default(uuid())
-  username        String?
-  email           String     @unique
-  passwordHash    String?
-  role            String     @default("STUDENT") // ADMIN | STUDENT
-  gender          String?    // M | F
-  institution     String?
-  createdAt       DateTime   @default(now())
-  responses       Response[]
+  id        String   @id @default(uuid())
+  name      String
+  campus    String
+  gender    String
+  createdAt DateTime @default(now())
+
+  AssessmentResult AssessmentResult[]
+  SurveyResult     SurveyResult[]
 }
 
-model Instrument {
-  id              String           @id @default(uuid())
-  title           String
-  version         String
-  filePath        String?          // Path to JSON/CSV
-  isActive        Boolean          @default(true)
-  uploadedAt      DateTime         @default(now())
-  items           Item[]
-  analysisResults AnalysisResult[]
+model AssessmentResult {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  type        String   // 'PDI-DL' or 'MADEL5C'
+  totalScore  Int
+  answersJson String   // JSON string of answers
+  createdAt   DateTime @default(now())
 }
 
-model Item {
-  id              String     @id @default(uuid())
-  instrumentId    String
-  instrument      Instrument @relation(fields: [instrumentId], references: [id])
-  itemCode        String     // e.g., ITEM_01
-  prompt          String     @db.Text
-  dimension       String     // INFO | CREATE | PEDAGOGY | ETHICS
-  maxScore        Int        @default(3) // For Partial Credit Model
-  metadata        Json?      // Rubric, Options, etc.
-  responses       Response[]
-}
-
-model Response {
-  id              String   @id @default(uuid())
-  userId          String
-  user            User     @relation(fields: [userId], references: [id])
-  itemId          String
-  item            Item     @relation(fields: [itemId], references: [id])
-  answerText      String   @db.Text
-  rawScore        Int      @default(0) // Polytomous score
-  aiFeedback      String?  @db.Text
-  abilityEstimate Float?   // Theta from IRT/PCM
-  submittedAt     DateTime @default(now())
-}
-
-model AnalysisResult {
-  id              String     @id @default(uuid())
-  instrumentId    String
-  instrument      Instrument @relation(fields: [instrumentId], references: [id])
-  analysisType    String     // EFA | CFA | PCM | DIF
-  resultData      Json       // Fit indices, DIF statistics
-  chartPath       String?    // Path to generated plot image
-  computedAt      DateTime   @default(now())
+model SurveyResult {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  totalScore  Int
+  answersJson String   // JSON string of 10 SUS answers
+  createdAt   DateTime @default(now())
 }

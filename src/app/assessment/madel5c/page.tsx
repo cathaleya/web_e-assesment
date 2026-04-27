@@ -7,17 +7,53 @@ import questionsData from "./questions.json";
 export default function Madel5cAssessment() {
   const [step, setStep] = useState(0);
   const [finished, setFinished] = useState(false);
+  const [answers, setAnswers] = useState<number[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
 
   const totalItems = questionsData.length;
   const currentQuestion = questionsData[step];
 
-  const handleNext = () => {
+  const handleOptionClick = async (score: number) => {
+    const newAnswers = [...answers, score];
+    setAnswers(newAnswers);
+
     if (step < totalItems - 1) {
       setStep(step + 1);
     } else {
+      setIsSubmitting(true);
       setFinished(true);
+      
+      const totalScore = newAnswers.reduce((acc, curr) => acc + curr, 0);
+      const userId = localStorage.getItem("userId");
+
+      if (userId) {
+        try {
+          await fetch('/api/assessment', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              userId,
+              type: 'MADEL5C',
+              totalScore,
+              answersJson: newAnswers
+            })
+          });
+        } catch (error) {
+          console.error("Failed to submit result:", error);
+        }
+      }
+      setIsSubmitting(false);
     }
+  };
+
+  const totalScore = answers.reduce((acc, curr) => acc + curr, 0);
+  const percentage = Math.round((totalScore / (totalItems * 5)) * 100);
+
+  const getAIFeedback = () => {
+    if (percentage >= 80) return "Luar biasa! Kompetensi literasi digital MADEL5C Anda berada pada level Pakar. Anda memiliki kemampuan kritis dalam mengevaluasi informasi dan memecahkan masalah kompleks secara kreatif.";
+    if (percentage >= 60) return "Sangat baik. Anda memiliki pemahaman yang solid tentang literasi digital. Fokuslah pada peningkatan kolaborasi dan etika digital yang lebih mendalam.";
+    return "Kemampuan Anda sudah cukup baik, namun perlu peningkatan pada aspek literasi data dan keamanan informasi. Pelajari lebih lanjut tentang evaluasi sumber digital yang kredibel.";
   };
 
   return (
@@ -50,7 +86,7 @@ export default function Madel5cAssessment() {
 
           <div className="grid grid-cols-1 gap-3 mb-10">
             {currentQuestion?.options.map((opt, i) => (
-              <button key={i} onClick={handleNext}
+              <button key={i} onClick={() => handleOptionClick(opt.score)}
                       className="w-full text-left p-5 rounded-2xl border border-slate-700/50 bg-slate-800/50 hover:bg-blue-600 hover:border-blue-500 transition-all font-medium text-slate-200 flex items-start gap-4 group shadow-lg">
                 <span className="flex-shrink-0 w-8 h-8 rounded-lg bg-slate-700/50 group-hover:bg-white/20 flex items-center justify-center text-xs font-bold transition-colors">
                   {String.fromCharCode(65 + i)}
@@ -67,12 +103,20 @@ export default function Madel5cAssessment() {
       ) : (
         <div className="max-w-2xl w-full bg-[#1E293B]/90 backdrop-blur-3xl rounded-[40px] p-12 shadow-2xl border border-slate-700/50 text-center animate-in fade-in duration-500">
           <div className="w-24 h-24 bg-blue-500/20 text-blue-400 rounded-full flex items-center justify-center text-4xl mx-auto mb-8 border border-blue-500/30">
-            <i className="fa-solid fa-flag-checkered"></i>
+            {isSubmitting ? <i className="fa-solid fa-circle-notch fa-spin"></i> : <i className="fa-solid fa-flag-checkered"></i>}
           </div>
           <h2 className="text-3xl font-black text-white mb-3 uppercase tracking-tighter">Asesmen MADEL5C Selesai!</h2>
-          <p className="text-slate-400 mb-10 font-medium text-sm leading-relaxed">
-            Data 30 butir SJT Anda telah berhasil direkam dan akan dianalisis secara psikometrik oleh sistem cerdas kami.
-          </p>
+          
+          <div className="bg-slate-900/60 rounded-3xl p-8 border border-slate-700/50 mb-10 text-left">
+             <div className="flex justify-between items-center mb-6 border-b border-slate-700/50 pb-4">
+                <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Skor Kompetensi</span>
+                <span className="text-4xl font-black text-blue-400">{totalScore} <span className="text-sm font-bold text-slate-500">/ 150</span></span>
+             </div>
+             <div>
+                <span className="text-[10px] font-black text-blue-500 uppercase tracking-[0.3em] mb-2 block">AI Diagnostic Feedback</span>
+                <p className="text-slate-300 italic leading-relaxed font-medium">"{getAIFeedback()}"</p>
+             </div>
+          </div>
           
           <button onClick={() => router.push('/dashboard?madel5c=done')}
                   className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-5 rounded-2xl shadow-[0_0_20px_rgba(37,99,235,0.3)] transition-all flex items-center justify-center gap-3 text-sm uppercase tracking-widest">
@@ -83,3 +127,4 @@ export default function Madel5cAssessment() {
     </div>
   );
 }
+

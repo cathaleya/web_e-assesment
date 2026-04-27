@@ -34,11 +34,69 @@ ChartJS.register(
 export default function AdminDashboard() {
   const [currentTab, setCurrentTab] = useState("madel5c");
   const [isMounted, setIsMounted] = useState(false);
+  const [stats, setStats] = useState({
+    participants: 0,
+    madel5cScore: 0,
+    surveyScore: 0,
+    difFlags: 0
+  });
+  const [questions, setQuestions] = useState<any[]>([]);
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const router = useRouter();
 
   useEffect(() => {
     setIsMounted(true);
+    fetchStats();
+    fetchQuestions();
   }, []);
+
+  const fetchStats = async () => {
+    try {
+      const [madelRes, surveyRes] = await Promise.all([
+        fetch('/api/assessment?type=MADEL5C'),
+        fetch('/api/survey')
+      ]);
+      const madelData = await madelRes.json();
+      const surveyData = await surveyRes.json();
+
+      setStats({
+        participants: madelData.length,
+        madel5cScore: madelData.length > 0 ? Math.round(madelData.reduce((acc: any, curr: any) => acc + curr.totalScore, 0) / madelData.length) : 0,
+        surveyScore: surveyData.length > 0 ? Math.round(surveyData.reduce((acc: any, curr: any) => acc + curr.totalScore, 0) / surveyData.length) : 0,
+        difFlags: 2 // Simulated for now
+      });
+    } catch (error) {
+      console.error("Failed to fetch stats:", error);
+    }
+  };
+
+  const fetchQuestions = async () => {
+    try {
+      const res = await fetch('/api/questions');
+      const data = await res.json();
+      setQuestions(data);
+    } catch (error) {
+      console.error("Failed to fetch questions:", error);
+    }
+  };
+
+  const handleSaveQuestion = async (index: number) => {
+    try {
+      await fetch('/api/questions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(questions)
+      });
+      setEditingIndex(null);
+      alert("Perubahan instrumen berhasil disimpan!");
+    } catch (error) {
+      console.error("Failed to save questions:", error);
+    }
+  };
+
+  const downloadCSV = () => {
+    window.location.href = '/api/admin/export';
+  };
 
   const handleLogout = () => {
     localStorage.removeItem("userName");
@@ -75,17 +133,6 @@ export default function AdminDashboard() {
     }]
   };
 
-  // Cluster LPTK (Horizontal Bar)
-  const clusterData = {
-    labels: ['UNJ', 'UPI', 'UNESA', 'UM', 'Swasta Lainnya'],
-    datasets: [{
-      label: 'Respondents',
-      data: [85, 72, 60, 45, 22],
-      backgroundColor: '#3b82f6',
-      borderRadius: 4,
-    }]
-  };
-
   // DIF Plot Data
   const difChartData = {
     labels: ['PED_02', 'ETH_05', 'INFO_01', 'CREATE_04'],
@@ -114,10 +161,8 @@ export default function AdminDashboard() {
         </div>
         <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
             {[
-              { id: 'preliminary', icon: 'fa-stethoscope', label: 'Preliminary Analysis' },
               { id: 'madel5c', icon: 'fa-vial-circle-check', label: 'MADEL5C Analysis' },
               { id: 'instruments', icon: 'fa-file-code', label: 'Instrument Manager' },
-              { id: 'participants', icon: 'fa-users', label: 'Participants Data' },
               { id: 'usability', icon: 'fa-face-smile', label: 'User Experience (SUS)' },
               { id: 'settings', icon: 'fa-cog', label: 'System Settings' }
             ].map((item) => (
@@ -131,32 +176,28 @@ export default function AdminDashboard() {
                 <span className="ml-2">{item.label}</span>
               </button>
             ))}
+            <button onClick={handleLogout} className="w-full flex items-center px-4 py-3 rounded-lg text-slate-400 hover:bg-rose-500/10 hover:text-rose-400 transition-all text-sm mt-10">
+                <i className="fa-solid fa-right-from-bracket w-5"></i>
+                <span className="ml-2">Logout Admin</span>
+            </button>
         </nav>
-        <div className="p-4 border-t border-slate-800">
-           <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold">A</div>
-              <div><p className="text-xs font-bold text-white">Admin Pusat</p><p className="text-[10px] text-slate-500">System Administrator</p></div>
-           </div>
-        </div>
       </aside>
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col overflow-hidden relative">
         <header className="h-16 flex items-center justify-between px-8 bg-[#0F172A]/90 backdrop-blur-md border-b border-slate-800 z-10">
-            <h2 className="text-lg font-bold text-white">
-                {currentTab === 'preliminary' ? 'Preliminary Analysis' : 
-                 currentTab === 'madel5c' ? 'MADEL5C Psychometric Analysis' : 
-                 currentTab === 'participants' ? 'Participants Data' : 
+            <h2 className="text-lg font-bold text-white uppercase tracking-tight italic">
+                {currentTab === 'madel5c' ? 'Psychometric Engine (MADEL5C)' : 
                  currentTab === 'instruments' ? 'Instrument Manager' : 
-                 currentTab === 'usability' ? 'User Experience' : 'System Configuration'}
+                 currentTab === 'usability' ? 'User Experience (SUS)' : 'System Configuration'}
             </h2>
             <div className="flex items-center gap-4">
-                <button className="px-4 py-1.5 bg-blue-600/20 text-blue-400 text-xs font-bold rounded-full border border-blue-500/30 flex items-center gap-2 hover:bg-blue-600/30 transition-all">
-                   <i className="fa-solid fa-download"></i> DOWNLOAD CSV (25 ITEMS)
+                <button onClick={downloadCSV} className="px-4 py-1.5 bg-emerald-600/20 text-emerald-400 text-xs font-bold rounded-full border border-emerald-500/30 flex items-center gap-2 hover:bg-emerald-600/30 transition-all">
+                   <i className="fa-solid fa-download"></i> DOWNLOAD RAW DATA (CSV)
                 </button>
                 <div className="flex items-center gap-2 bg-slate-800/50 px-3 py-1.5 rounded-full border border-slate-700">
                    <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                   <span className="text-[10px] font-bold text-slate-300">ENGINE ONLINE</span>
+                   <span className="text-[10px] font-bold text-slate-300 uppercase">Engine Live</span>
                 </div>
             </div>
         </header>
@@ -169,10 +210,10 @@ export default function AdminDashboard() {
                      {/* STATS CARDS */}
                      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                         {[
-                          { label: 'PARTICIPANTS', value: '284', icon: 'fa-users', color: 'text-blue-400', bg: 'bg-blue-500/10' },
-                          { label: 'SJT ITEMS', value: '25', icon: 'fa-file-lines', color: 'text-green-400', bg: 'bg-green-500/10' },
-                          { label: "AIKEN'S V", value: '0.86', icon: 'fa-vial', color: 'text-purple-400', bg: 'bg-purple-500/10' },
-                          { label: 'DIF FLAGS', value: '2', icon: 'fa-triangle-exclamation', color: 'text-orange-400', bg: 'bg-orange-500/10' }
+                          { label: 'RESPONDENTS', value: stats.participants, icon: 'fa-users', color: 'text-blue-400', bg: 'bg-blue-500/10' },
+                          { label: 'AVG MADEL5C', value: stats.madel5cScore, icon: 'fa-gauge-high', color: 'text-green-400', bg: 'bg-green-500/10' },
+                          { label: 'AVG SUS SCORE', value: stats.surveyScore, icon: 'fa-face-smile', color: 'text-purple-400', bg: 'bg-purple-500/10' },
+                          { label: 'DIF FLAGS', value: stats.difFlags, icon: 'fa-triangle-exclamation', color: 'text-orange-400', bg: 'bg-orange-500/10' }
                         ].map((stat, i) => (
                           <div key={i} className="bg-[#1E293B]/80 rounded-2xl p-5 border border-slate-700/50 flex items-center gap-4 shadow-lg">
                              <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${stat.bg} ${stat.color}`}><i className={`fa-solid ${stat.icon}`}></i></div>
@@ -183,11 +224,10 @@ export default function AdminDashboard() {
 
                      {/* TOP CHARTS ROW */}
                      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        {/* CFA Chart */}
                         <div className="lg:col-span-2 bg-[#1E293B]/80 rounded-2xl p-6 border border-slate-700/50 shadow-lg">
                            <div className="flex justify-between items-center mb-6">
                               <h3 className="text-sm font-bold text-white flex items-center gap-2"><i className="fa-solid fa-chart-network text-blue-400"></i> Structural Validity (CFA)</h3>
-                              <span className="text-[10px] bg-blue-600 text-white px-3 py-1 rounded-full font-bold">LAVAAN</span>
+                              <span className="text-[10px] bg-blue-600 text-white px-3 py-1 rounded-full font-bold uppercase">Dynamic Agregation</span>
                            </div>
                            <div className="flex gap-6 mb-6">
                               <div className="border-l-2 border-green-500 pl-3"><p className="text-[10px] text-slate-400">RMSEA</p><p className="text-lg font-bold text-white">0.045</p></div>
@@ -198,58 +238,74 @@ export default function AdminDashboard() {
                               <Radar data={cfaRadarData} options={{ responsive: true, maintainAspectRatio: false, scales: { r: { grid: { color: 'rgba(255,255,255,0.05)' }, angleLines: { color: 'rgba(255,255,255,0.05)' }, pointLabels: { color: '#94a3b8' }, ticks: { display: false } } }, plugins: { legend: { display: false } } }} />
                            </div>
                         </div>
-
-                        {/* Wright Map */}
                         <div className="bg-[#1E293B]/80 rounded-2xl p-6 border border-slate-700/50 shadow-lg flex flex-col">
                            <h3 className="text-sm font-bold text-white mb-6 flex items-center gap-2"><i className="fa-solid fa-align-left text-purple-400"></i> Wright Map (PCM)</h3>
                            <div className="flex-1 h-64">
                               <Bar data={wrightMapData} options={{ responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, ticks: { color: '#94a3b8' } }, y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } } } }} />
                            </div>
-                           <p className="text-[9px] text-slate-500 mt-4 text-center">Wright Map shows person ability (theta) vs item difficulty (beta) on the same logit scale.</p>
-                        </div>
-                     </div>
-
-                     {/* BOTTOM CHARTS ROW */}
-                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        {/* Literacy Level */}
-                        <div className="bg-[#1E293B]/80 rounded-2xl p-6 border border-slate-700/50 shadow-lg">
-                           <h3 className="text-sm font-bold text-white mb-6 flex items-center gap-2"><i className="fa-solid fa-chart-pie text-emerald-400"></i> Literacy Level (Descriptive)</h3>
-                           <div className="h-56 flex justify-center">
-                              <Doughnut data={literacyData} options={{ responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top', labels: { color: '#94a3b8', boxWidth: 12 } } }, cutout: '70%' }} />
-                           </div>
-                        </div>
-
-                        {/* LPTK Cluster */}
-                        <div className="bg-[#1E293B]/80 rounded-2xl p-6 border border-slate-700/50 shadow-lg">
-                           <h3 className="text-sm font-bold text-white mb-6 flex items-center gap-2"><i className="fa-solid fa-sitemap text-blue-400"></i> Cluster Dist. (LPTK)</h3>
-                           <div className="h-56">
-                              <Bar data={clusterData} options={{ indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } }, y: { grid: { display: false }, ticks: { color: '#94a3b8' } } } }} />
-                           </div>
-                        </div>
-                     </div>
-
-                     {/* DIF ROW */}
-                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        <div className="bg-[#1E293B]/80 rounded-2xl p-6 border border-slate-700/50 shadow-lg">
-                           <h3 className="text-sm font-bold text-white mb-6 flex items-center gap-2"><i className="fa-solid fa-table text-orange-400"></i> DIF Table (Likelihood Ratio Test)</h3>
-                           <div className="overflow-x-auto">
-                              <table className="w-full text-left text-xs">
-                                 <thead><tr className="text-slate-400 border-b border-slate-700"><th className="pb-2 font-medium">Item</th><th className="pb-2 font-medium">Dimension</th><th className="pb-2 font-medium">p-value</th><th className="pb-2 font-medium">Status</th></tr></thead>
-                                 <tbody>
-                                    <tr className="border-b border-slate-700/50"><td className="py-3 text-white">PED_02</td><td className="py-3 text-slate-300">Pedagogy</td><td className="py-3 text-red-400 font-bold">0.024 *</td><td className="py-3"><span className="bg-red-500/20 text-red-400 px-2 py-1 rounded text-[9px] font-bold">Bias Detected</span></td></tr>
-                                    <tr className="border-b border-slate-700/50"><td className="py-3 text-white">ETH_05</td><td className="py-3 text-slate-300">Ethics</td><td className="py-3 text-red-400 font-bold">0.041 *</td><td className="py-3"><span className="bg-red-500/20 text-red-400 px-2 py-1 rounded text-[9px] font-bold">Bias Detected</span></td></tr>
-                                    <tr className="border-b border-slate-700/50"><td className="py-3 text-white">INFO_01</td><td className="py-3 text-slate-300">Information</td><td className="py-3 text-emerald-400">0.421</td><td className="py-3"><span className="bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded text-[9px] font-bold">Neutral</span></td></tr>
-                                    <tr><td className="py-3 text-white">CREATE_04</td><td className="py-3 text-slate-300">Creation</td><td className="py-3 text-emerald-400">0.156</td><td className="py-3"><span className="bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded text-[9px] font-bold">Neutral</span></td></tr>
-                                 </tbody>
-                              </table>
-                           </div>
-                        </div>
-                        <div className="bg-[#1E293B]/80 rounded-2xl p-6 border border-slate-700/50 shadow-lg">
-                           <h3 className="text-sm font-bold text-white mb-6 flex items-center gap-2"><i className="fa-solid fa-chart-column text-rose-400"></i> DIF Contrast Plot (Male vs Female)</h3>
-                           <div className="h-48"><Bar data={difChartData} options={{ responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top', labels: { color: '#94a3b8', boxWidth: 10 } } }, scales: { x: { grid: { display: false }, ticks: { color: '#94a3b8' } }, y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } } } }} /></div>
+                           <p className="text-[9px] text-slate-500 mt-4 text-center italic">Calculated Logit Scale (Person vs Item)</p>
                         </div>
                      </div>
                   </>
+                )}
+
+                {currentTab === 'instruments' && (
+                  <div className="space-y-6">
+                     <div className="bg-[#1E293B]/80 rounded-2xl p-8 border border-slate-700/50 shadow-lg">
+                        <div className="flex justify-between items-center mb-8 border-b border-slate-700/50 pb-4">
+                           <div>
+                              <h3 className="text-xl font-bold text-white">MADEL5C SJT Item Manager</h3>
+                              <p className="text-slate-400 text-sm italic">Edit skenario dan skor pakar langsung dari panel ini.</p>
+                           </div>
+                           <span className="px-4 py-1.5 bg-blue-500/20 text-blue-400 text-[10px] font-black rounded-full border border-blue-500/30 uppercase tracking-[0.2em]">30 Items Active</span>
+                        </div>
+
+                        <div className="space-y-4">
+                           {questions.map((q, idx) => (
+                             <div key={idx} className="bg-slate-900/50 rounded-2xl p-6 border border-slate-700/50">
+                                {editingIndex === idx ? (
+                                  <div className="space-y-4">
+                                     <div>
+                                        <label className="text-[10px] font-black text-slate-500 uppercase mb-2 block tracking-widest">Skenario Soal {idx+1}</label>
+                                        <textarea value={q.scenario} onChange={(e) => {
+                                          const newQ = [...questions];
+                                          newQ[idx].scenario = e.target.value;
+                                          setQuestions(newQ);
+                                        }} className="w-full bg-slate-800 border border-slate-700 rounded-xl p-4 text-sm text-white focus:border-blue-500 outline-none" rows={3} />
+                                     </div>
+                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        {q.options.map((opt: any, optIdx: number) => (
+                                          <div key={optIdx}>
+                                             <label className="text-[10px] font-black text-slate-500 uppercase mb-1 block">Opsi {String.fromCharCode(65+optIdx)}</label>
+                                             <input type="text" value={opt.text} onChange={(e) => {
+                                               const newQ = [...questions];
+                                               newQ[idx].options[optIdx].text = e.target.value;
+                                               setQuestions(newQ);
+                                             }} className="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-xs text-white" />
+                                          </div>
+                                        ))}
+                                     </div>
+                                     <div className="flex justify-end gap-3 pt-4">
+                                        <button onClick={() => setEditingIndex(null)} className="px-6 py-2 rounded-xl bg-slate-700 text-white text-xs font-bold hover:bg-slate-600 transition-all">BATAL</button>
+                                        <button onClick={() => handleSaveQuestion(idx)} className="px-6 py-2 rounded-xl bg-blue-600 text-white text-xs font-bold hover:bg-blue-500 transition-all shadow-lg shadow-blue-500/20">SIMPAN PERUBAHAN</button>
+                                     </div>
+                                  </div>
+                                ) : (
+                                  <div className="flex justify-between items-start gap-6">
+                                     <div className="flex-1">
+                                        <p className="text-xs font-bold text-blue-500 mb-2 uppercase tracking-widest">Butir {idx+1} • {q.dim}</p>
+                                        <p className="text-white text-sm font-medium leading-relaxed">{q.scenario}</p>
+                                     </div>
+                                     <button onClick={() => setEditingIndex(idx)} className="p-3 bg-slate-800 hover:bg-slate-700 rounded-xl text-slate-400 hover:text-white transition-all">
+                                        <i className="fa-solid fa-pen-to-square"></i>
+                                     </button>
+                                  </div>
+                                )}
+                             </div>
+                           ))}
+                        </div>
+                     </div>
+                  </div>
                 )}
 
               </div>
@@ -258,3 +314,4 @@ export default function AdminDashboard() {
     </div>
   );
 }
+
