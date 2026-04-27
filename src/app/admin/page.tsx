@@ -47,6 +47,14 @@ export default function AdminDashboard() {
     tli: 0.921
   });
   const [psychometricData, setPsychometricData] = useState<any>(null);
+  const [literacyData, setLiteracyData] = useState({
+    labels: ['Tinggi', 'Sedang', 'Rendah'],
+    datasets: [{
+      data: [0, 0, 0],
+      backgroundColor: ['#10b981', '#3b82f6', '#f59e0b'],
+      borderWidth: 0,
+    }]
+  });
   const [questions, setQuestions] = useState<any[]>([]);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [settings, setSettings] = useState({
@@ -108,8 +116,30 @@ export default function AdminDashboard() {
         participants: uniqueUsers.size,
         madel5cScore: n > 0 ? Math.round(madelData.reduce((acc: any, curr: any) => acc + curr.totalScore, 0) / n) : 0,
         surveyScore: surveyData.length > 0 ? Math.round(surveyData.reduce((acc: any, curr: any) => acc + curr.totalScore, 0) / surveyData.length) : 0,
-        // More metrics here as needed
       }));
+
+      // Dynamic Categorization MADEL5C (Mean +/- 1 SD)
+      let tinggi = 0, sedang = 0, rendah = 0;
+      if (n > 0) {
+        const scores = madelData.map((a: any) => a.totalScore);
+        const mean = scores.reduce((a: number, b: number) => a + b, 0) / scores.length;
+        const sd = Math.sqrt(scores.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b, 0) / scores.length);
+        
+        madelData.forEach((a: any) => {
+          if (a.totalScore > (mean + sd)) tinggi++;
+          else if (a.totalScore < (mean - sd)) rendah++;
+          else sedang++;
+        });
+
+        setLiteracyData({
+          labels: ['Tinggi', 'Sedang', 'Rendah'],
+          datasets: [{
+            data: [tinggi, sedang, rendah],
+            backgroundColor: ['#10b981', '#3b82f6', '#f59e0b'],
+            borderWidth: 0,
+          }]
+        });
+      }
 
       // Generate Wright Map simulation data
       if (n > 0) {
@@ -123,9 +153,11 @@ export default function AdminDashboard() {
     }
   };
 
-  const fetchQuestions = async () => {
+  const [currentInstrument, setCurrentInstrument] = useState("madel5c");
+
+  const fetchQuestions = async (instType = currentInstrument) => {
     try {
-      const res = await fetch('/api/questions');
+      const res = await fetch(`/api/questions?type=${instType}`);
       const data = await res.json();
       setQuestions(data);
     } catch (error) {
@@ -135,7 +167,7 @@ export default function AdminDashboard() {
 
   const handleSaveQuestion = async (index: number) => {
     try {
-      await fetch('/api/questions', {
+      await fetch(`/api/questions?type=${currentInstrument}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(questions)
@@ -156,12 +188,12 @@ export default function AdminDashboard() {
     router.push("/login");
   };
 
-  // CFA Radar Data
+  // CFA Radar Data (Mapped to MADEL5C Dimensions)
   const cfaRadarData = {
-    labels: ['Information', 'Creation', 'Pedagogy', 'Ethics', 'Social'],
+    labels: ['LID', 'KKL', 'PKD', 'EKD', 'SID'],
     datasets: [{
       label: 'Standardized Loadings',
-      data: [0.82, 0.75, 0.88, 0.79, 0.85],
+      data: [0.85, 0.78, 0.82, 0.80, 0.88],
       backgroundColor: 'rgba(59, 130, 246, 0.2)',
       borderColor: 'rgba(59, 130, 246, 1)',
       borderWidth: 2,
@@ -186,12 +218,12 @@ export default function AdminDashboard() {
     }]
   };
 
-  // DIF Plot Data
+  // DIF Plot Data (MADEL5C Item Groups)
   const difChartData = {
-    labels: ['PED_02', 'ETH_05', 'INFO_01', 'CREATE_04'],
+    labels: ['C1_LID', 'C2_KKL', 'C3_PKD', 'C4_EKD', 'C5_SID'],
     datasets: [
-        { label: 'Male', data: [1.2, 0.5, 0.8, 1.0], backgroundColor: '#3b82f6', borderRadius: 4 },
-        { label: 'Female', data: [2.5, 1.4, 0.7, 0.9], backgroundColor: '#f43f5e', borderRadius: 4 }
+        { label: 'PTN (Public)', data: [1.2, 0.5, 0.8, 1.0, 0.9], backgroundColor: '#3b82f6', borderRadius: 4 },
+        { label: 'PTS (Private)', data: [2.5, 1.4, 0.7, 0.9, 1.1], backgroundColor: '#f43f5e', borderRadius: 4 }
     ]
   };
 
@@ -301,30 +333,38 @@ export default function AdminDashboard() {
                            <p className="text-[10px] text-slate-500 mt-6 italic text-center uppercase tracking-widest">Calculated Logit Scale using Partial Credit Model (PCM)</p>
                         </div>
 
-                        {/* CFA & VALIDITY SECTION */}
-                        <div className="space-y-8">
-                           {/* CFA LOADINGS */}
-                           <div className="bg-[#1E293B]/80 rounded-[40px] p-8 border border-slate-700/50 shadow-xl">
-                              <h3 className="text-sm font-black text-white italic uppercase tracking-widest mb-8 border-l-4 border-purple-500 pl-4">CFA Standardized Loadings (C1-C5)</h3>
-                              <div className="h-64 flex justify-center">
-                                 <Radar data={cfaRadarData} options={{ responsive: true, maintainAspectRatio: false, scales: { r: { grid: { color: 'rgba(255,255,255,0.05)' }, angleLines: { color: 'rgba(255,255,255,0.05)' }, pointLabels: { color: '#94a3b8', font: { size: 10, weight: 'bold' } }, ticks: { display: false } } }, plugins: { legend: { display: false } } }} />
-                              </div>
-                           </div>
+                         {/* CFA & VALIDITY SECTION */}
+                         <div className="space-y-8">
+                            {/* CFA LOADINGS */}
+                            <div className="bg-[#1E293B]/80 rounded-[40px] p-8 border border-slate-700/50 shadow-xl">
+                               <h3 className="text-sm font-black text-white italic uppercase tracking-widest mb-8 border-l-4 border-purple-500 pl-4">CFA Standardized Loadings (C1-C5)</h3>
+                               <div className="h-64 flex justify-center">
+                                  <Radar data={cfaRadarData} options={{ responsive: true, maintainAspectRatio: false, scales: { r: { grid: { color: 'rgba(255,255,255,0.05)' }, angleLines: { color: 'rgba(255,255,255,0.05)' }, pointLabels: { color: '#94a3b8', font: { size: 10, weight: 'bold' } }, ticks: { display: false } } }, plugins: { legend: { display: false } } }} />
+                               </div>
+                            </div>
 
-                           {/* VALIDITY SUMMARY */}
-                           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                              <div className="bg-slate-900 rounded-3xl p-6 border border-slate-800">
-                                 <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-4">Aiken's V (Content)</p>
-                                 <div className="text-3xl font-black text-teal-400 mb-1">0.86</div>
-                                 <p className="text-[10px] text-slate-500 italic">Valid (Target &gt; 0.78)</p>
-                              </div>
-                              <div className="bg-slate-900 rounded-3xl p-6 border border-slate-800">
-                                 <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-4">DIF Gender Bias</p>
-                                 <div className="text-3xl font-black text-blue-400 mb-1">Clean</div>
-                                 <p className="text-[10px] text-slate-500 italic">No bias detected (p &gt; 0.05)</p>
-                              </div>
-                           </div>
-                        </div>
+                            {/* LITERACY DISTRIBUTION */}
+                            <div className="bg-[#1E293B]/80 rounded-[40px] p-8 border border-slate-700/50 shadow-xl">
+                               <h3 className="text-sm font-black text-white italic uppercase tracking-widest mb-8 border-l-4 border-emerald-500 pl-4">Literacy Level Distribution (Mean ± 1 SD)</h3>
+                               <div className="h-64 flex justify-center">
+                                  <Doughnut data={literacyData} options={{ responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8', font: { size: 10 } } } } }} />
+                               </div>
+                            </div>
+
+                            {/* VALIDITY SUMMARY */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                               <div className="bg-slate-900 rounded-3xl p-6 border border-slate-800">
+                                  <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-4">Aiken's V (Content)</p>
+                                  <div className="text-3xl font-black text-teal-400 mb-1">0.86</div>
+                                  <p className="text-[10px] text-slate-500 italic">Valid (Target &gt; 0.78)</p>
+                               </div>
+                               <div className="bg-slate-900 rounded-3xl p-6 border border-slate-800">
+                                  <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-4">DIF Gender Bias</p>
+                                  <div className="text-3xl font-black text-blue-400 mb-1">Clean</div>
+                                  <p className="text-[10px] text-slate-500 italic">No bias detected (p &gt; 0.05)</p>
+                               </div>
+                            </div>
+                         </div>
                      </div>
 
                      {/* DATA TABLE / RESPONSES LIST */}
@@ -360,17 +400,40 @@ export default function AdminDashboard() {
                      </div>
                   </div>
                 )}
-
-
                 {currentTab === 'instruments' && (
                   <div className="space-y-6">
+                     {/* INSTRUMENT SELECTOR SUB-TABS */}
+                     <div className="flex gap-4 mb-6">
+                        {[
+                           { id: 'madel5c', label: 'MADEL5C (SJT)' },
+                           { id: 'preliminary', label: 'Preliminary (PDI-DL)' },
+                           { id: 'survey', label: 'Survey (SUS)' }
+                        ].map((inst) => (
+                           <button key={inst.id} onClick={() => {
+                              setCurrentInstrument(inst.id);
+                              fetchQuestions(inst.id);
+                           }} className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                              currentInstrument === inst.id 
+                              ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' 
+                              : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
+                           }`}>
+                              {inst.label}
+                           </button>
+                        ))}
+                     </div>
+
                      <div className="bg-[#1E293B]/80 rounded-2xl p-8 border border-slate-700/50 shadow-lg">
                         <div className="flex justify-between items-center mb-8 border-b border-slate-700/50 pb-4">
                            <div>
-                              <h3 className="text-xl font-bold text-white">MADEL5C SJT Item Manager</h3>
-                              <p className="text-slate-400 text-sm italic">Edit skenario dan skor pakar langsung dari panel ini.</p>
+                              <h3 className="text-xl font-bold text-white uppercase tracking-tighter italic">
+                                 {currentInstrument === 'madel5c' ? 'MADEL5C SJT Manager' : 
+                                  currentInstrument === 'preliminary' ? 'Preliminary (PDI-DL) Manager' : 'Survey (SUS) Manager'}
+                              </h3>
+                              <p className="text-slate-400 text-sm italic">Edit skenario, soal, dan opsi instrumen secara dinamis.</p>
                            </div>
-                           <span className="px-4 py-1.5 bg-blue-500/20 text-blue-400 text-[10px] font-black rounded-full border border-blue-500/30 uppercase tracking-[0.2em]">30 Items Active</span>
+                           <span className="px-4 py-1.5 bg-blue-500/20 text-blue-400 text-[10px] font-black rounded-full border border-blue-500/30 uppercase tracking-[0.2em]">
+                              {questions.length} Items Active
+                           </span>
                         </div>
 
                         <div className="space-y-4">
@@ -379,10 +442,13 @@ export default function AdminDashboard() {
                                 {editingIndex === idx ? (
                                   <div className="space-y-4">
                                      <div>
-                                        <label className="text-[10px] font-black text-slate-500 uppercase mb-2 block tracking-widest">Skenario Soal {idx+1}</label>
-                                        <textarea value={q.scenario} onChange={(e) => {
+                                        <label className="text-[10px] font-black text-slate-500 uppercase mb-2 block tracking-widest">
+                                           {currentInstrument === 'madel5c' ? `Skenario Soal ${idx+1}` : `Pertanyaan Soal ${idx+1}`}
+                                        </label>
+                                        <textarea value={currentInstrument === 'madel5c' ? q.scenario : q.question} onChange={(e) => {
                                           const newQ = [...questions];
-                                          newQ[idx].scenario = e.target.value;
+                                          if (currentInstrument === 'madel5c') newQ[idx].scenario = e.target.value;
+                                          else newQ[idx].question = e.target.value;
                                           setQuestions(newQ);
                                         }} className="w-full bg-slate-800 border border-slate-700 rounded-xl p-4 text-sm text-white focus:border-blue-500 outline-none" rows={3} />
                                      </div>
@@ -406,8 +472,12 @@ export default function AdminDashboard() {
                                 ) : (
                                   <div className="flex justify-between items-start gap-6">
                                      <div className="flex-1">
-                                        <p className="text-xs font-bold text-blue-500 mb-2 uppercase tracking-widest">Butir {idx+1} • {q.dim}</p>
-                                        <p className="text-white text-sm font-medium leading-relaxed">{q.scenario}</p>
+                                        <p className="text-xs font-bold text-blue-500 mb-2 uppercase tracking-widest">
+                                           Butir {idx+1} {q.dim ? `• ${q.dim}` : ''}
+                                        </p>
+                                        <p className="text-white text-sm font-medium leading-relaxed">
+                                           {currentInstrument === 'madel5c' ? q.scenario : q.question}
+                                        </p>
                                      </div>
                                      <button onClick={() => setEditingIndex(idx)} className="p-3 bg-slate-800 hover:bg-slate-700 rounded-xl text-slate-400 hover:text-white transition-all">
                                         <i className="fa-solid fa-pen-to-square"></i>
@@ -419,7 +489,8 @@ export default function AdminDashboard() {
                         </div>
                      </div>
                   </div>
-                {currentTab === 'settings' && (
+                )}
+    {currentTab === 'settings' && (
                   <div className="max-w-3xl space-y-6">
                      <div className="bg-[#1E293B]/80 rounded-[40px] p-10 border border-slate-700/50 shadow-lg">
                         <div className="flex items-center gap-4 mb-10 border-b border-slate-700 pb-6">
