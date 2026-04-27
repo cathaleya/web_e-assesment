@@ -116,11 +116,13 @@ export default function SurveyPage() {
                       initial={{ opacity: 0, y: 30 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: i * 0.05 }}
-                      className={`${creamBg}/95 backdrop-blur-2xl border-4 border-white p-8 lg:p-14 rounded-[50px] shadow-2xl`}
+                      className={`${creamBg}/95 backdrop-blur-2xl border-4 border-white p-6 sm:p-12 rounded-[40px] sm:rounded-[60px] shadow-2xl`}
                     >
-                      <p className="text-xl sm:text-3xl text-[#4B5320] font-black leading-snug mb-12 drop-shadow-[0_2px_4px_rgba(255,255,255,1)]">
-                        <span className="text-[#4B5320]/40 font-black mr-4 italic">#{i + 1}</span> {q}
-                      </p>
+                      <div className="mb-10 p-6 sm:p-10 bg-white/60 border-l-[10px] border-[#4B5320] rounded-[25px] sm:rounded-[35px] shadow-inner">
+                        <p className="text-lg sm:text-xl text-[#4B5320] font-bold leading-relaxed drop-shadow-[0_2px_4px_rgba(255,255,255,1)]">
+                          <span className="text-[#4B5320]/30 font-black mr-3 italic">#{i + 1}</span> {q}
+                        </p>
+                      </div>
                       
                       <div className="flex flex-col md:flex-row justify-between items-center gap-6 sm:gap-10">
                         <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest order-last md:order-first w-full md:w-auto text-center md:text-left">Sangat Tidak Setuju</span>
