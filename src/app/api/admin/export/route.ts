@@ -3,11 +3,11 @@ import { prisma } from '@/lib/prisma';
 
 export async function GET() {
   try {
-    const assessments = await prisma.assessmentResult.findMany({
+    const assessments = await prisma.assessment.findMany({
       include: { user: true }
     });
     
-    const surveys = await prisma.surveyResult.findMany({
+    const surveys = await prisma.survey.findMany({
       include: { user: true }
     });
 

@@ -9,7 +9,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    const result = await prisma.surveyResult.create({
+    const result = await prisma.survey.create({
       data: {
         userId,
         totalScore,
@@ -26,7 +26,7 @@ export async function POST(req: Request) {
 
 export async function GET() {
   try {
-    const results = await prisma.surveyResult.findMany({
+    const results = await prisma.survey.findMany({
       include: {
         user: true
       },

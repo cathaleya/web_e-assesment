@@ -9,7 +9,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    const result = await prisma.assessmentResult.create({
+    const result = await prisma.assessment.create({
       data: {
         userId,
         type,
@@ -30,7 +30,7 @@ export async function GET(req: Request) {
   const type = searchParams.get('type');
 
   try {
-    const results = await prisma.assessmentResult.findMany({
+    const results = await prisma.assessment.findMany({
       where: type ? { type } : {},
       include: {
         user: true

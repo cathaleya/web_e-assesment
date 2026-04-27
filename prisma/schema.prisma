@@ -14,11 +14,11 @@ model User {
   gender    String
   createdAt DateTime @default(now())
 
-  AssessmentResult AssessmentResult[]
-  SurveyResult     SurveyResult[]
+  assessments Assessment[]
+  surveys     Survey[]
 }
 
-model AssessmentResult {
+model Assessment {
   id          String   @id @default(uuid())
   userId      String
   user        User     @relation(fields: [userId], references: [id])
@@ -28,7 +28,7 @@ model AssessmentResult {
   createdAt   DateTime @default(now())
 }
 
-model SurveyResult {
+model Survey {
   id          String   @id @default(uuid())
   userId      String
   user        User     @relation(fields: [userId], references: [id])
@@ -36,3 +36,4 @@ model SurveyResult {
   answersJson String   // JSON string of 10 SUS answers
   createdAt   DateTime @default(now())
 }
+
