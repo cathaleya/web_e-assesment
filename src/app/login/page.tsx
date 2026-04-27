@@ -78,75 +78,77 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center relative overflow-hidden"
          style={{ 
-           backgroundImage: "linear-gradient(rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0.45)), url('/unj_bg.png')",
+           backgroundImage: "url('/unj_bg.png')",
            backgroundSize: 'cover',
            backgroundPosition: 'center',
            backgroundAttachment: 'fixed'
          }}>
       
-      <div className="w-full max-w-lg px-6 relative z-10">
-        <div className="text-center mb-10">
-          <div className="w-24 h-24 bg-white rounded-[35px] flex items-center justify-center mx-auto mb-6 shadow-2xl border-4 border-[#4B5320]/20">
-            <i className="fa-solid fa-graduation-cap text-[#4B5320] text-5xl"></i>
+      <div className="w-full max-w-md px-4 sm:px-6 relative z-10 py-8">
+        <div className="text-center mb-6 sm:mb-8">
+          <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-xl border-4 border-[#4B5320]/10">
+            <i className="fa-solid fa-graduation-cap text-[#4B5320] text-3xl sm:text-4xl"></i>
           </div>
-          <h1 className="text-4xl font-black text-[#4B5320] tracking-tighter uppercase italic leading-none drop-shadow-[0_2px_10px_rgba(255,255,255,1)]">HDAP Portal</h1>
-          <p className="text-[#4B5320] text-[10px] font-black uppercase tracking-[0.5em] mt-3 drop-shadow-[0_2px_5px_rgba(255,255,255,1)]">S3 UNJ Dissertation Research</p>
+          <h1 className="text-2xl sm:text-4xl font-black text-[#4B5320] tracking-tighter uppercase italic leading-none drop-shadow-[0_2px_10px_rgba(255,255,255,1)]">HDAP Portal</h1>
+          <p className="text-[#4B5320]/70 text-[9px] font-black uppercase tracking-[0.4em] mt-2 drop-shadow-[0_2px_5px_rgba(255,255,255,1)]">S3 UNJ Dissertation Research</p>
         </div>
 
-        <div className="bg-white/95 backdrop-blur-3xl rounded-[60px] p-10 lg:p-14 shadow-2xl border-4 border-white">
-          <div className="flex bg-slate-100 p-2 rounded-[25px] mb-10 border border-slate-200/50">
+        <div className="bg-white/95 backdrop-blur-2xl rounded-[40px] p-6 sm:p-10 shadow-2xl border-4 border-white">
+          <div className="flex bg-slate-50 p-1.5 rounded-2xl mb-8 border border-slate-100">
             <button onClick={() => setLoginType("student")} 
-                    className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest rounded-2xl transition-all duration-500 ${loginType === "student" ? "bg-[#4B5320] text-white shadow-xl" : "text-[#4B5320]/60 hover:text-[#4B5320]"}`}>
+                    className={`flex-1 py-3 text-[9px] font-black uppercase tracking-widest rounded-xl transition-all duration-300 ${loginType === "student" ? "bg-[#4B5320] text-white shadow-lg" : "text-[#4B5320]/40"}`}>
               RESPONDEN
             </button>
             <button onClick={() => setLoginType("admin")} 
-                    className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest rounded-2xl transition-all duration-500 ${loginType === "admin" ? "bg-[#4B5320] text-white shadow-xl" : "text-[#4B5320]/60 hover:text-[#4B5320]"}`}>
+                    className={`flex-1 py-3 text-[9px] font-black uppercase tracking-widest rounded-xl transition-all duration-300 ${loginType === "admin" ? "bg-[#4B5320] text-white shadow-lg" : "text-[#4B5320]/40"}`}>
               ADMIN
             </button>
           </div>
 
-          <form onSubmit={handleLogin} className="space-y-8">
+          <form onSubmit={handleLogin} className="space-y-6">
             {loginType === "student" ? (
-              <div className="space-y-6">
-                <div className="relative group">
-                  <i className="fa-solid fa-user absolute left-6 top-5 text-[#4B5320]/40"></i>
-                  <input type="text" required value={name} onChange={(e) => setName(e.target.value)} placeholder="Nama Lengkap" className="w-full bg-slate-50 border-2 border-slate-100 rounded-3xl py-5 pl-16 pr-6 text-sm text-[#4B5320] font-bold focus:border-[#4B5320] outline-none transition-all shadow-inner" />
+              <div className="space-y-4">
+                <div className="relative">
+                  <i className="fa-solid fa-user absolute left-5 top-4 text-[#4B5320]/30 text-sm"></i>
+                  <input type="text" required value={name} onChange={(e) => setName(e.target.value)} placeholder="Nama Lengkap" className="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl py-3.5 pl-12 pr-4 text-xs text-[#4B5320] font-bold focus:border-[#4B5320] outline-none transition-all" />
                 </div>
-                <div className="relative group">
-                  <i className="fa-solid fa-university absolute left-6 top-5 text-[#4B5320]/40"></i>
-                  <input type="text" required value={campus} onChange={e => setCampus(e.target.value)} placeholder="Kampus / Instansi" className="w-full bg-slate-50 border-2 border-slate-100 rounded-3xl py-5 pl-16 pr-6 text-sm text-[#4B5320] font-bold focus:border-[#4B5320] outline-none transition-all shadow-inner" />
+                <div className="relative">
+                  <i className="fa-solid fa-university absolute left-5 top-4 text-[#4B5320]/30 text-sm"></i>
+                  <input type="text" required value={campus} onChange={e => setCampus(e.target.value)} placeholder="Kampus / Instansi" className="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl py-3.5 pl-12 pr-4 text-xs text-[#4B5320] font-bold focus:border-[#4B5320] outline-none transition-all" />
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <button type="button" onClick={() => setGender("male")} className={`flex items-center justify-center gap-3 py-4 rounded-2xl border-2 text-xs font-black transition-all ${gender === "male" ? "bg-[#4B5320] border-[#4B5320] text-white shadow-lg" : "bg-white border-slate-100 text-[#4B5320]/40 hover:border-[#4B5320]/20"}`}>
+                <div className="grid grid-cols-2 gap-3">
+                  <button type="button" onClick={() => setGender("male")} className={`flex items-center justify-center gap-2 py-3.5 rounded-xl border-2 text-[10px] font-black transition-all ${gender === "male" ? "bg-[#4B5320] border-[#4B5320] text-white shadow-md" : "bg-white border-slate-100 text-[#4B5320]/40"}`}>
                     <i className="fa-solid fa-mars"></i> LAKI-LAKI
                   </button>
-                  <button type="button" onClick={() => setGender("female")} className={`flex items-center justify-center gap-3 py-4 rounded-2xl border-2 text-xs font-black transition-all ${gender === "female" ? "bg-[#4B5320] border-[#4B5320] text-white shadow-lg" : "bg-white border-slate-100 text-[#4B5320]/40 hover:border-[#4B5320]/20"}`}>
+                  <button type="button" onClick={() => setGender("female")} className={`flex items-center justify-center gap-2 py-3.5 rounded-xl border-2 text-[10px] font-black transition-all ${gender === "female" ? "bg-[#4B5320] border-[#4B5320] text-white shadow-md" : "bg-white border-slate-100 text-[#4B5320]/40"}`}>
                     <i className="fa-solid fa-venus"></i> PEREMPUAN
                   </button>
                 </div>
               </div>
             ) : (
-              <div className="space-y-6">
-                <div className="relative group">
-                  <i className="fa-solid fa-shield-halved absolute left-6 top-5 text-[#4B5320]/40"></i>
-                  <input type="text" required value={adminUsername} onChange={e => setAdminUsername(e.target.value)} placeholder="Username" className="w-full bg-slate-50 border-2 border-slate-100 rounded-3xl py-5 pl-16 pr-6 text-sm text-[#4B5320] font-bold focus:border-[#4B5320] outline-none transition-all shadow-inner" />
+              <div className="space-y-4">
+                <div className="relative">
+                  <i className="fa-solid fa-shield-halved absolute left-5 top-4 text-[#4B5320]/30 text-sm"></i>
+                  <input type="text" required value={adminUsername} onChange={e => setAdminUsername(e.target.value)} placeholder="Username" className="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl py-3.5 pl-12 pr-4 text-xs text-[#4B5320] font-bold focus:border-[#4B5320] outline-none transition-all" />
                 </div>
-                <div className="relative group">
-                  <i className="fa-solid fa-lock absolute left-6 top-5 text-[#4B5320]/40"></i>
-                  <input type="password" required value={adminPassword} onChange={e => setAdminPassword(e.target.value)} placeholder="Password" className="w-full bg-slate-50 border-2 border-slate-100 rounded-3xl py-5 pl-16 pr-6 text-sm text-[#4B5320] font-bold focus:border-[#4B5320] outline-none transition-all shadow-inner" />
+                <div className="relative">
+                  <i className="fa-solid fa-lock absolute left-5 top-4 text-[#4B5320]/30 text-sm"></i>
+                  <input type="password" required value={adminPassword} onChange={e => setAdminPassword(e.target.value)} placeholder="Password" className="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl py-3.5 pl-12 pr-4 text-xs text-[#4B5320] font-bold focus:border-[#4B5320] outline-none transition-all" />
                 </div>
               </div>
             )}
 
-            <button type="submit" disabled={isLoading} className="w-full font-black py-6 rounded-[30px] bg-[#4B5320] hover:bg-[#354B37] text-white shadow-2xl shadow-[#4B5320]/40 transition-all uppercase tracking-widest text-xs flex items-center justify-center gap-4">
-              <span>{isLoading ? "LOADING..." : "MASUK KE DASHBOARD"}</span>
-              <i className="fa-solid fa-arrow-right-to-bracket"></i>
+            {error && <div className="p-3 bg-red-50 text-red-500 text-[10px] font-bold rounded-xl border border-red-100 text-center">{error}</div>}
+
+            <button type="submit" disabled={isLoading} className="w-full font-black py-5 rounded-2xl bg-[#4B5320] hover:bg-[#354B37] text-white shadow-xl transition-all uppercase tracking-widest text-[10px] flex items-center justify-center gap-3">
+              <span>{isLoading ? "MEMPROSES..." : "MASUK KE DASHBOARD"}</span>
+              <i className="fa-solid fa-arrow-right-to-bracket text-xs"></i>
             </button>
           </form>
         </div>
 
-        <div className="text-center mt-12">
-          <p className="text-[#4B5320] text-[9px] font-black uppercase tracking-[0.5em] drop-shadow-[0_2px_5px_rgba(255,255,255,1)]">&copy; 2026 Riset Disertasi BIMA UNJ</p>
+        <div className="text-center mt-8">
+          <p className="text-[#4B5320] text-[8px] font-black uppercase tracking-[0.4em] drop-shadow-[0_2px_5px_rgba(255,255,255,1)]">&copy; 2026 Riset Disertasi BIMA UNJ</p>
         </div>
       </div>
     </div>
