@@ -23,7 +23,6 @@ export default function SurveyPage() {
   const router = useRouter();
 
   const armyGreen = "#2D3410";
-  const solidCream = "bg-[#FAF9F6]";
 
   const handleAnswer = (qIndex: number, value: number) => {
     setAnswers({ ...answers, [qIndex]: value });
@@ -56,15 +55,15 @@ export default function SurveyPage() {
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden"
+    <div className="min-h-screen relative bg-slate-50"
          style={{ 
-           backgroundImage: "linear-gradient(rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.4)), url('/unj_bg_v2.png')",
+           backgroundImage: "linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)), url('/unj_bg_v2.png')",
            backgroundSize: 'cover',
            backgroundPosition: 'center',
            backgroundAttachment: 'fixed'
          }}>
 
-      <main className="relative z-10 max-w-4xl mx-auto px-4 py-8 sm:py-12">
+      <main className="relative z-10 max-w-2xl mx-auto px-4 py-8">
         <AnimatePresence mode="wait">
           {showInstructions ? (
             <motion.div 
@@ -72,37 +71,37 @@ export default function SurveyPage() {
               initial={{ opacity: 0, scale: 0.98 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, y: -20 }}
-              className="bg-white border-[6px] border-white p-8 sm:p-12 rounded-[40px] shadow-2xl max-w-2xl mx-auto"
+              className="bg-white border-2 border-slate-100 p-6 sm:p-8 rounded-[30px] shadow-2xl mx-auto"
             >
-              <div className="flex items-center gap-6 mb-8 border-b-2 border-slate-100 pb-8">
-                <div className="w-16 h-16 bg-[#2D3410] rounded-2xl flex items-center justify-center shadow-lg shrink-0">
-                  <i className="fa-solid fa-star-half-stroke text-3xl text-white"></i>
+              <div className="flex items-center gap-4 mb-6 border-b border-slate-100 pb-6">
+                <div className="w-10 h-10 bg-[#2D3410] rounded-xl flex items-center justify-center text-white shadow-md">
+                  <i className="fa-solid fa-star-half-stroke text-lg"></i>
                 </div>
                 <div>
-                  <h1 className="text-2xl sm:text-4xl font-black text-[#2D3410] tracking-tighter uppercase italic leading-none">Evaluasi Usabilitas</h1>
-                  <p className="text-[#2D3410]/60 font-bold uppercase tracking-[0.3em] text-[10px] mt-2">System Usability Scale (SUS)</p>
+                  <h1 className="text-xl sm:text-2xl font-black text-[#2D3410] tracking-tighter uppercase italic leading-none">Evaluasi Usabilitas</h1>
+                  <p className="text-[#2D3410]/60 font-bold uppercase tracking-[0.2em] text-[8px] mt-1">System Usability Scale (SUS)</p>
                 </div>
               </div>
               
-              <div className="space-y-8 mb-12">
-                <div className="p-6 bg-[#FAF9F6] rounded-3xl border-2 border-[#2D3410]/5 italic font-bold text-lg sm:text-xl text-[#2D3410] leading-relaxed shadow-inner">
+              <div className="space-y-6 mb-8">
+                <div className="p-4 bg-slate-50 rounded-xl border border-slate-100 italic font-bold text-xs sm:text-sm text-[#2D3410] leading-relaxed">
                   "Mohon berikan penilaian objektif Bapak/Ibu mengenai pengalaman penggunaan platform ini."
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="flex items-center gap-4 p-4 bg-white border-2 border-slate-100 rounded-2xl shadow-sm">
-                    <div className="w-10 h-10 bg-[#2D3410] rounded-xl flex items-center justify-center text-white text-xs shadow-md"><i className="fa-solid fa-check"></i></div>
-                    <span className="font-black text-[#2D3410] uppercase tracking-wider text-[10px] sm:text-xs">10 Pernyataan Sistem</span>
+                <div className="flex gap-4">
+                  <div className="flex-1 flex items-center gap-3 p-3 bg-white border border-slate-100 rounded-xl">
+                    <div className="w-6 h-6 bg-[#2D3410] rounded-lg flex items-center justify-center text-white text-[10px]"><i className="fa-solid fa-check"></i></div>
+                    <span className="font-bold text-[#2D3410] uppercase tracking-wider text-[8px]">10 Item</span>
                   </div>
-                  <div className="flex items-center gap-4 p-4 bg-white border-2 border-slate-100 rounded-2xl shadow-sm">
-                    <div className="w-10 h-10 bg-[#2D3410] rounded-xl flex items-center justify-center text-white text-xs shadow-md"><i className="fa-solid fa-list-ol"></i></div>
-                    <span className="font-black text-[#2D3410] uppercase tracking-wider text-[10px] sm:text-xs">Skala Likert 1-5</span>
+                  <div className="flex-1 flex items-center gap-3 p-3 bg-white border border-slate-100 rounded-xl">
+                    <div className="w-6 h-6 bg-[#2D3410] rounded-lg flex items-center justify-center text-white text-[10px]"><i className="fa-solid fa-list-ol"></i></div>
+                    <span className="font-bold text-[#2D3410] uppercase tracking-wider text-[8px]">Skala 1-5</span>
                   </div>
                 </div>
               </div>
 
               <button 
                 onClick={() => setShowInstructions(false)}
-                className="w-full py-5 bg-[#2D3410] hover:bg-black text-white font-black rounded-2xl transition-all shadow-xl uppercase tracking-[0.4em] text-xs flex items-center justify-center gap-4"
+                className="w-full py-4 bg-[#2D3410] hover:bg-black text-white font-black rounded-xl shadow-xl uppercase tracking-[0.3em] text-[10px] flex items-center justify-center gap-3"
               >
                 MULAI SURVEY <i className="fa-solid fa-chevron-right text-[10px]"></i>
               </button>
@@ -112,62 +111,62 @@ export default function SurveyPage() {
               key="survey"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="space-y-8"
+              className="space-y-4"
             >
-               <div className="text-center mb-8">
-                  <h2 className="text-2xl sm:text-4xl font-black text-[#2D3410] tracking-tighter uppercase italic leading-none drop-shadow-sm">Kuesioner Usabilitas</h2>
-                  <div className="w-16 h-1.5 bg-[#2D3410] mx-auto mt-4 rounded-full"></div>
+               <div className="text-center mb-6">
+                  <h2 className="text-lg sm:text-2xl font-black text-[#2D3410] tracking-tighter uppercase italic leading-none drop-shadow-sm">Kuesioner</h2>
+                  <div className="w-12 h-1 bg-[#2D3410] mx-auto mt-2 rounded-full"></div>
                </div>
 
-               <div className="space-y-6">
+               <div className="space-y-3">
                   {susQuestions.map((q, i) => (
                     <motion.div 
                       key={i}
-                      initial={{ opacity: 0, y: 20 }}
+                      initial={{ opacity: 0, y: 15 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: i * 0.05 }}
-                      className="bg-white border-[5px] border-white p-6 sm:p-10 rounded-[40px] shadow-2xl"
+                      transition={{ delay: i * 0.03 }}
+                      className="bg-white border border-slate-100 p-4 rounded-2xl shadow-md"
                     >
-                      <div className="mb-8 p-6 sm:p-10 bg-[#FAF9F6] border-l-[10px] border-[#2D3410] rounded-3xl shadow-inner">
-                        <p className="text-base sm:text-xl text-[#2D3410] font-black leading-relaxed">
-                          <span className="text-[#2D3410]/30 font-black mr-3 italic">#{i + 1}</span> {q}
+                      <div className="mb-4 p-3 bg-slate-50 border-l-[4px] border-[#2D3410] rounded-lg shadow-inner">
+                        <p className="text-[11px] sm:text-[13px] text-[#2D3410] font-bold leading-relaxed">
+                          <span className="text-[#2D3410]/30 font-black mr-2 italic">#{i + 1}</span> {q}
                         </p>
                       </div>
                       
-                      <div className="flex flex-col md:flex-row justify-between items-center gap-6 sm:gap-12">
-                        <span className="text-[10px] font-black uppercase text-[#2D3410]/50 tracking-widest order-last md:order-first w-full md:w-auto text-center md:text-left">Tidak Setuju</span>
-                        <div className="flex justify-between gap-2 sm:gap-6 flex-1 w-full max-w-lg mx-auto">
+                      <div className="flex justify-between items-center gap-4">
+                        <span className="text-[7px] font-black uppercase text-[#2D3410]/40 tracking-widest">STS</span>
+                        <div className="flex justify-between gap-1.5 flex-1 max-w-[240px]">
                            {[1, 2, 3, 4, 5].map((val) => (
                              <button
                                key={val}
                                onClick={() => handleAnswer(i, val)}
-                               className={`w-12 h-12 sm:w-16 sm:h-16 rounded-2xl font-black text-lg sm:text-2xl transition-all flex items-center justify-center border-4 ${
+                               className={`w-7 h-7 sm:w-9 sm:h-9 rounded-lg font-black text-[10px] sm:text-xs transition-all flex items-center justify-center border-2 ${
                                  answers[i] === val
-                                   ? "bg-[#2D3410] border-[#2D3410] text-white shadow-xl scale-110"
-                                   : "bg-white border-slate-100 text-[#2D3410]/20 hover:border-[#2D3410]/30"
+                                   ? "bg-[#2D3410] border-[#2D3410] text-white shadow-md scale-105"
+                                   : "bg-white border-slate-100 text-[#2D3410]/20 hover:border-[#2D3410]/10"
                                }`}
                              >
                                {val}
                              </button>
                            ))}
                         </div>
-                        <span className="text-[10px] font-black uppercase text-[#2D3410]/50 tracking-widest w-full md:w-auto text-center md:text-right">Sangat Setuju</span>
+                        <span className="text-[7px] font-black uppercase text-[#2D3410]/40 tracking-widest">SS</span>
                       </div>
                     </motion.div>
                   ))}
                </div>
 
-               <div className="flex justify-center pt-16">
+               <div className="flex justify-center pt-8">
                   <button
                     disabled={!isComplete}
                     onClick={submitSurvey}
-                    className={`w-full sm:w-auto px-16 py-6 rounded-2xl font-black uppercase tracking-[0.5em] text-xs transition-all flex items-center justify-center gap-6 ${
+                    className={`w-full py-4 rounded-xl font-black uppercase tracking-[0.4em] text-[10px] transition-all flex items-center justify-center gap-4 ${
                       isComplete
                         ? "bg-[#2D3410] hover:bg-black text-white shadow-xl"
                         : "bg-slate-100 text-slate-300 cursor-not-allowed shadow-inner"
                     }`}
                   >
-                    Kirim Hasil Survey <i className="fa-solid fa-paper-plane text-xs"></i>
+                    Kirim Hasil <i className="fa-solid fa-paper-plane text-[10px]"></i>
                   </button>
                </div>
             </motion.div>
