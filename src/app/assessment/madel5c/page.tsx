@@ -10,6 +10,7 @@ interface Option {
 }
 
 interface Question {
+  id?: number;
   scenario: string;
   options: Option[];
 }
@@ -40,18 +41,25 @@ export default function Madel5cAssessment() {
   };
 
   const fetchQuestions = useCallback(async () => {
+    setLoading(true);
     try {
-      const res = await fetch('/api/questions?type=madel5c');
+      const res = await fetch('/api/questions?type=madel5c', { cache: 'no-store' });
       const data = await res.json();
-      if (Array.isArray(data)) {
+      
+      if (Array.isArray(data) && data.length > 0) {
         const shuffledQuestions = data.map((q: Question) => ({
           ...q,
           options: shuffleArray(q.options)
         }));
         setQuestions(shuffledQuestions);
+      } else {
+        console.error("Data soal kosong atau bukan array");
       }
+    } catch (err) { 
+      console.error("Gagal mengambil soal:", err); 
+    } finally {
       setLoading(false);
-    } catch (err) { console.error(err); setLoading(false); }
+    }
   }, []);
 
   useEffect(() => { 
@@ -73,6 +81,7 @@ export default function Madel5cAssessment() {
   }, [router]);
 
   const handleAnswer = (idx: number) => {
+    if (!questions[currentStep]) return;
     const selectedOption = questions[currentStep].options[idx];
     const newAnswers = { ...answers, [currentStep]: selectedOption.score };
     setAnswers(newAnswers);
@@ -87,65 +96,76 @@ export default function Madel5cAssessment() {
     }, 300);
   };
 
-  if (loading) return <div className="min-h-screen bg-white flex items-center justify-center font-bold text-xs">MEMUAT...</div>;
+  if (loading) return (
+    <div className="min-h-screen bg-white flex flex-col items-center justify-center p-6 text-center">
+      <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-4"></div>
+      <p className="font-black text-xs uppercase tracking-widest text-slate-400">Menghubungkan ke Database Soal...</p>
+    </div>
+  );
+
+  if (questions.length === 0) return (
+    <div className="min-h-screen bg-white flex flex-col items-center justify-center p-6 text-center">
+      <i className="fa-solid fa-triangle-exclamation text-rose-500 text-4xl mb-4"></i>
+      <p className="font-black text-sm uppercase tracking-widest text-slate-900 mb-4">Soal gagal dimuat. Harap periksa koneksi atau database Bapak.</p>
+      <button onClick={() => window.location.reload()} className="px-6 py-3 bg-blue-600 text-white rounded-xl font-black text-[10px] uppercase tracking-widest">Coba Lagi</button>
+    </div>
+  );
 
   return (
     <div className="min-h-screen relative"
          style={{ backgroundImage: "url('/unj_bg_v2.png')", backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}>
+      
+      <div className="absolute inset-0 bg-white/60 backdrop-blur-[2px] z-0"></div>
 
-      <main className="relative z-10 max-w-lg mx-auto px-4 py-6">
+      <main className="relative z-10 max-w-lg mx-auto px-4 py-8">
         <AnimatePresence mode="wait">
           {showInstructions ? (
-            <motion.div key="instructions" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="bg-white p-6 rounded-2xl shadow-2xl border border-slate-200"
+            <motion.div key="instructions" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-white p-8 rounded-[40px] shadow-3xl border border-slate-200"
             >
-              <div className="flex items-center gap-3 mb-4 border-b pb-4">
-                <div className="w-10 h-10 bg-emerald-600 rounded-xl flex items-center justify-center text-white shadow-lg">
-                  <i className="fa-solid fa-list-check text-xl"></i>
+              <div className="flex items-center gap-4 mb-6 border-b pb-6">
+                <div className="w-12 h-12 bg-emerald-600 rounded-2xl flex items-center justify-center text-white shadow-lg">
+                  <i className="fa-solid fa-list-check text-2xl"></i>
                 </div>
-                <h1 className="text-xl font-black text-slate-900 uppercase">Panduan MADEL5C</h1>
+                <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tighter">Panduan MADEL5C</h1>
               </div>
 
-              <div className="space-y-4 mb-6">
-                <div className="p-3 bg-emerald-50 rounded-xl border border-emerald-100">
-                  <h3 className="text-[10px] font-black text-emerald-900 uppercase mb-1">Cara Pengisian:</h3>
-                  <p className="text-[9px] font-bold text-emerald-800 leading-relaxed">
-                    Baca skenario situasi yang muncul, lalu pilih satu tindakan yang menurut Anda paling tepat dan efektif untuk dilakukan.
-                  </p>
-                </div>
-
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
-                  <h3 className="text-[10px] font-black text-slate-900 uppercase mb-1">Metode Penskoran (SJT):</h3>
-                  <p className="text-[9px] font-bold text-slate-600 leading-relaxed">
-                    Setiap pilihan jawaban memiliki bobot skor 1-5 berdasarkan tingkat efektivitas tindakan tersebut dalam literasi digital.
+              <div className="space-y-4 mb-8">
+                <div className="p-4 bg-emerald-50 rounded-2xl border border-emerald-100">
+                  <h3 className="text-[11px] font-black text-emerald-900 uppercase mb-1">Cara Pengisian:</h3>
+                  <p className="text-[10px] font-bold text-emerald-800 leading-relaxed italic">
+                    &quot;Baca skenario situasi nyata yang muncul, lalu pilih satu tindakan yang menurut Anda paling tepat dan efektif.&quot;
                   </p>
                 </div>
               </div>
 
-              <button onClick={() => setShowInstructions(false)} className="w-full py-4 bg-[#4B5320] text-white font-black rounded-lg text-[10px] uppercase tracking-widest shadow-lg">MULAI ASESMEN AKHIR</button>
+              <button onClick={() => setShowInstructions(false)} className="w-full py-5 bg-[#4B5320] text-white font-black rounded-2xl text-[11px] uppercase tracking-widest shadow-2xl active:scale-95 transition-all">MULAI ASESMEN AKHIR</button>
             </motion.div>
           ) : (
-            <motion.div key="assessment" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
-              <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-lg flex justify-between items-center">
-                <span className="text-[10px] font-black text-slate-900 uppercase tracking-widest">Skenario #{currentStep + 1}</span>
-                <div className="w-24 h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                   <div className="h-full bg-[#4B5320]" style={{ width: `${((currentStep+1)/questions.length)*100}%` }}></div>
+            <motion.div key="assessment" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
+              <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xl flex justify-between items-center">
+                <div>
+                   <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]">Situasi</p>
+                   <span className="text-lg font-black text-slate-900 italic">Skenario #{currentStep + 1}</span>
+                </div>
+                <div className="w-24 h-2 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
+                   <div className="h-full bg-[#4B5320] transition-all duration-500" style={{ width: `${((currentStep+1)/questions.length)*100}%` }}></div>
                 </div>
               </div>
 
-              <div className="bg-white p-4 rounded-2xl shadow-2xl border border-slate-200">
-                <div className="mb-5 p-4 bg-slate-50 border-l-4 border-slate-900 rounded-lg shadow-inner">
-                  <p className="text-[13px] text-black font-black leading-relaxed italic">&quot;{questions[currentStep]?.scenario}&quot;</p>
+              <div className="bg-white p-6 rounded-[40px] shadow-3xl border border-slate-200">
+                <div className="mb-6 p-6 bg-slate-50 border-l-[6px] border-[#4B5320] rounded-2xl shadow-inner">
+                  <p className="text-[14px] text-slate-900 font-bold leading-relaxed italic">&quot;{questions[currentStep]?.scenario}&quot;</p>
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-3">
                   {questions[currentStep]?.options?.map((opt, idx: number) => (
                     <button key={idx} onClick={() => handleAnswer(idx)}
-                      className={`w-full flex items-start gap-3 p-3 rounded-xl border-2 text-left transition-all ${
-                        answers[currentStep] === opt.score ? "bg-black border-black text-white shadow-xl scale-[1.02]" : `${optionColors[idx % optionColors.length]} opacity-90`
+                      className={`w-full flex items-start gap-4 p-4 rounded-2xl border-2 text-left transition-all ${
+                        answers[currentStep] === opt.score ? "bg-[#4B5320] border-[#4B5320] text-white shadow-xl scale-[1.02]" : `${optionColors[idx % optionColors.length]} hover:scale-[1.01]`
                       }`}
                     >
-                      <span className={`mt-0.5 w-7 h-7 rounded-lg flex items-center justify-center font-black text-[10px] shrink-0 ${answers[currentStep] === opt.score ? "bg-white text-black" : "bg-white/50 border border-current opacity-60"}`}>{String.fromCharCode(65 + idx)}</span>
-                      <span className="text-[11px] font-black leading-tight">{opt.text}</span>
+                      <span className={`mt-0.5 w-8 h-8 rounded-xl flex items-center justify-center font-black text-[11px] shrink-0 ${answers[currentStep] === opt.score ? "bg-white text-[#4B5320]" : "bg-white/60 border border-current opacity-80"}`}>{String.fromCharCode(65 + idx)}</span>
+                      <span className="text-[12px] font-bold leading-tight">{opt.text}</span>
                     </button>
                   ))}
                 </div>

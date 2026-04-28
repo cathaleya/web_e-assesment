@@ -36,24 +36,30 @@ export async function GET(request: Request) {
     
     if (!apiKey) {
       return NextResponse.json({ 
-        message: `Selamat datang, ${userData.name}! Silakan selesaikan instrumen PDI-DL untuk melihat hasil diagnosis literasi digital Anda.` 
+        message: `Halo ${userData.name}! Selesaikan semua tahap untuk mendapatkan diagnosis AI.` 
       });
     }
 
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-    const prompt = `
-      Anda adalah Asisten Pakar Diagnostik Literasi Digital UNJ. 
-      Berikan pesan selamat datang yang sangat singkat (maksimal 2 kalimat) untuk user bernama ${userData.name}.
-      
-      Konteks Progres:
-      - PDI-DL: ${pdi ? `Selesai dengan skor ${pdi.totalScore}` : 'Belum dikerjakan'}
-      - MADEL5C: ${madel ? `Selesai dengan skor ${madel.totalScore}` : 'Belum dikerjakan'}
-      
-      Gunakan gaya bahasa formal, cerdas, dan memotivasi. 
-      Jika belum mengerjakan PDI-DL, ajak dia untuk segera memulainya sebagai langkah awal diagnosis.
-    `;
+    let prompt = "";
+    if (pdi && madel) {
+      prompt = `
+        Anda adalah Pakar Psikometrika Digital UNJ.
+        Berikan diagnosis singkat (maks 3 kalimat) untuk ${userData.name} yang telah menyelesaikan seluruh instrumen.
+        Skor PDI-DL: ${pdi.totalScore}
+        Skor MADEL5C: ${madel.totalScore}
+        
+        Berikan pujian jika skor tinggi, atau saran perbaikan jika skor rendah. 
+        Gunakan gaya bahasa akademik yang memotivasi dan sangat ringkas.
+      `;
+    } else {
+      prompt = `
+        Sapa ${userData.name} dan ajak dia menyelesaikan seluruh instrumen (PDI-DL, Survey, MADEL5C) 
+        agar AI dapat memetakan profil literasi digitalnya secara akurat. Maks 2 kalimat.
+      `;
+    }
 
     const result = await model.generateContent(prompt);
     const response = await result.response;
@@ -63,7 +69,7 @@ export async function GET(request: Request) {
   } catch (error) {
     console.error('AI Error:', error);
     return NextResponse.json({ 
-      message: `Selamat datang kembali, ${userData?.name || 'User'}! Mari lanjutkan perjalanan literasi digital Anda hari ini.` 
+      message: `Selamat datang, ${userData?.name || 'User'}! Selesaikan instrumen Anda untuk diagnosis AI.` 
     });
   }
 }

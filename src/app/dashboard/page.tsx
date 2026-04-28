@@ -12,6 +12,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import { motion, AnimatePresence } from "framer-motion";
 
 ChartJS.register(RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
 
@@ -22,8 +23,10 @@ interface UserData {
 
 interface StatsData {
   preliminary: number;
-  surveyDone: boolean;
+  pdiAnswers: Record<string, number> | null;
   madel5c: number;
+  madelAnswers: Record<string, number> | null;
+  surveyDone: boolean;
   radar: number[];
 }
 
@@ -31,6 +34,7 @@ export default function DashboardPage() {
   const [user, setUser] = useState<UserData | null>(null);
   const [stats, setStats] = useState<StatsData | null>(null);
   const [aiMessage, setAiMessage] = useState<string>("Sedang menganalisis profil Anda...");
+  const [showReflection, setShowReflection] = useState<string | null>(null);
   const router = useRouter();
 
   const fetchData = useCallback(async (userId: string) => {
@@ -110,10 +114,10 @@ export default function DashboardPage() {
           {/* AI DIAGNOSTIC WELCOME CARD */}
           <div className="bg-white rounded-2xl p-5 shadow-lg border-l-8 border-blue-600">
              <div className="flex items-center gap-3 mb-2">
-                <div className="w-6 h-6 bg-blue-600 rounded-lg flex items-center justify-center text-white text-[10px]"><i className="fa-Robot text-robot"></i></div>
-                <p className="text-[8px] font-black text-blue-600 uppercase tracking-widest">AI Diagnostik UNJ</p>
+                <div className="w-6 h-6 bg-blue-600 rounded-lg flex items-center justify-center text-white text-[10px]"><i className="fa-solid fa-robot"></i></div>
+                <p className="text-[8px] font-black text-blue-600 uppercase tracking-widest">Diagnosis AI Diagnostik</p>
              </div>
-             <h3 className="text-sm font-bold text-slate-900 leading-tight">
+             <h3 className="text-sm font-bold text-slate-900 leading-tight italic">
                 &quot;{aiMessage}&quot;
              </h3>
           </div>
@@ -126,12 +130,14 @@ export default function DashboardPage() {
                      <p className="text-[8px] font-black text-blue-600 uppercase tracking-widest">Tahap 1</p>
                      {isPdiDone && <i className="fa-solid fa-circle-check text-emerald-500"></i>}
                   </div>
-                  <h4 className="text-[10px] font-black text-slate-900 uppercase leading-none">Instrumen PDI-DL</h4>
+                  <h4 className="text-[10px] font-black text-slate-900 uppercase leading-none">PDI-DL</h4>
+                  {isPdiDone && <p className="mt-2 text-xl font-black text-blue-600">Skor: {stats?.preliminary}</p>}
                </div>
-               <button onClick={() => router.push("/assessment/preliminary")}
-                  className={`mt-4 py-2 rounded-lg text-[8px] font-black uppercase transition-all ${isPdiDone ? "bg-emerald-50 text-emerald-600" : "bg-blue-600 text-white shadow-lg"}`}>
-                  {isPdiDone ? "Selesai" : "Mulai"}
-               </button>
+               {isPdiDone ? (
+                 <button onClick={() => setShowReflection('pdi')} className="mt-4 py-2 bg-slate-100 text-slate-600 rounded-lg text-[8px] font-black uppercase tracking-widest">Lihat Refleksi</button>
+               ) : (
+                 <button onClick={() => router.push("/assessment/preliminary")} className="mt-4 py-2 bg-blue-600 text-white rounded-lg text-[8px] font-black uppercase shadow-lg">Mulai</button>
+               )}
             </div>
 
             <div className={`bg-white p-4 rounded-xl border-2 shadow-md flex flex-col justify-between transition-all ${!isPdiDone ? 'opacity-50 grayscale' : 'border-amber-200'}`}>
@@ -140,7 +146,7 @@ export default function DashboardPage() {
                      <p className="text-[8px] font-black text-amber-600 uppercase tracking-widest">Tahap 2</p>
                      {isSurveyDone && <i className="fa-solid fa-circle-check text-emerald-500"></i>}
                   </div>
-                  <h4 className="text-[10px] font-black text-slate-900 uppercase leading-none">Survey Usabilitas</h4>
+                  <h4 className="text-[10px] font-black text-slate-900 uppercase leading-none">Survey</h4>
                </div>
                <button disabled={!isPdiDone} onClick={() => router.push("/survey")}
                   className={`mt-4 py-2 rounded-lg text-[8px] font-black uppercase transition-all ${!isPdiDone ? "bg-slate-100 text-slate-400" : isSurveyDone ? "bg-emerald-50 text-emerald-600" : "bg-amber-500 text-white shadow-lg"}`}>
@@ -154,19 +160,21 @@ export default function DashboardPage() {
                      <p className="text-[8px] font-black text-[#4B5320] uppercase tracking-widest">Tahap 3</p>
                      {isMadelDone && <i className="fa-solid fa-circle-check text-emerald-500"></i>}
                   </div>
-                  <h4 className="text-[10px] font-black text-slate-900 uppercase leading-none">Instrumen MADEL5C</h4>
+                  <h4 className="text-[10px] font-black text-slate-900 uppercase leading-none">MADEL5C</h4>
+                  {isMadelDone && <p className="mt-2 text-xl font-black text-[#4B5320]">Skor: {stats?.madel5c}</p>}
                </div>
-               <button disabled={!isSurveyDone} onClick={() => router.push("/assessment/madel5c")}
-                  className={`mt-4 py-2 rounded-lg text-[8px] font-black uppercase transition-all ${!isSurveyDone ? "bg-slate-100 text-slate-400" : isMadelDone ? "bg-emerald-50 text-emerald-600" : "bg-[#4B5320] text-white shadow-lg"}`}>
-                  {isMadelDone ? "Selesai" : "Mulai"}
-               </button>
+               {isMadelDone ? (
+                 <button onClick={() => setShowReflection('madel')} className="mt-4 py-2 bg-slate-100 text-[#4B5320] rounded-lg text-[8px] font-black uppercase tracking-widest">Lihat Refleksi</button>
+               ) : (
+                 <button disabled={!isSurveyDone} onClick={() => router.push("/assessment/madel5c")} className="mt-4 py-2 bg-[#4B5320] text-white rounded-lg text-[8px] font-black uppercase shadow-lg tracking-widest">Mulai</button>
+               )}
             </div>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
              {/* RADAR CHART */}
              <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-lg flex flex-col items-center">
-                <p className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-4">Mapping Kompetensi</p>
+                <p className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-4">Profil Kompetensi Digital</p>
                 <div className="w-full max-w-[200px]">
                   <Radar data={{
                     labels: ['C1', 'C2', 'C3', 'C4', 'C5'],
@@ -185,26 +193,47 @@ export default function DashboardPage() {
                 </div>
              </div>
 
-             <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-lg">
-                <h3 className="text-xs font-black text-slate-900 uppercase tracking-widest mb-4">Info Pengisian:</h3>
-                <div className="space-y-3">
-                  <div className="p-3 bg-blue-50 rounded-xl border border-blue-100">
-                    <p className="text-[9px] font-black text-blue-900 uppercase">Tahap 1: PDI-DL</p>
-                    <p className="text-[8px] font-bold text-blue-700">Diagnosis awal tingkat literasi digital secara mandiri.</p>
-                  </div>
-                  <div className="p-3 bg-amber-50 rounded-xl border border-amber-100">
-                    <p className="text-[9px] font-black text-amber-900 uppercase">Tahap 2: Survey</p>
-                    <p className="text-[8px] font-bold text-amber-700">Evaluasi pengalaman Anda menggunakan platform HDAP.</p>
-                  </div>
-                  <div className="p-3 bg-emerald-50 rounded-xl border border-emerald-100">
-                    <p className="text-[9px] font-black text-emerald-900 uppercase">Tahap 3: MADEL5C</p>
-                    <p className="text-[8px] font-bold text-emerald-700">Asesmen berbasis skenario situasi dunia nyata.</p>
-                  </div>
+             <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-lg flex flex-col justify-center">
+                <h3 className="text-[10px] font-black text-slate-900 uppercase tracking-widest mb-4">Status Akhir:</h3>
+                <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200">
+                   <p className="text-[11px] font-bold text-slate-600 leading-relaxed italic">
+                     {isMadelDone ? "Selamat! Anda telah menyelesaikan seluruh rangkaian evaluasi literasi digital. Gunakan hasil diagnosis AI sebagai bahan refleksi pengembangan diri Anda." : "Silakan selesaikan seluruh tahapan instrumen untuk mendapatkan profil kompetensi digital Anda secara utuh."}
+                   </p>
                 </div>
+                {isMadelDone && (
+                  <button onClick={() => { localStorage.clear(); router.push("/login"); }} className="mt-6 w-full py-4 bg-rose-500 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl shadow-rose-500/20 active:scale-95 transition-all">Selesai & Keluar</button>
+                )}
              </div>
           </div>
         </div>
       </main>
+
+      {/* REFLECTION MODAL */}
+      <AnimatePresence>
+        {showReflection && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowReflection(null)} className="absolute inset-0 bg-slate-900/60 backdrop-blur-md"></motion.div>
+            <motion.div initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9, y: 20 }} className="relative w-full max-w-lg bg-white rounded-[40px] p-8 shadow-3xl border border-slate-100 max-h-[80vh] flex flex-col">
+               <h2 className="text-xl font-black text-slate-900 mb-6 tracking-tight uppercase border-b pb-4">Refleksi Jawaban {showReflection.toUpperCase()}</h2>
+               <div className="flex-1 overflow-y-auto pr-4 space-y-4">
+                  {showReflection === 'pdi' && stats?.pdiAnswers && Object.entries(stats.pdiAnswers).map(([key, val], i) => (
+                    <div key={i} className="p-4 bg-blue-50 rounded-2xl border border-blue-100">
+                       <p className="text-[9px] font-black text-blue-500 uppercase mb-1">Butir Pertanyaan {Number(key) + 1}</p>
+                       <p className="text-xs font-bold text-slate-900">Skor Kemampuan Mandiri: <span className="text-blue-600">{val}</span> / 5</p>
+                    </div>
+                  ))}
+                  {showReflection === 'madel' && stats?.madelAnswers && Object.entries(stats.madelAnswers).map(([key, val], i) => (
+                    <div key={i} className="p-4 bg-[#4B5320]/10 rounded-2xl border border-[#4B5320]/20">
+                       <p className="text-[9px] font-black text-[#4B5320] uppercase mb-1">Skenario Situasi {Number(key) + 1}</p>
+                       <p className="text-xs font-bold text-slate-900">Skor Efektivitas Tindakan: <span className="text-[#4B5320]">{val}</span> / 5</p>
+                    </div>
+                  ))}
+               </div>
+               <button onClick={() => setShowReflection(null)} className="mt-8 w-full py-4 bg-slate-900 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl">Tutup</button>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

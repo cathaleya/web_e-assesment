@@ -170,10 +170,12 @@ Buka domain Bapak di browser. Seharusnya platform HDAP sudah tampil dengan gembo
 
 jika lakukan update jangan lupa selalu lakukan ini di vps
 
+
+cd /var/www
+cd web_e-assesment
 git pull origin main
 npm run build
 pm2 restart hdap-app
-
 
 ---
 *Dokumen ini merupakan bagian dari panduan implementasi teknologi Riset BIMA S3.*
