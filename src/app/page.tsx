@@ -32,7 +32,7 @@ export default function Home() {
           <a href="#about" className="text-[11px] font-bold text-slate-600 uppercase tracking-widest hover:text-blue-600 transition-colors">
             TENTANG PLATFORM
           </a>
-          <a href="#" className="text-[11px] font-bold text-slate-600 uppercase tracking-widest hover:text-blue-600 transition-colors">
+          <a href="/buku-panduan" className="text-[11px] font-bold text-slate-600 uppercase tracking-widest hover:text-blue-600 transition-colors">
             BUKU PANDUAN
           </a>
           <a
