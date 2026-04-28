@@ -52,6 +52,14 @@ export default function PreliminaryAssessment() {
     fetchQuestions(); 
   }, [fetchQuestions]);
 
+  const DEFAULT_OPTIONS = [
+    { text: "Sangat Tidak Mampu", score: 1 },
+    { text: "Tidak Mampu", score: 2 },
+    { text: "Cukup Mampu", score: 3 },
+    { text: "Mampu", score: 4 },
+    { text: "Sangat Mampu", score: 5 }
+  ];
+
   const submitAssessment = useCallback(async (finalAnswers: Record<number, number>) => {
     const userId = localStorage.getItem("userId");
     if (!userId) return router.push("/login");
@@ -66,10 +74,9 @@ export default function PreliminaryAssessment() {
     } catch (err) { console.error(err); }
   }, [router]);
 
-  const handleAnswer = (idx: number) => {
+  const handleAnswer = (score: number) => {
     if (!questions[currentStep]) return;
-    const selectedOption = questions[currentStep].options[idx];
-    const newAnswers = { ...answers, [currentStep]: selectedOption.score };
+    const newAnswers = { ...answers, [currentStep]: score };
     setAnswers(newAnswers);
     setTimeout(() => {
       if (currentStep < questions.length - 1) { 
@@ -100,8 +107,6 @@ export default function PreliminaryAssessment() {
   return (
     <div className="min-h-screen relative"
          style={{ backgroundImage: "url('/unj_bg_v2.png')", backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}>
-      
-      <div className="absolute inset-0 bg-white/60 backdrop-blur-[2px] z-0"></div>
 
       <main className="relative z-10 max-w-lg mx-auto px-4 py-8">
         <AnimatePresence mode="wait">
@@ -145,14 +150,8 @@ export default function PreliminaryAssessment() {
                    <p className="text-[14px] text-slate-900 font-bold leading-relaxed italic">&quot;{questions[currentStep]?.text}&quot;</p>
                 </div>
                 <div className="space-y-3">
-                  {(questions[currentStep]?.options || [
-                    { text: "Sangat Tidak Mampu", score: 1 },
-                    { text: "Tidak Mampu", score: 2 },
-                    { text: "Cukup Mampu", score: 3 },
-                    { text: "Mampu", score: 4 },
-                    { text: "Sangat Mampu", score: 5 }
-                  ]).map((opt, idx: number) => (
-                    <button key={idx} onClick={() => handleAnswer(idx)}
+                  {(questions[currentStep]?.options || DEFAULT_OPTIONS).map((opt, idx: number) => (
+                    <button key={idx} onClick={() => handleAnswer(opt.score)}
                       className={`w-full flex items-center gap-4 p-4 rounded-2xl border-2 text-left transition-all ${
                         answers[currentStep] === opt.score ? "bg-blue-600 border-blue-600 text-white shadow-xl scale-[1.02]" : `${optionColors[idx % optionColors.length]} hover:scale-[1.01]`
                       }`}

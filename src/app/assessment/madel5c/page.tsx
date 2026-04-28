@@ -114,8 +114,6 @@ export default function Madel5cAssessment() {
   return (
     <div className="min-h-screen relative"
          style={{ backgroundImage: "url('/unj_bg_v2.png')", backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}>
-      
-      <div className="absolute inset-0 bg-white/60 backdrop-blur-[2px] z-0"></div>
 
       <main className="relative z-10 max-w-lg mx-auto px-4 py-8">
         <AnimatePresence mode="wait">
