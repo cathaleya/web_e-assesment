@@ -130,17 +130,22 @@ export default function Home() {
               <p className="text-sm text-slate-700 font-semibold leading-relaxed">
                 <strong>HDAP (Hybrid-Diagnostic Assessment Platform)</strong> adalah platform e-assessment yang mengintegrasikan psikometrik modern berbasis IRT dengan kecerdasan buatan Generative AI.
               </p>
-              <p className="text-sm text-slate-700 font-semibold leading-relaxed">
-                Platform ini dirancang untuk mengukur dan memetakan profil <strong>Literasi Digital Mahasiswa</strong> secara komprehensif, valid, dan objektif melalui dua instrumen: <strong>PDI-DL</strong> dan <strong>MADEL5C</strong>.
+              <p className="text-[11px] md:text-sm text-slate-600 font-semibold leading-relaxed text-justify mb-4">
+                Hybrid-Diagnostic Assessment Platform (HDAP) merupakan sistem penilaian cerdas yang dirancang khusus untuk memetakan profil literasi digital mahasiswa calon guru secara objektif dan mendalam. Menggunakan integrasi Model Rasch (IRT) dan Generative AI.
               </p>
-              <div className="mt-auto pt-4 border-t border-slate-200">
-                <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Kontak Peneliti</p>
-                <a
-                  href="mailto:ruslina.irianty@mhs.unj.ac.id"
-                  className="text-sm font-bold text-blue-600 hover:text-blue-800 transition-colors break-all"
+              <div className="mt-auto space-y-3">
+                <button
+                  onClick={() => router.push("/buku-panduan")}
+                  className="w-full py-3.5 bg-white border-2 border-blue-600 text-blue-600 rounded-xl text-[11px] font-black uppercase tracking-widest hover:bg-blue-50 active:scale-95 transition-all flex items-center justify-center gap-2"
                 >
-                  ruslina.irianty@mhs.unj.ac.id
-                </a>
+                  <i className="fa-solid fa-book-open"></i> BACA BUKU PANDUAN
+                </button>
+                <div className="flex items-center gap-2 px-2">
+                  <i className="fa-solid fa-envelope text-blue-600 text-xs"></i>
+                  <a href="mailto:ruslina.irianty@mhs.unj.ac.id" className="text-[10px] font-bold text-slate-500 hover:text-blue-600 transition-colors">
+                    ruslina.irianty@mhs.unj.ac.id
+                  </a>
+                </div>
               </div>
             </div>
 
