@@ -21,8 +21,8 @@ export default function Home() {
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm px-6 md:px-12 py-3 flex items-center justify-between border-b border-slate-100 shadow-sm">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2 border-r border-slate-200 pr-4 mr-2">
-            <Image src="/unj_bg.png" alt="UNJ" width={35} height={35} className="object-contain" />
-            <Image src="/unj_bg.png" alt="DIKTI" width={35} height={35} className="object-contain" />
+            <Image src="/logo_unj.png" alt="UNJ" width={35} height={35} className="object-contain" />
+            <Image src="/logo_dikti.png" alt="DIKTI" width={35} height={35} className="object-contain" />
           </div>
           <div className="flex flex-col leading-none">
             <span className="text-lg font-black tracking-tighter text-[#1E3A8A] uppercase">MADEL5C</span>
