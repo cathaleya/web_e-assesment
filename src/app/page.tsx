@@ -1,10 +1,70 @@
 "use client";
 
+import React, { useRef, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import HTMLFlipBook from "react-pageflip";
+
+// Komponen Halaman Flipbook
+const Page = React.forwardRef((props: any, ref: any) => {
+  return (
+    <div className="bg-white shadow-lg border border-slate-100" ref={ref} data-density="hard">
+      <div className="h-full flex flex-col p-6 md:p-10 relative overflow-hidden">
+        {/* Page Number */}
+        <div className="absolute bottom-4 right-6 text-[9px] font-black text-slate-300 tracking-widest">
+           PAGE {props.number}
+        </div>
+        {props.children}
+      </div>
+    </div>
+  );
+});
+Page.displayName = "Page";
 
 export default function Home() {
   const router = useRouter();
+  const bookRef = useRef<any>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Konten Halaman Panduan untuk Landing Page
+  const PANDUAN_PAGES = [
+    {
+      type: "cover",
+      image: "/buku_cover.png",
+      title: "PANDUAN HDAP",
+      subtitle: "Hybrid-Diagnostic Assessment Platform"
+    },
+    {
+      type: "content",
+      title: "PENDAHULUAN",
+      content: `Platform ini dirancang untuk memetakan literasi digital mahasiswa dengan presisi tinggi. Menggunakan gabungan Item Response Theory dan Generative AI.`
+    },
+    {
+      type: "content",
+      title: "ALUR PENGGUNAAN",
+      content: `1. Login menggunakan akun mahasiswa.\n2. Pilih instrumen yang tersedia.\n3. Kerjakan soal SJT dengan jujur.\n4. Dapatkan diagnosa AI seketika.`
+    },
+    {
+      type: "content",
+      title: "DIAGNOSA AI",
+      content: `AI akan menganalisis pola jawaban Anda dan memberikan narasi bimbingan yang mendalam tentang area yang perlu Anda tingkatkan.`
+    },
+    {
+      type: "image",
+      image: "/dashboard_v2.png",
+      caption: "Tampilan Dashboard Mahasiswa"
+    },
+    {
+      type: "cover",
+      image: "/unj_bg.png",
+      title: "SIAP MULAI?",
+      subtitle: "Riset BIMA - UNJ 2025"
+    }
+  ];
 
   return (
     <div className="font-sans selection:bg-blue-100 overflow-x-hidden">
@@ -163,38 +223,84 @@ export default function Home() {
               </div>
             </div>
 
-            {/* ── BARIS 2: Flipbook Panduan ── */}
-            <div className="bg-white/40 backdrop-blur-md rounded-[40px] p-6 md:p-10 border border-white/30 shadow-xl">
-              <div className="text-center mb-8">
-                <h3 className="text-xl md:text-2xl font-black italic text-[#1E3A8A] uppercase tracking-tighter">Flipbook Panduan Penggunaan</h3>
-                <p className="text-[10px] font-bold text-blue-600 uppercase tracking-widest mt-1">Baca langsung di bawah ini</p>
+            {/* ── BARIS 2: Flipbook Panduan AKTIF ── */}
+            <div className="bg-white/40 backdrop-blur-md rounded-[40px] p-6 md:p-10 border border-white/30 shadow-xl flex flex-col items-center">
+              <div className="text-center mb-10">
+                <h3 className="text-xl md:text-3xl font-black italic text-[#1E3A8A] uppercase tracking-tighter">Flipbook Panduan Interaktif</h3>
+                <p className="text-[10px] font-bold text-blue-600 uppercase tracking-widest mt-1">Buka Halaman Langsung Di Sini</p>
               </div>
 
-              <div className="w-full max-w-5xl mx-auto">
-                <div className="aspect-[16/9] w-full rounded-2xl overflow-hidden shadow-2xl border border-white bg-white">
-                  <iframe 
-                    src="/media/Panduan_Website_HDAP.pdf#toolbar=0" 
-                    className="w-full h-full"
-                    title="Panduan PDF"
-                  />
-                </div>
-                <div className="mt-8 flex flex-wrap justify-center gap-4">
-                  <button 
-                    onClick={() => router.push("/buku-panduan")}
-                    className="px-8 py-3 bg-[#1E3A8A] text-white rounded-xl text-[11px] font-black uppercase tracking-widest shadow-xl hover:bg-blue-800 transition-all active:scale-95"
+              {mounted && (
+                <div className="relative group">
+                  {/* @ts-ignore */}
+                  <HTMLFlipBook 
+                    width={350} 
+                    height={500} 
+                    size="stretch"
+                    minWidth={300}
+                    maxWidth={1000}
+                    minHeight={400}
+                    maxHeight={1533}
+                    drawShadow={true}
+                    flippingTime={1000}
+                    usePortrait={true}
+                    startPage={0}
+                    showCover={true}
+                    mobileScrollSupport={true}
+                    ref={bookRef}
+                    className="shadow-2xl rounded-lg"
                   >
-                    Buka Versi Flipbook
-                  </button>
-                  <a 
-                    href="/media/Panduan_Website_HDAP.pdf" 
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-8 py-3 bg-white text-[#1E3A8A] border-2 border-[#1E3A8A] rounded-xl text-[11px] font-black uppercase tracking-widest hover:bg-blue-50 transition-all active:scale-95"
-                  >
-                    Buka di Tab Baru
-                  </a>
+                    {PANDUAN_PAGES.map((page, index) => (
+                      <Page key={index} number={index + 1}>
+                        {page.type === "cover" ? (
+                          <div className="h-full flex flex-col items-center justify-center text-center">
+                            <div className="relative w-full aspect-[3/4] mb-6 rounded-xl overflow-hidden shadow-xl">
+                              <Image src={page.image!} alt={page.title!} fill className="object-cover" />
+                            </div>
+                            <h3 className="text-xl font-black text-[#1E3A8A] uppercase tracking-tighter mb-1 italic">{page.title}</h3>
+                            <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">{page.subtitle}</p>
+                          </div>
+                        ) : page.type === "image" ? (
+                          <div className="h-full flex flex-col">
+                             <div className="relative w-full flex-1 rounded-xl overflow-hidden shadow-inner bg-slate-50 mb-4">
+                                <Image src={page.image!} alt="Illustration" fill className="object-cover" />
+                             </div>
+                             <p className="text-[9px] font-bold text-slate-500 italic text-center uppercase tracking-widest">
+                                {page.caption}
+                             </p>
+                          </div>
+                        ) : (
+                          <div className="h-full flex flex-col">
+                            <h4 className="text-xs font-black text-blue-600 uppercase tracking-widest mb-4 border-b pb-2">
+                               {page.title}
+                            </h4>
+                            <p className="text-[12px] text-slate-700 font-bold leading-relaxed text-justify whitespace-pre-line">
+                              {page.content}
+                            </p>
+                          </div>
+                        )}
+                      </Page>
+                    ))}
+                  </HTMLFlipBook>
+                  
+                  {/* Controls */}
+                  <div className="mt-8 flex items-center justify-center gap-6">
+                    <button 
+                      onClick={() => bookRef.current.pageFlip().flipPrev()}
+                      className="w-10 h-10 rounded-full bg-white shadow-lg flex items-center justify-center text-slate-400 hover:text-blue-600 active:scale-90 transition-all"
+                    >
+                      <i className="fa-solid fa-chevron-left"></i>
+                    </button>
+                    <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Gunakan mouse/jari untuk membalik halaman</span>
+                    <button 
+                      onClick={() => bookRef.current.pageFlip().flipNext()}
+                      className="w-10 h-10 rounded-full bg-white shadow-lg flex items-center justify-center text-slate-400 hover:text-blue-600 active:scale-90 transition-all"
+                    >
+                      <i className="fa-solid fa-chevron-right"></i>
+                    </button>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         </div>
