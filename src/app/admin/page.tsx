@@ -319,13 +319,24 @@ export default function AdminDashboard() {
             <div className="space-y-6 max-w-5xl animate-in fade-in duration-500">
               <div className="flex gap-3 p-1.5 bg-white rounded-2xl border border-slate-200 shadow-sm w-fit">
                 {['madel5c', 'preliminary', 'survey'].map(t => (
-                  <button key={t} onClick={() => { setPsychoTab(t); fetchQuestions(t); }} className={`px-6 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${psychoTab === t ? 'bg-slate-900 text-white shadow-lg' : 'text-slate-400 hover:text-slate-600'}`}>{t.toUpperCase()}</button>
+                  <button key={t} onClick={() => { setPsychoTab(t); fetchQuestions(t); }} 
+                    className={`px-6 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${
+                      psychoTab === t 
+                        ? (t === 'madel5c' ? 'bg-slate-900 text-white shadow-lg' : 'bg-emerald-600 text-white shadow-lg shadow-emerald-500/20') 
+                        : 'text-slate-400 hover:text-slate-600'
+                    }`}>
+                    {t === 'preliminary' ? 'PDI-DL (PRELIMINARY)' : t.toUpperCase()}
+                  </button>
                 ))}
               </div>
-              <div className="bg-white p-8 rounded-[32px] border border-slate-200 shadow-sm">
+              <div className={`p-8 rounded-[32px] border shadow-sm transition-all duration-500 ${
+                psychoTab === 'madel5c' ? 'bg-white border-slate-200' : 'bg-emerald-50 border-emerald-100'
+              }`}>
                 <div className="space-y-4">
                   {questions.map((q, i) => (
-                    <div key={i} className="p-6 bg-slate-50 rounded-2xl border border-slate-100 relative group">
+                    <div key={i} className={`p-6 rounded-2xl border relative group transition-all ${
+                      psychoTab === 'madel5c' ? 'bg-slate-50 border-slate-100' : 'bg-white border-emerald-200 shadow-sm'
+                    }`}>
                       {editingIndex === i ? (
                         <div className="space-y-4">
                           <textarea className="w-full bg-white border border-slate-200 rounded-xl p-4 text-xs font-bold text-slate-900" rows={3} value={psychoTab === 'madel5c' ? q.scenario : (q.question || q.text)} onChange={e => {
@@ -335,16 +346,22 @@ export default function AdminDashboard() {
                           }} />
                           <div className="flex justify-end gap-2">
                              <button onClick={() => setEditingIndex(null)} className="px-4 py-2 bg-slate-200 text-slate-600 rounded-lg text-[9px] font-black uppercase">Batal</button>
-                             <button onClick={handleSaveQuestion} className="px-4 py-2 bg-blue-600 text-white rounded-lg text-[9px] font-black uppercase shadow-lg shadow-blue-500/20">Simpan Perubahan</button>
+                             <button onClick={handleSaveQuestion} className={`px-4 py-2 text-white rounded-lg text-[9px] font-black uppercase shadow-lg ${
+                               psychoTab === 'madel5c' ? 'bg-blue-600 shadow-blue-500/20' : 'bg-emerald-600 shadow-emerald-500/20'
+                             }`}>Simpan Perubahan</button>
                           </div>
                         </div>
                       ) : (
                         <div className="flex justify-between items-start gap-4">
                           <div className="flex-1">
-                            <p className="text-[9px] font-black text-blue-500 uppercase tracking-widest mb-1">Item {i+1} {q.dim ? `• ${q.dim}` : ''}</p>
+                            <p className={`text-[9px] font-black uppercase tracking-widest mb-1 ${
+                              psychoTab === 'madel5c' ? 'text-blue-500' : 'text-emerald-600'
+                            }`}>Item {i+1} {q.dim ? `• ${q.dim}` : ''}</p>
                             <p className="text-slate-900 text-sm font-bold leading-relaxed italic">&quot;{psychoTab === 'madel5c' ? q.scenario : (q.question || q.text)}&quot;</p>
                           </div>
-                          <button onClick={() => setEditingIndex(i)} className="w-10 h-10 bg-white border border-slate-200 hover:bg-blue-50 text-slate-400 hover:text-blue-600 rounded-xl flex items-center justify-center transition-all shadow-sm"><i className="fa-solid fa-pen-to-square"></i></button>
+                          <button onClick={() => setEditingIndex(i)} className={`w-10 h-10 bg-white border rounded-xl flex items-center justify-center transition-all shadow-sm ${
+                            psychoTab === 'madel5c' ? 'border-slate-200 text-slate-400 hover:bg-blue-50 hover:text-blue-600' : 'border-emerald-100 text-emerald-400 hover:bg-emerald-50 hover:text-emerald-600'
+                          }`}><i className="fa-solid fa-pen-to-square"></i></button>
                         </div>
                       )}
                     </div>
