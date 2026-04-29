@@ -25,7 +25,7 @@ export default function Home() {
             <Image src="/logo_dikti.png" alt="DIKTI" width={35} height={35} className="object-contain" />
           </div>
           <div className="flex flex-col leading-none">
-            <span className="text-lg font-black tracking-tighter text-[#1E3A8A] uppercase">MADEL5C</span>
+            <span className="text-lg font-black tracking-tighter text-[#1E3A8A] uppercase leading-tight">MADEL5C</span>
             <span className="text-[8px] font-black text-[#2563EB] uppercase tracking-[0.2em]">E-ASSESSMENT PLATFORM</span>
           </div>
         </div>
@@ -47,9 +47,9 @@ export default function Home() {
       </nav>
 
       {/* ════════════════════════════════════════
-          HALAMAN 1 — HERO (JUDUL ASLI DIKEMBALIKAN)
+          HALAMAN 1 — HERO (FIX MOBILE WRAP)
       ════════════════════════════════════════ */}
-      <section className="relative min-h-screen flex items-center pt-20">
+      <section className="relative min-h-screen flex items-center pt-24 pb-12">
         <div className="absolute inset-0 z-0">
           <Image
             src="/media/praktek.jpeg"
@@ -58,23 +58,22 @@ export default function Home() {
             className="object-cover"
             priority
           />
-          {/* Tanpa Filter/Overlay sesuai permintaan */}
         </div>
         <div className="relative z-10 w-full px-6 md:px-14 lg:px-20">
-          <p className="text-sm md:text-2xl lg:text-[28px] font-black italic text-[#4338CA] uppercase tracking-tight whitespace-nowrap leading-none mb-2 drop-shadow-sm">
+          <p className="text-sm md:text-2xl lg:text-[28px] font-black italic text-[#4338CA] uppercase tracking-tight leading-tight mb-4 drop-shadow-sm max-w-[90%]">
             HYBRID-DIAGNOSTIC ASSESSMENT PLATFORM (HDAP)
           </p>
-          <h1 className="text-3xl md:text-5xl lg:text-[75px] xl:text-[90px] font-black italic text-[#2563EB] uppercase tracking-tighter leading-none whitespace-nowrap drop-shadow-md">
+          <h1 className="text-4xl md:text-6xl lg:text-[75px] xl:text-[90px] font-black italic text-[#2563EB] uppercase tracking-tighter leading-[1.1] md:leading-none drop-shadow-md break-words max-w-5xl">
             E-ASSESSMEN LITERASI DIGITAL.
           </h1>
           
-          <div className="mt-12 md:mt-20 max-w-xs md:max-w-md bg-white/70 backdrop-blur-lg p-5 md:p-8 rounded-3xl border border-white/50 shadow-xl">
+          <div className="mt-12 md:mt-16 max-w-sm md:max-w-md bg-white/80 backdrop-blur-lg p-6 md:p-8 rounded-3xl border border-white/50 shadow-2xl">
             <p className="text-sm md:text-base text-slate-800 font-bold leading-relaxed">
               Integrasi Analisis Item Response Theory dengan kecerdasan Generative AI untuk memetakan kompetensi Literasi Digital secara objektif.
             </p>
             <button 
               onClick={() => router.push("/login")}
-              className="mt-6 px-8 py-3 bg-[#2563EB] text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg hover:bg-blue-700 transition-all active:scale-95"
+              className="mt-8 w-full md:w-auto px-10 py-4 bg-[#2563EB] text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-lg hover:bg-blue-700 transition-all active:scale-95"
             >
               MULAI SEKARANG
             </button>
@@ -85,25 +84,21 @@ export default function Home() {
       {/* ════════════════════════════════════════
           HALAMAN 2 — VIDEO TUTORIAL (BESAR)
       ════════════════════════════════════════ */}
-      <section id="about" className="relative min-h-screen py-32 px-6 md:px-14 lg:px-20 bg-white">
-        <div className="max-w-7xl mx-auto w-full flex flex-col items-center gap-16 text-center">
+      <section id="about" className="relative py-24 md:py-32 px-6 md:px-14 lg:px-20 bg-white">
+        <div className="max-w-7xl mx-auto w-full flex flex-col items-center gap-12 text-center">
           
           <div className="space-y-4">
-            <h2 className="text-4xl md:text-6xl font-black italic text-slate-900 uppercase tracking-tighter leading-none">
+            <h2 className="text-3xl md:text-6xl font-black italic text-slate-900 uppercase tracking-tighter leading-tight">
               PANDUAN VISUAL PLATFORM
             </h2>
-            <div className="w-24 h-2 bg-blue-600 mx-auto rounded-full"></div>
-            <p className="text-slate-500 font-black uppercase tracking-[0.4em] text-[10px]">Video Tutorial Lengkap</p>
+            <div className="w-20 h-1.5 bg-blue-600 mx-auto rounded-full"></div>
+            <p className="text-slate-500 font-black uppercase tracking-[0.4em] text-[9px]">Video Tutorial Lengkap</p>
           </div>
 
-          <div className="w-full max-w-6xl aspect-video bg-slate-900 rounded-[48px] shadow-2xl overflow-hidden border-4 border-slate-100 relative group">
+          <div className="w-full max-w-6xl aspect-video bg-slate-900 rounded-3xl md:rounded-[48px] shadow-2xl overflow-hidden border-2 md:border-4 border-slate-100 relative">
              <video className="w-full h-full object-contain" controls>
                <source src="/media/video_HDAP.mp4" type="video/mp4" />
              </video>
-             <div className="absolute top-8 left-8 z-10 flex items-center gap-3 bg-black/60 backdrop-blur-md text-white px-5 py-2.5 rounded-2xl border border-white/20">
-                <div className="w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse"></div>
-                <span className="text-[10px] font-black uppercase tracking-widest italic">Tutorial Video</span>
-             </div>
           </div>
         </div>
       </section>
@@ -111,18 +106,18 @@ export default function Home() {
       {/* ════════════════════════════════════════
           HALAMAN 3 — FLIPBOOK MANUAL (DI BAWAH)
       ════════════════════════════════════════ */}
-      <section className="relative min-h-screen py-32 px-6 md:px-14 lg:px-20 bg-slate-50">
-        <div className="max-w-7xl mx-auto w-full flex flex-col items-center gap-16 relative z-10">
+      <section className="relative py-24 md:py-32 px-4 md:px-14 lg:px-20 bg-slate-50">
+        <div className="max-w-7xl mx-auto w-full flex flex-col items-center gap-12 relative z-10">
           
           <div className="space-y-4 text-center">
-            <h2 className="text-4xl md:text-6xl font-black italic text-slate-900 uppercase tracking-tighter leading-none">
+            <h2 className="text-3xl md:text-6xl font-black italic text-slate-900 uppercase tracking-tighter leading-tight">
               BUKU PANDUAN DIGITAL
             </h2>
-            <div className="w-24 h-2 bg-blue-600 mx-auto rounded-full"></div>
-            <p className="text-slate-500 font-black uppercase tracking-[0.4em] text-[10px]">Manual Penggunaan Platform</p>
+            <div className="w-20 h-1.5 bg-blue-600 mx-auto rounded-full"></div>
+            <p className="text-slate-500 font-black uppercase tracking-[0.4em] text-[9px]">Manual Penggunaan Platform</p>
           </div>
 
-          <div className="w-full flex justify-center">
+          <div className="w-full flex justify-center overflow-hidden">
              <FlipBookSection />
           </div>
 
@@ -131,13 +126,13 @@ export default function Home() {
 
       {/* ─── FOOTER ─── */}
       <footer className="bg-white text-slate-900 py-16 px-6 md:px-14 border-t border-slate-100">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-10">
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-10 text-center md:text-left">
           <div className="flex items-center gap-4">
             <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-xl">
               <i className="fa-solid fa-graduation-cap text-lg"></i>
             </div>
-            <div>
-              <span className="font-black text-lg tracking-tighter block uppercase">MADEL5C · HDAP</span>
+            <div className="text-left">
+              <span className="font-black text-lg tracking-tighter block uppercase leading-none">MADEL5C · HDAP</span>
               <span className="text-slate-400 text-[10px] font-bold uppercase tracking-[0.3em]">Institutional Research Platform</span>
             </div>
           </div>
