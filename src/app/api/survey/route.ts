@@ -3,7 +3,7 @@ import { prisma } from '@/lib/prisma';
 
 export async function POST(req: Request) {
   try {
-    const { userId, totalScore, answersJson } = await req.json();
+    const { userId, totalScore, answersJson, feedback } = await req.json();
 
     if (!userId || totalScore === undefined) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -13,7 +13,8 @@ export async function POST(req: Request) {
       data: {
         userId,
         totalScore,
-        answersJson: JSON.stringify(answersJson)
+        answersJson: JSON.stringify(answersJson),
+        feedback: feedback || ""
       },
       include: { user: true }
     });
@@ -28,7 +29,8 @@ export async function POST(req: Request) {
         score: result.totalScore,
         gender: result.user.gender,
         campus: result.user.campus,
-        answers: answersJson
+        answers: answersJson,
+        feedback: feedback || ""
       });
     } catch (e) {
       console.error("Google Sheets sync failed:", e);

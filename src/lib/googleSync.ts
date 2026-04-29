@@ -11,6 +11,7 @@ export async function syncToGoogleSheets(data: {
   gender?: string;
   campus?: string;
   answers: any;
+  feedback?: string;
 }) {
   const WEBHOOK_URL = process.env.NEXT_PUBLIC_GOOGLE_SHEETS_URL;
   

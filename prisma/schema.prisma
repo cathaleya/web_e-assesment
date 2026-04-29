@@ -34,5 +34,6 @@ model Survey {
   user        User     @relation(fields: [userId], references: [id])
   totalScore  Int
   answersJson String   // JSON string of 10 SUS answers
+  feedback    String?  // Qualitative feedback from user
   createdAt   DateTime @default(now())
 }
