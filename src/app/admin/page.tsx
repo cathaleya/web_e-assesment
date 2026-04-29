@@ -280,6 +280,7 @@ export default function AdminDashboard() {
                        <th className="p-6">PDI-DL</th>
                        <th className="p-6">SURVEY</th>
                        <th className="p-6">MADEL5C</th>
+                       <th className="p-6 text-emerald-600">Feedback</th>
                        <th className="p-6">Waktu</th>
                      </tr>
                    </thead>
@@ -302,6 +303,15 @@ export default function AdminDashboard() {
                            </td>
                            <td className="p-6">
                              {madel ? <span className="px-2 py-1 bg-[#4B5320]/10 text-[#4B5320] rounded text-[9px] font-black">SKOR: {madel.totalScore}</span> : <span className="text-slate-300 text-[9px] font-bold">BELUM</span>}
+                           </td>
+                           <td className="p-6 max-w-[200px]">
+                              {survey?.feedback ? (
+                                <p className="text-[10px] text-slate-600 font-medium italic line-clamp-2" title={survey.feedback}>
+                                  &quot;{survey.feedback}&quot;
+                                </p>
+                              ) : (
+                                <span className="text-slate-300 text-[9px] italic">-</span>
+                              )}
                            </td>
                            <td className="p-6 text-[10px] text-slate-400 font-medium">
                              {new Date(user.createdAt).toLocaleDateString()}
