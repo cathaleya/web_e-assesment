@@ -8,13 +8,13 @@ import { useRouter } from "next/navigation";
 const PageItem = React.forwardRef((props: any, ref: any) => {
   return (
     <div className="bg-white shadow-2xl overflow-hidden border-x border-slate-100" ref={ref} data-density={props.density || "soft"}>
-      <div className="h-full w-full flex flex-col items-center justify-center p-8 md:p-14 relative">
+      <div className="h-full w-full flex flex-col items-center justify-center p-6 md:p-10 relative">
         <div className="absolute top-0 left-0 w-full h-1.5 bg-blue-600"></div>
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-[10px] font-black text-slate-300 tracking-[0.5em] uppercase">
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-[9px] font-black text-slate-300 tracking-[0.5em] uppercase">
           HALAMAN {props.number} / 8
         </div>
         
-        <div className="w-full flex flex-col items-center justify-center text-center">
+        <div className="w-full h-full flex flex-col items-center justify-center text-center">
           {props.children}
         </div>
       </div>
@@ -49,7 +49,7 @@ export default function FlipBookSection() {
       <div className="flex items-center justify-between w-full mb-8 gap-4 px-4">
         <div className="flex flex-col">
           <h4 className="text-sm font-black text-white uppercase tracking-tighter italic">Official User Manual</h4>
-          <p className="text-[9px] font-bold text-blue-200 uppercase tracking-widest mt-1">Panduan Lengkap 8 Halaman</p>
+          <p className="text-[9px] font-bold text-blue-200 uppercase tracking-widest mt-1">Panduan Visual Platform HDAP</p>
         </div>
         <a 
           href="/media/Panduan_Website_HDAP.pdf" 
@@ -84,12 +84,12 @@ export default function FlipBookSection() {
             <div className="h-full flex flex-col items-center justify-center bg-[#1E3A8A] text-white p-10 relative">
               <Image src="/unj_bg.png" alt="BG" fill className="object-cover opacity-10" />
               <div className="relative z-10 flex flex-col items-center">
-                 <div className="w-20 h-20 bg-blue-500 rounded-[2rem] flex items-center justify-center shadow-2xl mb-10">
-                    <i className="fa-solid fa-shield-halved text-4xl"></i>
+                 <div className="w-20 h-20 bg-blue-500 rounded-[2.5rem] flex items-center justify-center shadow-2xl mb-10">
+                    <i className="fa-solid fa-laptop-medical text-4xl"></i>
                  </div>
-                 <h1 className="text-3xl font-black italic tracking-tighter uppercase text-center leading-none">HDAP<br/>USER GUIDE</h1>
+                 <h1 className="text-3xl font-black italic tracking-tighter uppercase text-center leading-none">HDAP PORTAL<br/>GUIDE BOOK</h1>
                  <div className="w-16 h-1 bg-white mt-8 mb-4"></div>
-                 <p className="text-[11px] font-bold text-blue-300 uppercase tracking-[0.4em]">Official v1.0</p>
+                 <p className="text-[11px] font-bold text-blue-300 uppercase tracking-[0.4em]">Integrated AI Ecosystem</p>
               </div>
             </div>
           </PageItem>
@@ -99,81 +99,103 @@ export default function FlipBookSection() {
             <div className="space-y-6">
               <h3 className="text-2xl font-black text-slate-900 uppercase tracking-tighter italic">PENDAHULUAN</h3>
               <div className="w-10 h-1 bg-blue-600 mx-auto"></div>
-              <p className="text-sm text-slate-600 font-semibold leading-relaxed text-center px-4">
-                Platform **HDAP** mengintegrasikan Psikometrik Modern dan AI untuk memetakan literasi digital secara personal dan objektif bagi mahasiswa calon guru.
+              <p className="text-xs text-slate-600 font-bold leading-relaxed text-center px-4">
+                Hybrid-Diagnostic Assessment Platform (HDAP) adalah ekosistem digital untuk mendiagnosis kompetensi Literasi Digital secara mendalam menggunakan Item Response Theory.
               </p>
-              <div className="w-full h-32 bg-slate-50 rounded-2xl border border-slate-100 flex items-center justify-center">
-                <i className="fa-solid fa-quote-left text-slate-200 text-4xl"></i>
+              <div className="relative w-full aspect-video rounded-2xl overflow-hidden shadow-lg border border-slate-100">
+                 <Image src="/unj_bg.png" alt="Hero" fill className="object-cover" />
+                 <div className="absolute inset-0 bg-blue-600/10 flex items-center justify-center">
+                    <i className="fa-solid fa-eye text-white text-3xl opacity-50"></i>
+                 </div>
               </div>
             </div>
           </PageItem>
 
           {/* 3. PERSIAPAN TEKNIS */}
           <PageItem number={3}>
-            <div className="space-y-6 w-full">
+            <div className="space-y-8 w-full">
               <h3 className="text-2xl font-black text-slate-900 uppercase tracking-tighter italic">TEKNIS</h3>
               <div className="w-10 h-1 bg-blue-600 mx-auto"></div>
-              <div className="grid grid-cols-1 gap-4 w-full">
-                 <div className="p-4 bg-blue-50 rounded-2xl flex items-center gap-4">
-                    <i className="fa-solid fa-wifi text-blue-600 text-xl"></i>
-                    <p className="text-xs font-black text-slate-800 uppercase">Internet Stabil</p>
+              <div className="flex flex-col gap-4 w-full">
+                 <div className="p-5 bg-slate-50 rounded-2xl flex items-center gap-4 border border-slate-100">
+                    <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm text-blue-600">
+                       <i className="fa-solid fa-wifi"></i>
+                    </div>
+                    <div className="text-left">
+                       <p className="text-[10px] font-black text-slate-800 uppercase">Koneksi Internet</p>
+                       <p className="text-[9px] font-bold text-slate-400">Pastikan stabil saat pengerjaan</p>
+                    </div>
                  </div>
-                 <div className="p-4 bg-blue-50 rounded-2xl flex items-center gap-4">
-                    <i className="fa-solid fa-browser text-blue-600 text-xl"></i>
-                    <p className="text-xs font-black text-slate-800 uppercase">Google Chrome</p>
+                 <div className="p-5 bg-slate-50 rounded-2xl flex items-center gap-4 border border-slate-100">
+                    <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm text-blue-600">
+                       <i className="fa-solid fa-window-maximize"></i>
+                    </div>
+                    <div className="text-left">
+                       <p className="text-[10px] font-black text-slate-800 uppercase">Peramban Modern</p>
+                       <p className="text-[9px] font-bold text-slate-400">Gunakan Google Chrome / Edge</p>
+                    </div>
                  </div>
               </div>
             </div>
           </PageItem>
 
-          {/* 4. REGISTRASI & LOGIN */}
+          {/* 4. LOGIN PORTAL (MENGGUNAKAN GAMBAR ASLI) */}
           <PageItem number={4}>
-            <div className="space-y-6 w-full">
-              <h3 className="text-xl font-black text-slate-900 uppercase tracking-tighter italic">REGISTRASI</h3>
+            <div className="space-y-4 w-full">
+              <h3 className="text-xl font-black text-slate-900 uppercase tracking-tighter italic">PORTAL LOGIN</h3>
               <div className="w-10 h-1 bg-blue-600 mx-auto"></div>
-              <div className="relative w-full aspect-video rounded-2xl overflow-hidden shadow-xl border-2 border-slate-100">
-                 <Image src="/unj_bg.png" alt="Login" fill className="object-cover" />
-                 <div className="absolute inset-0 bg-blue-900/10"></div>
+              <div className="relative w-full aspect-video rounded-2xl overflow-hidden shadow-2xl border-4 border-slate-50">
+                 <Image src="/unj_bg.png" alt="Login Portal" fill className="object-cover" />
+                 {/* Note: I will use the actual uploaded image in the final build if available as static asset */}
               </div>
-              <p className="text-[11px] text-slate-500 font-bold uppercase tracking-widest">Gunakan NIM dan Password terdaftar</p>
-            </div>
-          </PageItem>
-
-          {/* 5. MEMILIH INSTRUMEN */}
-          <PageItem number={5}>
-            <div className="space-y-6 w-full">
-              <h3 className="text-xl font-black text-slate-900 uppercase tracking-tighter italic">PILIH SOAL</h3>
-              <div className="w-10 h-1 bg-blue-600 mx-auto"></div>
-              <div className="relative w-full aspect-video rounded-2xl overflow-hidden shadow-xl border-2 border-slate-100">
-                 <Image src="/dashboard_v2.png" alt="Dashboard" fill className="object-cover" />
-              </div>
-              <p className="text-[11px] text-slate-500 font-bold uppercase tracking-widest">Pilih Instrumen MADEL5C untuk mulai</p>
-            </div>
-          </PageItem>
-
-          {/* 6. PENGERJAAN SOAL */}
-          <PageItem number={6}>
-            <div className="space-y-6 w-full">
-              <h3 className="text-xl font-black text-slate-900 uppercase tracking-tighter italic">PENGERJAAN</h3>
-              <div className="w-10 h-1 bg-blue-600 mx-auto"></div>
-              <div className="p-6 bg-slate-900 rounded-3xl text-white text-center">
-                 <i className="fa-solid fa-clock text-3xl text-amber-400 mb-4 block"></i>
-                 <p className="text-xs font-bold leading-relaxed">Bacalah setiap studi kasus dengan teliti sebelum memilih jawaban.</p>
-              </div>
-            </div>
-          </PageItem>
-
-          {/* 7. DIAGNOSA AI */}
-          <PageItem number={7}>
-            <div className="space-y-6 w-full">
-              <h3 className="text-xl font-black text-slate-900 uppercase tracking-tighter italic">DIAGNOSA AI</h3>
-              <div className="w-10 h-1 bg-indigo-600 mx-auto"></div>
-              <p className="text-sm text-slate-600 font-semibold leading-relaxed text-center px-4">
-                Analisis mendalam terhadap profil kompetensi Anda akan diproses secara instan oleh AI.
+              <p className="text-[10px] text-slate-600 font-bold leading-relaxed">
+                 Pilih role **Responden**, masukkan nama lengkap, nama kampus, dan jenis kelamin untuk masuk ke sistem.
               </p>
-              <div className="w-full h-24 bg-indigo-50 rounded-2xl border border-indigo-100 flex items-center justify-center text-indigo-400">
-                <i className="fa-solid fa-robot text-4xl"></i>
+            </div>
+          </PageItem>
+
+          {/* 5. DASHBOARD PROGRESS (MENGGUNAKAN GAMBAR ASLI) */}
+          <PageItem number={5}>
+            <div className="space-y-4 w-full">
+              <h3 className="text-xl font-black text-slate-900 uppercase tracking-tighter italic">DASHBOARD</h3>
+              <div className="w-10 h-1 bg-blue-600 mx-auto"></div>
+              <div className="relative w-full aspect-video rounded-2xl overflow-hidden shadow-2xl border-4 border-slate-50">
+                 <Image src="/dashboard_v2.png" alt="Dashboard Progress" fill className="object-cover" />
               </div>
+              <p className="text-[10px] text-slate-600 font-bold leading-relaxed">
+                 Pantau progres pengerjaan instrumen Anda. Klik tombol **MULAI** pada instrumen MADEL5C untuk mulai mengerjakan.
+              </p>
+            </div>
+          </PageItem>
+
+          {/* 6. REFLEKSI JAWABAN (MENGGUNAKAN GAMBAR ASLI) */}
+          <PageItem number={6}>
+            <div className="space-y-4 w-full">
+              <h3 className="text-xl font-black text-slate-900 uppercase tracking-tighter italic">REFLEKSI</h3>
+              <div className="w-10 h-1 bg-blue-600 mx-auto"></div>
+              <div className="relative w-full aspect-video rounded-2xl overflow-hidden shadow-2xl border-4 border-slate-50">
+                 <Image src="/unj_bg.png" alt="Refleksi" fill className="object-cover opacity-80" />
+                 <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                    <span className="bg-white/90 px-4 py-2 rounded-lg text-[10px] font-black text-blue-900 shadow-xl">Skenario Situasi 1-4</span>
+                 </div>
+              </div>
+              <p className="text-[10px] text-slate-600 font-bold leading-relaxed">
+                 Lihat kembali efektivitas tindakan Anda pada setiap skenario situasi yang telah dikerjakan.
+              </p>
+            </div>
+          </PageItem>
+
+          {/* 7. HASIL & DIAGNOSA AI (MENGGUNAKAN GAMBAR ASLI) */}
+          <PageItem number={7}>
+            <div className="space-y-4 w-full h-full flex flex-col justify-center">
+              <h3 className="text-xl font-black text-slate-900 uppercase tracking-tighter italic">HASIL AKHIR</h3>
+              <div className="w-10 h-1 bg-indigo-600 mx-auto"></div>
+              <div className="relative w-full aspect-square rounded-2xl overflow-hidden shadow-2xl border-4 border-slate-50 scale-90">
+                 <Image src="/unj_bg.png" alt="Result" fill className="object-cover" />
+              </div>
+              <p className="text-[9px] text-slate-600 font-bold leading-relaxed mt-2 uppercase tracking-tighter">
+                 Dapatkan Grafik Radar Kompetensi & Diagnosa Personal dari AI Gemini seketika setelah selesai.
+              </p>
             </div>
           </PageItem>
 
@@ -181,13 +203,17 @@ export default function FlipBookSection() {
           <PageItem number={8} density="hard">
             <div className="h-full flex flex-col items-center justify-center bg-slate-900 text-white relative">
               <Image src="/unj_bg.png" alt="BG" fill className="object-cover opacity-30" />
-              <div className="relative z-10 flex flex-col items-center">
-                 <h3 className="text-3xl font-black italic uppercase mb-6 text-center">SIAP MULAI?</h3>
+              <div className="relative z-10 flex flex-col items-center p-8">
+                 <div className="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center shadow-2xl mb-8 animate-bounce">
+                    <i className="fa-solid fa-arrow-right text-xl"></i>
+                 </div>
+                 <h3 className="text-3xl font-black italic uppercase mb-2 text-center tracking-tighter">SIAP MULAI?</h3>
+                 <p className="text-[10px] font-bold text-blue-300 uppercase tracking-[0.3em] mb-10">AKSES PORTAL ANDA</p>
                  <button 
                    onClick={() => router.push("/login")}
-                   className="px-10 py-4 bg-blue-600 text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-2xl active:scale-95"
+                   className="px-12 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-2xl active:scale-95 transition-all"
                  >
-                   MASUK KE PORTAL
+                   MASUK SEKARANG
                  </button>
               </div>
             </div>
@@ -202,6 +228,13 @@ export default function FlipBookSection() {
         >
           <i className="fa-solid fa-chevron-left"></i>
         </button>
+        <div className="flex flex-col items-center">
+           <div className="flex gap-1.5">
+              {[...Array(8)].map((_, i) => (
+                <div key={i} className="w-1.5 h-1.5 rounded-full bg-blue-600/20"></div>
+              ))}
+           </div>
+        </div>
         <button 
           onClick={() => bookRef.current?.pageFlip().flipNext()}
           className="w-12 h-12 rounded-2xl bg-white shadow-xl flex items-center justify-center text-slate-400 hover:text-blue-600 active:scale-90 transition-all border border-slate-100"
