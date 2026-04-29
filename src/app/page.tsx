@@ -6,13 +6,6 @@ import Image from "next/image";
 export default function Home() {
   const router = useRouter();
 
-  const stats = [
-    { value: "30", label: "Butir Soal MADEL5C", icon: "fa-list-check", color: "text-blue-600" },
-    { value: "20", label: "Butir Soal PDI-DL", icon: "fa-chart-bar", color: "text-violet-600" },
-    { value: "5", label: "Dimensi Literasi Digital", icon: "fa-layer-group", color: "text-emerald-600" },
-    { value: "AI", label: "Diagnostik Generative AI", icon: "fa-robot", color: "text-amber-600" },
-  ];
-
   return (
     <div className="font-sans selection:bg-blue-100 overflow-x-hidden">
 
@@ -64,7 +57,6 @@ export default function Home() {
           HALAMAN 1 — HERO
       ════════════════════════════════════════ */}
       <section className="relative min-h-screen flex items-center pt-20">
-        {/* Background TANPA FILTER */}
         <div className="absolute inset-0 z-0">
           <Image
             src="/unj_bg.png"
@@ -75,19 +67,15 @@ export default function Home() {
           />
         </div>
 
-        {/* Text */}
         <div className="relative z-10 w-full px-6 md:px-14 lg:px-20">
-          {/* Baris 1 */}
           <p className="text-sm md:text-2xl lg:text-[28px] font-black italic text-[#4338CA] uppercase tracking-tight whitespace-nowrap leading-none mb-2">
             HYBRID-DIAGNOSTIC ASSESSMENT PLATFORM (HDAP)
           </p>
 
-          {/* Baris 2 — judul utama, satu baris, italic, biru */}
           <h1 className="text-3xl md:text-5xl lg:text-[75px] xl:text-[90px] font-black italic text-[#2563EB] uppercase tracking-tighter leading-none whitespace-nowrap">
             E-ASSESSMEN LITERASI DIGITAL.
           </h1>
 
-          {/* Description card */}
           <div className="mt-10 md:mt-16 max-w-xs md:max-w-md bg-white/70 backdrop-blur-lg p-5 md:p-8 rounded-3xl border border-white/50 shadow-xl">
             <p className="text-sm md:text-base text-slate-800 font-bold leading-relaxed">
               Tehnik Analisis Item Response Theory dengan kecerdasan Generative AI untuk memetakan kompetensi Literasi Digital secara objektif.
@@ -97,10 +85,9 @@ export default function Home() {
       </section>
 
       {/* ════════════════════════════════════════
-          HALAMAN 2 — TENTANG PLATFORM & STATISTIK
+          HALAMAN 2 — TENTANG PLATFORM & PANDUAN
       ════════════════════════════════════════ */}
       <section id="about" className="relative min-h-screen py-24 px-6 md:px-14 lg:px-20 flex flex-col justify-center">
-        {/* Background TANPA FILTER */}
         <div className="absolute inset-0 z-0">
           <Image
             src="/unj_bg.png"
@@ -111,111 +98,104 @@ export default function Home() {
         </div>
 
         <div className="relative z-10 max-w-6xl mx-auto w-full">
-
-          {/* Judul section */}
           <h2 className="text-2xl md:text-4xl font-black italic text-white uppercase tracking-tight mb-10 drop-shadow-md">
             TENTANG PLATFORM
           </h2>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-            {/* ── KARTU 1: Tentang Platform ── */}
-            <div className="bg-white/80 backdrop-blur-xl rounded-3xl border border-white/60 shadow-2xl p-7 flex flex-col gap-5">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white shadow-lg shrink-0">
-                  <i className="fa-solid fa-info-circle text-2xl"></i>
+          <div className="flex flex-col gap-12">
+            {/* ── BARIS 1: Tentang & Video ── */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
+              
+              {/* KARTU 1: Tentang Platform */}
+              <div className="bg-white/80 backdrop-blur-xl rounded-3xl border border-white/60 shadow-2xl p-8 flex flex-col gap-6">
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center text-white shadow-lg shrink-0">
+                    <i className="fa-solid fa-info-circle text-3xl"></i>
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-black text-slate-900 uppercase tracking-tight">Platform HDAP</h3>
+                    <p className="text-[10px] font-bold text-blue-600 uppercase tracking-widest">Hybrid-Diagnostic Assessment</p>
+                  </div>
                 </div>
-                <h3 className="text-lg font-black text-slate-900 uppercase tracking-tight">Tentang Platform</h3>
+                
+                <div className="space-y-4">
+                  <p className="text-sm md:text-base text-slate-700 font-semibold leading-relaxed text-justify">
+                    <strong>HDAP</strong> adalah sistem penilaian cerdas yang dirancang untuk memetakan profil literasi digital mahasiswa calon guru secara objektif dan mendalam menggunakan integrasi <strong>Model Rasch (IRT)</strong> dan <strong>Generative AI</strong>.
+                  </p>
+                  <p className="text-sm text-slate-600 font-medium leading-relaxed text-justify">
+                    Platform ini memberikan diagnosa personal berupa narasi bimbingan pedagogis yang membantu mahasiswa memahami kelemahan literasi digital mereka secara spesifik.
+                  </p>
+                </div>
+
+                <div className="mt-auto grid grid-cols-2 gap-4">
+                  <button
+                    onClick={() => router.push("/login")}
+                    className="py-3.5 bg-blue-600 text-white rounded-xl text-[11px] font-black uppercase tracking-widest shadow-lg shadow-blue-600/25 hover:bg-blue-700 active:scale-95 transition-all flex items-center justify-center gap-2"
+                  >
+                    <i className="fa-solid fa-play"></i> MULAI ASESMEN
+                  </button>
+                  <a
+                    href="/media/Panduan_Website_HDAP.pdf"
+                    download
+                    className="py-3.5 bg-white border-2 border-slate-200 text-slate-600 rounded-xl text-[11px] font-black uppercase tracking-widest hover:border-blue-600 hover:text-blue-600 active:scale-95 transition-all flex items-center justify-center gap-2"
+                  >
+                    <i className="fa-solid fa-download"></i> UNDUH PDF
+                  </a>
+                </div>
               </div>
-              <p className="text-sm text-slate-700 font-semibold leading-relaxed">
-                <strong>HDAP (Hybrid-Diagnostic Assessment Platform)</strong> adalah platform e-assessment yang mengintegrasikan psikometrik modern berbasis IRT dengan kecerdasan buatan Generative AI.
-              </p>
-              <p className="text-[11px] md:text-sm text-slate-600 font-semibold leading-relaxed text-justify mb-4">
-                Hybrid-Diagnostic Assessment Platform (HDAP) merupakan sistem penilaian cerdas yang dirancang khusus untuk memetakan profil literasi digital mahasiswa calon guru secara objektif dan mendalam. Menggunakan integrasi Model Rasch (IRT) dan Generative AI.
-              </p>
-              <div className="mt-auto space-y-3">
-                <button
-                  onClick={() => router.push("/buku-panduan")}
-                  className="w-full py-3.5 bg-white border-2 border-blue-600 text-blue-600 rounded-xl text-[11px] font-black uppercase tracking-widest hover:bg-blue-50 active:scale-95 transition-all flex items-center justify-center gap-2"
-                >
-                  <i className="fa-solid fa-book-open"></i> BACA BUKU PANDUAN
-                </button>
-                <div className="flex items-center gap-2 px-2">
-                  <i className="fa-solid fa-envelope text-blue-600 text-xs"></i>
-                  <a href="mailto:ruslina.irianty@mhs.unj.ac.id" className="text-[10px] font-bold text-slate-500 hover:text-blue-600 transition-colors">
-                    ruslina.irianty@mhs.unj.ac.id
+
+              {/* KARTU 2: Video Tutorial */}
+              <div className="bg-slate-900 rounded-3xl shadow-2xl overflow-hidden border border-slate-800 flex flex-col relative group">
+                <div className="absolute top-5 left-5 z-10 flex items-center gap-2 bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10">
+                  <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                  <span className="text-[10px] font-black text-white uppercase tracking-widest">Video Tutorial</span>
+                </div>
+                <div className="relative flex-1 bg-black flex items-center justify-center min-h-[300px]">
+                  <video className="w-full h-full object-contain" controls>
+                    <source src="/media/Panduan_Platform_HDAP.mp4" type="video/mp4" />
+                    Your browser does not support video.
+                  </video>
+                </div>
+                <div className="p-5 bg-slate-800/50 border-t border-white/5">
+                  <p className="text-sm font-black text-white uppercase tracking-tight">Panduan Operasional Platform</p>
+                  <p className="text-[10px] text-slate-400 font-medium mt-1">Pelajari alur penggunaan sistem dari awal hingga akhir.</p>
+                </div>
+              </div>
+            </div>
+
+            {/* ── BARIS 2: Flipbook Panduan ── */}
+            <div className="bg-white/40 backdrop-blur-md rounded-[40px] p-6 md:p-10 border border-white/30 shadow-xl">
+              <div className="text-center mb-8">
+                <h3 className="text-xl md:text-2xl font-black italic text-[#1E3A8A] uppercase tracking-tighter">Flipbook Panduan Penggunaan</h3>
+                <p className="text-[10px] font-bold text-blue-600 uppercase tracking-widest mt-1">Baca langsung di bawah ini</p>
+              </div>
+
+              <div className="w-full max-w-5xl mx-auto">
+                <div className="aspect-[16/9] w-full rounded-2xl overflow-hidden shadow-2xl border border-white bg-white">
+                  <iframe 
+                    src="/media/Panduan_Website_HDAP.pdf#toolbar=0" 
+                    className="w-full h-full"
+                    title="Panduan PDF"
+                  />
+                </div>
+                <div className="mt-8 flex flex-wrap justify-center gap-4">
+                  <button 
+                    onClick={() => router.push("/buku-panduan")}
+                    className="px-8 py-3 bg-[#1E3A8A] text-white rounded-xl text-[11px] font-black uppercase tracking-widest shadow-xl hover:bg-blue-800 transition-all active:scale-95"
+                  >
+                    Buka Versi Flipbook
+                  </button>
+                  <a 
+                    href="/media/Panduan_Website_HDAP.pdf" 
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-8 py-3 bg-white text-[#1E3A8A] border-2 border-[#1E3A8A] rounded-xl text-[11px] font-black uppercase tracking-widest hover:bg-blue-50 transition-all active:scale-95"
+                  >
+                    Buka di Tab Baru
                   </a>
                 </div>
               </div>
             </div>
-
-            {/* ── KARTU 2: Statistik Pengunjung ── */}
-            <div className="bg-white/80 backdrop-blur-xl rounded-3xl border border-white/60 shadow-2xl p-7 flex flex-col gap-5">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-violet-600 rounded-2xl flex items-center justify-center text-white shadow-lg shrink-0">
-                  <i className="fa-solid fa-chart-pie text-2xl"></i>
-                </div>
-                <h3 className="text-lg font-black text-slate-900 uppercase tracking-tight">Statistik pengunjung Platform</h3>
-              </div>
-              <div className="grid grid-cols-2 gap-4 flex-1">
-                {stats.map((s, i) => (
-                  <div key={i} className="flex flex-col items-center justify-center p-4 rounded-2xl bg-slate-50 border border-slate-100 hover:shadow-md transition-shadow text-center">
-                    <i className={`fa-solid ${s.icon} ${s.color} text-2xl mb-2`}></i>
-                    <span className="text-3xl font-black text-slate-900 tracking-tighter">{s.value}</span>
-                    <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest mt-1 leading-tight">{s.label}</span>
-                  </div>
-                ))}
-              </div>
-              <div className="mt-auto pt-4 border-t border-slate-200">
-                <button
-                  onClick={() => router.push("/login")}
-                  className="w-full py-3 bg-[#2563EB] text-white rounded-xl text-[11px] font-black uppercase tracking-widest shadow-lg hover:bg-blue-700 active:scale-95 transition-all"
-                >
-                  Mulai Asesmen
-                </button>
-              </div>
-            </div>
-
-            {/* ── KARTU 3: Preview Panel Admin ── */}
-            <div className="bg-white/80 backdrop-blur-xl rounded-3xl border border-white/60 shadow-2xl p-7 flex flex-col gap-4">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-slate-800 rounded-2xl flex items-center justify-center text-white shadow-lg shrink-0">
-                  <i className="fa-solid fa-chart-line text-2xl"></i>
-                </div>
-                <h3 className="text-lg font-black text-slate-900 uppercase tracking-tight">Preview Panel Admin</h3>
-              </div>
-              {/* Admin panel screenshot preview */}
-              <div className="relative flex-1 min-h-[200px] rounded-2xl overflow-hidden border border-slate-200 shadow-inner bg-slate-900">
-                <Image
-                  src="/admin-preview.png"
-                  alt="Preview Panel Admin HDAP"
-                  fill
-                  className="object-cover object-top"
-                  onError={(e) => {
-                    // fallback jika gambar belum ada
-                    (e.target as HTMLImageElement).style.display = "none";
-                  }}
-                />
-                {/* Overlay label */}
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent flex items-end p-4">
-                  <div>
-                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Dashboard</p>
-                    <p className="text-sm font-black text-white">MADEL5C Psychometric Analysis</p>
-                  </div>
-                </div>
-                {/* Fallback jika gambar belum tersedia */}
-                <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-600 gap-3 p-4">
-                  <i className="fa-solid fa-chart-area text-4xl text-slate-500"></i>
-                  <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest text-center">
-                    MADEL5C Psychometric Analysis<br />Wright Map · CFA · IRT · Cluster
-                  </p>
-                </div>
-              </div>
-              <p className="text-[11px] text-slate-600 font-semibold leading-relaxed">
-                Panel admin menampilkan analisis psikometrik lengkap: Wright Map, CFA, DIF, distribusi cluster literasi digital, dan unduhan laporan.
-              </p>
-            </div>
-
           </div>
         </div>
       </section>
