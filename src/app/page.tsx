@@ -8,7 +8,7 @@ import dynamic from "next/dynamic";
 // Import FlipBookSection secara dinamis
 const FlipBookSection = dynamic(() => import("./components/FlipBookSection"), { 
   ssr: false,
-  loading: () => <div className="text-white font-black animate-pulse py-20">MEMUAT PANDUAN...</div>
+  loading: () => <div className="text-white font-black animate-pulse py-20 text-center">MEMUAT PANDUAN...</div>
 });
 
 export default function Home() {
@@ -17,7 +17,7 @@ export default function Home() {
   return (
     <div className="font-sans selection:bg-blue-100 overflow-x-hidden">
 
-      {/* ─── NAVBAR (DENGAN LOGO RESMI) ─── */}
+      {/* ─── NAVBAR ─── */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm px-6 md:px-12 py-3 flex items-center justify-between border-b border-slate-100 shadow-sm">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2 border-r border-slate-200 pr-4 mr-2">
@@ -37,142 +37,127 @@ export default function Home() {
           <a href="/buku-panduan" className="text-[10px] font-bold text-slate-600 uppercase tracking-widest hover:text-blue-600 transition-colors">
             BUKU PANDUAN
           </a>
-          <a
-            href="https://e-assessment.id"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-[10px] font-bold text-slate-600 uppercase tracking-widest hover:text-blue-600 transition-colors"
-          >
-            WEBSITE PAYUNG RISET
-          </a>
           <button
             onClick={() => router.push("/login")}
-            className="ml-4 px-6 py-2 bg-[#2563EB] text-white rounded-lg text-[10px] font-black uppercase tracking-widest shadow-lg shadow-blue-600/25 hover:bg-blue-700 active:scale-95 transition-all"
+            className="ml-4 px-6 py-2 bg-[#2563EB] text-white rounded-lg text-[10px] font-black uppercase tracking-widest shadow-lg hover:bg-blue-700 active:scale-95 transition-all"
           >
             MASUK PORTAL
           </button>
         </div>
-
-        <button
-          onClick={() => router.push("/login")}
-          className="lg:hidden px-4 py-2 bg-[#2563EB] text-white rounded-lg text-[9px] font-black uppercase tracking-widest shadow-md"
-        >
-          MASUK
-        </button>
       </nav>
 
       {/* ════════════════════════════════════════
-          HALAMAN 1 — HERO
+          HALAMAN 1 — HERO (BACKGROUND PRAKTEK)
       ════════════════════════════════════════ */}
       <section className="relative min-h-screen flex items-center pt-20">
         <div className="absolute inset-0 z-0">
           <Image
-            src="/unj_bg.png"
-            alt="Universitas Negeri Jakarta"
+            src="/media/praktek.jpeg"
+            alt="Praktek Literasi Digital"
             fill
             className="object-cover"
             priority
           />
+          <div className="absolute inset-0 bg-blue-900/40 backdrop-blur-[2px]"></div>
         </div>
-        <div className="relative z-10 w-full px-6 md:px-14 lg:px-20">
-          <p className="text-sm md:text-2xl lg:text-[28px] font-black italic text-[#4338CA] uppercase tracking-tight whitespace-nowrap leading-none mb-2">
+        <div className="relative z-10 w-full px-6 md:px-14 lg:px-20 text-white">
+          <p className="text-sm md:text-2xl font-black italic uppercase tracking-tight mb-2 opacity-90">
             HYBRID-DIAGNOSTIC ASSESSMENT PLATFORM (HDAP)
           </p>
-          <h1 className="text-3xl md:text-5xl lg:text-[75px] xl:text-[90px] font-black italic text-[#2563EB] uppercase tracking-tighter leading-none whitespace-nowrap">
-            E-ASSESSMEN LITERASI DIGITAL.
+          <h1 className="text-4xl md:text-7xl lg:text-[100px] font-black italic uppercase tracking-tighter leading-[0.85] drop-shadow-2xl">
+            OPTIMALISASI<br/>LITERASI DIGITAL.
           </h1>
-          <div className="mt-10 md:mt-16 max-w-xs md:max-w-md bg-white/70 backdrop-blur-lg p-5 md:p-8 rounded-3xl border border-white/50 shadow-xl">
-            <p className="text-sm md:text-base text-slate-800 font-bold leading-relaxed">
-              Tehnik Analisis Item Response Theory dengan kecerdasan Generative AI untuk memetakan kompetensi Literasi Digital secara objektif.
+          <div className="mt-12 max-w-lg bg-white/10 backdrop-blur-xl p-8 rounded-[40px] border border-white/20 shadow-2xl">
+            <p className="text-base md:text-lg font-bold leading-relaxed">
+              Transformasi pengukuran kompetensi digital mahasiswa melalui integrasi Rasch Model & Generative AI yang akurat dan terpercaya.
             </p>
+            <button 
+              onClick={() => router.push("/login")}
+              className="mt-8 px-10 py-4 bg-white text-blue-900 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl hover:bg-blue-50 transition-all active:scale-95"
+            >
+              MULAI ASESMEN SEKARANG
+            </button>
           </div>
         </div>
       </section>
 
       {/* ════════════════════════════════════════
-          HALAMAN 2 — TENTANG PLATFORM & VIDEO/PDF
+          HALAMAN 2 — VIDEO TUTORIAL (BESAR)
       ════════════════════════════════════════ */}
-      <section id="about" className="relative min-h-[140vh] py-24 px-6 md:px-14 lg:px-20 flex flex-col justify-center">
-        <div className="absolute inset-0 z-0">
-          <Image
-            src="/unj_bg.png"
-            alt="Universitas Negeri Jakarta"
-            fill
-            className="object-cover"
-          />
-        </div>
-
-        <div className="relative z-10 max-w-7xl mx-auto w-full flex flex-col gap-12">
+      <section id="about" className="relative min-h-screen py-32 px-6 md:px-14 lg:px-20 bg-slate-50">
+        <div className="max-w-7xl mx-auto w-full flex flex-col items-center gap-16 text-center">
           
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-            <div>
-              <h2 className="text-3xl md:text-5xl font-black italic text-white uppercase tracking-tighter drop-shadow-lg">
-                TENTANG PLATFORM & PANDUAN
-              </h2>
-              <p className="text-blue-200 font-bold uppercase tracking-[0.3em] mt-2">Hybrid-Diagnostic Assessment Ecosystem</p>
-            </div>
+          <div className="space-y-4">
+            <h2 className="text-4xl md:text-6xl font-black italic text-slate-900 uppercase tracking-tighter leading-none">
+              PANDUAN VISUAL PLATFORM
+            </h2>
+            <div className="w-24 h-2 bg-blue-600 mx-auto rounded-full"></div>
+            <p className="text-slate-500 font-black uppercase tracking-[0.4em] text-[10px]">Tonton Video Tutorial Lengkap di Bawah Ini</p>
           </div>
 
-          {/* GRID: SEJAJAR TOP */}
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-10 items-start">
-            
-            {/* KIRI: Video Tutorial */}
-            <div className="flex flex-col gap-6">
-              <div className="bg-slate-900 rounded-[32px] shadow-2xl overflow-hidden border-4 border-white/10 relative group aspect-video">
-                <div className="absolute top-5 left-5 z-10 flex items-center gap-2 bg-black/60 backdrop-blur-md px-4 py-2 rounded-full border border-white/20">
-                  <div className="w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse"></div>
-                  <span className="text-[11px] font-black text-white uppercase tracking-widest">Tutorial Video</span>
-                </div>
-                <video className="w-full h-full object-contain" controls>
-                  <source src="/media/Panduan_Platform_HDAP.mp4" type="video/mp4" />
-                </video>
-              </div>
-              <div className="bg-white/80 backdrop-blur-xl p-8 rounded-3xl border border-white shadow-xl">
-                 <h4 className="text-lg font-black text-slate-900 uppercase tracking-tight mb-2">Platform HDAP (Hybrid-Diagnostic Assessment Platform)</h4>
-                 <p className="text-sm text-slate-600 font-semibold leading-relaxed text-justify">
-                   Integrasi Psikometrik Modern (Model Rasch) dan Generative AI untuk pemetaan profil Literasi Digital mahasiswa calon guru secara objektif. Sistem ini memberikan diagnosa kualitatif yang personal dan mendalam bagi setiap responden.
-                 </p>
-              </div>
-            </div>
+          {/* VIDEO TUTORIAL - DIPERBESAR */}
+          <div className="w-full max-w-6xl aspect-video bg-slate-900 rounded-[48px] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] overflow-hidden border-8 border-white relative group">
+             <video className="w-full h-full object-cover" controls poster="/media/praktek.jpeg">
+               <source src="/media/video_HDAP.mp4" type="video/mp4" />
+             </video>
+             <div className="absolute top-8 left-8 z-10 flex items-center gap-3 bg-red-600 text-white px-6 py-3 rounded-2xl shadow-xl border border-red-500/50">
+                <div className="w-3 h-3 bg-white rounded-full animate-ping"></div>
+                <span className="text-xs font-black uppercase tracking-widest italic">Official Tutorial</span>
+             </div>
+          </div>
 
-            {/* KANAN: Flipbook Section (SEKARANG SEJAJAR ATAS) */}
-            <div className="flex flex-col">
-               <FlipBookSection />
-            </div>
-
+          <div className="max-w-3xl">
+             <p className="text-lg text-slate-600 font-semibold leading-relaxed">
+               Pelajari langkah-langkah penggunaan platform HDAP secara komprehensif. Mulai dari pendaftaran akun, pemilihan instrumen MADEL5C, hingga membaca hasil diagnosis AI secara personal.
+             </p>
           </div>
         </div>
       </section>
 
+      {/* ════════════════════════════════════════
+          HALAMAN 3 — FLIPBOOK MANUAL (DI BAWAH)
+      ════════════════════════════════════════ */}
+      <section className="relative min-h-screen py-32 px-6 md:px-14 lg:px-20 bg-[#1E3A8A]">
+        <div className="absolute inset-0 opacity-10">
+           <Image src="/unj_bg.png" alt="BG" fill className="object-cover grayscale" />
+        </div>
+        
+        <div className="max-w-7xl mx-auto w-full flex flex-col items-center gap-16 relative z-10">
+          
+          <div className="space-y-4 text-center">
+            <h2 className="text-4xl md:text-6xl font-black italic text-white uppercase tracking-tighter leading-none">
+              BUKU PANDUAN DIGITAL
+            </h2>
+            <div className="w-24 h-2 bg-blue-400 mx-auto rounded-full"></div>
+            <p className="text-blue-200 font-black uppercase tracking-[0.4em] text-[10px]">Silakan balik halaman untuk membaca detail teknis</p>
+          </div>
+
+          {/* FLIPBOOK - SEKARANG DI BAWAH VIDEO & FULL WIDTH */}
+          <div className="w-full flex justify-center">
+             <FlipBookSection />
+          </div>
+
+        </div>
+      </section>
+
       {/* ─── FOOTER ─── */}
-      <footer className="bg-slate-900 text-white py-10 px-6 md:px-14 border-t border-white/10">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 bg-[#2563EB] rounded-lg flex items-center justify-center text-white shadow">
-              <i className="fa-solid fa-graduation-cap text-base"></i>
+      <footer className="bg-slate-950 text-white py-16 px-6 md:px-14 border-t border-white/5">
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-10">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center shadow-2xl">
+              <i className="fa-solid fa-graduation-cap text-xl"></i>
             </div>
             <div>
-              <span className="font-black text-base tracking-tight block uppercase">MADEL5C · HDAP</span>
-              <span className="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Hybrid-Diagnostic Assessment Platform</span>
+              <span className="font-black text-xl tracking-tighter block uppercase">MADEL5C · HDAP</span>
+              <span className="text-slate-500 text-[10px] font-bold uppercase tracking-[0.3em]">Institutional Research Platform</span>
             </div>
           </div>
-          <div className="text-center md:text-right">
-            <a href="mailto:ruslina.irianty@mhs.unj.ac.id" className="text-blue-400 hover:text-blue-300 text-xs font-bold transition-colors">
-              ruslina.irianty@mhs.unj.ac.id
-            </a>
-            <p className="text-slate-600 text-[10px] mt-1 font-bold uppercase tracking-widest">
-              © 2025 HDAP. All rights reserved.
-            </p>
+          <div className="flex gap-8">
+             <a href="#" className="text-xs font-black uppercase tracking-widest text-slate-400 hover:text-white transition-all">Support</a>
+             <a href="#" className="text-xs font-black uppercase tracking-widest text-slate-400 hover:text-white transition-all">Documentation</a>
           </div>
         </div>
       </footer>
-
-      <style jsx global>{`
-        .react-pdf__Page__canvas {
-          margin: 0 auto;
-          box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-        }
-      `}</style>
 
     </div>
   );
