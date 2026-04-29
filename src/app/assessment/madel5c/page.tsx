@@ -21,6 +21,7 @@ export default function Madel5cAssessment() {
   const [answers, setAnswers] = useState<Record<number, number>>({});
   const [loading, setLoading] = useState(true);
   const [showInstructions, setShowInstructions] = useState(true);
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const router = useRouter();
 
   const optionColors = [
@@ -76,7 +77,8 @@ export default function Madel5cAssessment() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId, type: "MADEL5C", totalScore, answersJson: finalAnswers }),
       });
-      router.push("/dashboard");
+      // Tampilkan kartu terima kasih
+      setIsSubmitted(true);
     } catch (err) { console.error(err); }
   }, [router]);
 
@@ -117,7 +119,26 @@ export default function Madel5cAssessment() {
 
       <main className="relative z-10 max-w-lg mx-auto px-4 py-8">
         <AnimatePresence mode="wait">
-          {showInstructions ? (
+          {isSubmitted ? (
+            <motion.div key="success" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
+              className="bg-white p-10 rounded-[50px] shadow-3xl border border-slate-200 text-center"
+            >
+              <div className="w-24 h-24 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-8 shadow-inner">
+                <i className="fa-solid fa-circle-check text-5xl"></i>
+              </div>
+              <h2 className="text-3xl font-black text-slate-900 uppercase tracking-tighter leading-tight mb-4 italic">TERIMA KASIH BANYAK!</h2>
+              <div className="w-12 h-1.5 bg-emerald-500 mx-auto rounded-full mb-6"></div>
+              <p className="text-sm font-bold text-slate-600 leading-relaxed mb-8">
+                Anda telah berhasil menyelesaikan seluruh rangkaian instrumen asesmen dan survey pada platform HDAP. Kontribusi Anda sangat berarti bagi pengembangan riset Literasi Digital ini.
+              </p>
+              <button 
+                onClick={() => router.push("/dashboard")}
+                className="w-full py-5 bg-slate-900 text-white rounded-2xl font-black text-[11px] uppercase tracking-widest shadow-2xl hover:bg-black transition-all active:scale-95"
+              >
+                KEMBALI KE DASHBOARD UTAMA <i className="fa-solid fa-house-chimney ml-2"></i>
+              </button>
+            </motion.div>
+          ) : showInstructions ? (
             <motion.div key="instructions" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
               className="bg-white p-8 rounded-[40px] shadow-3xl border border-slate-200"
             >
