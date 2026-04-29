@@ -156,7 +156,7 @@ export default function Home() {
               </div>
             </div>
 
-            {/* KANAN: PDF Flipbook Aktif (TUNGGU LOADING SELESAI) */}
+            {/* KANAN: PDF Flipbook Aktif */}
             <div className="flex flex-col gap-6 items-center">
               <div className="bg-white/30 backdrop-blur-2xl rounded-[40px] p-8 border border-white/40 shadow-2xl w-full flex flex-col items-center">
                 <div className="flex items-center justify-between w-full mb-6 px-4">
@@ -177,7 +177,6 @@ export default function Home() {
                       onLoadSuccess={onDocumentLoadSuccess}
                       loading={<div className="text-white font-black animate-pulse uppercase tracking-widest">Menyiapkan Panduan...</div>}
                     >
-                      {/* Hanya render buku jika halamannya sudah siap */}
                       {isPdfReady && (
                         /* @ts-ignore */
                         <HTMLFlipBook 
@@ -197,21 +196,9 @@ export default function Home() {
                           ref={bookRef}
                           className="shadow-2xl rounded-xl"
                         >
-                          {/* 1. COVER DEPAN */}
-                          <PageItem number={1} density="hard">
-                             <div className="h-full flex flex-col items-center justify-center text-center p-10 bg-gradient-to-br from-blue-700 to-indigo-900 text-white">
-                                <div className="relative w-full aspect-[3/4] mb-8 rounded-2xl overflow-hidden shadow-2xl border-4 border-white/20">
-                                   <Image src="/buku_cover.png" alt="Cover" fill className="object-cover" />
-                                </div>
-                                <h3 className="text-3xl font-black uppercase tracking-tighter italic leading-none mb-2">PANDUAN HDAP</h3>
-                                <div className="w-16 h-1 bg-white mb-4"></div>
-                                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-200">E-Assessment Literasi Digital</p>
-                             </div>
-                          </PageItem>
-
-                          {/* 2. HALAMAN PDF ASLI (SEMUA HALAMAN) */}
+                          {/* 1. HALAMAN PDF ASLI (LANGSUNG DARI HALAMAN 1 PDF SEBAGAI COVER) */}
                           {Array.from(new Array(numPages), (el, index) => (
-                            <PageItem key={`pdf_${index}`} number={index + 2}>
+                            <PageItem key={`pdf_${index}`} number={index + 1} density={index === 0 ? "hard" : "soft"}>
                                <Page 
                                   pageNumber={index + 1} 
                                   width={550} 
@@ -221,8 +208,8 @@ export default function Home() {
                             </PageItem>
                           ))}
 
-                          {/* 3. HALAMAN PENUTUP (SIAP MULAI?) */}
-                          <PageItem number={numPages + 2} density="hard">
+                          {/* 2. HALAMAN PENUTUP (SIAP MULAI?) */}
+                          <PageItem number={numPages + 1} density="hard">
                              <div className="h-full flex flex-col items-center justify-center text-center relative overflow-hidden bg-slate-900">
                                 <Image src="/unj_bg.png" alt="Background" fill className="object-cover opacity-40" />
                                 <div className="relative z-10 p-10 border-4 border-white/30 rounded-3xl backdrop-blur-sm m-6">
@@ -254,7 +241,7 @@ export default function Home() {
                       </button>
                       <div className="bg-white/90 backdrop-blur-md px-6 py-2 rounded-2xl border border-slate-100 shadow-md">
                          <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
-                           {isPdfReady ? `Total ${numPages + 2} Halaman (Incl. Cover)` : "Menyiapkan Halaman..."}
+                           {isPdfReady ? `Total ${numPages + 1} Halaman` : "Menyiapkan Halaman..."}
                          </p>
                       </div>
                       <button 
