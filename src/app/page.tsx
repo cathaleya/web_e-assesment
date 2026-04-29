@@ -82,7 +82,7 @@ export default function Home() {
       </section>
 
       {/* ════════════════════════════════════════
-          HALAMAN 2 — VIDEO TUTORIAL (BG PRAKTEK 2)
+          HALAMAN 2 — VIDEO TUTORIAL (TANPA FILTER)
       ════════════════════════════════════════ */}
       <section id="about" className="relative min-h-screen py-32 px-6 md:px-14 lg:px-20 overflow-hidden">
         <div className="absolute inset-0 z-0">
@@ -92,16 +92,16 @@ export default function Home() {
             fill
             className="object-cover"
           />
-          <div className="absolute inset-0 bg-white/60 backdrop-blur-[2px]"></div>
+          {/* Filter dihapus sesuai permintaan */}
         </div>
 
         <div className="max-w-7xl mx-auto w-full flex flex-col items-center gap-12 text-center relative z-10">
           <div className="space-y-4">
-            <h2 className="text-3xl md:text-6xl font-black italic text-slate-900 uppercase tracking-tighter leading-tight drop-shadow-sm">
+            <h2 className="text-3xl md:text-6xl font-black italic text-slate-900 uppercase tracking-tighter leading-tight drop-shadow-lg">
               PANDUAN VISUAL PLATFORM
             </h2>
             <div className="w-20 h-1.5 bg-blue-600 mx-auto rounded-full"></div>
-            <p className="text-slate-600 font-black uppercase tracking-[0.4em] text-[9px]">Video Tutorial Lengkap</p>
+            <p className="text-slate-800 font-black uppercase tracking-[0.4em] text-[9px] drop-shadow-sm">Video Tutorial Lengkap</p>
           </div>
 
           <div className="w-full max-w-6xl aspect-video bg-slate-900 rounded-3xl md:rounded-[48px] shadow-2xl overflow-hidden border-4 md:border-8 border-white relative group">
@@ -113,7 +113,7 @@ export default function Home() {
       </section>
 
       {/* ════════════════════════════════════════
-          HALAMAN 3 — FLIPBOOK MANUAL (BG PRAKTEK 3)
+          HALAMAN 3 — FLIPBOOK MANUAL (TANPA FILTER)
       ════════════════════════════════════════ */}
       <section id="manual" className="relative min-h-screen py-32 px-4 md:px-14 lg:px-20 overflow-hidden">
         <div className="absolute inset-0 z-0">
@@ -123,16 +123,16 @@ export default function Home() {
             fill
             className="object-cover"
           />
-          <div className="absolute inset-0 bg-slate-100/70 backdrop-blur-[2px]"></div>
+          {/* Filter dihapus sesuai permintaan */}
         </div>
 
         <div className="max-w-7xl mx-auto w-full flex flex-col items-center gap-12 relative z-10">
           <div className="space-y-4 text-center">
-            <h2 className="text-3xl md:text-6xl font-black italic text-slate-900 uppercase tracking-tighter leading-tight drop-shadow-sm">
+            <h2 className="text-3xl md:text-6xl font-black italic text-slate-900 uppercase tracking-tighter leading-tight drop-shadow-lg">
               BUKU PANDUAN DIGITAL
             </h2>
             <div className="w-20 h-1.5 bg-blue-600 mx-auto rounded-full"></div>
-            <p className="text-slate-600 font-black uppercase tracking-[0.4em] text-[9px]">Manual Penggunaan Platform</p>
+            <p className="text-slate-800 font-black uppercase tracking-[0.4em] text-[9px] drop-shadow-sm">Manual Penggunaan Platform</p>
           </div>
 
           <div className="w-full flex justify-center">
