@@ -34,7 +34,7 @@ export default function Home() {
           <a href="#about" className="text-[10px] font-bold text-slate-600 uppercase tracking-widest hover:text-blue-600 transition-colors">
             TENTANG PLATFORM
           </a>
-          <a href="/buku-panduan" className="text-[10px] font-bold text-slate-600 uppercase tracking-widest hover:text-blue-600 transition-colors">
+          <a href="#manual" className="text-[10px] font-bold text-slate-600 uppercase tracking-widest hover:text-blue-600 transition-colors">
             BUKU PANDUAN
           </a>
           <button
@@ -115,7 +115,7 @@ export default function Home() {
       {/* ════════════════════════════════════════
           HALAMAN 3 — FLIPBOOK MANUAL (BG PRAKTEK 3)
       ════════════════════════════════════════ */}
-      <section className="relative min-h-screen py-32 px-4 md:px-14 lg:px-20 overflow-hidden">
+      <section id="manual" className="relative min-h-screen py-32 px-4 md:px-14 lg:px-20 overflow-hidden">
         <div className="absolute inset-0 z-0">
           <Image
             src="/media/praktek_3.jpeg"
