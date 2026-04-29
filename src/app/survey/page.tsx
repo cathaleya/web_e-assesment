@@ -45,7 +45,6 @@ export default function SurveyPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId, totalScore, answersJson: answers }),
       });
-      // Redirect to dashboard where MADEL5C is now unlocked
       router.push("/dashboard");
     } catch (err) { console.error(err); }
   };
@@ -80,19 +79,12 @@ export default function SurveyPage() {
                 <div className="p-3 bg-amber-50 rounded-xl border border-amber-100">
                   <h3 className="text-[10px] font-black text-amber-900 uppercase mb-1">Cara Pengisian:</h3>
                   <p className="text-[9px] font-bold text-amber-800 leading-relaxed">
-                    Berikan penilaian subjektif Anda mengenai kemudahan penggunaan sistem ini. Pilih angka 1 (Sangat Tidak Setuju) sampai 5 (Sangat Setuju).
-                  </p>
-                </div>
-
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
-                  <h3 className="text-[10px] font-black text-slate-900 uppercase mb-1">Metode Penskoran (SUS):</h3>
-                  <p className="text-[9px] font-bold text-slate-600 leading-relaxed">
-                    Setiap jawaban akan dikonversi menggunakan algoritma SUS (System Usability Scale) untuk menghasilkan indeks kenyamanan 0-100.
+                    Berikan penilaian subjektif Anda mengenai kemudahan penggunaan sistem ini. Pilih angka 5 (Sangat Setuju) sampai 1 (Sangat Tidak Setuju).
                   </p>
                 </div>
               </div>
 
-              <button onClick={() => setShowInstructions(false)} className="w-full py-4 bg-[#4B5320] text-white font-black rounded-lg text-[10px] uppercase tracking-widest shadow-lg">LANJUTKAN KE SURVEY</button>
+              <button onClick={() => setShowInstructions(false)} className="w-full py-4 bg-black text-white font-black rounded-lg text-[10px] uppercase tracking-widest shadow-lg">LANJUTKAN KE SURVEY</button>
             </motion.div>
           ) : (
             <motion.div key="survey" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-3">
@@ -110,9 +102,9 @@ export default function SurveyPage() {
                    </div>
                    
                    <div className="flex justify-between items-center gap-2">
-                     <span className="text-[8px] font-black text-slate-900 uppercase tracking-tighter w-12 leading-none">Tidak Setuju</span>
+                     <span className="text-[8px] font-black text-slate-900 uppercase tracking-tighter w-14 leading-none">Sangat Setuju</span>
                      <div className="flex justify-between gap-1.5 flex-1 max-w-[220px]">
-                        {[1, 2, 3, 4, 5].map((val) => (
+                        {[5, 4, 3, 2, 1].map((val) => (
                           <button
                             key={val}
                             onClick={() => handleAnswer(i, val)}
@@ -126,7 +118,7 @@ export default function SurveyPage() {
                           </button>
                         ))}
                      </div>
-                     <span className="text-[8px] font-black text-slate-900 uppercase tracking-tighter w-12 text-right leading-none">Sangat Setuju</span>
+                     <span className="text-[8px] font-black text-slate-900 uppercase tracking-tighter w-14 text-right leading-none">Tidak Setuju</span>
                    </div>
                  </motion.div>
                ))}

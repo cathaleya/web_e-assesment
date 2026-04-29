@@ -24,11 +24,11 @@ export default function Madel5cAssessment() {
   const router = useRouter();
 
   const optionColors = [
-    "bg-blue-50 border-blue-100 text-blue-900",
-    "bg-emerald-50 border-emerald-100 text-emerald-900",
-    "bg-amber-50 border-amber-100 text-amber-900",
-    "bg-rose-50 border-rose-100 text-rose-900",
-    "bg-purple-50 border-purple-100 text-purple-900"
+    "bg-white border-slate-100 text-slate-900",
+    "bg-white border-slate-100 text-slate-900",
+    "bg-white border-slate-100 text-slate-900",
+    "bg-white border-slate-100 text-slate-900",
+    "bg-white border-slate-100 text-slate-900"
   ];
 
   const shuffleArray = (array: Option[]) => {
@@ -106,7 +106,7 @@ export default function Madel5cAssessment() {
   if (questions.length === 0) return (
     <div className="min-h-screen bg-white flex flex-col items-center justify-center p-6 text-center">
       <i className="fa-solid fa-triangle-exclamation text-rose-500 text-4xl mb-4"></i>
-      <p className="font-black text-sm uppercase tracking-widest text-slate-900 mb-4">Soal gagal dimuat. Harap periksa koneksi atau database Bapak.</p>
+      <p className="font-black text-sm uppercase tracking-widest text-slate-900 mb-4">Soal gagal dimuat.</p>
       <button onClick={() => window.location.reload()} className="px-6 py-3 bg-blue-600 text-white rounded-xl font-black text-[10px] uppercase tracking-widest">Coba Lagi</button>
     </div>
   );
@@ -125,14 +125,14 @@ export default function Madel5cAssessment() {
                 <div className="w-12 h-12 bg-emerald-600 rounded-2xl flex items-center justify-center text-white shadow-lg">
                   <i className="fa-solid fa-list-check text-2xl"></i>
                 </div>
-                <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tighter">Panduan MADEL5C</h1>
+                <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tighter leading-tight">Panduan MADEL5C</h1>
               </div>
 
               <div className="space-y-4 mb-8">
                 <div className="p-4 bg-emerald-50 rounded-2xl border border-emerald-100">
                   <h3 className="text-[11px] font-black text-emerald-900 uppercase mb-1">Cara Pengisian:</h3>
                   <p className="text-[10px] font-bold text-emerald-800 leading-relaxed italic">
-                    &quot;Baca skenario situasi nyata yang muncul, lalu pilih satu tindakan yang menurut Anda paling tepat dan efektif.&quot;
+                    &quot;Baca skenario situasi nyata yang muncul, lalu pilih satu tindakan yang menurut Anda paling tepat.&quot;
                   </p>
                 </div>
               </div>
@@ -158,12 +158,13 @@ export default function Madel5cAssessment() {
                 <div className="space-y-3">
                   {questions[currentStep]?.options?.map((opt, idx: number) => (
                     <button key={idx} onClick={() => handleAnswer(idx)}
-                      className={`w-full flex items-start gap-4 p-4 rounded-2xl border-2 text-left transition-all ${
-                        answers[currentStep] === opt.score ? "bg-[#4B5320] border-[#4B5320] text-white shadow-xl scale-[1.02]" : `${optionColors[idx % optionColors.length]} hover:scale-[1.01]`
+                      className={`w-full p-5 rounded-2xl border-2 text-left transition-all ${
+                        answers[currentStep] === opt.score 
+                        ? "bg-[#4B5320] border-[#4B5320] text-white shadow-xl scale-[1.02]" 
+                        : "bg-white border-slate-100 hover:border-slate-300 hover:bg-slate-50"
                       }`}
                     >
-                      <span className={`mt-0.5 w-8 h-8 rounded-xl flex items-center justify-center font-black text-[11px] shrink-0 ${answers[currentStep] === opt.score ? "bg-white text-[#4B5320]" : "bg-white/60 border border-current opacity-80"}`}>{String.fromCharCode(65 + idx)}</span>
-                      <span className="text-[12px] font-bold leading-tight">{opt.text}</span>
+                      <span className="text-[13px] font-bold leading-tight block">{opt.text}</span>
                     </button>
                   ))}
                 </div>
