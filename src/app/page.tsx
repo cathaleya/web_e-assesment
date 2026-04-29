@@ -47,13 +47,13 @@ export default function Home() {
       </nav>
 
       {/* ════════════════════════════════════════
-          HALAMAN 1 — HERO (FIX MOBILE WRAP)
+          HALAMAN 1 — HERO
       ════════════════════════════════════════ */}
       <section className="relative min-h-screen flex items-center pt-24 pb-12">
         <div className="absolute inset-0 z-0">
           <Image
             src="/media/praktek.jpeg"
-            alt="Praktek Literasi Digital"
+            alt="Praktek Literasi Digital 1"
             fill
             className="object-cover"
             priority
@@ -82,20 +82,29 @@ export default function Home() {
       </section>
 
       {/* ════════════════════════════════════════
-          HALAMAN 2 — VIDEO TUTORIAL (BESAR)
+          HALAMAN 2 — VIDEO TUTORIAL (BG PRAKTEK 2)
       ════════════════════════════════════════ */}
-      <section id="about" className="relative py-24 md:py-32 px-6 md:px-14 lg:px-20 bg-white">
-        <div className="max-w-7xl mx-auto w-full flex flex-col items-center gap-12 text-center">
-          
+      <section id="about" className="relative min-h-screen py-32 px-6 md:px-14 lg:px-20 overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <Image
+            src="/media/praktek_2.jpeg"
+            alt="Praktek Literasi Digital 2"
+            fill
+            className="object-cover"
+          />
+          <div className="absolute inset-0 bg-white/60 backdrop-blur-[2px]"></div>
+        </div>
+
+        <div className="max-w-7xl mx-auto w-full flex flex-col items-center gap-12 text-center relative z-10">
           <div className="space-y-4">
-            <h2 className="text-3xl md:text-6xl font-black italic text-slate-900 uppercase tracking-tighter leading-tight">
+            <h2 className="text-3xl md:text-6xl font-black italic text-slate-900 uppercase tracking-tighter leading-tight drop-shadow-sm">
               PANDUAN VISUAL PLATFORM
             </h2>
             <div className="w-20 h-1.5 bg-blue-600 mx-auto rounded-full"></div>
-            <p className="text-slate-500 font-black uppercase tracking-[0.4em] text-[9px]">Video Tutorial Lengkap</p>
+            <p className="text-slate-600 font-black uppercase tracking-[0.4em] text-[9px]">Video Tutorial Lengkap</p>
           </div>
 
-          <div className="w-full max-w-6xl aspect-video bg-slate-900 rounded-3xl md:rounded-[48px] shadow-2xl overflow-hidden border-2 md:border-4 border-slate-100 relative">
+          <div className="w-full max-w-6xl aspect-video bg-slate-900 rounded-3xl md:rounded-[48px] shadow-2xl overflow-hidden border-4 md:border-8 border-white relative group">
              <video className="w-full h-full object-contain" controls>
                <source src="/media/video_HDAP.mp4" type="video/mp4" />
              </video>
@@ -104,28 +113,36 @@ export default function Home() {
       </section>
 
       {/* ════════════════════════════════════════
-          HALAMAN 3 — FLIPBOOK MANUAL (DI BAWAH)
+          HALAMAN 3 — FLIPBOOK MANUAL (BG PRAKTEK 3)
       ════════════════════════════════════════ */}
-      <section className="relative py-24 md:py-32 px-4 md:px-14 lg:px-20 bg-slate-50">
+      <section className="relative min-h-screen py-32 px-4 md:px-14 lg:px-20 overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <Image
+            src="/media/praktek_3.jpeg"
+            alt="Praktek Literasi Digital 3"
+            fill
+            className="object-cover"
+          />
+          <div className="absolute inset-0 bg-slate-100/70 backdrop-blur-[2px]"></div>
+        </div>
+
         <div className="max-w-7xl mx-auto w-full flex flex-col items-center gap-12 relative z-10">
-          
           <div className="space-y-4 text-center">
-            <h2 className="text-3xl md:text-6xl font-black italic text-slate-900 uppercase tracking-tighter leading-tight">
+            <h2 className="text-3xl md:text-6xl font-black italic text-slate-900 uppercase tracking-tighter leading-tight drop-shadow-sm">
               BUKU PANDUAN DIGITAL
             </h2>
             <div className="w-20 h-1.5 bg-blue-600 mx-auto rounded-full"></div>
-            <p className="text-slate-500 font-black uppercase tracking-[0.4em] text-[9px]">Manual Penggunaan Platform</p>
+            <p className="text-slate-600 font-black uppercase tracking-[0.4em] text-[9px]">Manual Penggunaan Platform</p>
           </div>
 
-          <div className="w-full flex justify-center overflow-hidden">
+          <div className="w-full flex justify-center">
              <FlipBookSection />
           </div>
-
         </div>
       </section>
 
       {/* ─── FOOTER ─── */}
-      <footer className="bg-white text-slate-900 py-16 px-6 md:px-14 border-t border-slate-100">
+      <footer className="bg-white text-slate-900 py-16 px-6 md:px-14 border-t border-slate-200">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-10 text-center md:text-left">
           <div className="flex items-center gap-4">
             <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-xl">
