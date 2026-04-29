@@ -12,6 +12,7 @@ interface Option {
 interface Question {
   question: string;
   dim: string;
+  text: string;
   options: Option[];
 }
 
@@ -24,11 +25,11 @@ export default function PreliminaryAssessment() {
   const router = useRouter();
 
   const optionColors = [
-    "bg-rose-50 border-rose-100 text-rose-900",
-    "bg-amber-50 border-amber-100 text-amber-900",
-    "bg-emerald-50 border-emerald-100 text-emerald-900",
+    "bg-indigo-50 border-indigo-100 text-indigo-900",
     "bg-blue-50 border-blue-100 text-blue-900",
-    "bg-purple-50 border-purple-100 text-purple-900"
+    "bg-emerald-50 border-emerald-100 text-emerald-900",
+    "bg-amber-50 border-amber-100 text-amber-900",
+    "bg-rose-50 border-rose-100 text-rose-900"
   ];
 
   const fetchQuestions = useCallback(async () => {
@@ -52,12 +53,13 @@ export default function PreliminaryAssessment() {
     fetchQuestions(); 
   }, [fetchQuestions]);
 
+  // Urutan dibalik: Sangat Mampu (5) di atas, Sangat Tidak Mampu (1) di bawah
   const DEFAULT_OPTIONS = [
-    { text: "Sangat Tidak Mampu", score: 1 },
-    { text: "Tidak Mampu", score: 2 },
-    { text: "Cukup Mampu", score: 3 },
+    { text: "Sangat Mampu", score: 5 },
     { text: "Mampu", score: 4 },
-    { text: "Sangat Mampu", score: 5 }
+    { text: "Cukup Mampu", score: 3 },
+    { text: "Tidak Mampu", score: 2 },
+    { text: "Sangat Tidak Mampu", score: 1 }
   ];
 
   const submitAssessment = useCallback(async (finalAnswers: Record<number, number>) => {
@@ -118,14 +120,18 @@ export default function PreliminaryAssessment() {
                 <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white shadow-lg">
                   <i className="fa-solid fa-info-circle text-2xl"></i>
                 </div>
-                <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tighter">Panduan PDI-DL</h1>
+                <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tighter leading-tight">Panduan PDI-DL</h1>
               </div>
 
               <div className="space-y-4 mb-8">
-                <div className="p-4 bg-blue-50 rounded-2xl border border-blue-100">
-                  <h3 className="text-[11px] font-black text-blue-900 uppercase mb-1">Cara Pengisian:</h3>
-                  <p className="text-[10px] font-bold text-blue-800 leading-relaxed italic">
-                    &quot;Pilih satu jawaban yang paling mencerminkan tingkat kemampuan Anda saat ini, dari Sangat Tidak Mampu hingga Sangat Mampu.&quot;
+                <div className="p-5 bg-blue-50 rounded-2xl border border-blue-100">
+                  <h3 className="text-[11px] font-black text-blue-900 uppercase mb-2 tracking-widest">PENTING:</h3>
+                  <p className="text-[11px] font-bold text-blue-800 leading-relaxed italic mb-3">
+                    &quot;Pilih satu jawaban yang paling mencerminkan tingkat kemampuan Anda saat ini.&quot;
+                  </p>
+                  <p className="text-[11px] font-bold text-slate-600 leading-relaxed bg-white/60 p-3 rounded-xl border border-blue-200 shadow-sm">
+                    <i className="fa-solid fa-lightbulb text-amber-500 mr-2"></i>
+                    Tidak Ada jawaban yang <span className="text-blue-600 underline">absolut benar</span>. Yang terpenting adalah bagaimana Anda mengaplikasikan pemikiran dan pertimbangan profesional dalam mengatasi situasi yang diberikan.
                   </p>
                 </div>
               </div>
@@ -156,8 +162,15 @@ export default function PreliminaryAssessment() {
                         answers[currentStep] === opt.score ? "bg-blue-600 border-blue-600 text-white shadow-xl scale-[1.02]" : `${optionColors[idx % optionColors.length]} hover:scale-[1.01]`
                       }`}
                     >
-                      <span className={`w-8 h-8 rounded-xl flex items-center justify-center font-black text-[11px] shrink-0 ${answers[currentStep] === opt.score ? "bg-white text-blue-600" : "bg-white/60 border border-current opacity-80"}`}>{opt.score}</span>
-                      <span className="text-[11px] font-black uppercase tracking-tight">{opt.text}</span>
+                      {/* Tombol Bulat (Radio Style) */}
+                      <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
+                        answers[currentStep] === opt.score ? "bg-white border-white" : "bg-white/40 border-current opacity-60"
+                      }`}>
+                         {answers[currentStep] === opt.score && (
+                           <div className="w-2.5 h-2.5 rounded-full bg-blue-600"></div>
+                         )}
+                      </div>
+                      <span className="text-[11px] font-black uppercase tracking-tight leading-tight">{opt.text}</span>
                     </button>
                   ))}
                 </div>
