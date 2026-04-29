@@ -15,7 +15,7 @@ const PDFPage = React.forwardRef((props: any, ref: any) => {
     <div className="bg-white shadow-2xl" ref={ref}>
       <Page 
         pageNumber={props.pageNumber} 
-        width={350} 
+        width={550} 
         renderAnnotationLayer={false} 
         renderTextLayer={false}
       />
@@ -187,16 +187,16 @@ export default function Home() {
                     >
                       {/* @ts-ignore */}
                       <HTMLFlipBook 
-                        width={350} 
-                        height={500} 
+                        width={550} 
+                        height={733} 
                         size="stretch"
-                        minWidth={300}
-                        maxWidth={450}
+                        minWidth={315}
+                        maxWidth={1000}
                         minHeight={400}
-                        maxHeight={650}
+                        maxHeight={1533}
                         drawShadow={true}
-                        flippingTime={800}
-                        usePortrait={true}
+                        flippingTime={1000}
+                        usePortrait={false}
                         startPage={0}
                         showCover={true}
                         mobileScrollSupport={true}
