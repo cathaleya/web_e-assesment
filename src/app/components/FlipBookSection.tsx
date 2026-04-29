@@ -8,11 +8,10 @@ import { useRouter } from "next/navigation";
 const PageItem = React.forwardRef((props: any, ref: any) => {
   return (
     <div className="bg-white shadow-2xl overflow-hidden border border-slate-100" ref={ref} data-density={props.density || "soft"}>
-      <div className="h-full w-full flex flex-col items-center justify-center p-8 md:p-12 relative">
-        {/* Page Decorative Elements */}
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-indigo-600 opacity-50"></div>
-        <div className="absolute bottom-6 right-8 text-[9px] font-black text-slate-300 tracking-[0.3em] uppercase">
-          HDAP GUIDE • PG {props.number}
+      <div className="h-full w-full flex flex-col items-center justify-center p-6 md:p-10 relative">
+        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-indigo-600 opacity-30"></div>
+        <div className="absolute bottom-4 right-6 text-[8px] font-black text-slate-300 tracking-widest uppercase">
+          PG {props.number}
         </div>
         
         <div className="w-full flex flex-col items-center justify-center text-center">
@@ -39,32 +38,36 @@ export default function FlipBookSection() {
   }, []);
 
   const isMobile = windowWidth < 768;
-  const pageWidth = isMobile ? Math.min(windowWidth - 40, 360) : 480;
-  const pageHeight = pageWidth * 1.41; // Golden ratio for books
+  const isTablet = windowWidth >= 768 && windowWidth < 1280;
+  
+  // Penyesuaian ukuran agar pas berdampingan dengan video
+  let pageWidth = 320; // Default desktop (Side-by-side)
+  if (isMobile) pageWidth = Math.min(windowWidth - 60, 340);
+  if (isTablet) pageWidth = 380;
+
+  const pageHeight = pageWidth * 1.4;
 
   if (!mounted) return null;
 
   return (
-    <div className="bg-white/30 backdrop-blur-3xl rounded-[40px] p-6 md:p-10 border border-white/40 shadow-2xl w-full flex flex-col items-center overflow-hidden">
+    <div className="w-full flex flex-col items-center">
       
-      {/* Header with Download Button */}
-      <div className="flex flex-col md:flex-row items-center justify-between w-full mb-10 gap-6 px-4">
-        <div className="text-center md:text-left">
-          <h4 className="text-xl font-black text-white uppercase tracking-tighter italic">Panduan Cepat Website</h4>
-          <p className="text-[10px] font-bold text-blue-200 uppercase tracking-widest mt-1">
-             Navigasi Cerdas & Operasional Platform HDAP
-          </p>
+      {/* Header Kecil */}
+      <div className="flex items-center justify-between w-full mb-6 gap-4 px-2">
+        <div className="hidden md:block">
+          <h4 className="text-xs font-black text-white uppercase tracking-widest italic">Quick Guide</h4>
         </div>
         <a 
           href="/media/Panduan_Website_HDAP.pdf" 
           download 
-          className="bg-white/10 hover:bg-white/20 backdrop-blur-md text-white border border-white/30 px-6 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 shadow-xl active:scale-95"
+          className="bg-white/10 hover:bg-white/20 text-white border border-white/20 px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all flex items-center gap-2"
         >
-          <i className="fa-solid fa-file-pdf"></i> Download PDF Lengkap
+          <i className="fa-solid fa-file-pdf"></i> PDF
         </a>
       </div>
 
-      <div className="relative w-full flex justify-center perspective-1000">
+      {/* Book Container - Dibuat sedikit ke kiri dengan margin negatif jika diperlukan */}
+      <div className="relative flex justify-center w-full">
         {/* @ts-ignore */}
         <HTMLFlipBook 
           width={pageWidth} 
@@ -81,79 +84,59 @@ export default function FlipBookSection() {
           showCover={true}
           mobileScrollSupport={true}
           ref={bookRef}
-          className="mx-auto shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)]"
+          className="shadow-2xl"
         >
-          {/* 1. COVER EXCLUSIVE */}
+          {/* 1. COVER */}
           <PageItem number={1} density="hard">
-            <div className="h-full flex flex-col items-center justify-center bg-gradient-to-br from-[#1E3A8A] to-[#0F172A] p-12 text-white relative">
+            <div className="h-full flex flex-col items-center justify-center bg-slate-900 p-8 text-white relative">
               <Image src="/unj_bg.png" alt="BG" fill className="object-cover opacity-10" />
               <div className="relative z-10 flex flex-col items-center">
-                 <div className="w-20 h-20 bg-blue-600 rounded-3xl flex items-center justify-center shadow-2xl mb-8">
-                    <i className="fa-solid fa-book-open text-4xl"></i>
+                 <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center shadow-2xl mb-6">
+                    <i className="fa-solid fa-book-open text-3xl"></i>
                  </div>
-                 <h1 className="text-4xl font-black italic tracking-tighter uppercase mb-2">USER MANUAL</h1>
-                 <p className="text-[11px] font-bold text-blue-400 uppercase tracking-[0.4em] mb-12">Platform HDAP v1.0</p>
-                 <div className="w-12 h-1.5 bg-white rounded-full"></div>
+                 <h1 className="text-2xl font-black italic tracking-tighter uppercase text-center">USER GUIDE</h1>
+                 <p className="text-[9px] font-bold text-blue-400 uppercase tracking-[0.3em] mt-2">HDAP PLATFORM</p>
               </div>
             </div>
           </PageItem>
 
-          {/* 2. PENDAHULUAN (Fit to center) */}
+          {/* 2. PENDAHULUAN */}
           <PageItem number={2}>
-            <div className="space-y-6">
-              <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 mx-auto mb-4">
-                <i className="fa-solid fa-star text-2xl"></i>
-              </div>
-              <h3 className="text-2xl font-black text-slate-900 uppercase tracking-tighter italic">PENDAHULUAN</h3>
-              <div className="w-10 h-1 bg-blue-600 mx-auto"></div>
-              <p className="text-sm text-slate-600 font-semibold leading-relaxed text-center px-4">
-                Selamat datang di platform **HDAP**. Aplikasi ini dirancang untuk memetakan literasi digital Anda dengan akurasi tinggi melalui integrasi Model Rasch dan Generative AI.
+            <div className="space-y-4">
+              <h3 className="text-lg font-black text-slate-900 uppercase tracking-tighter italic">PENDAHULUAN</h3>
+              <div className="w-8 h-1 bg-blue-600 mx-auto"></div>
+              <p className="text-[11px] text-slate-600 font-bold leading-relaxed text-center">
+                Platform **HDAP** memetakan literasi digital mahasiswa dengan presisi tinggi melalui integrasi Rasch Model & Generative AI.
               </p>
             </div>
           </PageItem>
 
           {/* 3. PERSIAPAN TEKNIS */}
           <PageItem number={3}>
-            <div className="space-y-6">
-              <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 mx-auto mb-4">
-                <i className="fa-solid fa-laptop-code text-2xl"></i>
-              </div>
-              <h3 className="text-2xl font-black text-slate-900 uppercase tracking-tighter italic">PERSIAPAN TEKNIS</h3>
-              <div className="w-10 h-1 bg-blue-600 mx-auto"></div>
-              <ul className="text-[12px] text-slate-600 font-bold space-y-4 text-left inline-block">
-                <li className="flex items-center gap-3">
-                  <i className="fa-solid fa-check-circle text-green-500"></i> Koneksi Internet Stabil
-                </li>
-                <li className="flex items-center gap-3">
-                  <i className="fa-solid fa-check-circle text-green-500"></i> Browser (Chrome/Edge Terbaru)
-                </li>
-                <li className="flex items-center gap-3">
-                  <i className="fa-solid fa-check-circle text-green-500"></i> Akun Mahasiswa Terdaftar
-                </li>
+            <div className="space-y-4 text-left w-full">
+              <h3 className="text-lg font-black text-slate-900 uppercase tracking-tighter italic text-center">TEKNIS</h3>
+              <div className="w-8 h-1 bg-blue-600 mx-auto mb-4"></div>
+              <ul className="text-[10px] text-slate-600 font-bold space-y-3 px-2">
+                <li className="flex items-center gap-2"><i className="fa-solid fa-wifi text-blue-500"></i> Internet Stabil</li>
+                <li className="flex items-center gap-2"><i className="fa-solid fa-globe text-blue-500"></i> Google Chrome</li>
+                <li className="flex items-center gap-2"><i className="fa-solid fa-user-circle text-blue-500"></i> Akun Login</li>
               </ul>
             </div>
           </PageItem>
 
           {/* 4. ALUR ASESMEN */}
           <PageItem number={4}>
-            <div className="space-y-6">
-              <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 mx-auto mb-4">
-                <i className="fa-solid fa-list-ol text-2xl"></i>
-              </div>
-              <h3 className="text-2xl font-black text-slate-900 uppercase tracking-tighter italic">ALUR ASESMEN</h3>
-              <div className="w-10 h-1 bg-blue-600 mx-auto"></div>
-              <div className="grid grid-cols-1 gap-4 text-left">
-                 <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 flex items-center gap-4">
-                    <span className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-black text-xs">1</span>
-                    <p className="text-[11px] font-bold text-slate-700">Login ke Portal</p>
+            <div className="space-y-4 w-full">
+              <h3 className="text-lg font-black text-slate-900 uppercase tracking-tighter italic">ALUR</h3>
+              <div className="w-8 h-1 bg-blue-600 mx-auto"></div>
+              <div className="space-y-2">
+                 <div className="p-2 bg-slate-50 rounded-lg flex items-center gap-3">
+                    <span className="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center font-black text-[10px]">1</span>
+                    <p className="text-[10px] font-bold text-slate-700">Masuk Portal</p>
                  </div>
-                 <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 flex items-center gap-4">
-                    <span className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-black text-xs">2</span>
-                    <p className="text-[11px] font-bold text-slate-700">Pilih Instrumen MADEL5C</p>
-                 </div>
-                 <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 flex items-center gap-4">
-                    <span className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-black text-xs">3</span>
-                    <p className="text-[11px] font-bold text-slate-700">Kerjakan hingga Selesai</p>
+                 <div className="p-2 bg-slate-50 rounded-lg flex items-center gap-3">
+                    <span className="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center font-black text-[10px]">2</span>
+                    <p className="text-[10px] font-bold text-slate-700">Pilih Instrumen</p>
                  </div>
               </div>
             </div>
@@ -161,34 +144,29 @@ export default function FlipBookSection() {
 
           {/* 5. DIAGNOSA AI */}
           <PageItem number={5}>
-            <div className="space-y-6">
-              <div className="w-16 h-16 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600 mx-auto mb-4">
-                <i className="fa-solid fa-robot text-2xl"></i>
-              </div>
-              <h3 className="text-2xl font-black text-slate-900 uppercase tracking-tighter italic">DIAGNOSA AI</h3>
-              <div className="w-10 h-1 bg-indigo-600 mx-auto"></div>
-              <p className="text-sm text-slate-600 font-semibold leading-relaxed text-center px-4">
-                Dapatkan bimbingan personal seketika. AI akan menganalisis pola jawaban Anda untuk memberikan saran pedagogis yang tepat sasaran.
+            <div className="space-y-4">
+              <h3 className="text-lg font-black text-slate-900 uppercase tracking-tighter italic">DIAGNOSA AI</h3>
+              <div className="w-8 h-1 bg-indigo-600 mx-auto"></div>
+              <p className="text-[11px] text-slate-600 font-bold leading-relaxed text-center">
+                AI menganalisis pola jawaban untuk memberikan saran pedagogis personal seketika.
               </p>
-              <div className="relative w-full aspect-video rounded-xl overflow-hidden shadow-lg border border-slate-200">
-                 <Image src="/unj_bg.png" alt="AI" fill className="object-cover" />
-                 <div className="absolute inset-0 bg-blue-600/20"></div>
+              <div className="relative w-full aspect-video rounded-lg overflow-hidden border border-slate-200">
+                 <Image src="/unj_bg.png" alt="AI" fill className="object-cover opacity-50" />
               </div>
             </div>
           </PageItem>
 
-          {/* 6. SIAP MULAI? (PENUTUP) */}
+          {/* 6. SIAP MULAI? */}
           <PageItem number={6} density="hard">
             <div className="h-full flex flex-col items-center justify-center bg-slate-900 text-white relative">
               <Image src="/unj_bg.png" alt="BG" fill className="object-cover opacity-30" />
-              <div className="relative z-10 flex flex-col items-center">
-                 <h3 className="text-4xl font-black italic tracking-tighter uppercase mb-4">SIAP MULAI?</h3>
-                 <div className="w-12 h-1 bg-blue-500 mb-8"></div>
+              <div className="relative z-10 flex flex-col items-center p-4">
+                 <h3 className="text-xl font-black italic uppercase mb-4 text-center">SIAP MULAI?</h3>
                  <button 
                    onClick={() => router.push("/login")}
-                   className="px-10 py-3.5 bg-blue-600 hover:bg-blue-500 text-white rounded-full font-black uppercase tracking-widest shadow-2xl transition-all active:scale-95"
+                   className="px-6 py-2 bg-blue-600 text-white rounded-full font-black text-[10px] uppercase tracking-widest shadow-xl active:scale-95"
                  >
-                   MASUK PORTAL
+                   MASUK
                  </button>
               </div>
             </div>
@@ -196,27 +174,19 @@ export default function FlipBookSection() {
         </HTMLFlipBook>
       </div>
 
-      {/* Modern Controls */}
-      <div className="mt-12 flex items-center justify-center gap-8">
+      {/* Controls Sederhana */}
+      <div className="mt-6 flex items-center justify-center gap-4">
         <button 
           onClick={() => bookRef.current?.pageFlip().flipPrev()}
-          className="w-14 h-14 rounded-2xl bg-white shadow-2xl flex items-center justify-center text-slate-400 hover:text-blue-600 active:scale-90 transition-all border border-slate-100 group"
+          className="w-10 h-10 rounded-xl bg-white shadow-xl flex items-center justify-center text-slate-400 hover:text-blue-600 active:scale-90 transition-all"
         >
-          <i className="fa-solid fa-arrow-left text-xl group-hover:-translate-x-1 transition-transform"></i>
+          <i className="fa-solid fa-chevron-left"></i>
         </button>
-        <div className="flex flex-col items-center">
-           <span className="text-[10px] font-black text-blue-300 uppercase tracking-[0.3em]">Flip Page</span>
-           <div className="flex gap-1 mt-1">
-              {[...Array(6)].map((_, i) => (
-                <div key={i} className="w-1.5 h-1.5 rounded-full bg-slate-200"></div>
-              ))}
-           </div>
-        </div>
         <button 
           onClick={() => bookRef.current?.pageFlip().flipNext()}
-          className="w-14 h-14 rounded-2xl bg-white shadow-2xl flex items-center justify-center text-slate-400 hover:text-blue-600 active:scale-90 transition-all border border-slate-100 group"
+          className="w-10 h-10 rounded-xl bg-white shadow-xl flex items-center justify-center text-slate-400 hover:text-blue-600 active:scale-90 transition-all"
         >
-          <i className="fa-solid fa-arrow-right text-xl group-hover:translate-x-1 transition-transform"></i>
+          <i className="fa-solid fa-chevron-right"></i>
         </button>
       </div>
     </div>
