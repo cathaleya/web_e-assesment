@@ -26,9 +26,13 @@ export default function FlipBookSection() {
   const [pageWidth, setPageWidth] = useState(450);
   const [mounted, setMounted] = useState(false);
   const bookRef = useRef<any>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     setMounted(true);
+    // Initialize audio object
+    audioRef.current = new Audio("/media/page-flip.mp3");
+    
     const updateWidth = () => {
       const width = window.innerWidth;
       if (width < 640) setPageWidth(width - 40);
@@ -39,6 +43,13 @@ export default function FlipBookSection() {
     window.addEventListener("resize", updateWidth);
     return () => window.removeEventListener("resize", updateWidth);
   }, []);
+
+  const playFlipSound = () => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = 0;
+      audioRef.current.play().catch(err => console.log("Audio play blocked by browser. Click page first."));
+    }
+  };
 
   function onDocumentLoadSuccess({ numPages }: { numPages: number }) {
     setNumPages(numPages);
@@ -88,6 +99,7 @@ export default function FlipBookSection() {
               drawShadow={true}
               flippingTime={1000}
               mobileScrollSupport={true}
+              onFlip={playFlipSound} // MEMICU SUARA SAAT DIBALIK
               ref={bookRef}
               className="mx-auto"
             >
