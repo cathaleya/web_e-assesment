@@ -37,6 +37,9 @@ export default function Home() {
           <a href="#manual" className="text-[10px] font-bold text-slate-600 uppercase tracking-widest hover:text-blue-600 transition-colors">
             BUKU PANDUAN
           </a>
+          <a href="https://e-assessment.id/" target="_blank" rel="noopener noreferrer" className="text-[10px] font-bold text-blue-600 uppercase tracking-widest hover:text-blue-800 transition-colors border-l border-slate-200 pl-6 ml-2">
+            PAYUNG RISET <i className="fa-solid fa-arrow-up-right-from-square ml-1 text-[8px]"></i>
+          </a>
           <button
             onClick={() => router.push("/login")}
             className="ml-4 px-6 py-2 bg-[#2563EB] text-white rounded-lg text-[10px] font-black uppercase tracking-widest shadow-lg hover:bg-blue-700 active:scale-95 transition-all"
