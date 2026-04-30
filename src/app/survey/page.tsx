@@ -4,6 +4,9 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 
+// Menghindari timeout saat build di VPS
+export const dynamic = "force-dynamic";
+
 const susQuestions = [
   "Saya rasa saya akan sering menggunakan sistem ini.",
   "Saya rasa sistem ini terlalu rumit padahal bisa dibuat lebih sederhana.",

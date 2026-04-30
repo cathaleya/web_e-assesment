@@ -25,6 +25,9 @@ import {
   estimateRaschLogits
 } from "@/lib/psychometrics";
 
+// Menghindari timeout saat build di VPS
+export const dynamic = "force-dynamic";
+
 ChartJS.register(
   RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend,
   CategoryScale, LinearScale, BarElement, ArcElement
@@ -118,7 +121,6 @@ export default function AdminDashboard() {
       setAssessments(validAssessments);
       setUsers(validUsers);
       processPsychometrics(validAssessments, psychoTab);
-      console.log('Surveys fetched:', surData.length);
     } catch (err) { console.error(err); }
   }, [psychoTab, processPsychometrics]);
 

@@ -3,6 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
+// Menghindari timeout saat build di VPS
+export const dynamic = "force-dynamic";
+
 export default function LoginPage() {
   const [name, setName] = useState("");
   const [campus, setCampus] = useState("");

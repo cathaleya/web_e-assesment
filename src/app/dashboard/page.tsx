@@ -14,6 +14,9 @@ import {
 } from "chart.js";
 import { motion, AnimatePresence } from "framer-motion";
 
+// Menghindari timeout saat build di VPS
+export const dynamic = "force-dynamic";
+
 ChartJS.register(RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
 
 interface UserData {

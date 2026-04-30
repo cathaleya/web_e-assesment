@@ -4,6 +4,9 @@ import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 
+// Menghindari timeout saat build di VPS
+export const dynamic = "force-dynamic";
+
 interface Option {
   text: string;
   score: number;

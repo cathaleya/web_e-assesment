@@ -1,180 +1,150 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 
-interface Option {
-  text: string;
-  score: number;
-}
+// Menghindari timeout saat build di VPS
+export const dynamic = "force-dynamic";
 
-interface Question {
-  question: string;
-  dim: string;
-  text: string;
-  options: Option[];
-}
+const pdiQuestions = [
+  "Saya mampu mengidentifikasi kebutuhan informasi digital untuk mendukung penyusunan karya ilmiah.",
+  "Saya mampu menyeleksi sumber informasi digital yang valid dan kredibel untuk tugas perkuliahan.",
+  "Saya mampu mengorganisasi file-file digital materi kuliah secara sistematis agar mudah dicari.",
+  "Saya mampu berkomunikasi secara sopan dan profesional melalui media digital kepada dosen/rekan.",
+  "Saya mampu berkolaborasi menggunakan platform berbagi dokumen (seperti Google Docs) secara efektif.",
+  "Saya mampu merancang media presentasi atau konten digital untuk mendukung tugas pembelajaran.",
+  "Saya mampu menjaga keamanan data pribadi dan akun akademik saya dari ancaman digital.",
+  "Saya mampu menggunakan teknologi digital untuk menyelesaikan kendala teknis dalam tugas kuliah.",
+];
 
-export default function PreliminaryAssessment() {
-  const [questions, setQuestions] = useState<Question[]>([]);
-  const [currentStep, setCurrentStep] = useState(0);
+const labels = [
+  "Sangat Mampu",
+  "Mampu",
+  "Cukup Mampu",
+  "Kurang Mampu",
+  "Sangat Tidak Mampu"
+];
+
+export default function PreliminaryPage() {
   const [answers, setAnswers] = useState<Record<number, number>>({});
-  const [loading, setLoading] = useState(true);
   const [showInstructions, setShowInstructions] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
 
-  const optionColors = [
-    "bg-indigo-50 border-indigo-100 text-indigo-900",
-    "bg-blue-50 border-blue-100 text-blue-900",
-    "bg-emerald-50 border-emerald-100 text-emerald-900",
-    "bg-amber-50 border-amber-100 text-amber-900",
-    "bg-rose-50 border-rose-100 text-rose-900"
-  ];
+  const handleAnswer = (qIndex: number, value: number) => {
+    setAnswers({ ...answers, [qIndex]: value });
+  };
 
-  const fetchQuestions = useCallback(async () => {
-    setLoading(true);
-    try {
-      const res = await fetch('/api/questions?type=preliminary', { cache: 'no-store' });
-      const data = await res.json();
-      if (Array.isArray(data) && data.length > 0) {
-        setQuestions(data);
-      } else {
-        console.error("Data soal preliminary kosong");
-      }
-    } catch (err) { 
-      console.error("Gagal ambil soal preliminary:", err); 
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const isComplete = Object.keys(answers).length === pdiQuestions.length;
 
-  useEffect(() => { 
-    fetchQuestions(); 
-  }, [fetchQuestions]);
-
-  // Urutan dibalik: Sangat Mampu (5) di atas, Sangat Tidak Mampu (1) di bawah
-  const DEFAULT_OPTIONS = [
-    { text: "Sangat Mampu", score: 5 },
-    { text: "Mampu", score: 4 },
-    { text: "Cukup Mampu", score: 3 },
-    { text: "Tidak Mampu", score: 2 },
-    { text: "Sangat Tidak Mampu", score: 1 }
-  ];
-
-  const submitAssessment = useCallback(async (finalAnswers: Record<number, number>) => {
+  const submitPreliminary = async () => {
     const userId = localStorage.getItem("userId");
     if (!userId) return router.push("/login");
-    const totalScore = Object.values(finalAnswers).reduce((a, b) => a + b, 0);
+
+    setIsSubmitting(true);
+    const totalScore = Object.values(answers).reduce((a, b) => a + b, 0);
+
     try {
       await fetch("/api/assessment", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, type: "PDI-DL", totalScore, answersJson: finalAnswers }),
+        body: JSON.stringify({ userId, type: "PDI-DL", totalScore, answersJson: answers }),
       });
-      router.push("/survey");
-    } catch (err) { console.error(err); }
-  }, [router]);
-
-  const handleAnswer = (score: number) => {
-    if (!questions[currentStep]) return;
-    const newAnswers = { ...answers, [currentStep]: score };
-    setAnswers(newAnswers);
-    setTimeout(() => {
-      if (currentStep < questions.length - 1) { 
-        setCurrentStep(currentStep + 1); 
-        window.scrollTo(0,0); 
-      }
-      else { 
-        submitAssessment(newAnswers); 
-      }
-    }, 300);
+      router.push("/dashboard");
+    } catch (err) { 
+      console.error(err); 
+      setIsSubmitting(false);
+    }
   };
 
-  if (loading) return (
-    <div className="min-h-screen bg-white flex flex-col items-center justify-center p-6 text-center">
-      <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-4"></div>
-      <p className="font-black text-xs uppercase tracking-widest text-slate-400">Memuat Instrumen PDI-DL...</p>
-    </div>
-  );
-
-  if (questions.length === 0) return (
-    <div className="min-h-screen bg-white flex flex-col items-center justify-center p-6 text-center">
-      <i className="fa-solid fa-triangle-exclamation text-rose-500 text-4xl mb-4"></i>
-      <p className="font-black text-sm uppercase tracking-widest text-slate-900 mb-4">Gagal memuat butir pertanyaan.</p>
-      <button onClick={() => window.location.reload()} className="px-6 py-3 bg-blue-600 text-white rounded-xl font-black text-[10px] uppercase tracking-widest">Coba Lagi</button>
-    </div>
-  );
-
   return (
-    <div className="min-h-screen relative"
-         style={{ backgroundImage: "url('/unj_bg_v2.png')", backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}>
+    <div className="min-h-screen relative bg-slate-100"
+         style={{ 
+           backgroundImage: "url('/unj_bg_v2.png')",
+           backgroundSize: 'cover',
+           backgroundPosition: 'center',
+           backgroundAttachment: 'fixed'
+         }}>
 
-      <main className="relative z-10 max-w-lg mx-auto px-4 py-8">
+      <main className="relative z-10 max-w-xl mx-auto px-4 py-6">
         <AnimatePresence mode="wait">
           {showInstructions ? (
-            <motion.div key="instructions" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
+            <motion.div 
+              key="instructions"
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               className="bg-white p-8 rounded-[40px] shadow-3xl border border-slate-200"
             >
-              <div className="flex items-center gap-4 mb-6 border-b pb-6">
-                <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white shadow-lg">
-                  <i className="fa-solid fa-info-circle text-2xl"></i>
+              <div className="flex items-center gap-3 mb-6 border-b pb-6">
+                <div className="w-12 h-12 bg-emerald-600 rounded-2xl flex items-center justify-center text-white shadow-lg">
+                  <i className="fa-solid fa-clipboard-check text-2xl"></i>
                 </div>
-                <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tighter leading-tight">Panduan PDI-DL</h1>
+                <div>
+                  <h1 className="text-xl font-black text-slate-900 uppercase tracking-tighter">PDI-DL Index</h1>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Self-Assessment Tahap Awal</p>
+                </div>
               </div>
-
+              
               <div className="space-y-4 mb-8">
-                <div className="p-5 bg-blue-50 rounded-2xl border border-blue-100">
-                  <h3 className="text-[11px] font-black text-blue-900 uppercase mb-2 tracking-widest">PENTING:</h3>
-                  <p className="text-[11px] font-bold text-blue-800 leading-relaxed italic mb-3">
-                    &quot;Pilih satu jawaban yang paling mencerminkan tingkat kemampuan Anda saat ini.&quot;
-                  </p>
-                  <p className="text-[11px] font-bold text-slate-600 leading-relaxed bg-white/60 p-3 rounded-xl border border-blue-200 shadow-sm">
-                    <i className="fa-solid fa-lightbulb text-amber-500 mr-2"></i>
-                    Tidak Ada jawaban yang <span className="text-blue-600 underline">absolut benar</span>. Yang terpenting adalah bagaimana Anda mengaplikasikan pemikiran dan pertimbangan profesional dalam mengatasi situasi yang diberikan.
+                <div className="p-4 bg-emerald-50 rounded-2xl border border-emerald-100">
+                  <h3 className="text-[11px] font-black text-emerald-900 uppercase mb-1 tracking-widest">PANDUAN:</h3>
+                  <p className="text-[10px] font-bold text-emerald-800 leading-relaxed italic">
+                    Pilihlah jawaban yang paling menggambarkan kemampuan diri Anda saat ini. Tidak Ada jawaban yang &quot;absolut benar&quot;. Yang terpenting adalah bagaimana Anda mengaplikasikan pemikiran dan pertimbangan profesional dalam mengatasi situasi yang diberikan.
                   </p>
                 </div>
               </div>
 
-              <button onClick={() => setShowInstructions(false)} className="w-full py-5 bg-blue-600 text-white font-black rounded-2xl text-[11px] uppercase tracking-widest shadow-2xl active:scale-95 transition-all">SAYA MENGERTI & MULAI</button>
+              <button onClick={() => setShowInstructions(false)} className="w-full py-5 bg-[#4B5320] text-white font-black rounded-2xl text-[11px] uppercase tracking-widest shadow-2xl active:scale-95 transition-all">SAYA MENGERTI & MULAI</button>
             </motion.div>
           ) : (
-            <motion.div key="assessment" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
-              <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xl flex justify-between items-center">
-                <div>
-                   <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]">Tahap Awal</p>
-                   <span className="text-lg font-black text-slate-900 italic">Pertanyaan #{currentStep + 1}</span>
-                </div>
-                <div className="w-24 h-2 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
-                   <div className="h-full bg-blue-600 transition-all duration-500" style={{ width: `${((currentStep+1)/questions.length)*100}%` }}></div>
-                </div>
-              </div>
+            <motion.div key="preliminary" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
+               <div className="text-center mb-6">
+                  <h2 className="text-xl font-black text-white uppercase drop-shadow-2xl italic tracking-tighter">PDI-DL ASSESSMENT</h2>
+                  <div className="w-12 h-1.5 bg-white mx-auto mt-2 rounded-full shadow-lg"></div>
+               </div>
 
-              <div className="bg-white p-6 rounded-[40px] shadow-3xl border border-slate-200">
-                <div className="mb-6 p-5 bg-blue-50 border-l-[6px] border-blue-600 rounded-2xl shadow-inner">
-                   <p className="text-[9px] font-black text-blue-600 uppercase tracking-widest mb-1">Dimensi: {questions[currentStep]?.dim}</p>
-                   <p className="text-[14px] text-slate-900 font-bold leading-relaxed italic">&quot;{questions[currentStep]?.text}&quot;</p>
-                </div>
-                <div className="space-y-3">
-                  {(questions[currentStep]?.options || DEFAULT_OPTIONS).map((opt, idx: number) => (
-                    <button key={idx} onClick={() => handleAnswer(opt.score)}
-                      className={`w-full flex items-center gap-4 p-4 rounded-2xl border-2 text-left transition-all ${
-                        answers[currentStep] === opt.score ? "bg-blue-600 border-blue-600 text-white shadow-xl scale-[1.02]" : `${optionColors[idx % optionColors.length]} hover:scale-[1.01]`
-                      }`}
-                    >
-                      {/* Tombol Bulat (Radio Style) */}
-                      <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
-                        answers[currentStep] === opt.score ? "bg-white border-white" : "bg-white/40 border-current opacity-60"
-                      }`}>
-                         {answers[currentStep] === opt.score && (
-                           <div className="w-2.5 h-2.5 rounded-full bg-blue-600"></div>
-                         )}
-                      </div>
-                      <span className="text-[11px] font-black uppercase tracking-tight leading-tight">{opt.text}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
+               {pdiQuestions.map((q, i) => (
+                 <motion.div key={i} className="bg-white border-2 border-slate-200 p-5 rounded-[30px] shadow-xl">
+                   <div className="mb-4 p-4 bg-slate-50 border-l-[6px] border-emerald-600 rounded-2xl">
+                     <p className="text-[13px] text-slate-900 font-bold leading-tight italic">
+                       <span className="text-slate-400 mr-1">#{i + 1}</span> {q}
+                     </p>
+                   </div>
+                   
+                   <div className="space-y-2">
+                     {labels.map((label, idx) => {
+                       const val = 5 - idx;
+                       return (
+                         <button
+                           key={val}
+                           onClick={() => handleAnswer(i, val)}
+                           className={`w-full p-4 rounded-2xl border-2 text-left transition-all flex items-center justify-between ${
+                             answers[i] === val 
+                               ? "bg-emerald-600 border-emerald-600 text-white shadow-xl scale-[1.02]" 
+                               : "bg-white border-slate-100 text-slate-500 hover:bg-slate-50"
+                           }`}
+                         >
+                           <span className="text-[11px] font-black uppercase tracking-widest">{label}</span>
+                           <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${answers[i] === val ? 'border-white' : 'border-slate-200'}`}>
+                              {answers[i] === val && <div className="w-2 h-2 bg-white rounded-full"></div>}
+                           </div>
+                         </button>
+                       );
+                     })}
+                   </div>
+                 </motion.div>
+               ))}
+
+               <button 
+                 disabled={!isComplete || isSubmitting} 
+                 onClick={submitPreliminary} 
+                 className={`w-full py-5 mt-10 rounded-2xl font-black uppercase text-xs tracking-widest transition-all shadow-2xl ${
+                   isComplete && !isSubmitting ? "bg-emerald-600 text-white hover:bg-emerald-700 active:scale-95" : "bg-slate-300 text-slate-500 cursor-not-allowed"
+                 }`}
+               >
+                 {isSubmitting ? "MENGIRIM DATA..." : "SIMPAN & LANJUT KE DASHBOARD"} 
+                 {!isSubmitting && <i className="fa-solid fa-arrow-right ml-2"></i>}
+               </button>
             </motion.div>
           )}
         </AnimatePresence>
