@@ -4,8 +4,10 @@ import React, { useState, useEffect, useRef } from "react";
 import { pdfjs, Document, Page } from "react-pdf";
 import HTMLFlipBook from "react-pageflip";
 
-// Configure pdfjs worker
-pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+// Configure pdfjs worker safely (client-side only)
+if (typeof window !== "undefined") {
+  pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+}
 
 const PDFPage = React.forwardRef((props: any, ref: any) => {
   return (

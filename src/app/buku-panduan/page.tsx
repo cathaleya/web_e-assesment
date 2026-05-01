@@ -5,8 +5,7 @@ import HTMLFlipBook from "react-pageflip";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
-// Menghindari timeout saat build di VPS
-export const dynamic = "force-dynamic";
+// Komponen Client murni tidak memerlukan force-dynamic karena tidak melakukan server fetching.
 
 // Teks Monograf (Disederhanakan untuk Flipbook)
 const BOOK_PAGES = [

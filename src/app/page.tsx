@@ -11,8 +11,7 @@ const FlipBookSection = dynamic(() => import("./components/FlipBookSection"), {
   loading: () => <div className="text-white font-black animate-pulse py-20 text-center">MEMUAT PANDUAN...</div>
 });
 
-// Menghindari timeout saat build di VPS
-export const dynamic = "force-dynamic";
+// Komponen Client murni tidak memerlukan force-dynamic karena tidak melakukan server fetching.
 
 export default function Home() {
   const router = useRouter();
