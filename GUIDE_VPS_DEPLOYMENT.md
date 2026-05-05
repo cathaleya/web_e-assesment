@@ -23,9 +23,24 @@ Masuk ke VPS melalui SSH (Gunakan Terminal atau PowerShell):
 ssh root@IP_ADDRESS_VPS_BAPAK
 ```
 
-### Update Sistem
+### Update Sistem & Security Tools
 ```bash
 sudo apt update && sudo apt upgrade -y
+# Install Firewall (UFW) dan Fail2ban (Anti-Brute Force)
+sudo apt install ufw fail2ban -y
+
+# Konfigurasi Firewall Dasar
+sudo ufw allow 22
+sudo ufw allow 80
+sudo ufw allow 443
+sudo ufw enable
+```
+
+### Konfigurasi Fail2ban
+Pastikan Fail2ban berjalan untuk melindungi dari serangan brute force SSH:
+```bash
+sudo systemctl start fail2ban
+sudo systemctl enable fail2ban
 ```
 
 ---
@@ -48,12 +63,12 @@ sudo systemctl enable postgresql
 ```
 
 ### C. Install Nginx (Web Server)
-```bash
+Aplikasi **WAJIB** diakses melalui Nginx sebagai Reverse Proxy untuk keamanan. Jangan membuka port 3000 ke publik.
 
+```bash
 sudo apt install nginx -y
-sudo ufw allow 'Nginx Full'
-sudo ufw allow 22
-sudo ufw enable
+sudo systemctl start nginx
+sudo systemctl enable nginx
 ```
 
 ---
@@ -176,6 +191,21 @@ git pull origin main
 npm install
 npm run build
 pm2 restart hdap-app
+
+---
+## 9. Penanganan Pasca-Abuse (Opsional)
+Jika VPS Bapak baru saja direset atau terkena abuse sebelumnya, pastikan tidak ada file mencurigakan yang tertinggal:
+
+1. **Cek Proses Mencurigakan:**
+   ```bash
+   top
+   # Tekan 'q' untuk keluar. Perhatikan jika ada proses seperti 'xmrig', 'miner', atau penggunaan CPU 100%.
+   ```
+2. **Hapus File Malware (Jika ada):**
+   ```bash
+   sudo rm -rf /tmp/xmrig*
+   sudo rm -rf /var/tmp/scanner*
+   ```
 
 ---
 *Dokumen ini merupakan bagian dari panduan implementasi teknologi Riset BIMA S3.*
