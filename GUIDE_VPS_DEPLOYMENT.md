@@ -82,7 +82,7 @@ psql
 Di dalam console PostgreSQL (`postgres=#`):
 ```sql
 CREATE DATABASE bima_hdap_db;
-CREATE USER bima_user WITH PASSWORD 'Password_Kuat_Bapak_Di_Sini';
+CREATE USER bima_user WITH PASSWORD 'Faithbless21!';
 GRANT ALL PRIVILEGES ON DATABASE bima_hdap_db TO bima_user;
 \q
 exit
@@ -94,9 +94,10 @@ exit
 
 ### A. Clone Repository
 ```bash
+
 cd /var/www
 # Pastikan git sudah terinstall, jika belum: sudo apt install git
-sudo git clone https://github.com/USERNAME/hdap-core-v1.git
+sudo git clone https://github.com/cathaleya/web_e-assesment.git
 cd web_e-assesment
 ```
 
@@ -107,10 +108,10 @@ sudo nano .env
 ```
 Isi dengan data server (sesuaikan dengan langkah 4):
 ```env
-DATABASE_URL="postgresql://bima_user:Password_Kuat_Bapak_Di_Sini@localhost:5432/bima_hdap_db?schema=public"
-GEMINI_API_KEY="AIzaSyA_KUNCI_API_BAPAK"
+DATABASE_URL="postgresql://bima_user:Faithbless21!@localhost:5432/bima_hdap_db?schema=public"
+GEMINI_API_KEY="AIzaSyA98EOZqgSeWh9dAoqrDuhb8WOKC6Om-0g"
 NEXTAUTH_SECRET="buat_string_acak_panjang_di_sini"
-NEXTAUTH_URL="https://domain-bapak.com"
+NEXTAUTH_URL="https://madel5c.com"
 ```
 *Tekan `Ctrl+O`, `Enter`, lalu `Ctrl+X` untuk simpan.*
 
