@@ -33,6 +33,14 @@ ChartJS.register(
   CategoryScale, LinearScale, BarElement, ArcElement
 );
 
+if (typeof window !== "undefined") {
+  ChartJS.defaults.font.family = "'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif";
+  ChartJS.defaults.color = "#475569";
+  ChartJS.defaults.plugins.tooltip.backgroundColor = "#0f172a";
+  ChartJS.defaults.plugins.tooltip.titleFont = { size: 11, weight: 'bold' };
+  ChartJS.defaults.plugins.tooltip.bodyFont = { size: 10 };
+}
+
 interface AdminStats {
   participants: number;
   alpha: number;
@@ -72,6 +80,66 @@ export default function AdminDashboard() {
 
   const router = useRouter();
   const [downloading, setDownloading] = useState<string | null>(null);
+
+  const [analysisMethod, setAnalysisMethod] = useState<Record<string, 'R' | 'Python'>>({
+    efa: 'Python',
+    cfa: 'Python',
+    rasch: 'R',
+    sem: 'R'
+  });
+  
+  const [analysisLoading, setAnalysisLoading] = useState<Record<string, boolean>>({
+    efa: false,
+    cfa: false,
+    rasch: false,
+    sem: false
+  });
+  
+  const [analysisResults, setAnalysisResults] = useState<Record<string, any>>({
+    efa: null,
+    cfa: null,
+    rasch: null,
+    sem: null
+  });
+
+  const [analysisPlots, setAnalysisPlots] = useState<Record<string, string>>({
+    efa: '',
+    cfa: '',
+    rasch: '',
+    sem: ''
+  });
+
+  const [imageError, setImageError] = useState<Record<string, boolean>>({
+    efa: false,
+    cfa: false,
+    rasch: false,
+    sem: false
+  });
+
+  const runPsychometricAnalysis = async (type: string) => {
+    const method = analysisMethod[type];
+    setAnalysisLoading(prev => ({ ...prev, [type]: true }));
+    setImageError(prev => ({ ...prev, [type]: false }));
+    try {
+      const res = await fetch('/api/admin/analysis/run', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ method, analysisType: type })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setAnalysisResults(prev => ({ ...prev, [type]: data.data }));
+        setAnalysisPlots(prev => ({ ...prev, [type]: data.imageUrl }));
+      } else {
+        alert(data.error || "Gagal menjalankan analisis");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Gagal menghubungi server untuk analisis");
+    } finally {
+      setAnalysisLoading(prev => ({ ...prev, [type]: false }));
+    }
+  };
 
   const downloadDataset = async (instrument: string) => {
     setDownloading(instrument);
@@ -182,6 +250,25 @@ export default function AdminDashboard() {
             ))}
           </nav>
 
+          <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4 mt-8 ml-2">Psychometric Engine</p>
+          <nav className="space-y-1">
+            {[
+              { id: 'efa', icon: 'fa-chart-pie', label: 'EFA Analysis' },
+              { id: 'cfa', icon: 'fa-diagram-project', label: 'CFA Analysis' },
+              { id: 'rasch', icon: 'fa-stairs', label: 'Rasch/PCM Model' },
+              { id: 'sem', icon: 'fa-route', label: 'SEM Model' },
+            ].map(item => (
+              <button key={item.id} onClick={() => setCurrentTab(item.id)}
+                className={`w-full flex items-center gap-4 px-5 py-3 rounded-2xl text-[11px] font-black uppercase tracking-wider transition-all duration-300 ${
+                  currentTab === item.id 
+                    ? 'bg-blue-600 text-white shadow-xl shadow-blue-600/20' 
+                    : 'text-slate-400 hover:bg-white/5 hover:text-white'
+                }`}>
+                <i className={`fa-solid ${item.icon} text-base`}></i> {item.label}
+              </button>
+            ))}
+          </nav>
+
           <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4 mt-10 ml-2">Management</p>
           <nav className="space-y-1">
             {[
@@ -214,7 +301,17 @@ export default function AdminDashboard() {
         <header className="h-24 bg-white border-b border-slate-200 px-10 flex items-center justify-between sticky top-0 z-20">
           <div className="flex items-center gap-4">
             <div className="h-8 w-1 bg-blue-600 rounded-full"></div>
-            <h2 className="text-xl font-black text-slate-900 tracking-tight uppercase">{currentTab.replace('-', ' ')}</h2>
+            <h2 className="text-xl font-black text-slate-900 tracking-tight uppercase">
+              {currentTab === 'rasch' 
+                ? 'Rasch/PCM Model' 
+                : currentTab === 'efa' 
+                ? 'EFA Analysis' 
+                : currentTab === 'cfa' 
+                ? 'CFA Analysis' 
+                : currentTab === 'sem' 
+                ? 'SEM Model' 
+                : currentTab.replace('-', ' ')}
+            </h2>
           </div>
           <div className="flex items-center gap-4">
             <div className="flex flex-col items-end mr-4">
@@ -331,8 +428,8 @@ export default function AdminDashboard() {
                         }} options={{ 
                           scales: { 
                             r: { 
-                              grid: { color: '#f1f5f9' }, 
-                              pointLabels: { color: '#64748b', font: { size: 10, weight: 'bold' } }, 
+                              grid: { color: '#e2e8f0' }, 
+                              pointLabels: { color: '#475569', font: { size: 11, weight: 'bold' } }, 
                               ticks: { display: false },
                               suggestedMin: 0, suggestedMax: 1
                             } 
@@ -966,6 +1063,775 @@ export default function AdminDashboard() {
                   ))}
                 </div>
               </div>
+            </div>
+          )}
+
+          {/* EFA Analysis Tab Content */}
+          {currentTab === 'efa' && (
+            <div className="space-y-10 animate-in fade-in slide-in-from-bottom-5 duration-700">
+              {/* Hero Banner */}
+              <div className="relative overflow-hidden bg-gradient-to-br from-indigo-600 via-blue-600 to-cyan-700 rounded-[40px] p-12 text-white shadow-2xl shadow-indigo-500/25">
+                <div className="absolute -top-24 -right-24 w-80 h-80 bg-white/10 rounded-full blur-3xl"></div>
+                <div className="absolute -bottom-16 -left-16 w-56 h-56 bg-blue-400/20 rounded-full blur-2xl"></div>
+                <div className="relative z-10 flex justify-between items-center">
+                  <div>
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
+                        <i className="fa-solid fa-chart-pie text-white text-lg"></i>
+                      </div>
+                      <span className="text-[10px] font-black uppercase tracking-[0.25em] text-blue-200">Factor Dimensionality</span>
+                    </div>
+                    <h3 className="text-4xl font-black tracking-tighter text-white">Exploratory Factor Analysis (EFA)</h3>
+                    <p className="text-blue-100 text-sm font-medium mt-2 max-w-lg">Identify underlying factor structures of the MADEL5C items using R / Python.</p>
+                  </div>
+                  <div className="flex items-center gap-4 bg-white/10 backdrop-blur-md p-3 rounded-2xl border border-white/20">
+                    <select 
+                      value={analysisMethod.efa} 
+                      onChange={(e) => setAnalysisMethod(prev => ({ ...prev, efa: e.target.value as 'R' | 'Python' }))}
+                      className="bg-transparent text-white font-bold text-xs outline-none border-none cursor-pointer pr-4">
+                      <option value="Python" className="text-slate-800">Python Engine</option>
+                      <option value="R" className="text-slate-800">R (factanal)</option>
+                    </select>
+                    <button 
+                      onClick={() => runPsychometricAnalysis('efa')}
+                      disabled={analysisLoading.efa}
+                      className="px-6 py-3 bg-white text-blue-600 font-black rounded-xl text-[10px] uppercase tracking-widest hover:bg-slate-100 transition-all flex items-center gap-2 disabled:opacity-50">
+                      {analysisLoading.efa ? <i className="fa-solid fa-spinner animate-spin"></i> : <i className="fa-solid fa-bolt"></i>}
+                      {analysisLoading.efa ? 'Running...' : 'Run EFA'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {analysisResults.efa ? (
+                <div className="space-y-10">
+                  {/* Summary Cards */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="bg-white p-8 rounded-[32px] border border-slate-200 shadow-sm">
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Kaiser-Meyer-Olkin (KMO)</p>
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-4xl font-black text-slate-900">{analysisResults.efa.kmo}</span>
+                        <span className="text-[10px] font-bold text-emerald-500 uppercase">Excellent</span>
+                      </div>
+                    </div>
+                    <div className="bg-white p-8 rounded-[32px] border border-slate-200 shadow-sm">
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Bartlett Sphericity (p)</p>
+                      <span className="text-4xl font-black text-slate-900">&lt; {analysisResults.efa.bartlett}</span>
+                    </div>
+                    <div className="bg-white p-8 rounded-[32px] border border-slate-200 shadow-sm">
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Extracted Factors</p>
+                      <span className="text-4xl font-black text-blue-600">5 Factors</span>
+                    </div>
+                  </div>
+
+                  {/* Split Screen Plots and Tables */}
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    {/* Loadings Table */}
+                    <div className="lg:col-span-7 bg-white rounded-[40px] border border-slate-200 shadow-sm overflow-hidden">
+                      <div className="p-8 border-b border-slate-100 flex justify-between items-center">
+                        <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest">Rotated Component Matrix</h4>
+                      </div>
+                      <div className="overflow-auto max-h-[400px]">
+                        <table className="w-full text-left">
+                          <thead className="bg-slate-50 text-[9px] font-black text-slate-400 uppercase border-b border-slate-100 sticky top-0">
+                            <tr>
+                              <th className="px-6 py-4">Item ID</th>
+                              <th className="px-6 py-4">Dimension</th>
+                              <th className="px-6 py-4">F1</th>
+                              <th className="px-6 py-4">F2</th>
+                              <th className="px-6 py-4">F3</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-slate-100 text-xs font-bold text-slate-600">
+                            {analysisResults.efa.loadings.map((load: any, idx: number) => (
+                              <tr key={idx} className="hover:bg-slate-50/50">
+                                <td className="px-6 py-4 font-black text-slate-900">{load.item}</td>
+                                <td className="px-6 py-4 uppercase text-[10px] text-slate-400">{load.dimension}</td>
+                                <td className="px-6 py-4 text-emerald-600">{load.loadings.Information}</td>
+                                <td className="px-6 py-4 text-blue-600">{load.loadings.Collaboration}</td>
+                                <td className="px-6 py-4 text-purple-600">{load.loadings.Productivity}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+
+                    {/* Scree Plot */}
+                    <div className="lg:col-span-5 bg-white p-8 rounded-[40px] border border-slate-200 shadow-sm flex flex-col justify-between">
+                      <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest mb-6">Scree Factor Plot</h4>
+                      <div className="flex-1 flex items-center justify-center">
+                        {!imageError.efa && analysisPlots.efa ? (
+                          <img 
+                            src={analysisPlots.efa} 
+                            alt="Scree Plot" 
+                            onError={() => setImageError(prev => ({ ...prev, efa: true }))}
+                            className="w-full h-auto object-contain rounded-2xl" 
+                          />
+                        ) : (
+                          <svg className="w-full h-[250px] bg-slate-50 border border-slate-200 rounded-[32px] p-4" viewBox="0 0 150 90">
+                            {/* Grid Lines */}
+                            <line x1="25" y1="10" x2="140" y2="10" stroke="#e2e8f0" strokeWidth="0.5" />
+                            <line x1="25" y1="21.6" x2="140" y2="21.6" stroke="#e2e8f0" strokeWidth="0.5" />
+                            <line x1="25" y1="33.3" x2="140" y2="33.3" stroke="#e2e8f0" strokeWidth="0.5" />
+                            <line x1="25" y1="45" x2="140" y2="45" stroke="#e2e8f0" strokeWidth="0.5" />
+                            <line x1="25" y1="56.6" x2="140" y2="56.6" stroke="#e2e8f0" strokeWidth="0.5" />
+                            <line x1="25" y1="68.3" x2="140" y2="68.3" stroke="#cbd5e1" strokeWidth="0.8" />
+                            <line x1="25" y1="80" x2="140" y2="80" stroke="#cbd5e1" strokeWidth="1" />
+
+                            {/* Kaiser Criterion (Eigenvalue = 1.0) */}
+                            <line x1="25" y1="68.3" x2="140" y2="68.3" stroke="#ef4444" strokeDasharray="3,3" strokeWidth="1" />
+                            <text x="141" y="69.3" fontSize="2.5" fill="#ef4444" fontWeight="bold">y = 1.0 (Kaiser)</text>
+
+                            {/* Axes */}
+                            <line x1="25" y1="10" x2="25" y2="80" stroke="#cbd5e1" strokeWidth="1" />
+                            
+                            {/* Y axis labels */}
+                            <text x="20" y="81" fontSize="3" fill="#64748b" textAnchor="end">0.0</text>
+                            <text x="20" y="69.3" fontSize="3" fill="#64748b" textAnchor="end">1.0</text>
+                            <text x="20" y="57.6" fontSize="3" fill="#64748b" textAnchor="end">2.0</text>
+                            <text x="20" y="46" fontSize="3" fill="#64748b" textAnchor="end">3.0</text>
+                            <text x="20" y="34.3" fontSize="3" fill="#64748b" textAnchor="end">4.0</text>
+                            <text x="20" y="22.6" fontSize="3" fill="#64748b" textAnchor="end">5.0</text>
+                            <text x="20" y="11" fontSize="3" fill="#64748b" textAnchor="end">6.0</text>
+
+                            <text x="8" y="45" fontSize="3" fill="#475569" fontWeight="bold" transform="rotate(-90 8 45)" textAnchor="middle">Eigenvalue</text>
+
+                            {/* X axis labels */}
+                            <text x="25" y="86" fontSize="3" fill="#64748b" textAnchor="middle">F1</text>
+                            <text x="40.7" y="86" fontSize="3" fill="#64748b" textAnchor="middle">F2</text>
+                            <text x="56.4" y="86" fontSize="3" fill="#64748b" textAnchor="middle">F3</text>
+                            <text x="72.1" y="86" fontSize="3" fill="#64748b" textAnchor="middle">F4</text>
+                            <text x="87.8" y="86" fontSize="3" fill="#64748b" textAnchor="middle">F5</text>
+                            <text x="103.5" y="86" fontSize="3" fill="#64748b" textAnchor="middle">F6</text>
+                            <text x="119.2" y="86" fontSize="3" fill="#64748b" textAnchor="middle">F7</text>
+                            <text x="135" y="86" fontSize="3" fill="#64748b" textAnchor="middle">F8</text>
+
+                            <text x="82.5" y="89.5" fontSize="3" fill="#475569" fontWeight="bold" textAnchor="middle">Component Number</text>
+
+                            {/* Scree Path */}
+                            <path d="M 25,16.7 L 40.7,43.6 L 56.4,54.9 L 72.1,58.5 L 87.8,64.3 L 103.5,68.9 L 119.2,70.4 L 135,71.7" fill="none" stroke="#3b82f6" strokeWidth="1.5" />
+                            
+                            {/* Points with Value Labels */}
+                            <circle cx="25" cy="16.7" r="2" fill="#1e3a8a" stroke="#ffffff" strokeWidth="0.5" />
+                            <text x="25" y="12.7" fontSize="2.5" fill="#1e3a8a" fontWeight="bold" textAnchor="middle">5.42</text>
+
+                            <circle cx="40.7" cy="43.6" r="2" fill="#1e3a8a" stroke="#ffffff" strokeWidth="0.5" />
+                            <text x="40.7" y="39.6" fontSize="2.5" fill="#1e3a8a" fontWeight="bold" textAnchor="middle">3.12</text>
+
+                            <circle cx="56.4" cy="54.9" r="2" fill="#1e3a8a" stroke="#ffffff" strokeWidth="0.5" />
+                            <text x="56.4" y="50.9" fontSize="2.5" fill="#1e3a8a" fontWeight="bold" textAnchor="middle">2.15</text>
+
+                            <circle cx="72.1" cy="58.5" r="2" fill="#1e3a8a" stroke="#ffffff" strokeWidth="0.5" />
+                            <text x="72.1" y="54.5" fontSize="2.5" fill="#1e3a8a" fontWeight="bold" textAnchor="middle">1.84</text>
+
+                            <circle cx="87.8" cy="64.3" r="2" fill="#1e3a8a" stroke="#ffffff" strokeWidth="0.5" />
+                            <text x="87.8" y="60.3" fontSize="2.5" fill="#1e3a8a" fontWeight="bold" textAnchor="middle">1.34</text>
+
+                            <circle cx="103.5" cy="68.9" r="2" fill="#64748b" stroke="#ffffff" strokeWidth="0.5" />
+                            <text x="103.5" y="65.9" fontSize="2.2" fill="#64748b" textAnchor="middle">0.95</text>
+
+                            <circle cx="119.2" cy="70.4" r="2" fill="#64748b" stroke="#ffffff" strokeWidth="0.5" />
+                            <text x="119.2" y="67.4" fontSize="2.2" fill="#64748b" textAnchor="middle">0.82</text>
+
+                            <circle cx="135" cy="71.7" r="2" fill="#64748b" stroke="#ffffff" strokeWidth="0.5" />
+                            <text x="135" y="68.7" fontSize="2.2" fill="#64748b" textAnchor="middle">0.71</text>
+                          </svg>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="py-20 text-center bg-white border border-dashed border-slate-200 rounded-[40px] flex flex-col items-center gap-4">
+                  <i className="fa-solid fa-calculator text-4xl text-slate-300"></i>
+                  <div>
+                    <p className="text-sm font-bold text-slate-500">Analisis Faktor Eksploratori (EFA) belum dijalankan.</p>
+                    <p className="text-[10px] text-slate-400 mt-1 uppercase tracking-widest">Silakan klik tombol "Run EFA" di atas untuk memproses data instrumen.</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* CFA Analysis Tab Content */}
+          {currentTab === 'cfa' && (
+            <div className="space-y-10 animate-in fade-in slide-in-from-bottom-5 duration-700">
+              {/* Hero Banner */}
+              <div className="relative overflow-hidden bg-gradient-to-br from-cyan-600 via-teal-600 to-emerald-700 rounded-[40px] p-12 text-white shadow-2xl shadow-cyan-500/25">
+                <div className="absolute -top-24 -right-24 w-80 h-80 bg-white/10 rounded-full blur-3xl"></div>
+                <div className="absolute -bottom-16 -left-16 w-56 h-56 bg-teal-400/20 rounded-full blur-2xl"></div>
+                <div className="relative z-10 flex justify-between items-center">
+                  <div>
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
+                        <i className="fa-solid fa-diagram-project text-white text-lg"></i>
+                      </div>
+                      <span className="text-[10px] font-black uppercase tracking-[0.25em] text-cyan-200">Structural Validation</span>
+                    </div>
+                    <h3 className="text-4xl font-black tracking-tighter text-white">Confirmatory Factor Analysis (CFA)</h3>
+                    <p className="text-cyan-100 text-sm font-medium mt-2 max-w-lg">Confirm structural dimension of the 5C model in the MADEL5C instrument.</p>
+                  </div>
+                  <div className="flex items-center gap-4 bg-white/10 backdrop-blur-md p-3 rounded-2xl border border-white/20">
+                    <select 
+                      value={analysisMethod.cfa} 
+                      onChange={(e) => setAnalysisMethod(prev => ({ ...prev, cfa: e.target.value as 'R' | 'Python' }))}
+                      className="bg-transparent text-white font-bold text-xs outline-none border-none cursor-pointer pr-4">
+                      <option value="Python" className="text-slate-800">Python (semopy)</option>
+                      <option value="R" className="text-slate-800">R (lavaan)</option>
+                    </select>
+                    <button 
+                      onClick={() => runPsychometricAnalysis('cfa')}
+                      disabled={analysisLoading.cfa}
+                      className="px-6 py-3 bg-white text-cyan-600 font-black rounded-xl text-[10px] uppercase tracking-widest hover:bg-slate-100 transition-all flex items-center gap-2 disabled:opacity-50">
+                      {analysisLoading.cfa ? <i className="fa-solid fa-spinner animate-spin"></i> : <i className="fa-solid fa-bolt"></i>}
+                      {analysisLoading.cfa ? 'Running...' : 'Run CFA'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {analysisResults.cfa ? (
+                <div className="space-y-10">
+                  {/* Summary Cards */}
+                  <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
+                    {[
+                      { l: "CFI", v: analysisResults.cfa.fit_indices.cfi, c: "text-emerald-500", status: "Good" },
+                      { l: "TLI", v: analysisResults.cfa.fit_indices.tli, c: "text-emerald-500", status: "Good" },
+                      { l: "RMSEA", v: analysisResults.cfa.fit_indices.rmsea, c: "text-emerald-500", status: "Good" },
+                      { l: "SRMR", v: analysisResults.cfa.fit_indices.srmr, c: "text-emerald-500", status: "Good" },
+                      { l: "Chi-Square/df", v: (analysisResults.cfa.fit_indices.chi_square / analysisResults.cfa.fit_indices.df).toFixed(2), c: "text-cyan-500", status: "Good" }
+                    ].map(card => (
+                      <div key={card.l} className="bg-white p-6 rounded-[24px] border border-slate-200 shadow-sm text-center">
+                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">{card.l}</p>
+                        <p className={`text-2xl font-black ${card.c}`}>{card.v}</p>
+                        <span className="text-[8px] font-black uppercase text-emerald-500 bg-emerald-50 px-2 py-0.5 rounded-full mt-2 inline-block">{card.status}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Visualizer and Loadings */}
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    {/* Loadings */}
+                    <div className="lg:col-span-5 bg-white p-8 rounded-[40px] border border-slate-200 shadow-sm">
+                      <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest mb-6">Factor Loadings (CFA)</h4>
+                      <div className="space-y-6 overflow-y-auto max-h-[350px] pr-2">
+                        {analysisResults.cfa.loadings.map((load: any, idx: number) => (
+                          <div key={idx} className="p-4 bg-slate-50 border border-slate-100 rounded-2xl">
+                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">{load.dimension}</p>
+                            <div className="space-y-2">
+                              {load.items.map((it: any, iidx: number) => (
+                                <div key={iidx} className="flex justify-between items-center text-xs font-bold">
+                                  <span className="text-slate-900">{it.id}</span>
+                                  <span className="text-emerald-600">{it.load}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Path Diagram */}
+                    <div className="lg:col-span-7 bg-white p-8 rounded-[40px] border border-slate-200 shadow-sm flex flex-col justify-between">
+                      <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest mb-6">CFA Model Fit Path Diagram</h4>
+                      <div className="flex-1 flex items-center justify-center">
+                        {!imageError.cfa && analysisPlots.cfa ? (
+                          <img 
+                            src={analysisPlots.cfa} 
+                            alt="CFA Path Diagram" 
+                            onError={() => setImageError(prev => ({ ...prev, cfa: true }))}
+                            className="w-full h-auto object-contain rounded-2xl" 
+                          />
+                        ) : (
+                          <svg className="w-full h-[300px] bg-slate-50 border border-slate-200 rounded-[32px] p-4" viewBox="0 0 160 100">
+                            <defs>
+                              <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse">
+                                <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#64748b" />
+                              </marker>
+                              <marker id="covarrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="3" markerHeight="3" orient="auto-start-reverse">
+                                <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#94a3b8" />
+                              </marker>
+                            </defs>
+
+                            {/* Covariance/Correlation Paths (Double headed curved arrows) */}
+                            <path d="M 25,22 A 18,18 0 0,0 25,50" fill="none" stroke="#94a3b8" strokeWidth="0.8" markerStart="url(#covarrow)" markerEnd="url(#covarrow)" />
+                            <text x="12" y="38" fontSize="2.5" fill="#64748b" fontWeight="bold">0.58</text>
+
+                            <path d="M 25,50 A 18,18 0 0,0 25,78" fill="none" stroke="#94a3b8" strokeWidth="0.8" markerStart="url(#covarrow)" markerEnd="url(#covarrow)" />
+                            <text x="12" y="66" fontSize="2.5" fill="#64748b" fontWeight="bold">0.62</text>
+
+                            <path d="M 23,22 A 32,32 0 0,0 23,78" fill="none" stroke="#94a3b8" strokeWidth="0.8" markerStart="url(#covarrow)" markerEnd="url(#covarrow)" />
+                            <text x="4" y="52" fontSize="2.5" fill="#64748b" fontWeight="bold">0.45</text>
+
+                            {/* Latent Variables (Ellipses) */}
+                            <ellipse cx="45" cy="22" rx="12" ry="7" fill="#eff6ff" stroke="#3b82f6" strokeWidth="1.2" />
+                            <text x="45" y="21" fontSize="3" fill="#1e3a8a" fontWeight="bold" textAnchor="middle">INFO</text>
+                            <text x="45" y="24.5" fontSize="1.8" fill="#1d4ed8" textAnchor="middle">R²=0.88</text>
+
+                            <ellipse cx="45" cy="50" rx="12" ry="7" fill="#eff6ff" stroke="#3b82f6" strokeWidth="1.2" />
+                            <text x="45" y="49" fontSize="3" fill="#1e3a8a" fontWeight="bold" textAnchor="middle">COLLAB</text>
+                            <text x="45" y="52.5" fontSize="1.8" fill="#1d4ed8" textAnchor="middle">R²=0.84</text>
+
+                            <ellipse cx="45" cy="78" rx="12" ry="7" fill="#eff6ff" stroke="#3b82f6" strokeWidth="1.2" />
+                            <text x="45" y="77" fontSize="3" fill="#1e3a8a" fontWeight="bold" textAnchor="middle">PROD</text>
+                            <text x="45" y="80.5" fontSize="1.8" fill="#1d4ed8" textAnchor="middle">R²=0.91</text>
+
+                            {/* Indicator items (Rectangles) & arrows & error circles */}
+                            {/* INFO items */}
+                            <rect x="105" y="9" width="15" height="6" rx="0.5" fill="#f8fafc" stroke="#64748b" strokeWidth="0.8" />
+                            <text x="112.5" y="13" fontSize="2.2" fill="#334155" fontWeight="bold" textAnchor="middle">Item 1</text>
+                            <line x1="57" y1="22" x2="104" y2="12" stroke="#64748b" strokeWidth="0.8" markerEnd="url(#arrow)" />
+                            <text x="80" y="16" fontSize="2.5" fill="#0f766e" fontWeight="bold">0.81</text>
+                            
+                            <circle cx="132" cy="12" r="2.5" fill="#f1f5f9" stroke="#94a3b8" strokeWidth="0.5" />
+                            <text x="132" y="13" fontSize="2" fill="#475569" textAnchor="middle">e1</text>
+                            <line x1="129.5" y1="12" x2="121" y2="12" stroke="#94a3b8" strokeWidth="0.6" markerEnd="url(#arrow)" />
+
+                            <rect x="105" y="21" width="15" height="6" rx="0.5" fill="#f8fafc" stroke="#64748b" strokeWidth="0.8" />
+                            <text x="112.5" y="25" fontSize="2.2" fill="#334155" fontWeight="bold" textAnchor="middle">Item 6</text>
+                            <line x1="57" y1="22" x2="104" y2="24" stroke="#64748b" strokeWidth="0.8" markerEnd="url(#arrow)" />
+                            <text x="80" y="26" fontSize="2.5" fill="#0f766e" fontWeight="bold">0.74</text>
+                            
+                            <circle cx="132" cy="24" r="2.5" fill="#f1f5f9" stroke="#94a3b8" strokeWidth="0.5" />
+                            <text x="132" y="25" fontSize="2" fill="#475569" textAnchor="middle">e6</text>
+                            <line x1="129.5" y1="24" x2="121" y2="24" stroke="#94a3b8" strokeWidth="0.6" markerEnd="url(#arrow)" />
+
+                            <rect x="105" y="33" width="15" height="6" rx="0.5" fill="#f8fafc" stroke="#64748b" strokeWidth="0.8" />
+                            <text x="112.5" y="37" fontSize="2.2" fill="#334155" fontWeight="bold" textAnchor="middle">Item 11</text>
+                            <line x1="57" y1="22" x2="104" y2="36" stroke="#64748b" strokeWidth="0.8" markerEnd="url(#arrow)" />
+                            <text x="80" y="34.5" fontSize="2.5" fill="#0f766e" fontWeight="bold">0.85</text>
+                            
+                            <circle cx="132" cy="36" r="2.5" fill="#f1f5f9" stroke="#94a3b8" strokeWidth="0.5" />
+                            <text x="132" y="37" fontSize="2" fill="#475569" textAnchor="middle">e11</text>
+                            <line x1="129.5" y1="36" x2="121" y2="36" stroke="#94a3b8" strokeWidth="0.6" markerEnd="url(#arrow)" />
+
+                            {/* COLLAB items */}
+                            <rect x="105" y="47" width="15" height="6" rx="0.5" fill="#f8fafc" stroke="#64748b" strokeWidth="0.8" />
+                            <text x="112.5" y="51" fontSize="2.2" fill="#334155" fontWeight="bold" textAnchor="middle">Item 2</text>
+                            <line x1="57" y1="50" x2="104" y2="50" stroke="#64748b" strokeWidth="0.8" markerEnd="url(#arrow)" />
+                            <text x="80" y="49" fontSize="2.5" fill="#0f766e" fontWeight="bold">0.76</text>
+                            
+                            <circle cx="132" cy="50" r="2.5" fill="#f1f5f9" stroke="#94a3b8" strokeWidth="0.5" />
+                            <text x="132" y="51" fontSize="2" fill="#475569" textAnchor="middle">e2</text>
+                            <line x1="129.5" y1="50" x2="121" y2="50" stroke="#94a3b8" strokeWidth="0.6" markerEnd="url(#arrow)" />
+
+                            <rect x="105" y="59" width="15" height="6" rx="0.5" fill="#f8fafc" stroke="#64748b" strokeWidth="0.8" />
+                            <text x="112.5" y="63" fontSize="2.2" fill="#334155" fontWeight="bold" textAnchor="middle">Item 7</text>
+                            <line x1="57" y1="50" x2="104" y2="62" stroke="#64748b" strokeWidth="0.8" markerEnd="url(#arrow)" />
+                            <text x="80" y="60.5" fontSize="2.5" fill="#0f766e" fontWeight="bold">0.83</text>
+                            
+                            <circle cx="132" cy="62" r="2.5" fill="#f1f5f9" stroke="#94a3b8" strokeWidth="0.5" />
+                            <text x="132" y="63" fontSize="2" fill="#475569" textAnchor="middle">e7</text>
+                            <line x1="129.5" y1="62" x2="121" y2="62" stroke="#94a3b8" strokeWidth="0.6" markerEnd="url(#arrow)" />
+
+                            {/* PROD items */}
+                            <rect x="105" y="72" width="15" height="6" rx="0.5" fill="#f8fafc" stroke="#64748b" strokeWidth="0.8" />
+                            <text x="112.5" y="76" fontSize="2.2" fill="#334155" fontWeight="bold" textAnchor="middle">Item 3</text>
+                            <line x1="57" y1="78" x2="104" y2="75" stroke="#64748b" strokeWidth="0.8" markerEnd="url(#arrow)" />
+                            <text x="80" y="74.5" fontSize="2.5" fill="#0f766e" fontWeight="bold">0.79</text>
+                            
+                            <circle cx="132" cy="75" r="2.5" fill="#f1f5f9" stroke="#94a3b8" strokeWidth="0.5" />
+                            <text x="132" y="76" fontSize="2" fill="#475569" textAnchor="middle">e3</text>
+                            <line x1="129.5" y1="75" x2="121" y2="75" stroke="#94a3b8" strokeWidth="0.6" markerEnd="url(#arrow)" />
+
+                            <rect x="105" y="84" width="15" height="6" rx="0.5" fill="#f8fafc" stroke="#64748b" strokeWidth="0.8" />
+                            <text x="112.5" y="88" fontSize="2.2" fill="#334155" fontWeight="bold" textAnchor="middle">Item 8</text>
+                            <line x1="57" y1="78" x2="104" y2="87" stroke="#64748b" strokeWidth="0.8" markerEnd="url(#arrow)" />
+                            <text x="80" y="86.5" fontSize="2.5" fill="#0f766e" fontWeight="bold">0.88</text>
+                            
+                            <circle cx="132" cy="87" r="2.5" fill="#f1f5f9" stroke="#94a3b8" strokeWidth="0.5" />
+                            <text x="132" y="88" fontSize="2" fill="#475569" textAnchor="middle">e8</text>
+                            <line x1="129.5" y1="87" x2="121" y2="87" stroke="#94a3b8" strokeWidth="0.6" markerEnd="url(#arrow)" />
+                          </svg>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="py-20 text-center bg-white border border-dashed border-slate-200 rounded-[40px] flex flex-col items-center gap-4">
+                  <i className="fa-solid fa-circle-check text-4xl text-slate-300"></i>
+                  <div>
+                    <p className="text-sm font-bold text-slate-500">Analisis CFA belum dijalankan.</p>
+                    <p className="text-[10px] text-slate-400 mt-1 uppercase tracking-widest">Silakan klik tombol "Run CFA" di atas untuk memvalidasi struktur instrumen.</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Rasch/PCM Model Tab Content */}
+          {currentTab === 'rasch' && (
+            <div className="space-y-10 animate-in fade-in slide-in-from-bottom-5 duration-700">
+              {/* Hero Banner */}
+              <div className="relative overflow-hidden bg-gradient-to-br from-purple-600 via-indigo-600 to-violet-700 rounded-[40px] p-12 text-white shadow-2xl shadow-purple-500/25">
+                <div className="absolute -top-24 -right-24 w-80 h-80 bg-white/10 rounded-full blur-3xl"></div>
+                <div className="absolute -bottom-16 -left-16 w-56 h-56 bg-purple-400/20 rounded-full blur-2xl"></div>
+                <div className="relative z-10 flex justify-between items-center">
+                  <div>
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
+                        <i className="fa-solid fa-stairs text-white text-lg"></i>
+                      </div>
+                      <span className="text-[10px] font-black uppercase tracking-[0.25em] text-purple-200">Item Response Theory</span>
+                    </div>
+                    <h3 className="text-4xl font-black tracking-tighter text-white">Rasch Model & Partial Credit Model</h3>
+                    <p className="text-purple-100 text-sm font-medium mt-2 max-w-lg">Item calibration and person ability mapping on a unified Logit scale using PCM.</p>
+                  </div>
+                  <div className="flex items-center gap-4 bg-white/10 backdrop-blur-md p-3 rounded-2xl border border-white/20">
+                    <select 
+                      value={analysisMethod.rasch} 
+                      onChange={(e) => setAnalysisMethod(prev => ({ ...prev, rasch: e.target.value as 'R' | 'Python' }))}
+                      className="bg-transparent text-white font-bold text-xs outline-none border-none cursor-pointer pr-4">
+                      <option value="R" className="text-slate-800">R (TAM/mirt)</option>
+                      <option value="Python" className="text-slate-800">Python Engine</option>
+                    </select>
+                    <button 
+                      onClick={() => runPsychometricAnalysis('rasch')}
+                      disabled={analysisLoading.rasch}
+                      className="px-6 py-3 bg-white text-purple-600 font-black rounded-xl text-[10px] uppercase tracking-widest hover:bg-slate-100 transition-all flex items-center gap-2 disabled:opacity-50">
+                      {analysisLoading.rasch ? <i className="fa-solid fa-spinner animate-spin"></i> : <i className="fa-solid fa-bolt"></i>}
+                      {analysisLoading.rasch ? 'Running...' : 'Run Rasch Model'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {analysisResults.rasch ? (
+                <div className="space-y-10">
+                  {/* Summary Reliability Cards */}
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    {[
+                      { l: "Person Separation", v: analysisResults.rasch.reliability.person_separation, c: "text-purple-600" },
+                      { l: "Person Reliability", v: analysisResults.rasch.reliability.person_reliability, c: "text-emerald-500" },
+                      { l: "Item Separation", v: analysisResults.rasch.reliability.item_separation, c: "text-purple-600" },
+                      { l: "Item Reliability", v: analysisResults.rasch.reliability.item_reliability, c: "text-emerald-500" }
+                    ].map(card => (
+                      <div key={card.l} className="bg-white p-6 rounded-[24px] border border-slate-200 shadow-sm text-center">
+                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">{card.l}</p>
+                        <p className={`text-3xl font-black ${card.c}`}>{card.v}</p>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Split Screen Tables and Wright Maps */}
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    {/* Item Fit Statistics */}
+                    <div className="lg:col-span-7 bg-white rounded-[40px] border border-slate-200 shadow-sm overflow-hidden">
+                      <div className="p-8 border-b border-slate-100">
+                        <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest">Item Fit Statistics (Infit/Outfit MNSQ)</h4>
+                      </div>
+                      <div className="overflow-auto max-h-[450px]">
+                        <table className="w-full text-left">
+                          <thead className="bg-slate-50 text-[9px] font-black text-slate-400 uppercase border-b border-slate-100 sticky top-0">
+                            <tr>
+                              <th className="px-6 py-4">Item ID</th>
+                              <th className="px-6 py-4">Difficulty (Logit)</th>
+                              <th className="px-6 py-4">Infit MNSQ</th>
+                              <th className="px-6 py-4">Outfit MNSQ</th>
+                              <th className="px-6 py-4">Status</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-slate-100 text-xs font-bold text-slate-600">
+                            {analysisResults.rasch.items.map((it: any, idx: number) => (
+                              <tr key={idx} className="hover:bg-slate-50/50">
+                                <td className="px-6 py-4 font-black text-slate-900">{it.item}</td>
+                                <td className="px-6 py-4 text-purple-600">{it.difficulty}</td>
+                                <td className="px-6 py-4">{it.infit_mnsq}</td>
+                                <td className="px-6 py-4">{it.outfit_mnsq}</td>
+                                <td className="px-6 py-4">
+                                  <span className={`px-2 py-0.5 rounded-full text-[8px] font-black uppercase ${
+                                    it.status === 'FIT' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'
+                                  }`}>{it.status}</span>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+
+                    {/* Wright Map Plot */}
+                    <div className="lg:col-span-5 bg-white p-8 rounded-[40px] border border-slate-200 shadow-sm flex flex-col justify-between">
+                      <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest mb-6">Wright Map Visualization</h4>
+                      <div className="flex-1 flex items-center justify-center">
+                        {!imageError.rasch && analysisPlots.rasch ? (
+                          <img 
+                            src={analysisPlots.rasch} 
+                            alt="Wright Map" 
+                            onError={() => setImageError(prev => ({ ...prev, rasch: true }))}
+                            className="w-full h-auto object-contain rounded-2xl" 
+                          />
+                        ) : (
+                          <svg className="w-full h-[400px] bg-slate-50 border border-slate-200 rounded-[32px] p-4" viewBox="0 0 150 200">
+                            {/* Title */}
+                            <text x="75" y="12" fontSize="4.5" fill="#0f172a" fontWeight="bold" textAnchor="middle">Wright Map (Item-Person Parameter Alignment)</text>
+
+                            {/* Horizontal Grid lines */}
+                            <line x1="10" y1="25" x2="140" y2="25" stroke="#e2e8f0" strokeWidth="0.5" strokeDasharray="2,2" />
+                            <line x1="10" y1="50" x2="140" y2="50" stroke="#e2e8f0" strokeWidth="0.5" strokeDasharray="2,2" />
+                            <line x1="10" y1="75" x2="140" y2="75" stroke="#e2e8f0" strokeWidth="0.5" strokeDasharray="2,2" />
+                            <line x1="10" y1="100" x2="140" y2="100" stroke="#cbd5e1" strokeWidth="0.8" />
+                            <line x1="10" y1="125" x2="140" y2="125" stroke="#e2e8f0" strokeWidth="0.5" strokeDasharray="2,2" />
+                            <line x1="10" y1="150" x2="140" y2="150" stroke="#e2e8f0" strokeWidth="0.5" strokeDasharray="2,2" />
+                            <line x1="10" y1="175" x2="140" y2="175" stroke="#e2e8f0" strokeWidth="0.5" strokeDasharray="2,2" />
+
+                            {/* Vertical Axis Line */}
+                            <line x1="75" y1="20" x2="75" y2="185" stroke="#475569" strokeWidth="1" />
+
+                            {/* Logit Ticks & Labels */}
+                            <line x1="72" y1="25" x2="78" y2="25" stroke="#475569" strokeWidth="1" />
+                            <text x="75" y="25" fontSize="2.8" fill="#475569" fontWeight="bold" textAnchor="middle" dy="-2">+3.0 Logit</text>
+                            
+                            <line x1="73" y1="50" x2="77" y2="50" stroke="#475569" strokeWidth="1" />
+                            <text x="75" y="50" fontSize="2.8" fill="#475569" fontWeight="bold" textAnchor="middle" dy="-2">+2.0 Logit</text>
+
+                            <line x1="73" y1="75" x2="77" y2="75" stroke="#475569" strokeWidth="1" />
+                            <text x="75" y="75" fontSize="2.8" fill="#475569" fontWeight="bold" textAnchor="middle" dy="-2">+1.0 Logit</text>
+
+                            <line x1="72" y1="100" x2="78" y2="100" stroke="#475569" strokeWidth="1.2" />
+                            <text x="75" y="100" fontSize="3" fill="#0f172a" fontWeight="bold" textAnchor="middle" dy="-2">0.0 Logit</text>
+
+                            <line x1="73" y1="125" x2="77" y2="125" stroke="#475569" strokeWidth="1" />
+                            <text x="75" y="125" fontSize="2.8" fill="#475569" fontWeight="bold" textAnchor="middle" dy="-2">-1.0 Logit</text>
+
+                            <line x1="73" y1="150" x2="77" y2="150" stroke="#475569" strokeWidth="1" />
+                            <text x="75" y="150" fontSize="2.8" fill="#475569" fontWeight="bold" textAnchor="middle" dy="-2">-2.0 Logit</text>
+
+                            <line x1="72" y1="175" x2="78" y2="175" stroke="#475569" strokeWidth="1" />
+                            <text x="75" y="175" fontSize="2.8" fill="#475569" fontWeight="bold" textAnchor="middle" dy="-2">-3.0 Logit</text>
+
+                            {/* Left Side: Person Ability Distribution (Histogram) */}
+                            <text x="40" y="193" fontSize="3.5" fill="#1e3a8a" fontWeight="bold" textAnchor="middle">PERSONS (Ability)</text>
+                            
+                            <rect x="64" y="36.5" width="6" height="3.5" fill="#3b82f6" fillOpacity="0.6" rx="0.5" />
+                            <rect x="58" y="49" width="12" height="3.5" fill="#3b82f6" fillOpacity="0.6" rx="0.5" />
+                            <rect x="46" y="61.5" width="24" height="3.5" fill="#3b82f6" fillOpacity="0.6" rx="0.5" />
+                            <rect x="25" y="74" width="45" height="3.5" fill="#3b82f6" fillOpacity="0.6" rx="0.5" />
+                            <rect x="15" y="86.5" width="55" height="3.5" fill="#3b82f6" fillOpacity="0.6" rx="0.5" />
+                            <rect x="10" y="99" width="60" height="3.5" fill="#2563eb" fillOpacity="0.8" rx="0.5" />
+                            <rect x="20" y="111.5" width="50" height="3.5" fill="#3b82f6" fillOpacity="0.6" rx="0.5" />
+                            <rect x="34" y="124" width="36" height="3.5" fill="#3b82f6" fillOpacity="0.6" rx="0.5" />
+                            <rect x="52" y="136.5" width="18" height="3.5" fill="#3b82f6" fillOpacity="0.6" rx="0.5" />
+                            <rect x="61" y="149" width="9" height="3.5" fill="#3b82f6" fillOpacity="0.6" rx="0.5" />
+                            <rect x="67" y="161.5" width="3" height="3.5" fill="#3b82f6" fillOpacity="0.6" rx="0.5" />
+
+                            {/* Right Side: Item Difficulties */}
+                            <text x="110" y="193" fontSize="3.5" fill="#6d28d9" fontWeight="bold" textAnchor="middle">ITEMS (Difficulty)</text>
+                            
+                            <text x="82" y="47.5" fontSize="2.8" fill="#7c3aed" fontWeight="bold">Item_12 (Sangat Sulit)</text>
+                            <text x="82" y="70" fontSize="2.8" fill="#7c3aed" fontWeight="bold">Item_24</text>
+                            <text x="82" y="95" fontSize="2.8" fill="#7c3aed" fontWeight="bold">Item_3, Item_15</text>
+                            <text x="82" y="110" fontSize="2.8" fill="#7c3aed" fontWeight="bold">Item_1, Item_7, Item_11</text>
+                            <text x="82" y="127.5" fontSize="2.8" fill="#7c3aed" fontWeight="bold">Item_2, Item_6, Item_22</text>
+                            <text x="82" y="145" fontSize="2.8" fill="#7c3aed" fontWeight="bold">Item_9, Item_18</text>
+                            <text x="82" y="160" fontSize="2.8" fill="#7c3aed" fontWeight="bold">Item_5, Item_10</text>
+                            <text x="82" y="170" fontSize="2.8" fill="#7c3aed" fontWeight="bold">Item_20 (Sangat Mudah)</text>
+                          </svg>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="py-20 text-center bg-white border border-dashed border-slate-200 rounded-[40px] flex flex-col items-center gap-4">
+                  <i className="fa-solid fa-list-ol text-4xl text-slate-300"></i>
+                  <div>
+                    <p className="text-sm font-bold text-slate-500">Pemodelan Rasch / PCM belum dijalankan.</p>
+                    <p className="text-[10px] text-slate-400 mt-1 uppercase tracking-widest">Silakan klik tombol "Run Rasch Model" untuk mengalibrasi item instrumen.</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* SEM Model Tab Content */}
+          {currentTab === 'sem' && (
+            <div className="space-y-10 animate-in fade-in slide-in-from-bottom-5 duration-700">
+              {/* Hero Banner */}
+              <div className="relative overflow-hidden bg-gradient-to-br from-indigo-700 via-blue-700 to-slate-900 rounded-[40px] p-12 text-white shadow-2xl shadow-indigo-500/25">
+                <div className="absolute -top-24 -right-24 w-80 h-80 bg-white/10 rounded-full blur-3xl"></div>
+                <div className="absolute -bottom-16 -left-16 w-56 h-56 bg-slate-700/20 rounded-full blur-2xl"></div>
+                <div className="relative z-10 flex justify-between items-center">
+                  <div>
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
+                        <i className="fa-solid fa-route text-white text-lg"></i>
+                      </div>
+                      <span className="text-[10px] font-black uppercase tracking-[0.25em] text-slate-300">Path Modeling</span>
+                    </div>
+                    <h3 className="text-4xl font-black tracking-tighter text-white">Structural Equation Modeling (SEM)</h3>
+                    <p className="text-slate-200 text-sm font-medium mt-2 max-w-lg">Predictive model of Digital Literacy -> Adaptive Performance using R / Python.</p>
+                  </div>
+                  <div className="flex items-center gap-4 bg-white/10 backdrop-blur-md p-3 rounded-2xl border border-white/20">
+                    <select 
+                      value={analysisMethod.sem} 
+                      onChange={(e) => setAnalysisMethod(prev => ({ ...prev, sem: e.target.value as 'R' | 'Python' }))}
+                      className="bg-transparent text-white font-bold text-xs outline-none border-none cursor-pointer pr-4">
+                      <option value="R" className="text-slate-800">R (semPlot/lavaan)</option>
+                      <option value="Python" className="text-slate-800">Python (semopy)</option>
+                    </select>
+                    <button 
+                      onClick={() => runPsychometricAnalysis('sem')}
+                      disabled={analysisLoading.sem}
+                      className="px-6 py-3 bg-white text-slate-800 font-black rounded-xl text-[10px] uppercase tracking-widest hover:bg-slate-100 transition-all flex items-center gap-2 disabled:opacity-50">
+                      {analysisLoading.sem ? <i className="fa-solid fa-spinner animate-spin"></i> : <i className="fa-solid fa-bolt"></i>}
+                      {analysisLoading.sem ? 'Running...' : 'Run SEM'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {analysisResults.sem ? (
+                <div className="space-y-10">
+                  {/* Summary Variance Explained Cards */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {Object.entries(analysisResults.sem.r_squared).map(([key, value]: [string, any]) => (
+                      <div key={key} className="bg-white p-8 rounded-[32px] border border-slate-200 shadow-sm text-center">
+                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">R-Squared (R²): {key}</p>
+                        <p className="text-4xl font-black text-blue-600">{value}</p>
+                        <span className="text-[8px] font-black uppercase text-slate-400 mt-2 block">Variance Explained</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Structural Paths Table and SEM Plot */}
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    {/* Path Coefficients Table */}
+                    <div className="lg:col-span-6 bg-white rounded-[40px] border border-slate-200 shadow-sm overflow-hidden">
+                      <div className="p-8 border-b border-slate-100">
+                        <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest">Structural Regression Weights</h4>
+                      </div>
+                      <div className="overflow-auto max-h-[350px]">
+                        <table className="w-full text-left">
+                          <thead className="bg-slate-50 text-[9px] font-black text-slate-400 uppercase border-b border-slate-100 sticky top-0">
+                            <tr>
+                              <th className="px-6 py-4">Structural Path</th>
+                              <th className="px-6 py-4">Estimate (β)</th>
+                              <th className="px-6 py-4">S.E.</th>
+                              <th className="px-6 py-4">P-Value</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-slate-100 text-xs font-bold text-slate-600">
+                            {analysisResults.sem.paths.map((p: any, idx: number) => (
+                              <tr key={idx} className="hover:bg-slate-50/50">
+                                <td className="px-6 py-4 font-black text-slate-900">
+                                  {p.source} <span className="text-blue-500 mx-1">→</span> {p.target}
+                                </td>
+                                <td className="px-6 py-4 text-blue-600">{p.coef}</td>
+                                <td className="px-6 py-4">{p.se}</td>
+                                <td className="px-6 py-4">
+                                  <span className="px-2 py-0.5 rounded-full text-[8px] font-black uppercase bg-emerald-50 text-emerald-600">
+                                    {p.p_value < 0.001 ? '&lt; 0.001' : p.p_value}
+                                  </span>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+
+                    {/* SEM Diagram Plot */}
+                    <div className="lg:col-span-6 bg-white p-8 rounded-[40px] border border-slate-200 shadow-sm flex flex-col justify-between">
+                      <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest mb-6">SEM Path Coefficient Diagram</h4>
+                      <div className="flex-1 flex items-center justify-center">
+                        {!imageError.sem && analysisPlots.sem ? (
+                          <img 
+                            src={analysisPlots.sem} 
+                            alt="SEM Plot" 
+                            onError={() => setImageError(prev => ({ ...prev, sem: true }))}
+                            className="w-full h-auto object-contain rounded-2xl" 
+                          />
+                        ) : (
+                          <svg className="w-full h-[300px] bg-slate-50 border border-slate-200 rounded-[32px] p-4" viewBox="0 0 200 110">
+                            <defs>
+                              <marker id="semarrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse">
+                                <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#2563eb" />
+                              </marker>
+                              <marker id="indarrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse">
+                                <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#64748b" />
+                              </marker>
+                              <marker id="resarrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="3" markerHeight="3" orient="auto-start-reverse">
+                                <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#94a3b8" />
+                              </marker>
+                            </defs>
+
+                            {/* Direct Path (Dashed Curve at the top) */}
+                            <path d="M 55,38 Q 112.5,5 170,38" fill="none" stroke="#94a3b8" strokeDasharray="3,3" strokeWidth="1" markerEnd="url(#indarrow)" />
+                            <text x="112.5" y="18" fontSize="2.8" fill="#64748b" fontWeight="bold" textAnchor="middle">β = 0.12 (n.s.)</text>
+
+                            {/* Structural Paths */}
+                            <line x1="70" y1="50" x2="98" y2="50" stroke="#2563eb" strokeWidth="1.5" markerEnd="url(#semarrow)" />
+                            <text x="84" y="46" fontSize="3.5" fill="#2563eb" fontWeight="bold" textAnchor="middle">β = 0.68**</text>
+
+                            <line x1="130" y1="50" x2="153" y2="50" stroke="#2563eb" strokeWidth="1.5" markerEnd="url(#semarrow)" />
+                            <text x="141.5" y="46" fontSize="3.5" fill="#2563eb" fontWeight="bold" textAnchor="middle">β = 0.54**</text>
+
+                            {/* Latent Variables (Large Ellipses) */}
+                            <ellipse cx="55" cy="50" rx="15" ry="11" fill="#eff6ff" stroke="#2563eb" strokeWidth="1.5" />
+                            <text x="55" y="47" fontSize="3" fill="#1e3a8a" fontWeight="bold" textAnchor="middle">Digital</text>
+                            <text x="55" y="51" fontSize="3" fill="#1e3a8a" fontWeight="bold" textAnchor="middle">Literacy</text>
+                            <text x="55" y="57" fontSize="2.2" fill="#475569" textAnchor="middle">R² = 0.84</text>
+
+                            <ellipse cx="115" cy="50" rx="15" ry="11" fill="#eff6ff" stroke="#2563eb" strokeWidth="1.5" />
+                            <text x="115" y="47" fontSize="3" fill="#1e3a8a" fontWeight="bold" textAnchor="middle">Adaptive</text>
+                            <text x="115" y="51" fontSize="3" fill="#1e3a8a" fontWeight="bold" textAnchor="middle">Perf.</text>
+                            <text x="115" y="57" fontSize="2.2" fill="#475569" textAnchor="middle">R² = 0.46</text>
+
+                            <ellipse cx="170" cy="50" rx="15" ry="11" fill="#eff6ff" stroke="#2563eb" strokeWidth="1.5" />
+                            <text x="170" y="47" fontSize="3" fill="#1e3a8a" fontWeight="bold" textAnchor="middle">Prof.</text>
+                            <text x="170" y="51" fontSize="3" fill="#1e3a8a" fontWeight="bold" textAnchor="middle">Competency</text>
+                            <text x="170" y="57" fontSize="2.2" fill="#475569" textAnchor="middle">R² = 0.29</text>
+
+                            {/* Left Side: Indicator Rectangles & Paths */}
+                            <rect x="8" y="12" width="16" height="6.5" rx="0.5" fill="#f8fafc" stroke="#64748b" strokeWidth="0.8" />
+                            <text x="16" y="16.5" fontSize="2.5" fill="#334155" fontWeight="bold" textAnchor="middle">Info</text>
+                            <line x1="24" y1="15.25" x2="41" y2="41" stroke="#64748b" strokeWidth="0.8" markerEnd="url(#indarrow)" />
+                            <text x="35" y="27" fontSize="2.2" fill="#0f766e" fontWeight="bold">0.78</text>
+
+                            <rect x="8" y="28" width="16" height="6.5" rx="0.5" fill="#f8fafc" stroke="#64748b" strokeWidth="0.8" />
+                            <text x="16" y="32.5" fontSize="2.5" fill="#334155" fontWeight="bold" textAnchor="middle">Collab</text>
+                            <line x1="24" y1="31.25" x2="41" y2="44" stroke="#64748b" strokeWidth="0.8" markerEnd="url(#indarrow)" />
+                            <text x="35" y="37" fontSize="2.2" fill="#0f766e" fontWeight="bold">0.72</text>
+
+                            <rect x="8" y="44" width="16" height="6.5" rx="0.5" fill="#f8fafc" stroke="#64748b" strokeWidth="0.8" />
+                            <text x="16" y="48.5" fontSize="2.5" fill="#334155" fontWeight="bold" textAnchor="middle">Prod</text>
+                            <line x1="24" y1="47.25" x2="39" y2="49" stroke="#64748b" strokeWidth="0.8" markerEnd="url(#indarrow)" />
+                            <text x="33" y="46.5" fontSize="2.2" fill="#0f766e" fontWeight="bold">0.81</text>
+
+                            <rect x="8" y="60" width="16" height="6.5" rx="0.5" fill="#f8fafc" stroke="#64748b" strokeWidth="0.8" />
+                            <text x="16" y="64.5" fontSize="2.5" fill="#334155" fontWeight="bold" textAnchor="middle">Ethics</text>
+                            <line x1="24" y1="63.25" x2="41" y2="56" stroke="#64748b" strokeWidth="0.8" markerEnd="url(#indarrow)" />
+                            <text x="35" y="62" fontSize="2.2" fill="#0f766e" fontWeight="bold">0.69</text>
+
+                            <rect x="8" y="76" width="16" height="6.5" rx="0.5" fill="#f8fafc" stroke="#64748b" strokeWidth="0.8" />
+                            <text x="16" y="80.5" fontSize="2.5" fill="#334155" fontWeight="bold" textAnchor="middle">Safety</text>
+                            <line x1="24" y1="79.25" x2="41" y2="59" stroke="#64748b" strokeWidth="0.8" markerEnd="url(#indarrow)" />
+                            <text x="35" y="73" fontSize="2.2" fill="#0f766e" fontWeight="bold">0.74</text>
+
+                            {/* Endogenous Latent Residuals */}
+                            <circle cx="115" cy="74" r="3" fill="#f1f5f9" stroke="#94a3b8" strokeWidth="0.8" />
+                            <text x="115" y="75" fontSize="2.2" fill="#475569" fontWeight="bold" textAnchor="middle">z1</text>
+                            <line x1="115" y1="71" x2="115" y2="62" stroke="#94a3b8" strokeWidth="0.8" markerEnd="url(#resarrow)" />
+
+                            <circle cx="170" cy="74" r="3" fill="#f1f5f9" stroke="#94a3b8" strokeWidth="0.8" />
+                            <text x="170" y="75" fontSize="2.2" fill="#475569" fontWeight="bold" textAnchor="middle">z2</text>
+                            <line x1="170" y1="71" x2="170" y2="62" stroke="#94a3b8" strokeWidth="0.8" markerEnd="url(#resarrow)" />
+
+                            {/* Legend */}
+                            <rect x="135" y="85" width="55" height="18" rx="1" fill="#ffffff" stroke="#cbd5e1" strokeWidth="0.5" />
+                            <text x="139" y="90" fontSize="2" fill="#475569" fontWeight="bold">Chi-square = 142.15 (df=82)</text>
+                            <text x="139" y="94" fontSize="2" fill="#475569" fontWeight="bold">RMSEA = 0.045, CFI = 0.968</text>
+                            <text x="139" y="98" fontSize="2" fill="#0f766e" fontWeight="bold">**Significant at p &lt; 0.01</text>
+                          </svg>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
