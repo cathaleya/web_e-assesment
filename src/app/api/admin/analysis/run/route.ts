@@ -170,7 +170,7 @@ function getFallbackData(type: string, matrix: number[][]) {
           item_loads[d] = round(0.05 + (i % 3) * 0.06 - (i % 2) * 0.04, 3);
         }
       });
-      loadings.append || loadings.push({
+      loadings.push({
         item: item_id,
         dimension: primary_dim,
         loadings: item_loads

@@ -513,10 +513,9 @@ export default function AdminDashboard() {
                         datasets: [{
                           data: [35, 52, 13],
                           backgroundColor: ['#10b981', '#3b82f6', '#f59e0b'],
-                          borderWidth: 0,
-                          cutout: '75%'
+                          borderWidth: 0
                         }]
-                      }} options={{ plugins: { legend: { display: false } } }} />
+                      }} options={{ cutout: '75%', plugins: { legend: { display: false } } }} />
                     </div>
                     <div className="flex-1 space-y-6">
                        {[
@@ -1662,7 +1661,7 @@ export default function AdminDashboard() {
                       <span className="text-[10px] font-black uppercase tracking-[0.25em] text-slate-300">Path Modeling</span>
                     </div>
                     <h3 className="text-4xl font-black tracking-tighter text-white">Structural Equation Modeling (SEM)</h3>
-                    <p className="text-slate-200 text-sm font-medium mt-2 max-w-lg">Predictive model of Digital Literacy -> Adaptive Performance using R / Python.</p>
+                    <p className="text-slate-200 text-sm font-medium mt-2 max-w-lg">Predictive model of Digital Literacy &#x2192; Adaptive Performance using R / Python.</p>
                   </div>
                   <div className="flex items-center gap-4 bg-white/10 backdrop-blur-md p-3 rounded-2xl border border-white/20">
                     <select 
@@ -1831,7 +1830,7 @@ export default function AdminDashboard() {
                     </div>
                   </div>
                 </div>
-              )}
+              ) : null}
             </div>
           )}
         </div>

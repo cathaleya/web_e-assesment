@@ -137,7 +137,7 @@ export async function GET(req: Request) {
           row.push(escapeCsvValue(val));
         }
 
-        row.push(escapeCsvValue(s.feedback));
+        row.push(escapeCsvValue((s as any).feedback ?? ''));
 
         csvContent += row.join(",") + "\n";
       });
@@ -215,7 +215,7 @@ export async function GET(req: Request) {
           row.push(escapeCsvValue(val));
         }
 
-        row.push(escapeCsvValue(s.feedback));
+        row.push(escapeCsvValue((s as any).feedback ?? ''));
 
         csvContent += row.join(",") + "\n";
       });

@@ -15,20 +15,21 @@ export async function POST(req: Request) {
         totalScore,
         answersJson: JSON.stringify(answersJson),
         feedback: feedback || ""
-      },
+      } as any,
       include: { user: true }
     });
 
     // Real-time sync to Google Sheets
     try {
       const { syncToGoogleSheets } = await import('@/lib/googleSync');
+      const r = result as any;
       await syncToGoogleSheets({
-        userId: result.userId,
-        name: result.user.name,
+        userId: r.userId,
+        name: r.user.name,
         type: "SURVEY-SUS",
-        score: result.totalScore,
-        gender: result.user.gender,
-        campus: result.user.campus,
+        score: r.totalScore,
+        gender: r.user.gender,
+        campus: r.user.campus,
         answers: answersJson,
         feedback: feedback || ""
       });
