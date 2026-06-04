@@ -57,7 +57,7 @@ export default function Home() {
       <section className="relative min-h-screen flex items-center pt-24 pb-12">
         <div className="absolute inset-0 z-0">
           <Image
-            src="/media/praktek.jpeg"
+            src="/media/bg_landing.jpg"
             alt="Praktek Literasi Digital 1"
             fill
             className="object-cover"

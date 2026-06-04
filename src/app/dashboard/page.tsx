@@ -118,7 +118,7 @@ export default function DashboardPage() {
           <div className="bg-white rounded-2xl p-5 shadow-lg border-l-8 border-blue-600">
              <div className="flex items-center gap-3 mb-2">
                 <div className="w-6 h-6 bg-blue-600 rounded-lg flex items-center justify-center text-white text-[10px]"><i className="fa-solid fa-robot"></i></div>
-                <p className="text-[8px] font-black text-blue-600 uppercase tracking-widest">Diagnosis AI Diagnostik</p>
+                <p className="text-[8px] font-black text-blue-600 uppercase tracking-widest">AI Diagnostik</p>
              </div>
              <h3 className="text-sm font-bold text-slate-900 leading-tight italic">
                 &quot;{aiMessage}&quot;

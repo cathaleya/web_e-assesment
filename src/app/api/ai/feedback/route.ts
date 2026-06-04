@@ -7,10 +7,15 @@ interface AssessmentData {
   totalScore: number;
 }
 
+interface SurveyData {
+  id: string;
+}
+
 interface UserWithAssessments {
   id: string;
   name: string;
   assessments: AssessmentData[];
+  surveys: SurveyData[];
 }
 
 export async function GET(request: Request) {
@@ -25,67 +30,74 @@ export async function GET(request: Request) {
   try {
     const rawUser = await prisma.user.findUnique({
       where: { id: userId },
-      include: { assessments: true }
+      include: { 
+        assessments: true,
+        surveys: true
+      }
     });
 
     if (!rawUser) return NextResponse.json({ error: 'User not found' }, { status: 404 });
     userData = rawUser as unknown as UserWithAssessments;
 
-    const pdi  = userData.assessments.find((a) => a.type === 'PDI-DL');
+    const pdi = userData.assessments.find((a) => a.type === 'PDI-DL');
     const madel = userData.assessments.find((a) => a.type === 'MADEL5C');
+    const surveyDone = userData.surveys && userData.surveys.length > 0;
 
-    // Jika API key belum diset, kembalikan pesan statis
+    const allDone = pdi && madel && surveyDone;
+
+    // Jika belum menyelesaikan seluruh instrumen, berikan petunjuk pengisian tanpa memanggil API Gemini
+    if (!allDone) {
+      let missingList = [];
+      if (!pdi) missingList.push('Tahap 1: PDI-DL');
+      if (!surveyDone) missingList.push('Tahap 2: Survey Respon');
+      if (!madel) missingList.push('Tahap 3: MADEL5C');
+
+      const message = `Halo ${userData.name}! Silakan selesaikan instrumen berikut agar diagnosis AI dapat dipetakan secara lengkap: ${missingList.join(', ')}.`;
+      return NextResponse.json({ message });
+    }
+
+    // Jika seluruh instrumen telah lengkap, panggil Gemini AI Premium secara otomatis
     if (!apiKey) {
-      const baseMsg = (pdi && madel)
-        ? `Halo ${userData.name}! Skor PDI-DL Anda ${pdi.totalScore} dan MADEL5C ${madel.totalScore}. ` +
-          `Hubungi peneliti untuk mendapatkan diagnosis lengkap.`
-        : `Halo ${userData.name}! Selesaikan semua tahap asesmen agar sistem dapat memetakan profil literasi digital Anda secara akurat.`;
+      const baseMsg = `Halo ${userData.name}! GEMINI_API_KEY belum terkonfigurasi di file .env server Anda. (Skor PDI-DL: ${pdi.totalScore}, MADEL5C: ${madel.totalScore})`;
       return NextResponse.json({ message: baseMsg });
     }
 
     const genAI = new GoogleGenerativeAI(apiKey);
-    // Gunakan gemini-2.0-flash sebagai model utama, fallback ke 1.5-flash
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-pro' }, { apiVersion: 'v1' });
 
-    let prompt = '';
-    if (pdi && madel) {
-      const pdiLabel  = pdi.totalScore  >= 80 ? 'Sangat Tinggi' : pdi.totalScore  >= 60 ? 'Tinggi' : pdi.totalScore  >= 40 ? 'Cukup' : 'Rendah';
-      const madelLabel = madel.totalScore >= 80 ? 'Sangat Tinggi' : madel.totalScore >= 60 ? 'Tinggi' : madel.totalScore >= 40 ? 'Cukup' : 'Rendah';
-      prompt = `
+    const pdiLabel  = pdi.totalScore  >= 80 ? 'Sangat Tinggi' : pdi.totalScore  >= 60 ? 'Tinggi' : pdi.totalScore  >= 40 ? 'Cukup' : 'Rendah';
+    const madelLabel = madel.totalScore >= 80 ? 'Sangat Tinggi' : madel.totalScore >= 60 ? 'Tinggi' : madel.totalScore >= 40 ? 'Cukup' : 'Rendah';
+    
+    const prompt = `
 Anda adalah Pakar Psikometrika Digital dari Universitas Negeri Jakarta.
-Tulis diagnosis singkat (maksimal 3 kalimat, bahasa Indonesia, akademis dan memotivasi) untuk mahasiswa bernama ${userData.name}.
+Tulis diagnosis singkat (maksimal 3 sentences, bahasa Indonesia, akademis dan memotivasi) untuk mahasiswa bernama ${userData.name} yang telah MENYELESAIKAN seluruh rangkaian instrumen asesmen platform HDAP.
 
 Data hasil asesmen:
 - Skor PDI-DL  : ${pdi.totalScore}  (Kategori: ${pdiLabel})
 - Skor MADEL5C : ${madel.totalScore} (Kategori: ${madelLabel})
 
 Panduan:
+- Sampaikan selamat atas keberhasilan menyelesaikan seluruh tahapan instrumen.
 - Jika skor tinggi: beri pujian dan dorong untuk terus berkembang.
 - Jika skor rendah: beri saran konkret dan motivasi positif.
-- Sebut nama mahasiswa.
+- Sebut nama mahasiswa secara hangat.
 - Jangan gunakan bullet point, cukup paragraf singkat.
-      `.trim();
-    } else {
-      prompt = `
-Sapa mahasiswa bernama ${userData.name} dengan hangat. 
-Ajak dia menyelesaikan seluruh instrumen (PDI-DL, Survey, dan MADEL5C) 
-agar sistem dapat memetakan profil literasi digitalnya secara lengkap dan akurat.
-Maksimal 2 kalimat, bahasa Indonesia, akademis.
-      `.trim();
-    }
+    `.trim();
 
     const result = await model.generateContent(prompt);
     const text   = result.response.text();
 
     return NextResponse.json({ message: text });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('[AI Feedback Error]:', error);
 
-    // Fallback yang informatif agar user tidak melihat layar kosong
+    const errDetail = error?.message || String(error);
+    
+    // Tampilkan detail error asli dari SDK Google Gemini di layar agar mudah didiagnosis oleh Bapak
     const fallback = (userData)
-      ? `Halo ${userData.name}! Sistem diagnostik AI sedang dalam pemeliharaan. Silakan coba lagi beberapa saat.`
-      : 'Sistem diagnostik AI sedang dalam pemeliharaan. Silakan coba lagi beberapa saat.';
+      ? `Halo ${userData.name}! Sistem mendeteksi seluruh instrumen telah lengkap, namun terjadi kesalahan pada API Gemini: "${errDetail}". Pastikan GEMINI_API_KEY berbayar Anda valid dan kuotanya aktif di VPS.`
+      : `Sistem diagnostik AI sedang dalam pemeliharaan. Detail error: "${errDetail}"`;
 
     return NextResponse.json({ message: fallback });
   }
