@@ -21,16 +21,42 @@ export async function GET(request: Request) {
     const pdi = user.assessments.find((a) => a.type === "PDI-DL");
     const madel = user.assessments.find((a) => a.type === "MADEL5C");
 
+    const pdiAnswers = pdi?.answersJson ? JSON.parse(pdi.answersJson) : null;
+    const madelAnswers = madel?.answersJson ? JSON.parse(madel.answersJson) : null;
+
+    let c1 = 4.0;
+    let c2 = 4.2;
+    let c3 = 3.8;
+    let c4 = 3.5;
+    let c5 = 4.0;
+
+    if (madelAnswers) {
+      let sumC1 = 0, sumC2 = 0, sumC3 = 0, sumC4 = 0, sumC5 = 0;
+      for (let i = 0; i < 6; i++) sumC1 += madelAnswers[i] || 0;
+      for (let i = 6; i < 12; i++) sumC2 += madelAnswers[i] || 0;
+      for (let i = 12; i < 18; i++) sumC3 += madelAnswers[i] || 0;
+      for (let i = 18; i < 24; i++) sumC4 += madelAnswers[i] || 0;
+      for (let i = 24; i < 30; i++) sumC5 += madelAnswers[i] || 0;
+
+      c1 = sumC1 / 6;
+      c2 = sumC2 / 6;
+      c3 = sumC3 / 6;
+      c4 = sumC4 / 6;
+      c5 = sumC5 / 6;
+    }
+
     const stats = {
       preliminary: pdi?.totalScore || 0,
-      pdiAnswers: pdi?.answersJson ? JSON.parse(pdi.answersJson) : null,
+      pdiAnswers,
       madel5c: madel?.totalScore || 0,
-      madelAnswers: madel?.answersJson ? JSON.parse(madel.answersJson) : null,
+      madelAnswers,
       surveyDone: user.surveys.length > 0,
       radar: [
-        (pdi?.totalScore || 0) / 10,
-        (madel?.totalScore || 0) / 10,
-        3, 4, 2 // Dummy for other dimensions
+        Math.round(c1 * 20),
+        Math.round(c2 * 20),
+        Math.round(c3 * 20),
+        Math.round(c4 * 20),
+        Math.round(c5 * 20)
       ]
     };
 
@@ -40,3 +66,4 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
+

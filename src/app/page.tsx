@@ -20,19 +20,23 @@ export default function Home() {
     <div className="font-sans selection:bg-blue-100 overflow-x-hidden">
 
       {/* ─── NAVBAR ─── */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md px-6 md:px-12 py-5 flex items-center justify-between border-b border-slate-100 shadow-sm">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md px-6 md:px-12 py-6 flex items-center justify-between border-b border-slate-100 shadow-sm">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-3 border-r border-slate-200 pr-6 mr-2">
-            <Image src="/logo_unj.png" alt="UNJ" width={50} height={50} className="object-contain" />
-            <Image src="/logo_dikti.png" alt="DIKTI" width={50} height={50} className="object-contain" />
+            <Image src="/logo_madel5c.png" alt="MADEL-5C Logo" width={55} height={55} className="object-contain" />
           </div>
           <div className="flex flex-col leading-none">
-            <span className="text-xl font-black tracking-tighter text-[#1E3A8A] uppercase leading-tight">MADEL5C</span>
+            <span className="text-xl font-black tracking-tighter text-[#1E3A8A] uppercase leading-tight">MADEL-5C</span>
             <span className="text-[9px] font-black text-[#2563EB] uppercase tracking-[0.2em]">E-ASSESSMENT PLATFORM</span>
           </div>
         </div>
 
         <div className="hidden lg:flex items-center gap-8">
+          <div className="flex items-center gap-3 border-r border-slate-200 pr-6 mr-2">
+            <Image src="/logo_penari.png" alt="Penari" width={42} height={42} className="object-contain" />
+            <Image src="/logo_dikti.png" alt="DIKTI" width={42} height={42} className="object-contain" />
+            <Image src="/logo_unj.png" alt="UNJ" width={42} height={42} className="object-contain" />
+          </div>
           <a href="#about" className="text-[10px] font-bold text-slate-600 uppercase tracking-widest hover:text-blue-600 transition-colors">
             TENTANG PLATFORM
           </a>
@@ -50,6 +54,7 @@ export default function Home() {
           </button>
         </div>
       </nav>
+
 
       {/* ════════════════════════════════════════
           HALAMAN 1 — HERO
