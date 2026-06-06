@@ -1,19 +1,15 @@
-# Panduan Teknis Deployment Platform HDAP di VPS (Ubuntu 22.04/24.04)
+# Panduan Teknis Deployment Platform HDAP di VPS (Ubuntu 22.04/24.04) - Metode Docker (Aman & Anti Ransomware)
 
-Dokumen ini menjelaskan langkah-langkah sistematis untuk mendeploy aplikasi **Hybrid-Diagnostic Assessment Platform (HDAP)** ke server VPS Bapak menggunakan domain yang sudah ada.
+Dokumen ini menjelaskan langkah-langkah sistematis untuk mendeploy aplikasi **Hybrid-Diagnostic Assessment Platform (HDAP)** ke server VPS Bapak secara aman menggunakan Docker dan Docker Compose.
 
-## 1. Konfigurasi DNS (Domain Name System)
-Sebelum masuk ke server, Bapak perlu mengarahkan domain ke IP VPS:
-1. Login ke akun tempat Bapak membeli domain (misal: Rumahweb, Niagahoster, atau Cloudflare).
-2. Cari menu **DNS Management**.
-3. Tambahkan **A Record**:
-   - **Type:** `A`
-   - **Name:** `@` (untuk domain utama) atau `app` (untuk subdomain seperti app.domain.com)
-   - **Value:** `IP_ADDRESS_VPS_BAPAK`
-   - **TTL:** `Auto/3600`
-4. Tambahkan **CNAME Record** (Opsional):
-   - **Name:** `www`
-   - **Target:** `@`
+---
+
+## 1. Konsep Keamanan (Isolasi & Localhost Port Binding)
+Untuk mencegah serangan ransomware, eksploitasi database, atau malware yang memindai port terbuka:
+- Database **PostgreSQL** dan aplikasi **Next.js** berjalan di dalam kontainer terisolasi (Docker).
+- Port PostgreSQL (`5432`) dan port Next.js (`3000`) **TIDAK dibind ke `0.0.0.0` (IP Publik)**.
+- Port-port tersebut **hanya dibind ke `127.0.0.1` (localhost)** di dalam VPS.
+- Akses ke sistem dari luar dilakukan menggunakan **Reverse Proxy (Nginx + HTTPS)** untuk publik, atau lewat **SSH Tunneling** untuk keperluan administrasi database/uji coba lokal.
 
 ---
 
@@ -23,20 +19,21 @@ Masuk ke VPS melalui SSH (Gunakan Terminal atau PowerShell):
 ssh root@IP_ADDRESS_VPS_BAPAK
 ```
 
-### Update Sistem & Security Tools
+### A. Update Sistem & Security Tools
 ```bash
 sudo apt update && sudo apt upgrade -y
-# Install Firewall (UFW) dan Fail2ban (Anti-Brute Force)
+
+# Install Firewall (UFW) dan Fail2ban (Anti-Brute Force SSH)
 sudo apt install ufw fail2ban -y
 
 # Konfigurasi Firewall Dasar
-sudo ufw allow 22
-sudo ufw allow 80
-sudo ufw allow 443
+sudo ufw allow 22    # Port SSH
+sudo ufw allow 80    # Port HTTP
+sudo ufw allow 443   # Port HTTPS
 sudo ufw enable
 ```
 
-### Konfigurasi Fail2ban
+### B. Konfigurasi Fail2ban
 Pastikan Fail2ban berjalan untuk melindungi dari serangan brute force SSH:
 ```bash
 sudo systemctl start fail2ban
@@ -45,164 +42,146 @@ sudo systemctl enable fail2ban
 
 ---
 
-## 3. Instalasi Stack Teknologi
-
-### A. Install Node.js (v20.x atau terbaru)
+## 3. Instalasi Docker & Docker Compose
+Hapus kebutuhan menginstal Node.js dan PostgreSQL secara manual di OS VPS utama. Cukup instal Docker:
 ```bash
-curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
-sudo apt install -y nodejs
-# Verifikasi
-node -v && npm -v
-```
-
-### B. Install PostgreSQL
-```bash
-sudo apt install postgresql postgresql-contrib -y
-sudo systemctl start postgresql
-sudo systemctl enable postgresql
-```
-
-### C. Install Nginx (Web Server)
-Aplikasi **WAJIB** diakses melalui Nginx sebagai Reverse Proxy untuk keamanan. Jangan membuka port 3000 ke publik.
-
-```bash
-sudo apt install nginx -y
-sudo systemctl start nginx
-sudo systemctl enable nginx
+sudo apt install docker.io docker-compose -y
+sudo systemctl enable --now docker
 ```
 
 ---
 
-## 4. Konfigurasi Database (PostgreSQL)
-Lakukan pengaturan database untuk project HDAP:
-```bash
-sudo -i -u postgres
-psql
-```
-Di dalam console PostgreSQL (`postgres=#`):
-```sql
-CREATE DATABASE bima_hdap_db;
-CREATE USER bima_user WITH PASSWORD 'Faithbless21!';
-GRANT ALL PRIVILEGES ON DATABASE bima_hdap_db TO bima_user;
-\q
-exit
-```
-
----
-
-## 5. Deployment Aplikasi
+## 4. Deployment Aplikasi
 
 ### A. Clone Repository
+Pastikan Anda masuk ke folder `/var/www`, lalu lakukan clone repository:
 ```bash
-
 cd /var/www
-# Pastikan git sudah terinstall, jika belum: sudo apt install git
-sudo git clone https://github.com/cathaleya/web_e-assesment.git
+# Jika git belum terinstall: sudo apt install git -y
+sudo git clone https://github.com/cathaleya/web_e-assesment.git web_e-assesment
 cd web_e-assesment
 ```
+*(Atau arahkan ke folder versi deployment VPS Anda)*
 
-### B. Konfigurasi Environment (.env)
-Buat file `.env` di server (Jangan push file ini ke GitHub):
+### B. Konfigurasi Environment (`.env`)
+Salin template konfigurasi lingkungan:
 ```bash
+cp .env.example .env
 sudo nano .env
 ```
-Isi dengan data server (sesuaikan dengan langkah 4):
+Isi dan sesuaikan konfigurasi. Gunakan password database yang aman:
 ```env
-DATABASE_URL="postgresql://bima_user:Faithbless21!@localhost:5432/bima_hdap_db?schema=public"
-GEMINI_API_KEY="AIzaSyA98EOZqgSeWh9dAoqrDuhb8WOKC6Om-0g"
-NEXTAUTH_SECRET="buat_string_acak_panjang_di_sini"
-NEXTAUTH_URL="https://madel5c.com"
+# Database (PostgreSQL di dalam Docker container)
+DB_PASSWORD=GantiDenganPasswordYangSangatAman123!
+DATABASE_URL="postgresql://postgres:GantiDenganPasswordYangSangatAman123!@db:5432/hdap?schema=public"
+
+# Kredensial Admin Panel
+ADMIN_USERNAME=admin.hdap
+ADMIN_PASSWORD=GantiPasswordAdminBapak21!
+
+# URL aplikasi
+NEXT_PUBLIC_APP_URL=https://domain-bapak.com
+
+NODE_ENV=production
 ```
 *Tekan `Ctrl+O`, `Enter`, lalu `Ctrl+X` untuk simpan.*
 
-### C. Install & Build
+### C. Build & Jalankan Docker Container
+Jalankan Docker Compose untuk mengunduh database PostgreSQL, membuild aplikasi Next.js, dan menjalankannya di background:
 ```bash
-sudo npm install
-# Jalankan migrasi database prisma
-npx prisma generate
-npx prisma db push
-
-# Build project Next.js
-sudo npm run build
+docker-compose up -d --build
+```
+Untuk memantau log aplikasi guna memastikan koneksi database sukses:
+```bash
+docker-compose logs -f
 ```
 
 ---
 
-## 6. Manajemen Proses dengan PM2
-Agar aplikasi tetap jalan meskipun terminal ditutup:
-```bash
-sudo npm install -g pm2
-pm2 start npm --name "hdap-app" -- start
-# Pastikan auto-restart saat server reboot
-pm2 save
-pm2 startup
-```
+## 5. Cara Mengakses Aplikasi & Database Dari Luar VPS
+
+### Cara A: Menggunakan SSH Tunneling (Akses Lokal/Administrasi)
+Karena semua port dibind ke localhost (`127.0.0.1`), port tersebut aman dari scan luar. Untuk mengaksesnya dari laptop pribadi Anda:
+
+1. Buka **Command Prompt (CMD)** baru di laptop Anda.
+2. Jalankan perintah tunneling ini:
+   ```cmd
+   ssh -L 3000:127.0.0.1:3000 -L 5432:127.0.0.1:5432 root@IP_ADDRESS_VPS_BAPAK
+   ```
+3. Biarkan jendela CMD tersebut terbuka. Sekarang Anda bisa mengakses:
+   * **Aplikasi Web**: Buka browser ke [http://localhost:3000](http://localhost:3000)
+   * **Database**: Hubungkan aplikasi pgAdmin/DBeaver di laptop Anda ke `localhost:5432`.
 
 ---
 
-## 7. Konfigurasi Nginx & SSL
+### Cara B: Menggunakan Nginx Reverse Proxy (Untuk Publik & SSL)
+Untuk mempublikasikan aplikasi agar bisa diakses oleh pengguna umum menggunakan nama domain Anda secara aman (HTTPS):
 
-### A. Setup Reverse Proxy
-```bash
-sudo nano /etc/nginx/sites-available/hdap
-```
-Isi dengan konfigurasi berikut:
-```nginx
-server {
-    listen 80;
-    server_name domain-bapak.com www.domain-bapak.com;
+1. **Install Nginx** di OS utama VPS:
+   ```bash
+   sudo apt install nginx -y
+   ```
+2. **Buat File Konfigurasi Nginx**:
+   ```bash
+   sudo nano /etc/nginx/sites-available/hdap
+   ```
+3. Masukkan konfigurasi reverse proxy berikut:
+   ```nginx
+   server {
+       listen 80;
+       server_name domain-bapak.com www.domain-bapak.com;
 
-    location / {
-        proxy_pass http://localhost:3000;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host $host;
-        proxy_cache_bypass $http_upgrade;
-    }
-}
-```
-Aktifkan config:
-```bash
-sudo ln -s /etc/nginx/sites-available/hdap /etc/nginx/sites-enabled/
-sudo nginx -t
-sudo systemctl restart nginx
-```
-
-### B. Install SSL (HTTPS) dengan Certbot
-```bash
-sudo apt install certbot python3-certbot-nginx -y
-sudo certbot --nginx -d domain-bapak.com -d www.domain-bapak.com
-# Pilih opsi 2 untuk "Redirect" agar semua akses otomatis ke HTTPS.
-```
+       location / {
+           proxy_pass http://127.0.0.1:3000;
+           proxy_http_version 1.1;
+           proxy_set_header Upgrade $http_upgrade;
+           proxy_set_header Connection 'upgrade';
+           proxy_set_header Host $host;
+           proxy_cache_bypass $http_upgrade;
+       }
+   }
+   ```
+4. **Aktifkan Konfigurasi & Reload Nginx**:
+   ```bash
+   sudo ln -s /etc/nginx/sites-available/hdap /etc/nginx/sites-enabled/
+   sudo nginx -t
+   sudo systemctl restart nginx
+   ```
+5. **Pasang SSL Gratis (HTTPS) dengan Certbot**:
+   ```bash
+   sudo apt install certbot python3-certbot-nginx -y
+   ```
+   ```bash
+   sudo certbot --nginx -d domain-bapak.com -d www.domain-bapak.com
+   ```
+   *(Pilih opsi `Redirect` saat ditanya untuk otomatis mengarahkan HTTP ke HTTPS).*
 
 ---
 
-## 8. Verifikasi Akhir
-Buka domain Bapak di browser. Seharusnya platform HDAP sudah tampil dengan gembok hijau (HTTPS) dan terkoneksi ke database serta AI Gemini.
+## 6. Cara Melakukan Update Aplikasi di VPS
+Jika Bapak melakukan perubahan kode di laptop lokal dan telah mem-push-nya ke GitHub, jalankan perintah ini di VPS untuk mengupdate aplikasi:
 
-> [!IMPORTANT]
-> **Backup Berkala:** Selalu lakukan backup database PostgreSQL Bapak secara rutin menggunakan perintah `pg_dump`.
-
-jika lakukan update jangan lupa selalu lakukan ini di vps
-
-
+```bash
 cd /var/www/web_e-assesment
+
+# 1. Tarik kode terbaru dari GitHub
 git pull origin main
-npm install
-npm run build
-pm2 restart hdap-app
+
+# 2. Rebuild dan restart container tanpa downtime yang lama
+docker-compose up -d --build
+```
 
 ---
-## 9. Penanganan Pasca-Abuse (Opsional)
-Jika VPS Bapak baru saja direset atau terkena abuse sebelumnya, pastikan tidak ada file mencurigakan yang tertinggal:
 
-1. **Cek Proses Mencurigakan:**
+## 7. Penanganan Pasca-Abuse (Deteksi Malware)
+Jika VPS Bapak pernah terkena malware sebelumnya, pastikan sistem bersih dengan langkah berikut:
+
+1. **Cek Penggunaan CPU:**
    ```bash
    top
-   # Tekan 'q' untuk keluar. Perhatikan jika ada proses seperti 'xmrig', 'miner', atau penggunaan CPU 100%.
+   # Tekan 'q' untuk keluar. Waspadai proses mencurigakan dengan CPU 100% (seperti 'xmrig', 'miner').
    ```
-2. **Hapus File Malware (Jika ada):**
+2. **Hapus File Malware (Jika ada di folder tmp):**
    ```bash
    sudo rm -rf /tmp/xmrig*
    sudo rm -rf /var/tmp/scanner*

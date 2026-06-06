@@ -17,7 +17,7 @@ COPY package*.json ./
 COPY prisma ./prisma/
 
 # Install Node dependencies
-RUN npm ci
+RUN npm install
 
 # Copy the rest of application code
 COPY . .
@@ -26,8 +26,8 @@ COPY . .
 RUN npx prisma generate
 
 # Build Next.js application
-ENV NEXT_TELEMETRY_DISABLED 1
-ENV NODE_ENV production
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV NODE_ENV=production
 RUN npm run build
 
 # Expose port 3000
@@ -35,3 +35,4 @@ EXPOSE 3000
 
 # Start Next.js
 CMD ["npm", "run", "start"]
+
