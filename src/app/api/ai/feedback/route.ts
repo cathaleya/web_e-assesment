@@ -63,7 +63,8 @@ export async function GET(request: Request) {
     }
 
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-pro' }, { apiVersion: 'v1' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' }, { apiVersion: 'v1' });
+
 
     const pdiLabel  = pdi.totalScore  >= 80 ? 'Sangat Tinggi' : pdi.totalScore  >= 60 ? 'Tinggi' : pdi.totalScore  >= 40 ? 'Cukup' : 'Rendah';
     const madelLabel = madel.totalScore >= 80 ? 'Sangat Tinggi' : madel.totalScore >= 60 ? 'Tinggi' : madel.totalScore >= 40 ? 'Cukup' : 'Rendah';
