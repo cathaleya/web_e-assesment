@@ -6,11 +6,12 @@ import fs from 'fs';
 
 export async function POST(req: Request) {
   try {
-    const { method, analysisType } = await req.json();
+    const { method, analysisType, irtModel } = await req.json();
     
     if (!method || !analysisType) {
       return NextResponse.json({ error: 'Missing method or analysisType' }, { status: 400 });
     }
+
 
     // 1. Fetch real participant response data from database
     const users = await prisma.user.findMany({
@@ -75,9 +76,9 @@ export async function POST(req: Request) {
 
     if (method === 'Python') {
       // Try 'python' and fallback to 'python3'
-      command = `python "${scriptPathPy}" ${analysisType} "${dataFilePath}" "${outputJsonPath}" "${outputImgPath}"`;
+      command = `python "${scriptPathPy}" ${analysisType} "${dataFilePath}" "${outputJsonPath}" "${outputImgPath}" "${irtModel || '1PL'}"`;
     } else if (method === 'R') {
-      command = `Rscript "${scriptPathR}" ${analysisType} "${dataFilePath}" "${outputJsonPath}" "${outputImgPath}"`;
+      command = `Rscript "${scriptPathR}" ${analysisType} "${dataFilePath}" "${outputJsonPath}" "${outputImgPath}" "${irtModel || '1PL'}"`;
     }
 
     // 4. Run the script with a promise wrapper
@@ -90,11 +91,12 @@ export async function POST(req: Request) {
             
             // Try fallback command if Python
             if (method === 'Python') {
-              const fallbackCmd = `python3 "${scriptPathPy}" ${analysisType} "${dataFilePath}" "${outputJsonPath}" "${outputImgPath}"`;
+              const fallbackCmd = `python3 "${scriptPathPy}" ${analysisType} "${dataFilePath}" "${outputJsonPath}" "${outputImgPath}" "${irtModel || '1PL'}"`;
               exec(fallbackCmd, (err2, stdout2, stderr2) => {
                 if (err2) {
                   console.error("Fallback python3 also failed:", err2);
                   resolve(false);
+
                 } else {
                   resolve(true);
                 }

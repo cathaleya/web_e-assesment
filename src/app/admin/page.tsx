@@ -116,6 +116,12 @@ export default function AdminDashboard() {
     sem: false
   });
 
+  const [selectedIrtModel, setSelectedIrtModel] = useState<'1PL' | '2PL' | '3PL'>('1PL');
+  const [raschSubTab, setRaschSubTab] = useState<'parameters' | 'plots' | 'dif'>('parameters');
+  const [efaSubTab, setEfaSubTab] = useState<'parameters' | 'plots'>('parameters');
+  const [cfaSubTab, setCfaSubTab] = useState<'parameters' | 'plots'>('parameters');
+  const [semSubTab, setSemSubTab] = useState<'parameters' | 'plots'>('parameters');
+
   const runPsychometricAnalysis = async (type: string) => {
     const method = analysisMethod[type];
     setAnalysisLoading(prev => ({ ...prev, [type]: true }));
@@ -124,7 +130,7 @@ export default function AdminDashboard() {
       const res = await fetch('/api/admin/analysis/run', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ method, analysisType: type })
+        body: JSON.stringify({ method, analysisType: type, irtModel: selectedIrtModel })
       });
       const data = await res.json();
       if (data.success) {
@@ -140,6 +146,7 @@ export default function AdminDashboard() {
       setAnalysisLoading(prev => ({ ...prev, [type]: false }));
     }
   };
+
 
   const downloadDataset = async (instrument: string) => {
     setDownloading(instrument);
@@ -231,7 +238,7 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        <div className="px-6 py-8">
+        <div className="px-6 py-6 flex-1 overflow-y-auto custom-scrollbar">
           <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4 ml-2">Main Analysis</p>
           <nav className="space-y-1">
             {[
@@ -1104,142 +1111,188 @@ export default function AdminDashboard() {
 
               {analysisResults.efa ? (
                 <div className="space-y-10">
-                  {/* Summary Cards */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="bg-white p-8 rounded-[32px] border border-slate-200 shadow-sm">
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Kaiser-Meyer-Olkin (KMO)</p>
-                      <div className="flex items-baseline gap-2">
-                        <span className="text-4xl font-black text-slate-900">{analysisResults.efa.kmo}</span>
-                        <span className="text-[10px] font-bold text-emerald-500 uppercase">Excellent</span>
-                      </div>
-                    </div>
-                    <div className="bg-white p-8 rounded-[32px] border border-slate-200 shadow-sm">
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Bartlett Sphericity (p)</p>
-                      <span className="text-4xl font-black text-slate-900">&lt; {analysisResults.efa.bartlett}</span>
-                    </div>
-                    <div className="bg-white p-8 rounded-[32px] border border-slate-200 shadow-sm">
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Extracted Factors</p>
-                      <span className="text-4xl font-black text-blue-600">5 Factors</span>
-                    </div>
+                  {/* Sub-Tab Navigation */}
+                  <div className="flex border-b border-slate-200 gap-8">
+                    {[
+                      { id: 'parameters', label: 'Loadings & Component Matrix', icon: 'fa-table-list' },
+                      { id: 'plots', label: 'Scree Plot & Eigenvalues', icon: 'fa-chart-line' }
+                    ].map(sub => (
+                      <button key={sub.id} onClick={() => setEfaSubTab(sub.id as any)}
+                        className={`pb-4 px-2 text-xs font-black uppercase tracking-wider transition-all border-b-2 flex items-center gap-2 ${
+                          efaSubTab === sub.id 
+                            ? 'border-indigo-600 text-indigo-600' 
+                            : 'border-transparent text-slate-400 hover:text-slate-600'
+                        }`}>
+                        <i className={`fa-solid ${sub.icon}`}></i>
+                        {sub.label}
+                      </button>
+                    ))}
                   </div>
 
-                  {/* Split Screen Plots and Tables */}
-                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                    {/* Loadings Table */}
-                    <div className="lg:col-span-7 bg-white rounded-[40px] border border-slate-200 shadow-sm overflow-hidden">
-                      <div className="p-8 border-b border-slate-100 flex justify-between items-center">
-                        <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest">Rotated Component Matrix</h4>
+                  {efaSubTab === 'parameters' && (
+                    <div className="space-y-10 animate-in fade-in duration-300">
+                      {/* Summary Cards */}
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div className="bg-white p-8 rounded-[32px] border border-slate-200 shadow-sm">
+                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Kaiser-Meyer-Olkin (KMO)</p>
+                          <div className="flex items-baseline gap-2">
+                            <span className="text-4xl font-black text-slate-900">{analysisResults.efa.kmo}</span>
+                            <span className="text-[10px] font-bold text-emerald-500 uppercase">Excellent</span>
+                          </div>
+                        </div>
+                        <div className="bg-white p-8 rounded-[32px] border border-slate-200 shadow-sm">
+                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Bartlett Sphericity (p)</p>
+                          <span className="text-4xl font-black text-slate-900">&lt; {analysisResults.efa.bartlett}</span>
+                        </div>
+                        <div className="bg-white p-8 rounded-[32px] border border-slate-200 shadow-sm">
+                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Extracted Factors</p>
+                          <span className="text-4xl font-black text-blue-600">5 Factors</span>
+                        </div>
                       </div>
-                      <div className="overflow-auto max-h-[400px]">
-                        <table className="w-full text-left">
-                          <thead className="bg-slate-50 text-[9px] font-black text-slate-400 uppercase border-b border-slate-100 sticky top-0">
-                            <tr>
-                              <th className="px-6 py-4">Item ID</th>
-                              <th className="px-6 py-4">Dimension</th>
-                              <th className="px-6 py-4">F1</th>
-                              <th className="px-6 py-4">F2</th>
-                              <th className="px-6 py-4">F3</th>
-                            </tr>
-                          </thead>
-                          <tbody className="divide-y divide-slate-100 text-xs font-bold text-slate-600">
-                            {analysisResults.efa.loadings.map((load: any, idx: number) => (
-                              <tr key={idx} className="hover:bg-slate-50/50">
-                                <td className="px-6 py-4 font-black text-slate-900">{load.item}</td>
-                                <td className="px-6 py-4 uppercase text-[10px] text-slate-400">{load.dimension}</td>
-                                <td className="px-6 py-4 text-emerald-600">{load.loadings.Information}</td>
-                                <td className="px-6 py-4 text-blue-600">{load.loadings.Collaboration}</td>
-                                <td className="px-6 py-4 text-purple-600">{load.loadings.Productivity}</td>
+
+                      {/* Loadings Table */}
+                      <div className="bg-white rounded-[40px] border border-slate-200 shadow-sm overflow-hidden">
+                        <div className="p-8 border-b border-slate-100 flex justify-between items-center">
+                          <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest">Rotated Component Matrix</h4>
+                        </div>
+                        <div className="overflow-auto max-h-[500px] custom-scrollbar">
+                          <table className="w-full text-left">
+                            <thead className="bg-slate-50 text-[9px] font-black text-slate-400 uppercase border-b border-slate-100 sticky top-0">
+                              <tr>
+                                <th className="px-6 py-4">Item ID</th>
+                                <th className="px-6 py-4">Dimension</th>
+                                <th className="px-6 py-4">F1</th>
+                                <th className="px-6 py-4">F2</th>
+                                <th className="px-6 py-4">F3</th>
                               </tr>
-                            ))}
-                          </tbody>
-                        </table>
+                            </thead>
+                            <tbody className="divide-y divide-slate-100 text-xs font-bold text-slate-600">
+                              {analysisResults.efa.loadings.map((load: any, idx: number) => (
+                                <tr key={idx} className="hover:bg-slate-50/50">
+                                  <td className="px-6 py-4 font-black text-slate-900">{load.item}</td>
+                                  <td className="px-6 py-4 uppercase text-[10px] text-slate-400">{load.dimension}</td>
+                                  <td className="px-6 py-4 text-emerald-600">{load.loadings.Information}</td>
+                                  <td className="px-6 py-4 text-blue-600">{load.loadings.Collaboration}</td>
+                                  <td className="px-6 py-4 text-purple-600">{load.loadings.Productivity}</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
                       </div>
                     </div>
+                  )}
 
-                    {/* Scree Plot */}
-                    <div className="lg:col-span-5 bg-white p-8 rounded-[40px] border border-slate-200 shadow-sm flex flex-col justify-between">
-                      <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest mb-6">Scree Factor Plot</h4>
-                      <div className="flex-1 flex items-center justify-center">
-                        {!imageError.efa && analysisPlots.efa ? (
-                          <img 
-                            src={analysisPlots.efa} 
-                            alt="Scree Plot" 
-                            onError={() => setImageError(prev => ({ ...prev, efa: true }))}
-                            className="w-full h-auto object-contain rounded-2xl" 
-                          />
-                        ) : (
-                          <svg className="w-full h-[250px] bg-slate-50 border border-slate-200 rounded-[32px] p-4" viewBox="0 0 150 90">
-                            {/* Grid Lines */}
-                            <line x1="25" y1="10" x2="140" y2="10" stroke="#e2e8f0" strokeWidth="0.5" />
-                            <line x1="25" y1="21.6" x2="140" y2="21.6" stroke="#e2e8f0" strokeWidth="0.5" />
-                            <line x1="25" y1="33.3" x2="140" y2="33.3" stroke="#e2e8f0" strokeWidth="0.5" />
-                            <line x1="25" y1="45" x2="140" y2="45" stroke="#e2e8f0" strokeWidth="0.5" />
-                            <line x1="25" y1="56.6" x2="140" y2="56.6" stroke="#e2e8f0" strokeWidth="0.5" />
-                            <line x1="25" y1="68.3" x2="140" y2="68.3" stroke="#cbd5e1" strokeWidth="0.8" />
-                            <line x1="25" y1="80" x2="140" y2="80" stroke="#cbd5e1" strokeWidth="1" />
+                  {efaSubTab === 'plots' && (
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 animate-in fade-in duration-300">
+                      {/* Scree Plot */}
+                      <div className="lg:col-span-8 bg-white p-8 rounded-[40px] border border-slate-200 shadow-sm flex flex-col justify-between">
+                        <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest mb-6">Scree Factor Plot</h4>
+                        <div className="flex-1 flex items-center justify-center">
+                          {!imageError.efa && analysisPlots.efa ? (
+                            <img 
+                              src={analysisPlots.efa} 
+                              alt="Scree Plot" 
+                              onError={() => setImageError(prev => ({ ...prev, efa: true }))}
+                              className="w-full h-auto object-contain rounded-2xl border border-slate-100" 
+                            />
+                          ) : (
+                            <svg className="w-full h-[300px] bg-slate-50 border border-slate-200 rounded-[32px] p-4" viewBox="0 0 150 90">
+                              {/* Grid Lines */}
+                              <line x1="25" y1="10" x2="140" y2="10" stroke="#e2e8f0" strokeWidth="0.5" />
+                              <line x1="25" y1="21.6" x2="140" y2="21.6" stroke="#e2e8f0" strokeWidth="0.5" />
+                              <line x1="25" y1="33.3" x2="140" y2="33.3" stroke="#e2e8f0" strokeWidth="0.5" />
+                              <line x1="25" y1="45" x2="140" y2="45" stroke="#e2e8f0" strokeWidth="0.5" />
+                              <line x1="25" y1="56.6" x2="140" y2="56.6" stroke="#e2e8f0" strokeWidth="0.5" />
+                              <line x1="25" y1="68.3" x2="140" y2="68.3" stroke="#cbd5e1" strokeWidth="0.8" />
+                              <line x1="25" y1="80" x2="140" y2="80" stroke="#cbd5e1" strokeWidth="1" />
 
-                            {/* Kaiser Criterion (Eigenvalue = 1.0) */}
-                            <line x1="25" y1="68.3" x2="140" y2="68.3" stroke="#ef4444" strokeDasharray="3,3" strokeWidth="1" />
-                            <text x="141" y="69.3" fontSize="2.5" fill="#ef4444" fontWeight="bold">y = 1.0 (Kaiser)</text>
+                              {/* Kaiser Criterion (Eigenvalue = 1.0) */}
+                              <line x1="25" y1="68.3" x2="140" y2="68.3" stroke="#ef4444" strokeDasharray="3,3" strokeWidth="1" />
+                              <text x="141" y="69.3" fontSize="2.5" fill="#ef4444" fontWeight="bold">y = 1.0 (Kaiser)</text>
 
-                            {/* Axes */}
-                            <line x1="25" y1="10" x2="25" y2="80" stroke="#cbd5e1" strokeWidth="1" />
-                            
-                            {/* Y axis labels */}
-                            <text x="20" y="81" fontSize="3" fill="#64748b" textAnchor="end">0.0</text>
-                            <text x="20" y="69.3" fontSize="3" fill="#64748b" textAnchor="end">1.0</text>
-                            <text x="20" y="57.6" fontSize="3" fill="#64748b" textAnchor="end">2.0</text>
-                            <text x="20" y="46" fontSize="3" fill="#64748b" textAnchor="end">3.0</text>
-                            <text x="20" y="34.3" fontSize="3" fill="#64748b" textAnchor="end">4.0</text>
-                            <text x="20" y="22.6" fontSize="3" fill="#64748b" textAnchor="end">5.0</text>
-                            <text x="20" y="11" fontSize="3" fill="#64748b" textAnchor="end">6.0</text>
+                              {/* Axes */}
+                              <line x1="25" y1="10" x2="25" y2="80" stroke="#cbd5e1" strokeWidth="1" />
+                              
+                              {/* Y axis labels */}
+                              <text x="20" y="81" fontSize="3" fill="#64748b" textAnchor="end">0.0</text>
+                              <text x="20" y="69.3" fontSize="3" fill="#64748b" textAnchor="end">1.0</text>
+                              <text x="20" y="57.6" fontSize="3" fill="#64748b" textAnchor="end">2.0</text>
+                              <text x="20" y="46" fontSize="3" fill="#64748b" textAnchor="end">3.0</text>
+                              <text x="20" y="34.3" fontSize="3" fill="#64748b" textAnchor="end">4.0</text>
+                              <text x="20" y="22.6" fontSize="3" fill="#64748b" textAnchor="end">5.0</text>
+                              <text x="20" y="11" fontSize="3" fill="#64748b" textAnchor="end">6.0</text>
 
-                            <text x="8" y="45" fontSize="3" fill="#475569" fontWeight="bold" transform="rotate(-90 8 45)" textAnchor="middle">Eigenvalue</text>
+                              <text x="8" y="45" fontSize="3" fill="#475569" fontWeight="bold" transform="rotate(-90 8 45)" textAnchor="middle">Eigenvalue</text>
 
-                            {/* X axis labels */}
-                            <text x="25" y="86" fontSize="3" fill="#64748b" textAnchor="middle">F1</text>
-                            <text x="40.7" y="86" fontSize="3" fill="#64748b" textAnchor="middle">F2</text>
-                            <text x="56.4" y="86" fontSize="3" fill="#64748b" textAnchor="middle">F3</text>
-                            <text x="72.1" y="86" fontSize="3" fill="#64748b" textAnchor="middle">F4</text>
-                            <text x="87.8" y="86" fontSize="3" fill="#64748b" textAnchor="middle">F5</text>
-                            <text x="103.5" y="86" fontSize="3" fill="#64748b" textAnchor="middle">F6</text>
-                            <text x="119.2" y="86" fontSize="3" fill="#64748b" textAnchor="middle">F7</text>
-                            <text x="135" y="86" fontSize="3" fill="#64748b" textAnchor="middle">F8</text>
+                              {/* X axis labels */}
+                              <text x="25" y="86" fontSize="3" fill="#64748b" textAnchor="middle">F1</text>
+                              <text x="40.7" y="86" fontSize="3" fill="#64748b" textAnchor="middle">F2</text>
+                              <text x="56.4" y="86" fontSize="3" fill="#64748b" textAnchor="middle">F3</text>
+                              <text x="72.1" y="86" fontSize="3" fill="#64748b" textAnchor="middle">F4</text>
+                              <text x="87.8" y="86" fontSize="3" fill="#64748b" textAnchor="middle">F5</text>
+                              <text x="103.5" y="86" fontSize="3" fill="#64748b" textAnchor="middle">F6</text>
+                              <text x="119.2" y="86" fontSize="3" fill="#64748b" textAnchor="middle">F7</text>
+                              <text x="135" y="86" fontSize="3" fill="#64748b" textAnchor="middle">F8</text>
 
-                            <text x="82.5" y="89.5" fontSize="3" fill="#475569" fontWeight="bold" textAnchor="middle">Component Number</text>
+                              <text x="82.5" y="89.5" fontSize="3" fill="#475569" fontWeight="bold" textAnchor="middle">Component Number</text>
 
-                            {/* Scree Path */}
-                            <path d="M 25,16.7 L 40.7,43.6 L 56.4,54.9 L 72.1,58.5 L 87.8,64.3 L 103.5,68.9 L 119.2,70.4 L 135,71.7" fill="none" stroke="#3b82f6" strokeWidth="1.5" />
-                            
-                            {/* Points with Value Labels */}
-                            <circle cx="25" cy="16.7" r="2" fill="#1e3a8a" stroke="#ffffff" strokeWidth="0.5" />
-                            <text x="25" y="12.7" fontSize="2.5" fill="#1e3a8a" fontWeight="bold" textAnchor="middle">5.42</text>
+                              {/* Scree Path */}
+                              <path d="M 25,16.7 L 40.7,43.6 L 56.4,54.9 L 72.1,58.5 L 87.8,64.3 L 103.5,68.9 L 119.2,70.4 L 135,71.7" fill="none" stroke="#3b82f6" strokeWidth="1.5" />
+                              
+                              {/* Points with Value Labels */}
+                              <circle cx="25" cy="16.7" r="2" fill="#1e3a8a" stroke="#ffffff" strokeWidth="0.5" />
+                              <text x="25" y="12.7" fontSize="2.5" fill="#1e3a8a" fontWeight="bold" textAnchor="middle">5.42</text>
 
-                            <circle cx="40.7" cy="43.6" r="2" fill="#1e3a8a" stroke="#ffffff" strokeWidth="0.5" />
-                            <text x="40.7" y="39.6" fontSize="2.5" fill="#1e3a8a" fontWeight="bold" textAnchor="middle">3.12</text>
+                              <circle cx="40.7" cy="43.6" r="2" fill="#1e3a8a" stroke="#ffffff" strokeWidth="0.5" />
+                              <text x="40.7" y="39.6" fontSize="2.5" fill="#1e3a8a" fontWeight="bold" textAnchor="middle">3.12</text>
 
-                            <circle cx="56.4" cy="54.9" r="2" fill="#1e3a8a" stroke="#ffffff" strokeWidth="0.5" />
-                            <text x="56.4" y="50.9" fontSize="2.5" fill="#1e3a8a" fontWeight="bold" textAnchor="middle">2.15</text>
+                              <circle cx="56.4" cy="54.9" r="2" fill="#1e3a8a" stroke="#ffffff" strokeWidth="0.5" />
+                              <text x="56.4" y="50.9" fontSize="2.5" fill="#1e3a8a" fontWeight="bold" textAnchor="middle">2.15</text>
 
-                            <circle cx="72.1" cy="58.5" r="2" fill="#1e3a8a" stroke="#ffffff" strokeWidth="0.5" />
-                            <text x="72.1" y="54.5" fontSize="2.5" fill="#1e3a8a" fontWeight="bold" textAnchor="middle">1.84</text>
+                              <circle cx="72.1" cy="58.5" r="2" fill="#1e3a8a" stroke="#ffffff" strokeWidth="0.5" />
+                              <text x="72.1" y="54.5" fontSize="2.5" fill="#1e3a8a" fontWeight="bold" textAnchor="middle">1.84</text>
 
-                            <circle cx="87.8" cy="64.3" r="2" fill="#1e3a8a" stroke="#ffffff" strokeWidth="0.5" />
-                            <text x="87.8" y="60.3" fontSize="2.5" fill="#1e3a8a" fontWeight="bold" textAnchor="middle">1.34</text>
+                              <circle cx="87.8" cy="64.3" r="2" fill="#1e3a8a" stroke="#ffffff" strokeWidth="0.5" />
+                              <text x="87.8" y="60.3" fontSize="2.5" fill="#1e3a8a" fontWeight="bold" textAnchor="middle">1.34</text>
 
-                            <circle cx="103.5" cy="68.9" r="2" fill="#64748b" stroke="#ffffff" strokeWidth="0.5" />
-                            <text x="103.5" y="65.9" fontSize="2.2" fill="#64748b" textAnchor="middle">0.95</text>
+                              <circle cx="103.5" cy="68.9" r="2" fill="#64748b" stroke="#ffffff" strokeWidth="0.5" />
+                              <text x="103.5" y="65.9" fontSize="2.2" fill="#64748b" textAnchor="middle">0.95</text>
 
-                            <circle cx="119.2" cy="70.4" r="2" fill="#64748b" stroke="#ffffff" strokeWidth="0.5" />
-                            <text x="119.2" y="67.4" fontSize="2.2" fill="#64748b" textAnchor="middle">0.82</text>
+                              <circle cx="119.2" cy="70.4" r="2" fill="#64748b" stroke="#ffffff" strokeWidth="0.5" />
+                              <text x="119.2" y="67.4" fontSize="2.2" fill="#64748b" textAnchor="middle">0.82</text>
 
-                            <circle cx="135" cy="71.7" r="2" fill="#64748b" stroke="#ffffff" strokeWidth="0.5" />
-                            <text x="135" y="68.7" fontSize="2.2" fill="#64748b" textAnchor="middle">0.71</text>
-                          </svg>
-                        )}
+                              <circle cx="135" cy="71.7" r="2" fill="#64748b" stroke="#ffffff" strokeWidth="0.5" />
+                              <text x="135" y="68.7" fontSize="2.2" fill="#64748b" textAnchor="middle">0.71</text>
+                            </svg>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Eigenvalues Table */}
+                      <div className="lg:col-span-4 bg-white p-8 rounded-[40px] border border-slate-200 shadow-sm flex flex-col">
+                        <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest mb-6">Eigenvalue Summary</h4>
+                        <div className="overflow-auto max-h-[300px] custom-scrollbar flex-1">
+                          <table className="w-full text-left">
+                            <thead className="bg-slate-50 text-[9px] font-black text-slate-400 uppercase border-b border-slate-100">
+                              <tr>
+                                <th className="px-4 py-3">Factor</th>
+                                <th className="px-4 py-3">Eigenvalue</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-100 text-xs font-bold text-slate-600">
+                              {analysisResults.efa.eigenvalues.map((ev: number, idx: number) => (
+                                <tr key={idx} className="hover:bg-slate-50/50">
+                                  <td className="px-4 py-3 text-slate-900">Factor {idx+1}</td>
+                                  <td className="px-4 py-3 text-indigo-600">{ev}</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  )}
                 </div>
               ) : (
                 <div className="py-20 text-center bg-white border border-dashed border-slate-200 rounded-[40px] flex flex-col items-center gap-4">
@@ -1292,58 +1345,78 @@ export default function AdminDashboard() {
 
               {analysisResults.cfa ? (
                 <div className="space-y-10">
-                  {/* Summary Cards */}
-                  <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
+                  {/* Sub-Tab Navigation */}
+                  <div className="flex border-b border-slate-200 gap-8">
                     {[
-                      { l: "CFI", v: analysisResults.cfa.fit_indices.cfi, c: "text-emerald-500", status: "Good" },
-                      { l: "TLI", v: analysisResults.cfa.fit_indices.tli, c: "text-emerald-500", status: "Good" },
-                      { l: "RMSEA", v: analysisResults.cfa.fit_indices.rmsea, c: "text-emerald-500", status: "Good" },
-                      { l: "SRMR", v: analysisResults.cfa.fit_indices.srmr, c: "text-emerald-500", status: "Good" },
-                      { l: "Chi-Square/df", v: (analysisResults.cfa.fit_indices.chi_square / analysisResults.cfa.fit_indices.df).toFixed(2), c: "text-cyan-500", status: "Good" }
-                    ].map(card => (
-                      <div key={card.l} className="bg-white p-6 rounded-[24px] border border-slate-200 shadow-sm text-center">
-                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">{card.l}</p>
-                        <p className={`text-2xl font-black ${card.c}`}>{card.v}</p>
-                        <span className="text-[8px] font-black uppercase text-emerald-500 bg-emerald-50 px-2 py-0.5 rounded-full mt-2 inline-block">{card.status}</span>
-                      </div>
+                      { id: 'parameters', label: 'Fit Indices & Factor Loadings', icon: 'fa-table-list' },
+                      { id: 'plots', label: 'CFA Path Diagram', icon: 'fa-diagram-project' }
+                    ].map(sub => (
+                      <button key={sub.id} onClick={() => setCfaSubTab(sub.id as any)}
+                        className={`pb-4 px-2 text-xs font-black uppercase tracking-wider transition-all border-b-2 flex items-center gap-2 ${
+                          cfaSubTab === sub.id 
+                            ? 'border-cyan-600 text-cyan-600' 
+                            : 'border-transparent text-slate-400 hover:text-slate-600'
+                        }`}>
+                        <i className={`fa-solid ${sub.icon}`}></i>
+                        {sub.label}
+                      </button>
                     ))}
                   </div>
 
-                  {/* Visualizer and Loadings */}
-                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                    {/* Loadings */}
-                    <div className="lg:col-span-5 bg-white p-8 rounded-[40px] border border-slate-200 shadow-sm">
-                      <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest mb-6">Factor Loadings (CFA)</h4>
-                      <div className="space-y-6 overflow-y-auto max-h-[350px] pr-2">
-                        {analysisResults.cfa.loadings.map((load: any, idx: number) => (
-                          <div key={idx} className="p-4 bg-slate-50 border border-slate-100 rounded-2xl">
-                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">{load.dimension}</p>
-                            <div className="space-y-2">
-                              {load.items.map((it: any, iidx: number) => (
-                                <div key={iidx} className="flex justify-between items-center text-xs font-bold">
-                                  <span className="text-slate-900">{it.id}</span>
-                                  <span className="text-emerald-600">{it.load}</span>
-                                </div>
-                              ))}
-                            </div>
+                  {cfaSubTab === 'parameters' && (
+                    <div className="space-y-10 animate-in fade-in duration-300">
+                      {/* Summary Cards */}
+                      <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
+                        {[
+                          { l: "CFI", v: analysisResults.cfa.fit_indices.cfi, c: "text-emerald-500", status: "Good" },
+                          { l: "TLI", v: analysisResults.cfa.fit_indices.tli, c: "text-emerald-500", status: "Good" },
+                          { l: "RMSEA", v: analysisResults.cfa.fit_indices.rmsea, c: "text-emerald-500", status: "Good" },
+                          { l: "SRMR", v: analysisResults.cfa.fit_indices.srmr, c: "text-emerald-500", status: "Good" },
+                          { l: "Chi-Square/df", v: (analysisResults.cfa.fit_indices.chi_square / analysisResults.cfa.fit_indices.df).toFixed(2), c: "text-cyan-500", status: "Good" }
+                        ].map(card => (
+                          <div key={card.l} className="bg-white p-6 rounded-[24px] border border-slate-200 shadow-sm text-center">
+                            <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">{card.l}</p>
+                            <p className={`text-2xl font-black ${card.c}`}>{card.v}</p>
+                            <span className="text-[8px] font-black uppercase text-emerald-500 bg-emerald-50 px-2 py-0.5 rounded-full mt-2 inline-block">{card.status}</span>
                           </div>
                         ))}
                       </div>
-                    </div>
 
-                    {/* Path Diagram */}
-                    <div className="lg:col-span-7 bg-white p-8 rounded-[40px] border border-slate-200 shadow-sm flex flex-col justify-between">
+                      {/* Loadings */}
+                      <div className="bg-white p-8 rounded-[40px] border border-slate-200 shadow-sm">
+                        <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest mb-6">Factor Loadings (CFA)</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                          {analysisResults.cfa.loadings.map((load: any, idx: number) => (
+                            <div key={idx} className="p-5 bg-slate-50 border border-slate-100 rounded-2xl">
+                              <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3 border-b border-slate-200/60 pb-2">{load.dimension}</p>
+                              <div className="space-y-2">
+                                {load.items.map((it: any, iidx: number) => (
+                                  <div key={iidx} className="flex justify-between items-center text-xs font-bold">
+                                    <span className="text-slate-900">{it.id}</span>
+                                    <span className="text-emerald-600">{it.load}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {cfaSubTab === 'plots' && (
+                    <div className="bg-white p-8 rounded-[40px] border border-slate-200 shadow-sm flex flex-col justify-between animate-in fade-in duration-300">
                       <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest mb-6">CFA Model Fit Path Diagram</h4>
-                      <div className="flex-1 flex items-center justify-center">
+                      <div className="flex items-center justify-center">
                         {!imageError.cfa && analysisPlots.cfa ? (
                           <img 
                             src={analysisPlots.cfa} 
                             alt="CFA Path Diagram" 
                             onError={() => setImageError(prev => ({ ...prev, cfa: true }))}
-                            className="w-full h-auto object-contain rounded-2xl" 
+                            className="w-full max-w-4xl h-auto object-contain rounded-2xl border border-slate-100 shadow-md" 
                           />
                         ) : (
-                          <svg className="w-full h-[300px] bg-slate-50 border border-slate-200 rounded-[32px] p-4" viewBox="0 0 160 100">
+                          <svg className="w-full max-w-3xl h-[400px] bg-slate-50 border border-slate-200 rounded-[32px] p-4" viewBox="0 0 160 100">
                             <defs>
                               <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse">
                                 <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#64748b" />
@@ -1446,7 +1519,7 @@ export default function AdminDashboard() {
                         )}
                       </div>
                     </div>
-                  </div>
+                  )}
                 </div>
               ) : (
                 <div className="py-20 text-center bg-white border border-dashed border-slate-200 rounded-[40px] flex flex-col items-center gap-4">
@@ -1480,6 +1553,14 @@ export default function AdminDashboard() {
                   </div>
                   <div className="flex items-center gap-4 bg-white/10 backdrop-blur-md p-3 rounded-2xl border border-white/20">
                     <select 
+                      value={selectedIrtModel} 
+                      onChange={(e) => setSelectedIrtModel(e.target.value as any)}
+                      className="bg-transparent text-white font-bold text-xs outline-none border-none cursor-pointer pr-4 border-r border-white/20 mr-2">
+                      <option value="1PL" className="text-slate-800">1PL / Rasch Model</option>
+                      <option value="2PL" className="text-slate-800">2PL Model</option>
+                      <option value="3PL" className="text-slate-800">3PL Model</option>
+                    </select>
+                    <select 
                       value={analysisMethod.rasch} 
                       onChange={(e) => setAnalysisMethod(prev => ({ ...prev, rasch: e.target.value as 'R' | 'Python' }))}
                       className="bg-transparent text-white font-bold text-xs outline-none border-none cursor-pointer pr-4">
@@ -1499,139 +1580,235 @@ export default function AdminDashboard() {
 
               {analysisResults.rasch ? (
                 <div className="space-y-10">
-                  {/* Summary Reliability Cards */}
-                  <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                  {/* Sub-Tab Navigation */}
+                  <div className="flex border-b border-slate-200 gap-8">
                     {[
-                      { l: "Person Separation", v: analysisResults.rasch.reliability.person_separation, c: "text-purple-600" },
-                      { l: "Person Reliability", v: analysisResults.rasch.reliability.person_reliability, c: "text-emerald-500" },
-                      { l: "Item Separation", v: analysisResults.rasch.reliability.item_separation, c: "text-purple-600" },
-                      { l: "Item Reliability", v: analysisResults.rasch.reliability.item_reliability, c: "text-emerald-500" }
-                    ].map(card => (
-                      <div key={card.l} className="bg-white p-6 rounded-[24px] border border-slate-200 shadow-sm text-center">
-                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">{card.l}</p>
-                        <p className={`text-3xl font-black ${card.c}`}>{card.v}</p>
-                      </div>
+                      { id: 'parameters', label: 'Parameters & Calibration', icon: 'fa-table-list' },
+                      { id: 'plots', label: 'Visualizations (Wright Map & ICC)', icon: 'fa-chart-line' },
+                      { id: 'dif', label: 'Differential Item Functioning (DIF)', icon: 'fa-sliders' }
+                    ].map(sub => (
+                      <button key={sub.id} onClick={() => setRaschSubTab(sub.id as any)}
+                        className={`pb-4 px-2 text-xs font-black uppercase tracking-wider transition-all border-b-2 flex items-center gap-2 ${
+                          raschSubTab === sub.id 
+                            ? 'border-purple-600 text-purple-600' 
+                            : 'border-transparent text-slate-400 hover:text-slate-600'
+                        }`}>
+                        <i className={`fa-solid ${sub.icon}`}></i>
+                        {sub.label}
+                      </button>
                     ))}
                   </div>
 
-                  {/* Split Screen Tables and Wright Maps */}
-                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                    {/* Item Fit Statistics */}
-                    <div className="lg:col-span-7 bg-white rounded-[40px] border border-slate-200 shadow-sm overflow-hidden">
-                      <div className="p-8 border-b border-slate-100">
-                        <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest">Item Fit Statistics (Infit/Outfit MNSQ)</h4>
+                  {raschSubTab === 'parameters' && (
+                    <div className="space-y-10 animate-in fade-in duration-300">
+                      {/* Summary Reliability Cards */}
+                      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                        {[
+                          { l: "Person Separation", v: analysisResults.rasch.reliability.person_separation, c: "text-purple-600" },
+                          { l: "Person Reliability", v: analysisResults.rasch.reliability.person_reliability, c: "text-emerald-500" },
+                          { l: "Item Separation", v: analysisResults.rasch.reliability.item_separation, c: "text-purple-600" },
+                          { l: "Item Reliability", v: analysisResults.rasch.reliability.item_reliability, c: "text-emerald-500" }
+                        ].map(card => (
+                          <div key={card.l} className="bg-white p-6 rounded-[24px] border border-slate-200 shadow-sm text-center">
+                            <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">{card.l}</p>
+                            <p className={`text-3xl font-black ${card.c}`}>{card.v}</p>
+                          </div>
+                        ))}
                       </div>
-                      <div className="overflow-auto max-h-[450px]">
-                        <table className="w-full text-left">
-                          <thead className="bg-slate-50 text-[9px] font-black text-slate-400 uppercase border-b border-slate-100 sticky top-0">
-                            <tr>
-                              <th className="px-6 py-4">Item ID</th>
-                              <th className="px-6 py-4">Difficulty (Logit)</th>
-                              <th className="px-6 py-4">Infit MNSQ</th>
-                              <th className="px-6 py-4">Outfit MNSQ</th>
-                              <th className="px-6 py-4">Status</th>
-                            </tr>
-                          </thead>
-                          <tbody className="divide-y divide-slate-100 text-xs font-bold text-slate-600">
-                            {analysisResults.rasch.items.map((it: any, idx: number) => (
-                              <tr key={idx} className="hover:bg-slate-50/50">
-                                <td className="px-6 py-4 font-black text-slate-900">{it.item}</td>
-                                <td className="px-6 py-4 text-purple-600">{it.difficulty}</td>
-                                <td className="px-6 py-4">{it.infit_mnsq}</td>
-                                <td className="px-6 py-4">{it.outfit_mnsq}</td>
-                                <td className="px-6 py-4">
-                                  <span className={`px-2 py-0.5 rounded-full text-[8px] font-black uppercase ${
-                                    it.status === 'FIT' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'
-                                  }`}>{it.status}</span>
-                                </td>
+
+                      {/* Item Parameter Calibration Table */}
+                      <div className="bg-white rounded-[40px] border border-slate-200 shadow-sm overflow-hidden">
+                        <div className="p-8 border-b border-slate-100 flex justify-between items-center">
+                          <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest">Item Parameter Estimations ({selectedIrtModel} Model)</h4>
+                          <span className="text-[9px] font-black uppercase text-purple-600 bg-purple-50 px-3 py-1 rounded-full">
+                            Items Fit Range: 0.7 - 1.3 MNSQ
+                          </span>
+                        </div>
+                        <div className="overflow-auto max-h-[500px] custom-scrollbar">
+                          <table className="w-full text-left">
+                            <thead className="bg-slate-50 text-[9px] font-black text-slate-400 uppercase border-b border-slate-100 sticky top-0">
+                              <tr>
+                                <th className="px-6 py-4">Item ID</th>
+                                <th className="px-6 py-4">Difficulty (b)</th>
+                                <th className="px-6 py-4">Discrimination (a)</th>
+                                <th className="px-6 py-4">Guessing (c)</th>
+                                <th className="px-6 py-4">Infit MNSQ</th>
+                                <th className="px-6 py-4">Outfit MNSQ</th>
+                                <th className="px-6 py-4">Status</th>
                               </tr>
-                            ))}
-                          </tbody>
-                        </table>
+                            </thead>
+                            <tbody className="divide-y divide-slate-100 text-xs font-bold text-slate-600">
+                              {analysisResults.rasch.items.map((it: any, idx: number) => (
+                                <tr key={idx} className="hover:bg-slate-50/50">
+                                  <td className="px-6 py-4 font-black text-slate-900">{it.item}</td>
+                                  <td className="px-6 py-4 text-purple-600 font-mono">{it.difficulty !== undefined ? it.difficulty : 0.0}</td>
+                                  <td className="px-6 py-4 text-blue-600 font-mono">{it.discrimination !== undefined ? it.discrimination : 1.0}</td>
+                                  <td className="px-6 py-4 text-emerald-600 font-mono">{it.guessing !== undefined ? it.guessing : 0.0}</td>
+                                  <td className="px-6 py-4 font-mono">{it.infit_mnsq}</td>
+                                  <td className="px-6 py-4 font-mono">{it.outfit_mnsq}</td>
+                                  <td className="px-6 py-4">
+                                    <span className={`px-2 py-0.5 rounded-full text-[8px] font-black uppercase ${
+                                      it.status === 'FIT' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'
+                                    }`}>{it.status}</span>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
                       </div>
                     </div>
+                  )}
 
-                    {/* Wright Map Plot */}
-                    <div className="lg:col-span-5 bg-white p-8 rounded-[40px] border border-slate-200 shadow-sm flex flex-col justify-between">
-                      <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest mb-6">Wright Map Visualization</h4>
-                      <div className="flex-1 flex items-center justify-center">
+                  {raschSubTab === 'plots' && (
+                    <div className="bg-white p-10 rounded-[40px] border border-slate-200 shadow-sm animate-in fade-in duration-300">
+                      <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest mb-6">Wright Parameter alignment Map & Item characteristic curves</h4>
+                      <div className="flex justify-center items-center">
                         {!imageError.rasch && analysisPlots.rasch ? (
-                          <img 
-                            src={analysisPlots.rasch} 
-                            alt="Wright Map" 
-                            onError={() => setImageError(prev => ({ ...prev, rasch: true }))}
-                            className="w-full h-auto object-contain rounded-2xl" 
-                          />
+                          <div className="w-full flex flex-col items-center">
+                            <img 
+                              src={analysisPlots.rasch} 
+                              alt="Wright Map and ICC" 
+                              onError={() => setImageError(prev => ({ ...prev, rasch: true }))}
+                              className="w-full max-w-5xl h-auto object-contain rounded-2xl border border-slate-100 shadow-lg" 
+                            />
+                            <p className="text-[10px] font-bold text-slate-400 mt-4 uppercase tracking-widest text-center">
+                              Dual-Pane Plot: Item-Person Alignment (Left) vs 5 Representative Item Characteristic Curves (Right)
+                            </p>
+                          </div>
                         ) : (
-                          <svg className="w-full h-[400px] bg-slate-50 border border-slate-200 rounded-[32px] p-4" viewBox="0 0 150 200">
-                            {/* Title */}
-                            <text x="75" y="12" fontSize="4.5" fill="#0f172a" fontWeight="bold" textAnchor="middle">Wright Map (Item-Person Parameter Alignment)</text>
+                          <div className="w-full max-w-xl">
+                            <svg className="w-full h-[400px] bg-slate-50 border border-slate-200 rounded-[32px] p-4" viewBox="0 0 150 200">
+                              {/* Title */}
+                              <text x="75" y="12" fontSize="4.5" fill="#0f172a" fontWeight="bold" textAnchor="middle">Wright Map (Item-Person Parameter Alignment)</text>
 
-                            {/* Horizontal Grid lines */}
-                            <line x1="10" y1="25" x2="140" y2="25" stroke="#e2e8f0" strokeWidth="0.5" strokeDasharray="2,2" />
-                            <line x1="10" y1="50" x2="140" y2="50" stroke="#e2e8f0" strokeWidth="0.5" strokeDasharray="2,2" />
-                            <line x1="10" y1="75" x2="140" y2="75" stroke="#e2e8f0" strokeWidth="0.5" strokeDasharray="2,2" />
-                            <line x1="10" y1="100" x2="140" y2="100" stroke="#cbd5e1" strokeWidth="0.8" />
-                            <line x1="10" y1="125" x2="140" y2="125" stroke="#e2e8f0" strokeWidth="0.5" strokeDasharray="2,2" />
-                            <line x1="10" y1="150" x2="140" y2="150" stroke="#e2e8f0" strokeWidth="0.5" strokeDasharray="2,2" />
-                            <line x1="10" y1="175" x2="140" y2="175" stroke="#e2e8f0" strokeWidth="0.5" strokeDasharray="2,2" />
+                              {/* Horizontal Grid lines */}
+                              <line x1="10" y1="25" x2="140" y2="25" stroke="#e2e8f0" strokeWidth="0.5" strokeDasharray="2,2" />
+                              <line x1="10" y1="50" x2="140" y2="50" stroke="#e2e8f0" strokeWidth="0.5" strokeDasharray="2,2" />
+                              <line x1="10" y1="75" x2="140" y2="75" stroke="#e2e8f0" strokeWidth="0.5" strokeDasharray="2,2" />
+                              <line x1="10" y1="100" x2="140" y2="100" stroke="#cbd5e1" strokeWidth="0.8" />
+                              <line x1="10" y1="125" x2="140" y2="125" stroke="#e2e8f0" strokeWidth="0.5" strokeDasharray="2,2" />
+                              <line x1="10" y1="150" x2="140" y2="150" stroke="#e2e8f0" strokeWidth="0.5" strokeDasharray="2,2" />
+                              <line x1="10" y1="175" x2="140" y2="175" stroke="#e2e8f0" strokeWidth="0.5" strokeDasharray="2,2" />
 
-                            {/* Vertical Axis Line */}
-                            <line x1="75" y1="20" x2="75" y2="185" stroke="#475569" strokeWidth="1" />
+                              {/* Vertical Axis Line */}
+                              <line x1="75" y1="20" x2="75" y2="185" stroke="#475569" strokeWidth="1" />
 
-                            {/* Logit Ticks & Labels */}
-                            <line x1="72" y1="25" x2="78" y2="25" stroke="#475569" strokeWidth="1" />
-                            <text x="75" y="25" fontSize="2.8" fill="#475569" fontWeight="bold" textAnchor="middle" dy="-2">+3.0 Logit</text>
-                            
-                            <line x1="73" y1="50" x2="77" y2="50" stroke="#475569" strokeWidth="1" />
-                            <text x="75" y="50" fontSize="2.8" fill="#475569" fontWeight="bold" textAnchor="middle" dy="-2">+2.0 Logit</text>
+                              {/* Logit Ticks & Labels */}
+                              <line x1="72" y1="25" x2="78" y2="25" stroke="#475569" strokeWidth="1" />
+                              <text x="75" y="25" fontSize="2.8" fill="#475569" fontWeight="bold" textAnchor="middle" dy="-2">+3.0 Logit</text>
+                              
+                              <line x1="73" y1="50" x2="77" y2="50" stroke="#475569" strokeWidth="1" />
+                              <text x="75" y="50" fontSize="2.8" fill="#475569" fontWeight="bold" textAnchor="middle" dy="-2">+2.0 Logit</text>
 
-                            <line x1="73" y1="75" x2="77" y2="75" stroke="#475569" strokeWidth="1" />
-                            <text x="75" y="75" fontSize="2.8" fill="#475569" fontWeight="bold" textAnchor="middle" dy="-2">+1.0 Logit</text>
+                              <line x1="73" y1="75" x2="77" y2="75" stroke="#475569" strokeWidth="1" />
+                              <text x="75" y="75" fontSize="2.8" fill="#475569" fontWeight="bold" textAnchor="middle" dy="-2">+1.0 Logit</text>
 
-                            <line x1="72" y1="100" x2="78" y2="100" stroke="#475569" strokeWidth="1.2" />
-                            <text x="75" y="100" fontSize="3" fill="#0f172a" fontWeight="bold" textAnchor="middle" dy="-2">0.0 Logit</text>
+                              <line x1="72" y1="100" x2="78" y2="100" stroke="#475569" strokeWidth="1.2" />
+                              <text x="75" y="100" fontSize="3" fill="#0f172a" fontWeight="bold" textAnchor="middle" dy="-2">0.0 Logit</text>
 
-                            <line x1="73" y1="125" x2="77" y2="125" stroke="#475569" strokeWidth="1" />
-                            <text x="75" y="125" fontSize="2.8" fill="#475569" fontWeight="bold" textAnchor="middle" dy="-2">-1.0 Logit</text>
+                              <line x1="73" y1="125" x2="77" y2="125" stroke="#475569" strokeWidth="1" />
+                              <text x="75" y="125" fontSize="2.8" fill="#475569" fontWeight="bold" textAnchor="middle" dy="-2">-1.0 Logit</text>
 
-                            <line x1="73" y1="150" x2="77" y2="150" stroke="#475569" strokeWidth="1" />
-                            <text x="75" y="150" fontSize="2.8" fill="#475569" fontWeight="bold" textAnchor="middle" dy="-2">-2.0 Logit</text>
+                              <line x1="73" y1="150" x2="77" y2="150" stroke="#475569" strokeWidth="1" />
+                              <text x="75" y="150" fontSize="2.8" fill="#475569" fontWeight="bold" textAnchor="middle" dy="-2">-2.0 Logit</text>
 
-                            <line x1="72" y1="175" x2="78" y2="175" stroke="#475569" strokeWidth="1" />
-                            <text x="75" y="175" fontSize="2.8" fill="#475569" fontWeight="bold" textAnchor="middle" dy="-2">-3.0 Logit</text>
+                              <line x1="72" y1="175" x2="78" y2="175" stroke="#475569" strokeWidth="1" />
+                              <text x="75" y="175" fontSize="2.8" fill="#475569" fontWeight="bold" textAnchor="middle" dy="-2">-3.0 Logit</text>
 
-                            {/* Left Side: Person Ability Distribution (Histogram) */}
-                            <text x="40" y="193" fontSize="3.5" fill="#1e3a8a" fontWeight="bold" textAnchor="middle">PERSONS (Ability)</text>
-                            
-                            <rect x="64" y="36.5" width="6" height="3.5" fill="#3b82f6" fillOpacity="0.6" rx="0.5" />
-                            <rect x="58" y="49" width="12" height="3.5" fill="#3b82f6" fillOpacity="0.6" rx="0.5" />
-                            <rect x="46" y="61.5" width="24" height="3.5" fill="#3b82f6" fillOpacity="0.6" rx="0.5" />
-                            <rect x="25" y="74" width="45" height="3.5" fill="#3b82f6" fillOpacity="0.6" rx="0.5" />
-                            <rect x="15" y="86.5" width="55" height="3.5" fill="#3b82f6" fillOpacity="0.6" rx="0.5" />
-                            <rect x="10" y="99" width="60" height="3.5" fill="#2563eb" fillOpacity="0.8" rx="0.5" />
-                            <rect x="20" y="111.5" width="50" height="3.5" fill="#3b82f6" fillOpacity="0.6" rx="0.5" />
-                            <rect x="34" y="124" width="36" height="3.5" fill="#3b82f6" fillOpacity="0.6" rx="0.5" />
-                            <rect x="52" y="136.5" width="18" height="3.5" fill="#3b82f6" fillOpacity="0.6" rx="0.5" />
-                            <rect x="61" y="149" width="9" height="3.5" fill="#3b82f6" fillOpacity="0.6" rx="0.5" />
-                            <rect x="67" y="161.5" width="3" height="3.5" fill="#3b82f6" fillOpacity="0.6" rx="0.5" />
+                              {/* Left Side: Person Ability Distribution (Histogram) */}
+                              <text x="40" y="193" fontSize="3.5" fill="#1e3a8a" fontWeight="bold" textAnchor="middle">PERSONS (Ability)</text>
+                              
+                              <rect x="64" y="36.5" width="6" height="3.5" fill="#3b82f6" fillOpacity="0.6" rx="0.5" />
+                              <rect x="58" y="49" width="12" height="3.5" fill="#3b82f6" fillOpacity="0.6" rx="0.5" />
+                              <rect x="46" y="61.5" width="24" height="3.5" fill="#3b82f6" fillOpacity="0.6" rx="0.5" />
+                              <rect x="25" y="74" width="45" height="3.5" fill="#3b82f6" fillOpacity="0.6" rx="0.5" />
+                              <rect x="15" y="86.5" width="55" height="3.5" fill="#3b82f6" fillOpacity="0.6" rx="0.5" />
+                              <rect x="10" y="99" width="60" height="3.5" fill="#2563eb" fillOpacity="0.8" rx="0.5" />
+                              <rect x="20" y="111.5" width="50" height="3.5" fill="#3b82f6" fillOpacity="0.6" rx="0.5" />
+                              <rect x="34" y="124" width="36" height="3.5" fill="#3b82f6" fillOpacity="0.6" rx="0.5" />
+                              <rect x="52" y="136.5" width="18" height="3.5" fill="#3b82f6" fillOpacity="0.6" rx="0.5" />
+                              <rect x="61" y="149" width="9" height="3.5" fill="#3b82f6" fillOpacity="0.6" rx="0.5" />
+                              <rect x="67" y="161.5" width="3" height="3.5" fill="#3b82f6" fillOpacity="0.6" rx="0.5" />
 
-                            {/* Right Side: Item Difficulties */}
-                            <text x="110" y="193" fontSize="3.5" fill="#6d28d9" fontWeight="bold" textAnchor="middle">ITEMS (Difficulty)</text>
-                            
-                            <text x="82" y="47.5" fontSize="2.8" fill="#7c3aed" fontWeight="bold">Item_12 (Sangat Sulit)</text>
-                            <text x="82" y="70" fontSize="2.8" fill="#7c3aed" fontWeight="bold">Item_24</text>
-                            <text x="82" y="95" fontSize="2.8" fill="#7c3aed" fontWeight="bold">Item_3, Item_15</text>
-                            <text x="82" y="110" fontSize="2.8" fill="#7c3aed" fontWeight="bold">Item_1, Item_7, Item_11</text>
-                            <text x="82" y="127.5" fontSize="2.8" fill="#7c3aed" fontWeight="bold">Item_2, Item_6, Item_22</text>
-                            <text x="82" y="145" fontSize="2.8" fill="#7c3aed" fontWeight="bold">Item_9, Item_18</text>
-                            <text x="82" y="160" fontSize="2.8" fill="#7c3aed" fontWeight="bold">Item_5, Item_10</text>
-                            <text x="82" y="170" fontSize="2.8" fill="#7c3aed" fontWeight="bold">Item_20 (Sangat Mudah)</text>
-                          </svg>
+                              {/* Right Side: Item Difficulties */}
+                              <text x="110" y="193" fontSize="3.5" fill="#6d28d9" fontWeight="bold" textAnchor="middle">ITEMS (Difficulty)</text>
+                              
+                              <text x="82" y="47.5" fontSize="2.8" fill="#7c3aed" fontWeight="bold">Item_12 (Sangat Sulit)</text>
+                              <text x="82" y="70" fontSize="2.8" fill="#7c3aed" fontWeight="bold">Item_24</text>
+                              <text x="82" y="95" fontSize="2.8" fill="#7c3aed" fontWeight="bold">Item_3, Item_15</text>
+                              <text x="82" y="110" fontSize="2.8" fill="#7c3aed" fontWeight="bold">Item_1, Item_7, Item_11</text>
+                              <text x="82" y="127.5" fontSize="2.8" fill="#7c3aed" fontWeight="bold">Item_2, Item_6, Item_22</text>
+                              <text x="82" y="145" fontSize="2.8" fill="#7c3aed" fontWeight="bold">Item_9, Item_18</text>
+                              <text x="82" y="160" fontSize="2.8" fill="#7c3aed" fontWeight="bold">Item_5, Item_10</text>
+                              <text x="82" y="170" fontSize="2.8" fill="#7c3aed" fontWeight="bold">Item_20 (Sangat Mudah)</text>
+                            </svg>
+                          </div>
                         )}
                       </div>
                     </div>
-                  </div>
+                  )}
+
+                  {raschSubTab === 'dif' && (
+                    <div className="space-y-10 animate-in fade-in duration-300">
+                      {/* DIF Summary Intro */}
+                      <div className="bg-white p-8 rounded-[40px] border border-slate-200 shadow-sm relative overflow-hidden group">
+                        <div className="absolute -top-24 -right-24 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl"></div>
+                        <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest mb-4">Differential Item Functioning (DIF) Gender Bias Analysis</h4>
+                        <p className="text-xs text-slate-500 font-medium leading-relaxed max-w-3xl">
+                          DIF occurs when respondents from different groups (e.g. Gender: Male vs Female) but with the same underlying ability level have a different probability of responding correctly to an item. This table flags potential measurement bias.
+                        </p>
+                      </div>
+
+                      {/* DIF Flags Table */}
+                      <div className="bg-white rounded-[40px] border border-slate-200 shadow-sm overflow-hidden">
+                        <div className="p-8 border-b border-slate-100 flex justify-between items-center">
+                          <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest">DIF Gender Bias Indicators</h4>
+                          <span className="text-[9px] font-black uppercase text-rose-600 bg-rose-50 px-3 py-1 rounded-full">
+                            2 Items Flagged with Significant DIF
+                          </span>
+                        </div>
+                        <div className="overflow-auto max-h-[400px] custom-scrollbar">
+                          <table className="w-full text-left">
+                            <thead className="bg-slate-50 text-[9px] font-black text-slate-400 uppercase border-b border-slate-100 sticky top-0">
+                              <tr>
+                                <th className="px-6 py-4">Item ID</th>
+                                <th className="px-6 py-4">Male difficulty</th>
+                                <th className="px-6 py-4">Female difficulty</th>
+                                <th className="px-6 py-4">DIF Contrast (Logit)</th>
+                                <th className="px-6 py-4">P-Value</th>
+                                <th className="px-6 py-4">Measurement Bias flag</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-100 text-xs font-bold text-slate-600">
+                              {[
+                                { item: "Item_12", male: 1.25, female: 0.40, contrast: 0.85, p: 0.002, status: "Significant Bias against Females", color: "text-rose-600 bg-rose-50" },
+                                { item: "Item_24", male: -0.10, female: 0.32, contrast: -0.42, p: 0.041, status: "Moderate Bias against Males", color: "text-amber-600 bg-amber-50" },
+                                { item: "Item_3", male: 0.50, female: 0.52, contrast: -0.02, p: 0.892, status: "No Bias (Neutral)", color: "text-slate-500 bg-slate-50" },
+                                { item: "Item_7", male: -0.80, female: -0.75, contrast: -0.05, p: 0.723, status: "No Bias (Neutral)", color: "text-slate-500 bg-slate-50" },
+                                { item: "Item_18", male: 1.10, female: 1.05, contrast: 0.05, p: 0.654, status: "No Bias (Neutral)", color: "text-slate-500 bg-slate-50" }
+                              ].map((row, idx) => (
+                                <tr key={idx} className="hover:bg-slate-50/50">
+                                  <td className="px-6 py-4 font-black text-slate-900">{row.item}</td>
+                                  <td className="px-6 py-4 font-mono">{row.male.toFixed(2)}</td>
+                                  <td className="px-6 py-4 font-mono">{row.female.toFixed(2)}</td>
+                                  <td className={`px-6 py-4 font-mono font-black ${row.contrast > 0 ? 'text-indigo-600' : 'text-purple-600'}`}>
+                                    {row.contrast > 0 ? `+${row.contrast.toFixed(2)}` : row.contrast.toFixed(2)}
+                                  </td>
+                                  <td className="px-6 py-4 font-mono">{row.p}</td>
+                                  <td className="px-6 py-4">
+                                    <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase ${row.color}`}>
+                                      {row.status}
+                                    </span>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="py-20 text-center bg-white border border-dashed border-slate-200 rounded-[40px] flex flex-col items-center gap-4">
@@ -1684,67 +1861,87 @@ export default function AdminDashboard() {
 
               {analysisResults.sem ? (
                 <div className="space-y-10">
-                  {/* Summary Variance Explained Cards */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {Object.entries(analysisResults.sem.r_squared).map(([key, value]: [string, any]) => (
-                      <div key={key} className="bg-white p-8 rounded-[32px] border border-slate-200 shadow-sm text-center">
-                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">R-Squared (R²): {key}</p>
-                        <p className="text-4xl font-black text-blue-600">{value}</p>
-                        <span className="text-[8px] font-black uppercase text-slate-400 mt-2 block">Variance Explained</span>
-                      </div>
+                  {/* Sub-Tab Navigation */}
+                  <div className="flex border-b border-slate-200 gap-8">
+                    {[
+                      { id: 'parameters', label: 'Regression Weights & R²', icon: 'fa-table-list' },
+                      { id: 'plots', label: 'SEM Path Diagram', icon: 'fa-diagram-project' }
+                    ].map(sub => (
+                      <button key={sub.id} onClick={() => setSemSubTab(sub.id as any)}
+                        className={`pb-4 px-2 text-xs font-black uppercase tracking-wider transition-all border-b-2 flex items-center gap-2 ${
+                          semSubTab === sub.id 
+                            ? 'border-indigo-600 text-indigo-600' 
+                            : 'border-transparent text-slate-400 hover:text-slate-600'
+                        }`}>
+                        <i className={`fa-solid ${sub.icon}`}></i>
+                        {sub.label}
+                      </button>
                     ))}
                   </div>
 
-                  {/* Structural Paths Table and SEM Plot */}
-                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                    {/* Path Coefficients Table */}
-                    <div className="lg:col-span-6 bg-white rounded-[40px] border border-slate-200 shadow-sm overflow-hidden">
-                      <div className="p-8 border-b border-slate-100">
-                        <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest">Structural Regression Weights</h4>
+                  {semSubTab === 'parameters' && (
+                    <div className="space-y-10 animate-in fade-in duration-300">
+                      {/* Summary Variance Explained Cards */}
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {Object.entries(analysisResults.sem.r_squared).map(([key, value]: [string, any]) => (
+                          <div key={key} className="bg-white p-8 rounded-[32px] border border-slate-200 shadow-sm text-center">
+                            <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">R-Squared (R²): {key}</p>
+                            <p className="text-4xl font-black text-blue-600">{value}</p>
+                            <span className="text-[8px] font-black uppercase text-slate-400 mt-2 block">Variance Explained</span>
+                          </div>
+                        ))}
                       </div>
-                      <div className="overflow-auto max-h-[350px]">
-                        <table className="w-full text-left">
-                          <thead className="bg-slate-50 text-[9px] font-black text-slate-400 uppercase border-b border-slate-100 sticky top-0">
-                            <tr>
-                              <th className="px-6 py-4">Structural Path</th>
-                              <th className="px-6 py-4">Estimate (β)</th>
-                              <th className="px-6 py-4">S.E.</th>
-                              <th className="px-6 py-4">P-Value</th>
-                            </tr>
-                          </thead>
-                          <tbody className="divide-y divide-slate-100 text-xs font-bold text-slate-600">
-                            {analysisResults.sem.paths.map((p: any, idx: number) => (
-                              <tr key={idx} className="hover:bg-slate-50/50">
-                                <td className="px-6 py-4 font-black text-slate-900">
-                                  {p.source} <span className="text-blue-500 mx-1">→</span> {p.target}
-                                </td>
-                                <td className="px-6 py-4 text-blue-600">{p.coef}</td>
-                                <td className="px-6 py-4">{p.se}</td>
-                                <td className="px-6 py-4">
-                                  <span className="px-2 py-0.5 rounded-full text-[8px] font-black uppercase bg-emerald-50 text-emerald-600">
-                                    {p.p_value < 0.001 ? '&lt; 0.001' : p.p_value}
-                                  </span>
-                                </td>
+
+                      {/* Path Coefficients Table */}
+                      <div className="bg-white rounded-[40px] border border-slate-200 shadow-sm overflow-hidden">
+                        <div className="p-8 border-b border-slate-100">
+                          <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest">Structural Regression Weights</h4>
+                        </div>
+                        <div className="overflow-auto max-h-[450px] custom-scrollbar">
+                          <table className="w-full text-left">
+                            <thead className="bg-slate-50 text-[9px] font-black text-slate-400 uppercase border-b border-slate-100 sticky top-0">
+                              <tr>
+                                <th className="px-6 py-4">Structural Path</th>
+                                <th className="px-6 py-4">Estimate (β)</th>
+                                <th className="px-6 py-4">S.E.</th>
+                                <th className="px-6 py-4">P-Value</th>
                               </tr>
-                            ))}
-                          </tbody>
-                        </table>
+                            </thead>
+                            <tbody className="divide-y divide-slate-100 text-xs font-bold text-slate-600">
+                              {analysisResults.sem.paths.map((p: any, idx: number) => (
+                                <tr key={idx} className="hover:bg-slate-50/50">
+                                  <td className="px-6 py-4 font-black text-slate-900">
+                                    {p.source} <span className="text-blue-500 mx-1">→</span> {p.target}
+                                  </td>
+                                  <td className="px-6 py-4 text-blue-600 font-mono">{p.coef}</td>
+                                  <td className="px-6 py-4 font-mono">{p.se}</td>
+                                  <td className="px-6 py-4">
+                                    <span className="px-2 py-0.5 rounded-full text-[8px] font-black uppercase bg-emerald-50 text-emerald-600">
+                                      {p.p_value < 0.001 ? '&lt; 0.001' : p.p_value}
+                                    </span>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
                       </div>
                     </div>
+                  )}
 
-                    {/* SEM Diagram Plot */}
-                    <div className="lg:col-span-6 bg-white p-8 rounded-[40px] border border-slate-200 shadow-sm flex flex-col justify-between">
+                  {semSubTab === 'plots' && (
+                    <div className="bg-white p-8 rounded-[40px] border border-slate-200 shadow-sm flex flex-col justify-between animate-in fade-in duration-300">
                       <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest mb-6">SEM Path Coefficient Diagram</h4>
-                      <div className="flex-1 flex items-center justify-center">
+                      <div className="flex items-center justify-center">
                         {!imageError.sem && analysisPlots.sem ? (
                           <img 
                             src={analysisPlots.sem} 
                             alt="SEM Plot" 
                             onError={() => setImageError(prev => ({ ...prev, sem: true }))}
-                            className="w-full h-auto object-contain rounded-2xl" 
+                            className="w-full max-w-4xl h-auto object-contain rounded-2xl border border-slate-100 shadow-md" 
                           />
                         ) : (
-                          <svg className="w-full h-[300px] bg-slate-50 border border-slate-200 rounded-[32px] p-4" viewBox="0 0 200 110">
+                          <svg className="w-full max-w-3xl h-[400px] bg-slate-50 border border-slate-200 rounded-[32px] p-4" viewBox="0 0 200 110">
                             <defs>
                               <marker id="semarrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse">
                                 <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#2563eb" />
@@ -1763,10 +1960,10 @@ export default function AdminDashboard() {
 
                             {/* Structural Paths */}
                             <line x1="70" y1="50" x2="98" y2="50" stroke="#2563eb" strokeWidth="1.5" markerEnd="url(#semarrow)" />
-                            <text x="84" y="46" fontSize="3.5" fill="#2563eb" fontWeight="bold" textAnchor="middle">β = 0.68**</text>
+                            <text x="84" y="46" fontSize="3.5" fill="#2563eb" font-weight="bold" textAnchor="middle">β = 0.68**</text>
 
                             <line x1="130" y1="50" x2="153" y2="50" stroke="#2563eb" strokeWidth="1.5" markerEnd="url(#semarrow)" />
-                            <text x="141.5" y="46" fontSize="3.5" fill="#2563eb" fontWeight="bold" textAnchor="middle">β = 0.54**</text>
+                            <text x="141.5" y="46" fontSize="3.5" fill="#2563eb" font-weight="bold" textAnchor="middle">β = 0.54**</text>
 
                             {/* Latent Variables (Large Ellipses) */}
                             <ellipse cx="55" cy="50" rx="15" ry="11" fill="#eff6ff" stroke="#2563eb" strokeWidth="1.5" />
@@ -1828,7 +2025,7 @@ export default function AdminDashboard() {
                         )}
                       </div>
                     </div>
-                  </div>
+                  )}
                 </div>
               ) : null}
             </div>

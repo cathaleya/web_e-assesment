@@ -45,7 +45,7 @@ sudo systemctl enable fail2ban
 ## 3. Instalasi Docker & Docker Compose
 Hapus kebutuhan menginstal Node.js dan PostgreSQL secara manual di OS VPS utama. Cukup instal Docker:
 ```bash
-sudo apt install docker.io docker-compose -y
+sudo apt install docker.io docker-compose-v2 -y
 sudo systemctl enable --now docker
 ```
 
@@ -79,6 +79,9 @@ DATABASE_URL="postgresql://postgres:GantiDenganPasswordYangSangatAman123!@db:543
 ADMIN_USERNAME=admin.hdap
 ADMIN_PASSWORD=GantiPasswordAdminBapak21!
 
+# Google Gemini API Key
+GEMINI_API_KEY="AIzaSyA98EOZqgSeWh9dAoqrDuhb8WOKC6Om-0g"
+
 # URL aplikasi
 NEXT_PUBLIC_APP_URL=https://domain-bapak.com
 
@@ -86,15 +89,17 @@ NODE_ENV=production
 ```
 *Tekan `Ctrl+O`, `Enter`, lalu `Ctrl+X` untuk simpan.*
 
+
 ### C. Build & Jalankan Docker Container
 Jalankan Docker Compose untuk mengunduh database PostgreSQL, membuild aplikasi Next.js, dan menjalankannya di background:
 ```bash
-docker-compose up -d --build
+docker compose up -d --build
 ```
 Untuk memantau log aplikasi guna memastikan koneksi database sukses:
 ```bash
-docker-compose logs -f
+docker compose logs -f
 ```
+
 
 ---
 
@@ -168,7 +173,7 @@ cd /var/www/web_e-assesment
 git pull origin main
 
 # 2. Rebuild dan restart container tanpa downtime yang lama
-docker-compose up -d --build
+docker compose up -d --build
 ```
 
 ---
