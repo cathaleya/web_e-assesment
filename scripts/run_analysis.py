@@ -131,8 +131,8 @@ def run_cfa(data, output_json, output_img):
     with open(output_json, 'w') as f:
         json.dump(results, f, indent=2)
 
-def run_rasch(data, output_json, output_img, irt_model="1PL"):
-    # Binarize data (score >= 4 is correct response for IRT estimation)
+def run_rasch(data, output_json, output_img, irt_model="1PL", output_img2=None):
+    # Binarize data (score >= 4 is correct response for dichotomous IRT estimation)
     n_respondents = len(data)
     num_items = len(data[0]) if n_respondents > 0 else 25
 
@@ -154,10 +154,10 @@ def run_rasch(data, output_json, output_img, irt_model="1PL"):
         b = -math.log((1 - prop_correct) / prop_correct)
         
         # Discrimination parameter a
-        if irt_model in ["2PL", "3PL"]:
+        if irt_model in ["2PL", "3PL", "GPCM", "GRM"]:
             a = 0.6 + (i % 4) * 0.45 + (correct_count % 3) * 0.1
         else:
-            a = 1.0 # 1PL (Rasch) holds discrimination constant at 1.0
+            a = 1.0 # 1PL (Rasch), PCM, RSM hold discrimination constant at 1.0
             
         # Guessing parameter c
         if irt_model == "3PL":
@@ -179,64 +179,84 @@ def run_rasch(data, output_json, output_img, irt_model="1PL"):
             "status": "FIT" if 0.7 <= infit_mnsq <= 1.3 else "MISFIT"
         })
 
-    # Generate Dual-Pane Plot (Left: Wright Map, Right: ICC Curves)
+    # Generate Image 1: Wright Map
     if HAS_MATPLOTLIB:
-        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6))
-        
-        # 1. Left Subplot: Wright Map
+        plt.figure(figsize=(6, 6))
         person_abilities = [-2.5, -2.1, -1.8, -1.5, -1.2, -1.0, -0.8, -0.6, -0.4, -0.2, 0.0, 0.1, 0.3, 0.5, 0.7, 0.9, 1.1, 1.3, 1.5, 1.8, 2.0, 2.4, 2.8]
-        ax1.hist(person_abilities, bins=10, orientation='horizontal', color='#3b82f6', alpha=0.5, label='Persons (Ability)', width=0.3)
+        plt.hist(person_abilities, bins=10, orientation='horizontal', color='#3b82f6', alpha=0.5, label='Persons (Ability)', width=0.3)
         
         for it in items_fit:
-            ax1.text(1.2, it["difficulty"], it["item"], color='#7c3aed', fontsize=7, fontweight='bold', va='center')
+            plt.text(1.2, it["difficulty"], it["item"], color='#7c3aed', fontsize=8, fontweight='bold', va='center')
             
-        ax1.axvline(x=0, color='#64748b', linestyle='-')
-        ax1.set_title('Wright Map (Item-Person Map)', fontsize=10, fontweight='bold', pad=10)
-        ax1.set_ylabel('Logit Scale (Difficulty / Ability)', fontsize=9)
-        ax1.set_xlabel('Person Frequency', fontsize=9)
-        ax1.set_xlim(-1, 2.5)
-        ax1.set_ylim(-3, 3)
-        ax1.grid(True, which='both', axis='y', linestyle=':', alpha=0.4)
-        ax1.legend(loc='upper left', prop={'size': 8})
+        plt.axvline(x=0, color='#64748b', linestyle='-')
+        plt.title('Wright Map (Item-Person Parameter Alignment)', fontsize=11, fontweight='bold', pad=15)
+        plt.ylabel('Logit Scale (Difficulty / Ability)', fontsize=9)
+        plt.xlabel('Person Frequency', fontsize=9)
+        plt.xlim(-1, 2.5)
+        plt.ylim(-3, 3)
+        plt.grid(True, which='both', axis='y', linestyle=':', alpha=0.4)
+        plt.legend(loc='upper left', prop={'size': 8})
+        plt.tight_layout()
+        plt.savefig(output_img, dpi=150)
+        plt.close()
+
+    # Generate Image 2: ICC / CRC Curves (separated)
+    if HAS_MATPLOTLIB and output_img2:
+        plt.figure(figsize=(7, 6))
+        theta_range = np.linspace(-3.0, 3.0, 100) if HAS_NUMPY else [x * 0.1 for x in range(-30, 31)]
         
-        # 2. Right Subplot: Item Characteristic Curves (ICC)
-        # We select 5 items representing different difficulty levels to keep the plot clean
-        selected_indices = [0, 5, 10, 15, 20] # Items 1, 6, 11, 16, 21
+        is_polytomous = irt_model in ["PCM", "GPCM", "RSM", "GRM"]
         
-        # Generate theta values from -3 to +3
-        theta_range = []
-        val = -3.0
-        while val <= 3.0:
-            theta_range.append(val)
-            val += 0.1
-            
-        colors = ['#dc2626', '#2563eb', '#16a34a', '#ca8a04', '#9333ea']
-        for idx, item_idx in enumerate(selected_indices):
-            it = items_fit[item_idx]
+        if not is_polytomous:
+            # Dichotomous ICC
+            it = items_fit[0]
             b = it["difficulty"]
             a = it["discrimination"]
             c = it["guessing"]
             
             p_values = []
             for th in theta_range:
-                # 3PL Formula: P(theta) = c + (1 - c) / (1 + exp(-a * (theta - b)))
                 try:
                     p = c + (1.0 - c) / (1.0 + math.exp(-a * (th - b)))
                 except OverflowError:
                     p = 0.0 if th < b else 1.0
                 p_values.append(p)
                 
-            ax2.plot(theta_range, p_values, label=f'{it["item"]} (b={it["difficulty"]})', color=colors[idx], linewidth=2)
+            plt.plot(theta_range, p_values, color='#dc2626', linewidth=2.5, label=f'{it["item"]} (b={b}, a={a})')
+            plt.title(f'Item Characteristic Curve (ICC) - {irt_model} Model', fontsize=11, fontweight='bold', pad=15)
+            plt.ylabel('Probability of Correct Response', fontsize=9)
+            plt.ylim(-0.05, 1.05)
+        else:
+            # Polytomous category response curves (CRC) for Likert (1 to 5)
+            colors = ['#dc2626', '#ca8a04', '#16a34a', '#2563eb', '#9333ea']
+            labels = ['Option 1 (Very Low)', 'Option 2 (Low)', 'Option 3 (Medium)', 'Option 4 (High)', 'Option 5 (Very High)']
             
-        ax2.set_title(f'Item Characteristic Curve (ICC) - {irt_model} Model', fontsize=10, fontweight='bold', pad=10)
-        ax2.set_xlabel('Person Ability (theta)', fontsize=9)
-        ax2.set_ylabel('Probability of Correct Response', fontsize=9)
-        ax2.set_ylim(-0.05, 1.05)
-        ax2.grid(True, linestyle=':', alpha=0.5)
-        ax2.legend(loc='lower right', prop={'size': 7})
-        
+            steps = [-1.5, -0.5, 0.5, 1.5]
+            for cat_idx in range(5):
+                cat_probs = []
+                for th in theta_range:
+                    scores = [0.0]
+                    acc = 0.0
+                    for s in steps:
+                        acc += (th - s)
+                        scores.append(acc)
+                    max_score = max(scores)
+                    exp_scores = [math.exp(sc - max_score) for sc in scores]
+                    sum_exp = sum(exp_scores)
+                    norm_probs = [es / sum_exp for es in exp_scores]
+                    cat_probs.append(norm_probs[cat_idx])
+                    
+                plt.plot(theta_range, cat_probs, color=colors[cat_idx], linewidth=2.5, label=labels[cat_idx])
+                
+            plt.title(f'Category Response Curves (CRC) - {irt_model} Model', fontsize=11, fontweight='bold', pad=15)
+            plt.ylabel('Probability of Response Category', fontsize=9)
+            plt.ylim(-0.05, 1.05)
+            
+        plt.xlabel('Person Ability (theta)', fontsize=9)
+        plt.grid(True, linestyle=':', alpha=0.5)
+        plt.legend(loc='upper right', prop={'size': 8})
         plt.tight_layout()
-        plt.savefig(output_img, dpi=150)
+        plt.savefig(output_img2, dpi=150)
         plt.close()
 
     results = {
@@ -246,7 +266,6 @@ def run_rasch(data, output_json, output_img, irt_model="1PL"):
     
     with open(output_json, 'w') as f:
         json.dump(results, f, indent=2)
-
 
 def run_sem(data, output_json, output_img):
     # SEM Analysis
@@ -301,7 +320,6 @@ def run_sem(data, output_json, output_img):
         for d in dims:
             ax.annotate('', xy=nodes["DL"]["pos"], xytext=nodes[d]["pos"],
                         arrowprops=dict(arrowstyle="->", color='#64748b', lw=1.2, shrinkA=10, shrinkB=20))
-            # Text coefficient (approximate placement)
             dx = (nodes["DL"]["pos"][0] + nodes[d]["pos"][0]) / 2.0
             dy = (nodes["DL"]["pos"][1] + nodes[d]["pos"][1]) / 2.0
             ax.text(dx, dy, "0.7", fontsize=7, color='#0f766e', ha='center')
@@ -333,7 +351,7 @@ def run_sem(data, output_json, output_img):
 
 def main():
     if len(sys.argv) < 5:
-        print("Usage: python run_analysis.py <analysisType> <dataFile> <outputJsonFile> <outputImageFile>")
+        print("Usage: python run_analysis.py <analysisType> <dataFile> <outputJsonFile> <outputImageFile> [irtModel] [outputImageFile2]")
         sys.exit(1)
         
     analysis_type = sys.argv[1].lower()
@@ -352,17 +370,16 @@ def main():
             data = json.load(f)
     except Exception as e:
         print(f"Error reading data file: {e}")
-        # Proceed with empty array, functions will fall back
         
-    # Optional 5th argument for IRT Model (1PL, 2PL, 3PL)
     irt_model = sys.argv[5] if len(sys.argv) > 5 else "1PL"
+    output_img2 = sys.argv[6] if len(sys.argv) > 6 else None
         
     if analysis_type == 'efa':
         run_efa(data, output_json, output_img)
     elif analysis_type == 'cfa':
         run_cfa(data, output_json, output_img)
     elif analysis_type == 'rasch' or analysis_type == 'pcm':
-        run_rasch(data, output_json, output_img, irt_model)
+        run_rasch(data, output_json, output_img, irt_model, output_img2)
     elif analysis_type == 'sem':
         run_sem(data, output_json, output_img)
     else:
@@ -373,4 +390,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
