@@ -1168,6 +1168,14 @@ export default function AdminDashboard() {
                       {analysisLoading.efa ? <i className="fa-solid fa-spinner animate-spin"></i> : <i className="fa-solid fa-bolt"></i>}
                       {analysisLoading.efa ? 'Running...' : 'Run EFA'}
                     </button>
+                    {analysisResults.efa && (
+                      <a 
+                        href={`/api/admin/analysis/download?type=efa&method=${analysisMethod.efa}`}
+                        className="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-xl text-[10px] uppercase tracking-widest transition-all flex items-center gap-2">
+                        <i className="fa-solid fa-file-zipper"></i>
+                        Download Sepaket
+                      </a>
+                    )}
                   </div>
                 </div>
               </div>
@@ -1402,6 +1410,14 @@ export default function AdminDashboard() {
                       {analysisLoading.cfa ? <i className="fa-solid fa-spinner animate-spin"></i> : <i className="fa-solid fa-bolt"></i>}
                       {analysisLoading.cfa ? 'Running...' : 'Run CFA'}
                     </button>
+                    {analysisResults.cfa && (
+                      <a 
+                        href={`/api/admin/analysis/download?type=cfa&method=${analysisMethod.cfa}`}
+                        className="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-xl text-[10px] uppercase tracking-widest transition-all flex items-center gap-2">
+                        <i className="fa-solid fa-file-zipper"></i>
+                        Download Sepaket
+                      </a>
+                    )}
                   </div>
                 </div>
               </div>
@@ -1641,6 +1657,14 @@ export default function AdminDashboard() {
                       {analysisLoading.rasch ? <i className="fa-solid fa-spinner animate-spin"></i> : <i className="fa-solid fa-bolt"></i>}
                       {analysisLoading.rasch ? 'Running...' : 'Run Rasch Model'}
                     </button>
+                    {analysisResults.rasch && (
+                      <a 
+                        href={`/api/admin/analysis/download?type=rasch&method=${analysisMethod.rasch}`}
+                        className="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-xl text-[10px] uppercase tracking-widest transition-all flex items-center gap-2">
+                        <i className="fa-solid fa-file-zipper"></i>
+                        Download Sepaket
+                      </a>
+                    )}
                   </div>
                 </div>
               </div>
@@ -1992,6 +2016,14 @@ export default function AdminDashboard() {
                       {analysisLoading.sem ? <i className="fa-solid fa-spinner animate-spin"></i> : <i className="fa-solid fa-bolt"></i>}
                       {analysisLoading.sem ? 'Running...' : 'Run SEM'}
                     </button>
+                    {analysisResults.sem && (
+                      <a 
+                        href={`/api/admin/analysis/download?type=sem&method=${analysisMethod.sem}`}
+                        className="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-xl text-[10px] uppercase tracking-widest transition-all flex items-center gap-2">
+                        <i className="fa-solid fa-file-zipper"></i>
+                        Download Sepaket
+                      </a>
+                    )}
                   </div>
                 </div>
               </div>
