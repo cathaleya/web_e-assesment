@@ -24,6 +24,7 @@ import {
   calculatePearsonCorrelation,
   estimateRaschLogits
 } from "@/lib/psychometrics";
+import AssessmentOverview from "../components/AssessmentOverview";
 
 // Menghindari timeout saat build di VPS
 export const dynamic = "force-dynamic";
@@ -56,6 +57,21 @@ export default function AdminDashboard() {
   const [currentTab, setCurrentTab] = useState("madel5c");
   const [isMounted, setIsMounted] = useState(false);
   const [users, setUsers] = useState<any[]>([]);
+  const [selectedUser, setSelectedUser] = useState<any>(null);
+  const [selectedUserStats, setSelectedUserStats] = useState<any>(null);
+
+  useEffect(() => {
+    if (!selectedUser) {
+      setSelectedUserStats(null);
+      return;
+    }
+    fetch(`/api/user/stats?userId=${selectedUser.id}`)
+      .then((res) => res.json())
+      .then((data) => {
+        setSelectedUserStats(data.stats);
+      })
+      .catch((err) => console.error("Error fetching stats:", err));
+  }, [selectedUser]);
   const [stats, setStats] = useState<AdminStats>({
     participants: 284, alpha: 0.86, omega: 0.88, rmsea: 0.045, cfi: 0.962, tli: 0.941, difCount: 2, predictiveValidity: 0.75
   });
@@ -961,7 +977,7 @@ export default function AdminDashboard() {
                             ? 'bg-amber-100 text-amber-700' 
                             : 'bg-slate-100 text-slate-500';
                           return (
-                          <tr key={idx} className="hover:bg-slate-50/50 transition-all">
+                          <tr key={idx} onClick={() => setSelectedUser(user)} className="hover:bg-slate-50/50 transition-all cursor-pointer">
                             <td className="px-10 py-6 font-bold text-slate-900 text-xs">{user.name}</td>
                             <td className="px-10 py-6 text-[11px] font-bold text-slate-500 uppercase">{user.campus}</td>
                             <td className="px-10 py-6 font-black text-blue-600 text-xs">{pdiScore ?? <span className="text-slate-300">—</span>}</td>
@@ -2241,6 +2257,45 @@ export default function AdminDashboard() {
           )}
         </div>
       </main>
+
+      {/* Participant Overview Modal */}
+      {selectedUser && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div 
+            onClick={() => setSelectedUser(null)}
+            className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
+          ></div>
+          <div className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto bg-slate-100 rounded-3xl p-2 shadow-2xl border border-slate-200/50 animate-in fade-in zoom-in duration-300">
+            <div className="absolute right-6 top-6 z-50">
+              <button 
+                onClick={() => setSelectedUser(null)}
+                className="w-10 h-10 bg-white hover:bg-slate-100 rounded-full flex items-center justify-center text-slate-500 hover:text-slate-800 shadow-md border transition-all"
+              >
+                <i className="fa-solid fa-xmark text-lg"></i>
+              </button>
+            </div>
+            
+            {selectedUserStats ? (
+              <AssessmentOverview
+                userName={selectedUser.name}
+                userCampus={selectedUser.campus}
+                sessionDate="15 Okt 2023"
+                madelScore={selectedUserStats.madel5c || 0}
+                preliminaryScore={selectedUserStats.preliminary || 0}
+                surveyDone={selectedUserStats.surveyDone || false}
+                radarData={selectedUserStats.radar || [85, 90, 80, 75, 88]}
+                onExit={() => setSelectedUser(null)}
+                isAdminMode={true}
+              />
+            ) : (
+              <div className="bg-white rounded-3xl p-20 flex flex-col items-center justify-center gap-4 border shadow-sm">
+                <i className="fa-solid fa-spinner animate-spin text-blue-600 text-3xl"></i>
+                <p className="text-xs font-black uppercase text-slate-400 tracking-widest">Memuat Profil Peserta...</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
