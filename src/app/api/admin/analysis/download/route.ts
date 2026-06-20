@@ -67,8 +67,8 @@ export async function GET(req: Request) {
           parsed.items.forEach((it: any) => {
             summaryText += `- ${it.item}: difficulty (b) = ${it.difficulty}, discrimination (a) = ${it.discrimination}, fit status = ${it.status}\n`;
           });
-        } else if (type === 'sem') {
-          summaryText += `SEM Path Coefficients:\n`;
+        } else if (type === 'sem' || type === 'cbsem') {
+          summaryText += `${type.toUpperCase()} Path Coefficients:\n`;
           parsed.paths.forEach((p: any) => {
             summaryText += `- ${p.source} -> ${p.target}: beta = ${p.coef}, p-value = ${p.p_value}\n`;
           });
@@ -76,6 +76,16 @@ export async function GET(req: Request) {
           Object.entries(parsed.r_squared).forEach(([k, v]) => {
             summaryText += `- ${k}: R2 = ${v}\n`;
           });
+          if (type === 'cbsem' && parsed.fit_indices) {
+            summaryText += `\nGoodness-of-Fit (GoF) Indices:\n`;
+            summaryText += `- Chi-Square: ${parsed.fit_indices.chi_square}\n`;
+            summaryText += `- df: ${parsed.fit_indices.df}\n`;
+            summaryText += `- p-value: ${parsed.fit_indices.p_value}\n`;
+            summaryText += `- CFI: ${parsed.fit_indices.cfi}\n`;
+            summaryText += `- TLI: ${parsed.fit_indices.tli}\n`;
+            summaryText += `- RMSEA: ${parsed.fit_indices.rmsea}\n`;
+            summaryText += `- SRMR: ${parsed.fit_indices.srmr}\n`;
+          }
         }
         
         zip.addFile(`readable_report.txt`, Buffer.from(summaryText, 'utf8'));

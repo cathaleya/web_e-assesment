@@ -4,6 +4,55 @@ import { exec } from 'child_process';
 import path from 'path';
 import fs from 'fs';
 
+export async function GET(req: Request) {
+  try {
+    const outputDir = path.join(process.cwd(), 'public', 'analysis', 'outputs');
+    if (!fs.existsSync(outputDir)) {
+      return NextResponse.json({ success: true, results: {}, plots: {}, plots2: {} });
+    }
+
+    const files = fs.readdirSync(outputDir);
+    const results: Record<string, any> = {};
+    const plots: Record<string, string> = {};
+    const plots2: Record<string, string> = {};
+
+    files.forEach(file => {
+      const filePath = path.join(outputDir, file);
+      if (file.endsWith('_output.json')) {
+        try {
+          const typeAndMethod = file.replace('_output.json', '');
+          const lastUnderscore = typeAndMethod.lastIndexOf('_');
+          const type = typeAndMethod.substring(0, lastUnderscore);
+          const content = fs.readFileSync(filePath, 'utf8');
+          results[type] = JSON.parse(content);
+        } catch (e) {
+          console.error(`Error reading cached output file ${file}:`, e);
+        }
+      } else if (file.endsWith('_plot.png')) {
+        const typeAndMethod = file.replace('_plot.png', '');
+        const lastUnderscore = typeAndMethod.lastIndexOf('_');
+        const type = typeAndMethod.substring(0, lastUnderscore);
+        plots[type] = `/analysis/outputs/${file}?t=${Date.now()}`;
+      } else if (file.endsWith('_plot2.png')) {
+        const typeAndMethod = file.replace('_plot2.png', '');
+        const lastUnderscore = typeAndMethod.lastIndexOf('_');
+        const type = typeAndMethod.substring(0, lastUnderscore);
+        plots2[type] = `/analysis/outputs/${file}?t=${Date.now()}`;
+      }
+    });
+
+    return NextResponse.json({
+      success: true,
+      results,
+      plots,
+      plots2
+    });
+  } catch (error) {
+    console.error('API admin analysis status error:', error);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+  }
+}
+
 export async function POST(req: Request) {
   try {
     const { method, analysisType, irtModel, customData } = await req.json();

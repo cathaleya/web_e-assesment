@@ -274,6 +274,24 @@ export default function AdminDashboard() {
   useEffect(() => {
     setIsMounted(true);
     fetchData();
+
+    // Load previously run analysis results if they exist on the server
+    fetch('/api/admin/analysis/run')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          if (data.results) {
+            setAnalysisResults(prev => ({ ...prev, ...data.results }));
+          }
+          if (data.plots) {
+            setAnalysisPlots(prev => ({ ...prev, ...data.plots }));
+          }
+          if (data.plots2) {
+            setAnalysisPlots2(prev => ({ ...prev, ...data.plots2 }));
+          }
+        }
+      })
+      .catch(err => console.error("Error loading analysis status:", err));
   }, [fetchData]);
 
   if (!isMounted) return null;
@@ -1192,12 +1210,33 @@ export default function AdminDashboard() {
                       {analysisLoading.efa ? 'Running...' : 'Run EFA'}
                     </button>
                     {analysisResults.efa && (
-                      <a 
-                        href={`/api/admin/analysis/download?type=efa&method=${analysisMethod.efa}`}
-                        className="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-xl text-[10px] uppercase tracking-widest transition-all flex items-center gap-2">
-                        <i className="fa-solid fa-file-zipper"></i>
-                        Download Sepaket
-                      </a>
+                      <div className="flex items-center gap-2">
+                        <a 
+                          href={`/api/admin/analysis/download?type=efa&method=${analysisMethod.efa}`}
+                          className="px-4 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-xl text-[10px] uppercase tracking-widest transition-all flex items-center gap-1.5"
+                          title="Download ZIP berisi JSON, Gambar, dan Laporan Teks">
+                          <i className="fa-solid fa-file-zipper"></i>
+                          Download ZIP
+                        </a>
+                        <a 
+                          href={`/analysis/outputs/efa_${analysisMethod.efa.toLowerCase()}_output.json`}
+                          download={`EFA_${analysisMethod.efa}_Output.json`}
+                          className="px-4 py-3 bg-slate-600 hover:bg-slate-700 text-white font-black rounded-xl text-[10px] uppercase tracking-widest transition-all flex items-center gap-1.5"
+                          title="Download File Output JSON">
+                          <i className="fa-solid fa-file-code"></i>
+                          JSON
+                        </a>
+                        {analysisPlots.efa && (
+                          <a 
+                            href={analysisPlots.efa}
+                            download={`EFA_${analysisMethod.efa}_ScreePlot.png`}
+                            className="px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-xl text-[10px] uppercase tracking-widest transition-all flex items-center gap-1.5"
+                            title="Download Gambar Scree Plot">
+                            <i className="fa-solid fa-file-image"></i>
+                            Plot
+                          </a>
+                        )}
+                      </div>
                     )}
                   </div>
                 </div>
@@ -1434,12 +1473,33 @@ export default function AdminDashboard() {
                       {analysisLoading.cfa ? 'Running...' : 'Run CFA'}
                     </button>
                     {analysisResults.cfa && (
-                      <a 
-                        href={`/api/admin/analysis/download?type=cfa&method=${analysisMethod.cfa}`}
-                        className="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-xl text-[10px] uppercase tracking-widest transition-all flex items-center gap-2">
-                        <i className="fa-solid fa-file-zipper"></i>
-                        Download Sepaket
-                      </a>
+                      <div className="flex items-center gap-2">
+                        <a 
+                          href={`/api/admin/analysis/download?type=cfa&method=${analysisMethod.cfa}`}
+                          className="px-4 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-xl text-[10px] uppercase tracking-widest transition-all flex items-center gap-1.5"
+                          title="Download ZIP berisi JSON, Gambar, dan Laporan Teks">
+                          <i className="fa-solid fa-file-zipper"></i>
+                          Download ZIP
+                        </a>
+                        <a 
+                          href={`/analysis/outputs/cfa_${analysisMethod.cfa.toLowerCase()}_output.json`}
+                          download={`CFA_${analysisMethod.cfa}_Output.json`}
+                          className="px-4 py-3 bg-slate-600 hover:bg-slate-700 text-white font-black rounded-xl text-[10px] uppercase tracking-widest transition-all flex items-center gap-1.5"
+                          title="Download File Output JSON">
+                          <i className="fa-solid fa-file-code"></i>
+                          JSON
+                        </a>
+                        {analysisPlots.cfa && (
+                          <a 
+                            href={analysisPlots.cfa}
+                            download={`CFA_${analysisMethod.cfa}_Plot.png`}
+                            className="px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-xl text-[10px] uppercase tracking-widest transition-all flex items-center gap-1.5"
+                            title="Download Gambar Diagram CFA">
+                            <i className="fa-solid fa-file-image"></i>
+                            Plot
+                          </a>
+                        )}
+                      </div>
                     )}
                   </div>
                 </div>
@@ -1681,12 +1741,43 @@ export default function AdminDashboard() {
                       {analysisLoading.rasch ? 'Running...' : 'Run Rasch Model'}
                     </button>
                     {analysisResults.rasch && (
-                      <a 
-                        href={`/api/admin/analysis/download?type=rasch&method=${analysisMethod.rasch}`}
-                        className="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-xl text-[10px] uppercase tracking-widest transition-all flex items-center gap-2">
-                        <i className="fa-solid fa-file-zipper"></i>
-                        Download Sepaket
-                      </a>
+                      <div className="flex items-center gap-2">
+                        <a 
+                          href={`/api/admin/analysis/download?type=rasch&method=${analysisMethod.rasch}`}
+                          className="px-4 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-xl text-[10px] uppercase tracking-widest transition-all flex items-center gap-1.5"
+                          title="Download ZIP berisi JSON, Gambar, dan Laporan Teks">
+                          <i className="fa-solid fa-file-zipper"></i>
+                          Download ZIP
+                        </a>
+                        <a 
+                          href={`/analysis/outputs/rasch_${analysisMethod.rasch.toLowerCase()}_output.json`}
+                          download={`Rasch_${analysisMethod.rasch}_Output.json`}
+                          className="px-4 py-3 bg-slate-600 hover:bg-slate-700 text-white font-black rounded-xl text-[10px] uppercase tracking-widest transition-all flex items-center gap-1.5"
+                          title="Download File Output JSON">
+                          <i className="fa-solid fa-file-code"></i>
+                          JSON
+                        </a>
+                        {analysisPlots.rasch && (
+                          <a 
+                            href={analysisPlots.rasch}
+                            download={`Rasch_${analysisMethod.rasch}_WrightMap.png`}
+                            className="px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-xl text-[10px] uppercase tracking-widest transition-all flex items-center gap-1.5"
+                            title="Download Gambar Wright Map">
+                            <i className="fa-solid fa-file-image"></i>
+                            Wright Map
+                          </a>
+                        )}
+                        {analysisPlots2.rasch && (
+                          <a 
+                            href={analysisPlots2.rasch}
+                            download={`Rasch_${analysisMethod.rasch}_Curves.png`}
+                            className="px-4 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-xl text-[10px] uppercase tracking-widest transition-all flex items-center gap-1.5"
+                            title="Download Gambar Kurva ICC/CRC">
+                            <i className="fa-solid fa-file-image"></i>
+                            Curves
+                          </a>
+                        )}
+                      </div>
                     )}
                   </div>
                 </div>
@@ -2070,12 +2161,33 @@ export default function AdminDashboard() {
                       {analysisLoading[selectedSemModel === 'cbsem' ? 'cbsem' : 'sem'] ? 'Running...' : 'Run SEM'}
                     </button>
                     {analysisResults[selectedSemModel === 'cbsem' ? 'cbsem' : 'sem'] && (
-                      <a 
-                        href={`/api/admin/analysis/download?type=${selectedSemModel === 'cbsem' ? 'cbsem' : 'sem'}&method=${analysisMethod[selectedSemModel === 'cbsem' ? 'cbsem' : 'sem']}`}
-                        className="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-xl text-[10px] uppercase tracking-widest transition-all flex items-center gap-2">
-                        <i className="fa-solid fa-file-zipper"></i>
-                        Download Sepaket
-                      </a>
+                      <div className="flex items-center gap-2">
+                        <a 
+                          href={`/api/admin/analysis/download?type=${selectedSemModel === 'cbsem' ? 'cbsem' : 'sem'}&method=${analysisMethod[selectedSemModel === 'cbsem' ? 'cbsem' : 'sem']}`}
+                          className="px-4 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-xl text-[10px] uppercase tracking-widest transition-all flex items-center gap-1.5"
+                          title="Download ZIP berisi JSON, Gambar, dan Laporan Teks">
+                          <i className="fa-solid fa-file-zipper"></i>
+                          Download ZIP
+                        </a>
+                        <a 
+                          href={`/analysis/outputs/${selectedSemModel === 'cbsem' ? 'cbsem' : 'sem'}_${analysisMethod[selectedSemModel === 'cbsem' ? 'cbsem' : 'sem'].toLowerCase()}_output.json`}
+                          download={`${selectedSemModel === 'cbsem' ? 'CB-SEM' : 'PLS-SEM'}_${analysisMethod[selectedSemModel === 'cbsem' ? 'cbsem' : 'sem']}_Output.json`}
+                          className="px-4 py-3 bg-slate-600 hover:bg-slate-700 text-white font-black rounded-xl text-[10px] uppercase tracking-widest transition-all flex items-center gap-1.5"
+                          title="Download File Output JSON">
+                          <i className="fa-solid fa-file-code"></i>
+                          JSON
+                        </a>
+                        {((selectedSemModel === 'cbsem' && analysisPlots.cbsem) || (selectedSemModel === 'pls' && analysisPlots.sem)) && (
+                          <a 
+                            href={selectedSemModel === 'cbsem' ? analysisPlots.cbsem : analysisPlots.sem}
+                            download={`${selectedSemModel === 'cbsem' ? 'CB-SEM' : 'PLS-SEM'}_${analysisMethod[selectedSemModel === 'cbsem' ? 'cbsem' : 'sem']}_Plot.png`}
+                            className="px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-xl text-[10px] uppercase tracking-widest transition-all flex items-center gap-1.5"
+                            title="Download Gambar Diagram Jalur SEM">
+                            <i className="fa-solid fa-file-image"></i>
+                            Plot
+                          </a>
+                        )}
+                      </div>
                     )}
                   </div>
                 </div>
