@@ -16,11 +16,9 @@ const LAST_NAMES = [
 ];
 
 const CAMPUSES = [
-  "Universitas Negeri Jakarta",
-  "Universitas Indonesia",
-  "Universitas Negeri Padang",
-  "Universitas Pendidikan Indonesia",
-  "Universitas Negeri Yogyakarta"
+  "Universitas Negeri Jakarta (UNJ)",
+  "Universitas Muhammadiyah Prof. DR. HAMKA (UHAMKA)",
+  "Universitas Katolik Indonesia Atma Jaya (ATMAJAYA)"
 ];
 
 const GENDERS = ["Laki-laki", "Perempuan"];
