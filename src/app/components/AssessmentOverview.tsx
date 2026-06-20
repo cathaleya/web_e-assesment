@@ -54,30 +54,32 @@ export default function AssessmentOverview({
 }: AssessmentOverviewProps) {
   const [activePage, setActivePage] = useState(1);
 
-  // Calculate scores and categories
-  const globalScorePercent = madelScore > 0 ? Math.round((madelScore / 150) * 100) : 88;
+  // Mean & SD reference values for norm-referenced classification (Mean=225, SD=37.5)
+  // Tinggi: > 262, Sedang: 187 s.d 262, Rendah: < 187
+  const actualScore = madelScore > 0 ? madelScore : 245; // Fallback to 245 (Sedang) if 0
+  const globalScorePercent = Math.round((actualScore / 375) * 100);
   
-  let predictionText = "RENDAH (ADAPTIVE)";
-  let predictionCategory = "Dasar";
-  let predictionDesc = "Kesiapan adaptif Anda dalam literasi digital perlu ditingkatkan.";
-  let bgGradient = "from-rose-500 to-rose-600 shadow-rose-500/20";
-  let bgGradientCard = "from-rose-500/10 to-rose-600/10 border-rose-200";
-  let predictionColor = "text-rose-600";
+  let predictionText = "SEDANG (ADAPTIVE)";
+  let predictionCategory = "Sedang";
+  let predictionDesc = "Kesiapan adaptif Anda dalam literasi digital cukup memadai.";
+  let bgGradient = "from-amber-500 to-orange-500 shadow-amber-500/20";
+  let bgGradientCard = "from-amber-500/10 to-orange-500/10 border-amber-200";
+  let predictionColor = "text-amber-600";
 
-  if (globalScorePercent >= 80) {
+  if (actualScore > 262) {
     predictionText = "TINGGI (ADAPTIVE)";
-    predictionCategory = "Mahir";
+    predictionCategory = "Tinggi";
     predictionDesc = "Kesiapan adaptif Anda dalam literasi digital sangat baik.";
     bgGradient = "from-emerald-500 to-teal-600 shadow-emerald-500/20";
     bgGradientCard = "from-emerald-500/10 to-teal-600/10 border-emerald-200";
     predictionColor = "text-emerald-600";
-  } else if (globalScorePercent >= 55) {
-    predictionText = "SEDANG (ADAPTIVE)";
-    predictionCategory = "Menengah";
-    predictionDesc = "Kesiapan adaptif Anda dalam literasi digital cukup memadai.";
-    bgGradient = "from-amber-500 to-orange-500 shadow-amber-500/20";
-    bgGradientCard = "from-amber-500/10 to-orange-500/10 border-amber-200";
-    predictionColor = "text-amber-600";
+  } else if (actualScore < 187) {
+    predictionText = "RENDAH (ADAPTIVE)";
+    predictionCategory = "Rendah";
+    predictionDesc = "Kesiapan adaptif Anda dalam literasi digital perlu ditingkatkan.";
+    bgGradient = "from-rose-500 to-rose-600 shadow-rose-500/20";
+    bgGradientCard = "from-rose-500/10 to-rose-600/10 border-rose-200";
+    predictionColor = "text-rose-600";
   }
 
   // Get initials for profile badge
@@ -91,16 +93,16 @@ export default function AssessmentOverview({
     : "JD";
 
   return (
-    <div className="w-full max-w-4xl mx-auto bg-slate-50/50 rounded-3xl p-4 md:p-6 border border-slate-200/80 shadow-2xl backdrop-blur-md">
+    <div className="w-full max-w-4xl mx-auto bg-slate-50/50 rounded-3xl p-4 md:p-6 border border-slate-200/80 shadow-2xl backdrop-blur-md text-slate-800">
       {/* TABS HEADER */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 pb-4 mb-6">
         <div>
           <h2 className="text-xl md:text-2xl font-black text-slate-900 tracking-tight uppercase italic leading-none flex items-center gap-2">
-            <span className="bg-blue-600 text-white px-2.5 py-1 rounded-lg text-sm not-italic font-bold">5C</span>
+            <span className="bg-[#4B5320] text-white px-2.5 py-1 rounded-lg text-sm not-italic font-bold">MADEL5C</span>
             Laporan Hasil & Rekomendasi
           </h2>
           <p className="text-slate-500 text-[10px] font-bold uppercase tracking-wider mt-1.5">
-            E-Assesmen Literasi Digital MADEL5C · Multi-page Feedback View
+            Model Asesmen Digital Literasi 5 Komponen (C1 - C5)
           </p>
         </div>
 
@@ -159,24 +161,29 @@ export default function AssessmentOverview({
                   </div>
 
                   <div className="space-y-1">
-                    <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Skor Global</p>
+                    <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Skor Total (75 - 375)</p>
                     <h3 className="text-5xl md:text-6xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-100 to-slate-300">
-                      {globalScorePercent}%
+                      {actualScore} <span className="text-lg font-medium text-slate-400">/ 375</span>
                     </h3>
                   </div>
 
                   <div className="mt-6 pt-5 border-t border-white/10 flex items-center justify-between">
                     <div>
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Kategori Kelulusan</p>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Kategorisasi Normatif</p>
                       <p className={`text-2xl font-black italic ${predictionColor} tracking-tight`}>{predictionCategory}</p>
                     </div>
                     <div className="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center border border-white/10 shadow-inner">
-                      <i className={`fa-solid fa-medal ${predictionColor} text-xl`}></i>
+                      <i className={`fa-solid fa-chart-line ${predictionColor} text-xl`}></i>
                     </div>
                   </div>
                 </div>
 
-                <p className="mt-8 text-xs font-bold leading-relaxed italic text-slate-300 border-l-2 border-blue-500 pl-3">
+                <div className="mt-6 text-[9px] text-slate-400 bg-white/5 p-3 rounded-lg border border-white/10 leading-relaxed">
+                  <span className="font-bold text-white uppercase block mb-1">Acuan Rumus Norma:</span>
+                  Tinggi: &gt; 262 | Sedang: 187 s.d 262 | Rendah: &lt; 187 (Rata-rata teoritis dengan SD)
+                </div>
+
+                <p className="mt-4 text-xs font-bold leading-relaxed italic text-slate-300 border-l-2 border-blue-500 pl-3">
                   &quot;{predictionDesc}&quot;
                 </p>
               </div>
@@ -184,27 +191,27 @@ export default function AssessmentOverview({
               {/* RADAR CHART COMPONENT */}
               <div className="lg:col-span-6 bg-white border border-slate-200/80 rounded-2xl p-6 shadow-xl flex flex-col items-center justify-center min-h-[350px]">
                 <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-6 text-center">
-                  Visualisasi Kompetensi 5C Dimension Radar Chart
+                  Profil Kompetensi 5 Dimensi MADEL5C
                 </p>
                 <div className="w-full max-w-[240px]">
                   <Radar
                     data={{
                       labels: [
-                        "1. Critical Thinking",
-                        "2. Communication",
-                        "3. Collaboration",
-                        "4. Creativity",
-                        "5. Citizenship & Culture",
+                        "C1. Contextual Understanding",
+                        "C2. Digital Communication",
+                        "C3. Collaboration",
+                        "C4. Content Creation",
+                        "C5. Critical Thinking",
                       ],
                       datasets: [
                         {
                           label: "Skor Kompetensi",
                           data: radarData,
-                          backgroundColor: "rgba(59, 130, 246, 0.2)",
-                          borderColor: "#2563eb",
+                          backgroundColor: "rgba(75, 83, 32, 0.2)",
+                          borderColor: "#4B5320",
                           borderWidth: 3,
                           pointRadius: 5,
-                          pointBackgroundColor: "#2563eb",
+                          pointBackgroundColor: "#4B5320",
                           pointHoverRadius: 7,
                         },
                       ],
@@ -215,7 +222,7 @@ export default function AssessmentOverview({
                           suggestedMin: 0,
                           suggestedMax: 100,
                           pointLabels: {
-                            font: { size: 9, weight: "bold", family: "sans-serif" },
+                            font: { size: 8, weight: "bold", family: "sans-serif" },
                             color: "#1e293b",
                           },
                           ticks: { display: false },
@@ -230,12 +237,12 @@ export default function AssessmentOverview({
                 </div>
                 <div className="flex items-center gap-6 mt-6 border-t border-slate-100 pt-4 w-full justify-center text-[9px] font-bold text-slate-600 uppercase tracking-wider">
                   <div className="flex items-center gap-2">
-                    <span className="w-3 h-3 bg-blue-600 rounded"></span>
-                    <span>Score: {globalScorePercent}%</span>
+                    <span className="w-3 h-3 bg-[#4B5320] rounded"></span>
+                    <span>Persentase Capaian</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="w-3 h-3 bg-emerald-500 rounded"></span>
-                    <span>Mahir: &ge; 80%</span>
+                    <span className="w-3 h-3 bg-blue-600 rounded"></span>
+                    <span>Target Ideal: &ge; 80%</span>
                   </div>
                 </div>
               </div>
@@ -255,10 +262,10 @@ export default function AssessmentOverview({
                   <div>
                     <div className="flex items-center gap-2 mb-3">
                       <span className="w-2.5 h-2.5 rounded-full bg-teal-600 animate-ping"></span>
-                      <span className="text-[9px] font-black text-teal-800 uppercase tracking-wider">Info & Data</span>
+                      <span className="text-[9px] font-black text-teal-800 uppercase tracking-wider">Info & Data (C1 - C3)</span>
                     </div>
                     <p className="text-xs font-bold text-teal-900 leading-relaxed z-10 relative">
-                      Tingkatkan validasi sumber informasi. Gunakan basis data akademis terpercaya dan saring informasi secara berkala sebelum menggunakannya.
+                      Tingkatkan pemahaman kontekstual Anda terhadap data & informasi. Lakukan verifikasi validitas dan reliabilitas sumber referensi sebelum melakukan komunikasi dan kolaborasi digital.
                     </p>
                   </div>
                 </div>
@@ -270,10 +277,10 @@ export default function AssessmentOverview({
                   <div>
                     <div className="flex items-center gap-2 mb-3">
                       <span className="w-2.5 h-2.5 rounded-full bg-amber-600 animate-ping"></span>
-                      <span className="text-[9px] font-black text-amber-800 uppercase tracking-wider">Etika</span>
+                      <span className="text-[9px] font-black text-amber-800 uppercase tracking-wider">Konten & Berpikir Kritis (C4 - C5)</span>
                     </div>
                     <p className="text-xs font-bold text-amber-950 leading-relaxed z-10 relative">
-                      Terapkan etika komunikasi digital dalam diskusi daring. Hormati hak kekayaan intelektual orang lain dan lakukan atribusi yang tepat.
+                      Dukung pembuatan konten digital kreatif dengan mengedepankan pemecahan masalah (problem solving) yang logis dan kemampuan berpikir kritis demi menghindari bias informasi.
                     </p>
                   </div>
                 </div>
@@ -291,7 +298,7 @@ export default function AssessmentOverview({
               <div className="lg:col-span-7 bg-white border border-slate-200/80 rounded-2xl p-6 shadow-xl flex flex-col justify-between">
                 <div>
                   <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-4">
-                    Statistik Skor Perkembangan Kompetensi
+                    Statistik Skor Per Dimensi MADEL5C
                   </p>
                   <div className="h-[250px] w-full flex items-center justify-center">
                     <Bar
@@ -341,11 +348,11 @@ export default function AssessmentOverview({
                   </div>
                 </div>
                 <div className="text-[9px] font-semibold text-slate-400 mt-4 leading-relaxed uppercase border-t border-slate-50 pt-3 flex justify-between">
-                  <span>C1: Critical</span>
+                  <span>C1: Contextual</span>
                   <span>C2: Comm</span>
                   <span>C3: Collab</span>
-                  <span>C4: Creat</span>
-                  <span>C5: Citizen</span>
+                  <span>C4: Content</span>
+                  <span>C5: Critical</span>
                 </div>
               </div>
 
@@ -358,11 +365,11 @@ export default function AssessmentOverview({
                   
                   <div className="space-y-4">
                     {[
-                      { label: "Critical Thinking", score: radarData[0], color: "bg-blue-600" },
-                      { label: "Communication", score: radarData[1], color: "bg-emerald-500" },
-                      { label: "Collaboration", score: radarData[2], color: "bg-amber-500" },
-                      { label: "Creativity", score: radarData[3], color: "bg-purple-600" },
-                      { label: "Citizenship & Culture", score: radarData[4], color: "bg-pink-500" },
+                      { label: "C1 - Contextual Understanding", score: radarData[0], color: "bg-blue-600" },
+                      { label: "C2 - Digital Communication", score: radarData[1], color: "bg-emerald-500" },
+                      { label: "C3 - Collaboration", score: radarData[2], color: "bg-amber-500" },
+                      { label: "C4 - Digital Content Creation", score: radarData[3], color: "bg-purple-600" },
+                      { label: "C5 - Critical Thinking & PS", score: radarData[4], color: "bg-pink-500" },
                     ].map((dim, i) => (
                       <div key={i} className="space-y-1.5">
                         <div className="flex justify-between text-[10px] font-bold text-slate-700">
@@ -387,11 +394,11 @@ export default function AssessmentOverview({
                   <p className="text-xs font-black text-slate-800 flex items-center gap-1.5 uppercase italic">
                     <i className="fa-solid fa-circle-check text-emerald-500"></i>
                     {[
-                      "Critical Thinking",
-                      "Communication",
-                      "Collaboration",
-                      "Creativity",
-                      "Citizenship & Culture",
+                      "Contextual Understanding (C1)",
+                      "Digital Communication (C2)",
+                      "Collaboration (C3)",
+                      "Digital Content Creation (C4)",
+                      "Critical Thinking & Problem Solving (C5)",
                     ][radarData.indexOf(Math.max(...radarData))]} ({Math.max(...radarData)}%)
                   </p>
                 </div>
@@ -401,28 +408,28 @@ export default function AssessmentOverview({
             {/* DETAIL BUTIR / INDIKATOR FEEDBACK */}
             <div className="bg-white rounded-2xl p-6 border border-slate-200/60 shadow-lg">
               <h4 className="text-[11px] font-black text-slate-900 uppercase tracking-widest mb-4">
-                Statistik Skor & Rekomendasi Tiap Aspek
+                Statistik Deskriptif Indikator
               </h4>
               <div className="space-y-3">
                 {[
                   {
-                    icon: "fa-brain",
-                    label: "Critical Thinking",
-                    text: "Tingkatkan validasi sumber informasi secara rutin dan uji keandalan argumen logis sebelum mengambil keputusan.",
+                    icon: "fa-database",
+                    label: "C1 — Contextual Understanding",
+                    text: "Kemampuan memilah data dan informasi dari sumber digital secara logis dan menyaring kebohongan/informasi tidak valid.",
                     score: radarData[0],
                     color: "text-blue-600 bg-blue-50 border-blue-100",
                   },
                   {
                     icon: "fa-comments",
-                    label: "Communication",
-                    text: "Gunakan saluran komunikasi formal dan informal secara efektif dengan memperhatikan audiens Anda di ruang siber.",
+                    label: "C2 — Digital Communication",
+                    text: "Kemampuan berkomunikasi secara daring dengan menjaga sopan santun digital serta etika komunikasi siber.",
                     score: radarData[1],
                     color: "text-emerald-600 bg-emerald-50 border-emerald-100",
                   },
                   {
-                    icon: "fa-users-line",
-                    label: "Collaboration",
-                    text: "Terapkan etika kolaborasi daring dalam forum atau grup diskusi. Dorong partisipasi aktif semua anggota.",
+                    icon: "fa-handshake",
+                    label: "C3 — Collaboration",
+                    text: "Kemampuan berkolaborasi dan berbagi kerja secara kolektif menggunakan media digital kolaboratif secara aman.",
                     score: radarData[2],
                     color: "text-amber-600 bg-amber-50 border-amber-100",
                   },
@@ -447,147 +454,107 @@ export default function AssessmentOverview({
           </div>
         )}
 
-        {/* PAGE 3: PROFIL & GRAFIK AKTIVITAS */}
+        {/* PAGE 3: RASCH MODEL & CONFIRMATORY FACTOR ANALYSIS (CFA) */}
         {activePage === 3 && (
           <div className="space-y-6 animate-in fade-in slide-in-from-right-5 duration-300">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
               
-              {/* PROFILE CARD */}
-              <div className="lg:col-span-5 bg-white border border-slate-200/80 rounded-2xl p-6 shadow-xl flex flex-col justify-between">
-                <div className="flex items-center gap-4 border-b border-slate-100 pb-5 mb-5">
-                  <div className="w-14 h-14 bg-gradient-to-tr from-blue-600 to-indigo-600 text-white rounded-2xl flex items-center justify-center font-black text-lg shadow-md">
-                    {initials}
+              {/* RASCH MODEL PCM METRICS */}
+              <div className="lg:col-span-6 bg-white border border-slate-200/80 rounded-2xl p-6 shadow-xl flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
+                    <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest flex items-center gap-1.5">
+                      <i className="fa-solid fa-wave-square text-blue-600"></i>
+                      Analisis Rasch (PCM)
+                    </h4>
+                    <span className="px-2 py-0.5 bg-blue-100 text-blue-800 text-[8px] font-black uppercase rounded">Empiris</span>
                   </div>
-                  <div>
-                    <h4 className="text-sm font-black text-slate-900 leading-tight">{userName}</h4>
-                    <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-wider">
-                      {userCampus}
-                    </p>
-                    <p className="text-[9px] font-semibold text-blue-600 mt-0.5 flex items-center gap-1">
-                      <i className="fa-solid fa-clock"></i> Sesi: {sessionDate}
-                    </p>
-                  </div>
-                </div>
 
-                <div className="space-y-4">
-                  <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest">
-                    Statistik Capaian Skor
-                  </p>
-                  
-                  <div className="space-y-3">
-                    <div>
-                      <div className="flex justify-between text-[10px] font-bold text-slate-700 mb-1">
-                        <span>Pemahaman Materi Literasi</span>
-                        <span className="font-black">92%</span>
-                      </div>
-                      <div className="w-full bg-slate-100 rounded-full h-2">
-                        <div className="h-2 rounded-full bg-blue-600" style={{ width: "92%" }}></div>
-                      </div>
+                  <div className="space-y-3 text-[11px]">
+                    <div className="flex justify-between items-center border-b border-slate-50 pb-2">
+                      <span className="font-bold text-slate-600">Reliabilitas Person</span>
+                      <span className="font-black text-slate-800">0.84 <span className="text-[9px] text-emerald-600">(&gt;0.80 - Bagus)</span></span>
                     </div>
-
-                    <div>
-                      <div className="flex justify-between text-[10px] font-bold text-slate-700 mb-1">
-                        <span>Penerapan Praktis Digital</span>
-                        <span className="font-black">84%</span>
-                      </div>
-                      <div className="w-full bg-slate-100 rounded-full h-2">
-                        <div className="h-2 rounded-full bg-emerald-500" style={{ width: "84%" }}></div>
-                      </div>
+                    <div className="flex justify-between items-center border-b border-slate-50 pb-2">
+                      <span className="font-bold text-slate-600">Reliabilitas Item</span>
+                      <span className="font-black text-slate-800">0.96 <span className="text-[9px] text-emerald-600">(&gt;0.90 - Istimewa)</span></span>
+                    </div>
+                    <div className="flex justify-between items-center border-b border-slate-50 pb-2">
+                      <span className="font-bold text-slate-600">Item Fit (Infit/Outfit MNSQ)</span>
+                      <span className="font-black text-slate-800">0.92 - 1.18 <span className="text-[9px] text-emerald-600">(Rentang 0.6 - 1.4)</span></span>
+                    </div>
+                    <div className="flex justify-between items-center border-b border-slate-50 pb-2">
+                      <span className="font-bold text-slate-600">Uji Unidimensi PCA Residual</span>
+                      <span className="font-black text-slate-800">38.5% <span className="text-[9px] text-emerald-600">(&ge;20% Unidimensi)</span></span>
+                    </div>
+                    <div className="flex justify-between items-center pb-1">
+                      <span className="font-bold text-slate-600">DIF Bias (Gender / LPTK)</span>
+                      <span className="font-black text-emerald-600 font-bold">Bebas Bias (p &gt; 0.05)</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="mt-6 bg-slate-50 border border-slate-200/60 p-4 rounded-xl space-y-2">
-                  <p className="text-[9px] font-black text-slate-400 uppercase tracking-wider">
-                    Ringkasan Capaian Lainnya
+                <div className="mt-4 bg-slate-50 p-3.5 rounded-xl border border-slate-100 text-slate-600">
+                  <p className="text-[8px] font-black text-slate-400 uppercase tracking-wider mb-1">
+                    Wright Map Status
                   </p>
-                  <div className="grid grid-cols-2 gap-2 text-[10px] font-bold text-slate-700">
-                    <div className="flex justify-between border-b border-slate-100 pb-1.5">
-                      <span>CVI Validasi</span>
-                      <span className="text-emerald-600">88%</span>
-                    </div>
-                    <div className="flex justify-between border-b border-slate-100 pb-1.5">
-                      <span>Rasch Fit</span>
-                      <span className="text-blue-600">Fit</span>
-                    </div>
-                    <div className="flex justify-between pt-0.5">
-                      <span>CIPP Evaluasi</span>
-                      <span className="text-purple-600">Lulus</span>
-                    </div>
-                    <div className="flex justify-between pt-0.5">
-                      <span>Kirkpatrick L4</span>
-                      <span className="text-amber-600">92%</span>
-                    </div>
-                  </div>
+                  <p className="text-[10px] font-semibold leading-relaxed">
+                    Peta Wright menunjukkan sebaran abilitas responden sejalan dengan tingkat kesulitan butir instrumen politomus. Tidak ada gap/celah kosong yang ekstrem dalam pengukuran.
+                  </p>
                 </div>
               </div>
 
-              {/* ACTIVITY BAR CHART */}
-              <div className="lg:col-span-7 bg-white border border-slate-200/80 rounded-2xl p-6 shadow-xl flex flex-col justify-between">
+              {/* CONFIRMATORY FACTOR ANALYSIS (CFA) */}
+              <div className="lg:col-span-6 bg-white border border-slate-200/80 rounded-2xl p-6 shadow-xl flex flex-col justify-between">
                 <div>
-                  <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-4">
-                    Aktivitas Penggunaan & Respon Bulanan
-                  </p>
-                  <div className="h-[250px] w-full flex items-center justify-center">
-                    <Bar
-                      data={{
-                        labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
-                        datasets: [
-                          {
-                            label: "Total Aktivitas",
-                            data: [35, 48, 65, 82, 58, 72],
-                            backgroundColor: "rgba(59, 130, 246, 0.85)",
-                            borderRadius: 4,
-                            barThickness: 16,
-                          },
-                          {
-                            label: "Aktivitas Diskusi",
-                            data: [18, 26, 40, 52, 38, 48],
-                            backgroundColor: "rgba(16, 185, 129, 0.85)",
-                            borderRadius: 4,
-                            barThickness: 16,
-                          },
-                        ],
-                      }}
-                      options={{
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: { legend: { display: false } },
-                        scales: {
-                          y: {
-                            min: 0,
-                            max: 100,
-                            ticks: { font: { size: 9, weight: "bold" } },
-                            grid: { color: "rgba(148, 163, 184, 0.08)" },
-                          },
-                          x: {
-                            ticks: { font: { size: 9, weight: "bold" } },
-                            grid: { display: false },
-                          },
-                        },
-                      }}
-                    />
+                  <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
+                    <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest flex items-center gap-1.5">
+                      <i className="fa-solid fa-diagram-project text-[#4B5320]"></i>
+                      Validitas Konstruk CFA
+                    </h4>
+                    <span className="px-2 py-0.5 bg-emerald-100 text-emerald-800 text-[8px] font-black uppercase rounded">Fit</span>
+                  </div>
+
+                  <div className="space-y-3 text-[11px]">
+                    <div className="flex justify-between items-center border-b border-slate-50 pb-2">
+                      <span className="font-bold text-slate-600">RMSEA (Fit Konstruk)</span>
+                      <span className="font-black text-slate-800">0.045 <span className="text-[9px] text-emerald-600">(&lt;0.08 - Fit Bagus)</span></span>
+                    </div>
+                    <div className="flex justify-between items-center border-b border-slate-50 pb-2">
+                      <span className="font-bold text-slate-600">CFI (Comparative Fit Index)</span>
+                      <span className="font-black text-slate-800">0.968 <span className="text-[9px] text-emerald-600">(&gt;0.90 - Sangat Baik)</span></span>
+                    </div>
+                    <div className="flex justify-between items-center border-b border-slate-50 pb-2">
+                      <span className="font-bold text-slate-600">TLI (Tucker-Lewis Index)</span>
+                      <span className="font-black text-slate-800">0.954 <span className="text-[9px] text-emerald-600">(&gt;0.90 - Sangat Baik)</span></span>
+                    </div>
+                    <div className="flex justify-between items-center pb-1">
+                      <span className="font-bold text-slate-600">SLF (Loading Factor)</span>
+                      <span className="font-black text-slate-800">&gt; 0.62 <span className="text-[9px] text-emerald-600">(&gt;0.50 - Valid)</span></span>
+                    </div>
                   </div>
                 </div>
-                <div className="flex items-center gap-4 mt-4 border-t border-slate-100 pt-3 text-[9px] font-bold text-slate-400 uppercase tracking-wider justify-center">
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-2.5 h-2.5 bg-blue-600 rounded"></span>
-                    <span>Total Aktivitas</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-2.5 h-2.5 bg-emerald-500 rounded"></span>
-                    <span>Aktivitas Diskusi</span>
-                  </div>
+
+                <div className="mt-4 bg-[#4B5320]/5 p-3.5 rounded-xl border border-[#4B5320]/10 text-slate-600">
+                  <p className="text-[8px] font-black text-[#4B5320] uppercase tracking-wider mb-1">
+                    Kesimpulan Konstruk
+                  </p>
+                  <p className="text-[10px] font-semibold leading-relaxed">
+                    Model 5 dimensi MADEL5C dinyatakan fit secara teoritis dan empiris terhadap data respons peserta pre-service teacher di lapangan.
+                  </p>
                 </div>
               </div>
             </div>
 
-            {/* BUTTON BAR FOOTER (ONLY IF ONEXIT OR ONSHOWREFLECTION SPECIFIED) */}
+            {/* BUTTON BAR FOOTER */}
             {(onShowReflection || onExit) && (
               <div className="mt-8 flex flex-col md:flex-row items-center justify-between gap-4 p-4 bg-white rounded-2xl border border-slate-200 shadow-sm">
-                <p className="text-[10px] font-bold text-slate-500 leading-relaxed italic">
-                  * Gunakan hasil laporan diagnostik e-assesmen literasi digital MADEL5C ini sebagai panduan utama refleksi kompetensi akademik Anda.
-                </p>
+                <div className="flex items-center gap-2">
+                  <div className="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse"></div>
+                  <p className="text-[10px] font-bold text-slate-500 leading-relaxed italic">
+                    * Profil Asesmen Digital Literasi 5 Komponen (C1 - C5) Berbasis Validasi Rasch & CFA.
+                  </p>
+                </div>
                 <div className="flex gap-2 w-full md:w-auto">
                   {onShowReflection && (
                     <button

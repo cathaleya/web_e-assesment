@@ -453,7 +453,7 @@ export default function AdminDashboard() {
               <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                 {[
                   { label: "Participants", value: stats.participants, icon: "fa-users-viewfinder", color: "text-blue-600", bg: "bg-blue-50" },
-                  { label: "SJT Items", value: "25", icon: "fa-list-check", color: "text-emerald-600", bg: "bg-emerald-50" },
+                  { label: "SJT Items", value: instrumentQuestions.madel5c.length.toString() || "75", icon: "fa-list-check", color: "text-emerald-600", bg: "bg-emerald-50" },
                   { label: "Cronbach α", value: stats.alpha, icon: "fa-vial-circle-check", color: "text-purple-600", bg: "bg-purple-50" },
                   { label: "DIF Bias", value: stats.difCount, icon: "fa-triangle-exclamation", color: "text-rose-600", bg: "bg-rose-50" }
                 ].map((card, i) => (
@@ -1009,7 +1009,7 @@ export default function AdminDashboard() {
               {[
                 { key: 'preliminary', label: 'PDI-DL', icon: 'fa-list-ol', color: 'text-blue-600', bg: 'bg-blue-50', border: 'border-blue-200', desc: 'Pre-Digital Literacy Instrument (Tes Awal)' },
                 { key: 'survey', label: 'Survey Respon', icon: 'fa-clipboard-question', color: 'text-amber-600', bg: 'bg-amber-50', border: 'border-amber-200', desc: 'Angket Respon Mahasiswa (Skala Likert)' },
-                { key: 'madel5c', label: 'MADEL5C', icon: 'fa-brain', color: 'text-purple-600', bg: 'bg-purple-50', border: 'border-purple-200', desc: 'Main Assessment - SJT 25 Butir' },
+                { key: 'madel5c', label: 'MADEL5C', icon: 'fa-brain', color: 'text-purple-600', bg: 'bg-purple-50', border: 'border-purple-200', desc: `Main Assessment - SJT ${instrumentQuestions.madel5c.length || 75} Butir` },
               ].map(inst => {
                 const qs = instrumentQuestions[inst.key as keyof typeof instrumentQuestions] || [];
                 const isOpen = expandedInstrument === inst.key;

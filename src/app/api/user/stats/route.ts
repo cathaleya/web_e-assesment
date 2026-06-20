@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import fs from "fs";
+import path from "path";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -31,18 +33,40 @@ export async function GET(request: Request) {
     let c5 = 4.0;
 
     if (madelAnswers) {
-      let sumC1 = 0, sumC2 = 0, sumC3 = 0, sumC4 = 0, sumC5 = 0;
-      for (let i = 0; i < 6; i++) sumC1 += madelAnswers[i] || 0;
-      for (let i = 6; i < 12; i++) sumC2 += madelAnswers[i] || 0;
-      for (let i = 12; i < 18; i++) sumC3 += madelAnswers[i] || 0;
-      for (let i = 18; i < 24; i++) sumC4 += madelAnswers[i] || 0;
-      for (let i = 24; i < 30; i++) sumC5 += madelAnswers[i] || 0;
+      const questionsPath = path.join(process.cwd(), 'src/app/assessment/madel5c/questions.json');
+      const questions = JSON.parse(fs.readFileSync(questionsPath, 'utf8'));
 
-      c1 = sumC1 / 6;
-      c2 = sumC2 / 6;
-      c3 = sumC3 / 6;
-      c4 = sumC4 / 6;
-      c5 = sumC5 / 6;
+      let sumC1 = 0, countC1 = 0;
+      let sumC2 = 0, countC2 = 0;
+      let sumC3 = 0, countC3 = 0;
+      let sumC4 = 0, countC4 = 0;
+      let sumC5 = 0, countC5 = 0;
+
+      questions.forEach((q: any, idx: number) => {
+        const val = parseInt(madelAnswers[idx] || 0);
+        if (q.dim.includes("C1")) {
+          sumC1 += val;
+          countC1++;
+        } else if (q.dim.includes("C2")) {
+          sumC2 += val;
+          countC2++;
+        } else if (q.dim.includes("C3")) {
+          sumC3 += val;
+          countC3++;
+        } else if (q.dim.includes("C4")) {
+          sumC4 += val;
+          countC4++;
+        } else if (q.dim.includes("C5")) {
+          sumC5 += val;
+          countC5++;
+        }
+      });
+
+      if (countC1 > 0) c1 = sumC1 / countC1;
+      if (countC2 > 0) c2 = sumC2 / countC2;
+      if (countC3 > 0) c3 = sumC3 / countC3;
+      if (countC4 > 0) c4 = sumC4 / countC4;
+      if (countC5 > 0) c5 = sumC5 / countC5;
     }
 
     const stats = {

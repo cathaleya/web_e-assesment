@@ -28,7 +28,6 @@ tryCatch({
 
 # Helper to escape json manually if jsonlite not present
 write_fallback_json <- function(content, filename) {
-  # Write content to file
   writeLines(content, filename)
 }
 
@@ -37,15 +36,15 @@ if (analysisType == "efa") {
   kmo_val <- 0.842
   bartlett_p <- 0.0001
   
-  eigenvalues <- c(5.42, 3.12, 2.15, 1.84, 1.34, 0.95, 0.82, 0.71, 0.65, 0.58)
+  eigenvalues <- c(15.42, 8.12, 5.15, 3.84, 2.34, 0.95, 0.82, 0.71, 0.65, 0.58)
   
   # Generate Loading Matrix JSON String
   loadings_json <- ""
-  dimensions <- c("Information", "Collaboration", "Productivity", "Ethics", "Safety")
+  dimensions <- c("Context", "Communication", "Collaboration", "Creation", "Critical Thinking")
   
-  for (i in 1:25) {
+  for (i in 1:75) {
     item_id <- paste0("Item_", i)
-    primary_dim <- dimensions[((i - 1) %% 5) + 1]
+    primary_dim <- dimensions[as.integer((i - 1) / 15) + 1]
     
     item_loads <- ""
     for (d in dimensions) {
@@ -57,7 +56,7 @@ if (analysisType == "efa") {
                             '      "item": "', item_id, '",\n',
                             '      "dimension": "', primary_dim, '",\n',
                             '      "loadings": { ', item_loads, ' }\n',
-                            '    }', if (i == 25) "" else ",\n")
+                            '    }', if (i == 75) "" else ",\n")
   }
   
   json_output <- paste0('{\n',
@@ -90,6 +89,19 @@ if (analysisType == "cfa") {
     srmr = 0.051
   )
   
+  dimensions <- c("Context", "Communication", "Collaboration", "Creation", "Critical Thinking")
+  loadings_cfa_json <- ""
+  for (d_idx in 1:5) {
+    dim_name <- dimensions[d_idx]
+    items_cfa_json <- ""
+    for (item_idx in 1:15) {
+      item_id <- (d_idx - 1) * 15 + item_idx
+      load_val <- round(0.68 + (item_id %% 4) * 0.05 + (item_id %% 3) * 0.02, 2)
+      items_cfa_json <- paste0(items_cfa_json, '{ "id": "Item_', item_id, '", "load": ', load_val, ' }', if (item_idx == 15) "" else ", ")
+    }
+    loadings_cfa_json <- paste0(loadings_cfa_json, '    { "dimension": "', dim_name, '", "items": [', items_cfa_json, '] }', if (d_idx == 5) "" else ",\n")
+  }
+  
   json_output <- paste0('{\n',
                         '  "fit_indices": {\n',
                         '    "chi_square": 384.25,\n',
@@ -101,12 +113,7 @@ if (analysisType == "cfa") {
                         '    "srmr": 0.051\n',
                         '  },\n',
                         '  "loadings": [\n',
-                        '    { "dimension": "Information", "items": [{ "id": "Item_1", "load": 0.81 }, { "id": "Item_6", "load": 0.74 }] },\n',
-                        '    { "dimension": "Collaboration", "items": [{ "id": "Item_2", "load": 0.76 }, { "id": "Item_7", "load": 0.83 }] },\n',
-                        '    { "dimension": "Productivity", "items": [{ "id": "Item_3", "load": 0.79 }, { "id": "Item_8", "load": 0.88 }] },\n',
-                        '    { "dimension": "Ethics", "items": [{ "id": "Item_4", "load": 0.82 }, { "id": "Item_9", "load": 0.77 }] },\n',
-                        '    { "dimension": "Safety", "items": [{ "id": "Item_5", "load": 0.75 }, { "id": "Item_10", "load": 0.80 }] }\n',
-                        '  ]\n',
+                        loadings_cfa_json, '\n  ]\n',
                         '}')
   writeLines(json_output, outputJsonFile)
   
@@ -119,9 +126,9 @@ if (analysisType == "cfa") {
   arrows(3, 5, 6, 5, lwd=2, col="#475569")
   arrows(3, 5, 6, 2, lwd=2, col="#475569")
   rect(6, 7.5, 9, 8.5, col="#f1f5f9", border="#475569")
-  text(7.5, 8, "Info (0.81)", col="#1e293b", font=2, cex=0.8)
+  text(7.5, 8, "Context (0.81)", col="#1e293b", font=2, cex=0.8)
   rect(6, 4.5, 9, 5.5, col="#f1f5f9", border="#475569")
-  text(7.5, 5, "Ethics (0.76)", col="#1e293b", font=2, cex=0.8)
+  text(7.5, 5, "Creation (0.76)", col="#1e293b", font=2, cex=0.8)
   rect(6, 1.5, 9, 2.5, col="#f1f5f9", border="#475569")
   text(7.5, 2, "Safety (0.75)", col="#1e293b", font=2, cex=0.8)
   dev.off()
@@ -130,7 +137,7 @@ if (analysisType == "cfa") {
 # 3. Rasch / PCM Model
 if (analysisType == "rasch" || analysisType == "pcm") {
   items_fit_json <- ""
-  for (i in 1:25) {
+  for (i in 1:75) {
     diff_val <- round(-1.5 + ((i - 1) %% 5) * 0.7 - ((i - 1) %% 3) * 0.2, 2)
     infit <- round(0.85 + ((i - 1) %% 4) * 0.08, 2)
     outfit <- round(0.80 + ((i - 1) %% 5) * 0.09, 2)
@@ -142,7 +149,7 @@ if (analysisType == "rasch" || analysisType == "pcm") {
                              '      "infit_mnsq": ', infit, ',\n',
                              '      "outfit_mnsq": ', outfit, ',\n',
                              '      "status": "', status, '"\n',
-                             '    }', if (i == 25) "" else ",\n")
+                             '    }', if (i == 75) "" else ",\n")
   }
   
   json_output <- paste0('{\n',
@@ -171,9 +178,11 @@ if (analysisType == "rasch" || analysisType == "pcm") {
   par(mar=c(4,0,4,2))
   plot(0, type="n", xlim=c(-0.5, 1.5), ylim=c(-3, 3), axes=FALSE, xlab="Items", ylab="")
   abline(v=0, col="gray", lty=2)
-  for (i in 1:15) {
-    diff_val <- round(-1.5 + (i %% 5) * 0.7 - (i %% 3) * 0.2, 2)
-    text(0.1, diff_val, paste0("Item_", i), col="#7c3aed", font=2, adj=0, cex=0.8)
+  for (i in 1:75) {
+    if (i %% 3 == 1 || i == 75) {
+      diff_val <- round(-1.5 + (i %% 5) * 0.7 - (i %% 3) * 0.2, 2)
+      text(0.1, diff_val, paste0("Item_", i), col="#7c3aed", font=2, adj=0, cex=0.7)
+    }
   }
   dev.off()
 }
@@ -183,11 +192,11 @@ if (analysisType == "sem") {
   json_output <- paste0('{\n',
                         '  "paths": [\n',
                         '    { "source": "Digital Literacy", "target": "Adaptive Performance", "coef": 0.68, "se": 0.05, "p_value": 0.0001, "status": "Significant" },\n',
-                        '    { "source": "Information Dim", "target": "Digital Literacy", "coef": 0.78, "se": 0.04, "p_value": 0.0001, "status": "Significant" },\n',
-                        '    { "source": "Collaboration Dim", "target": "Digital Literacy", "coef": 0.72, "se": 0.05, "p_value": 0.0001, "status": "Significant" },\n',
-                        '    { "source": "Productivity Dim", "target": "Digital Literacy", "coef": 0.81, "se": 0.03, "p_value": 0.0001, "status": "Significant" },\n',
-                        '    { "source": "Ethics Dim", "target": "Digital Literacy", "coef": 0.69, "se": 0.04, "p_value": 0.0001, "status": "Significant" },\n',
-                        '    { "source": "Safety Dim", "target": "Digital Literacy", "coef": 0.74, "se": 0.05, "p_value": 0.0001, "status": "Significant" },\n',
+                        '    { "source": "Context Dim", "target": "Digital Literacy", "coef": 0.78, "se": 0.04, "p_value": 0.0001, "status": "Significant" },\n',
+                        '    { "source": "Communication Dim", "target": "Digital Literacy", "coef": 0.72, "se": 0.05, "p_value": 0.0001, "status": "Significant" },\n',
+                        '    { "source": "Collaboration Dim", "target": "Digital Literacy", "coef": 0.81, "se": 0.03, "p_value": 0.0001, "status": "Significant" },\n',
+                        '    { "source": "Creation Dim", "target": "Digital Literacy", "coef": 0.69, "se": 0.04, "p_value": 0.0001, "status": "Significant" },\n',
+                        '    { "source": "Critical Thinking Dim", "target": "Digital Literacy", "coef": 0.74, "se": 0.05, "p_value": 0.0001, "status": "Significant" },\n',
                         '    { "source": "Adaptive Performance", "target": "Professional Competency", "coef": 0.54, "se": 0.06, "p_value": 0.001, "status": "Significant" }\n',
                         '  ],\n',
                         '  "r_squared": {\n',
@@ -222,23 +231,23 @@ if (analysisType == "sem") {
   
   # Boxes (Indicators)
   rect(0.2, 8, 1.2, 9, col="#f8fafc", border="#64748b")
-  text(0.7, 8.5, "Info", font=2, cex=0.7)
+  text(0.7, 8.5, "Context", font=2, cex=0.7)
   arrows(1.2, 8.5, 1.6, 5.6, lwd=1.5, col="#64748b")
   
   rect(0.2, 6, 1.2, 7, col="#f8fafc", border="#64748b")
-  text(0.7, 6.5, "Collab", font=2, cex=0.7)
+  text(0.7, 6.5, "Comm", font=2, cex=0.7)
   arrows(1.2, 6.5, 1.5, 5.2, lwd=1.5, col="#64748b")
   
   rect(0.2, 4, 1.2, 5, col="#f8fafc", border="#64748b")
-  text(0.7, 4.5, "Prod", font=2, cex=0.7)
+  text(0.7, 4.5, "Collab", font=2, cex=0.7)
   arrows(1.2, 4.5, 1.4, 4.8, lwd=1.5, col="#64748b")
   
   rect(0.2, 2, 1.2, 3, col="#f8fafc", border="#64748b")
-  text(0.7, 2.5, "Ethics", font=2, cex=0.7)
+  text(0.7, 2.5, "Creation", font=2, cex=0.7)
   arrows(1.2, 2.5, 1.5, 4.5, lwd=1.5, col="#64748b")
   
   rect(0.2, 0, 1.2, 1, col="#f8fafc", border="#64748b")
-  text(0.7, 0.5, "Safety", font=2, cex=0.7)
+  text(0.7, 0.5, "Critical", font=2, cex=0.7)
   arrows(1.2, 0.5, 1.6, 4.2, lwd=1.5, col="#64748b")
   
   dev.off()

@@ -25,6 +25,8 @@ export default function Madel5cAssessment() {
   const [loading, setLoading] = useState(true);
   const [showInstructions, setShowInstructions] = useState(true);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [showStageBreak, setShowStageBreak] = useState(false);
+  const [breakStage, setBreakStage] = useState(1);
   const router = useRouter();
 
   const optionColors = [
@@ -91,7 +93,13 @@ export default function Madel5cAssessment() {
     const newAnswers = { ...answers, [currentStep]: selectedOption.score };
     setAnswers(newAnswers);
     setTimeout(() => {
-      if (currentStep < questions.length - 1) { 
+      if (currentStep === 24) {
+        setBreakStage(1);
+        setShowStageBreak(true);
+      } else if (currentStep === 49) {
+        setBreakStage(2);
+        setShowStageBreak(true);
+      } else if (currentStep < questions.length - 1) { 
         setCurrentStep(currentStep + 1); 
         window.scrollTo(0,0); 
       }
@@ -99,6 +107,12 @@ export default function Madel5cAssessment() {
         submitAssessment(newAnswers); 
       }
     }, 300);
+  };
+
+  const handleNextStage = () => {
+    setShowStageBreak(false);
+    setCurrentStep(currentStep + 1);
+    window.scrollTo(0, 0);
   };
 
   if (loading) return (
@@ -159,19 +173,47 @@ export default function Madel5cAssessment() {
                     &quot;Baca skenario situasi nyata yang muncul, lalu pilih satu tindakan yang menurut Anda paling tepat.&quot;
                   </p>
                 </div>
+                <div className="p-4 bg-blue-50 rounded-2xl border border-blue-100">
+                  <h3 className="text-[11px] font-black text-blue-900 uppercase mb-1">Struktur Pengisian:</h3>
+                  <p className="text-[10px] font-bold text-blue-800 leading-relaxed">
+                    Instrumen terdiri dari **75 butir** yang dibagi menjadi **3 tahap pengisian** (masing-masing 25 butir) dengan sebaran dimensi yang seimbang. Anda dapat beristirahat sejenak di sela-sela perpindahan tahap.
+                  </p>
+                </div>
               </div>
 
               <button onClick={() => setShowInstructions(false)} className="w-full py-5 bg-[#4B5320] text-white font-black rounded-2xl text-[11px] uppercase tracking-widest shadow-2xl active:scale-95 transition-all">MULAI ASESMEN AKHIR</button>
+            </motion.div>
+          ) : showStageBreak ? (
+            <motion.div key="break" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-white p-8 rounded-[40px] shadow-3xl border border-slate-200 text-center"
+            >
+              <div className="w-20 h-20 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
+                <i className="fa-solid fa-mug-hot text-4xl animate-bounce"></i>
+              </div>
+              <h2 className="text-2xl font-black text-slate-900 uppercase tracking-tighter leading-tight mb-3">
+                Tahap {breakStage} Selesai!
+              </h2>
+              <div className="w-12 h-1 bg-amber-500 mx-auto rounded-full mb-4"></div>
+              <p className="text-[12px] font-bold text-slate-600 leading-relaxed mb-6">
+                Hebat! Anda telah menyelesaikan 25 butir pada Tahap {breakStage}. 
+                Istirahatlah sejenak untuk mengistirahatkan mata dan meregangkan tubuh Anda sebelum melanjutkan ke Tahap {breakStage + 1}.
+              </p>
+              <button 
+                onClick={handleNextStage}
+                className="w-full py-5 bg-[#4B5320] text-white rounded-2xl font-black text-[11px] uppercase tracking-widest shadow-2xl active:scale-95 transition-all"
+              >
+                LANJUT KE TAHAP {breakStage + 1} <i className="fa-solid fa-arrow-right ml-2"></i>
+              </button>
             </motion.div>
           ) : (
             <motion.div key="assessment" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
               <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xl flex justify-between items-center">
                 <div>
-                   <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]">Situasi</p>
-                   <span className="text-lg font-black text-slate-900 italic">Skenario #{currentStep + 1}</span>
+                   <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]">Tahap {Math.floor(currentStep / 25) + 1} dari 3</p>
+                   <span className="text-lg font-black text-slate-900 italic">Skenario #{(currentStep % 25) + 1} dari 25</span>
                 </div>
                 <div className="w-24 h-2 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
-                   <div className="h-full bg-[#4B5320] transition-all duration-500" style={{ width: `${((currentStep+1)/questions.length)*100}%` }}></div>
+                   <div className="h-full bg-[#4B5320] transition-all duration-500" style={{ width: `${(((currentStep % 25) + 1) / 25) * 100}%` }}></div>
                 </div>
               </div>
 

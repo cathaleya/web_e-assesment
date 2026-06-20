@@ -67,7 +67,7 @@ export async function GET(request: Request) {
 
 
     const pdiLabel  = pdi.totalScore  >= 80 ? 'Sangat Tinggi' : pdi.totalScore  >= 60 ? 'Tinggi' : pdi.totalScore  >= 40 ? 'Cukup' : 'Rendah';
-    const madelLabel = madel.totalScore >= 80 ? 'Sangat Tinggi' : madel.totalScore >= 60 ? 'Tinggi' : madel.totalScore >= 40 ? 'Cukup' : 'Rendah';
+    const madelLabel = madel.totalScore >= 300 ? 'Sangat Tinggi' : madel.totalScore >= 225 ? 'Tinggi' : madel.totalScore >= 150 ? 'Cukup' : 'Rendah';
     
     const prompt = `
 Anda adalah Pakar Psikometrika Digital dari Universitas Negeri Jakarta.

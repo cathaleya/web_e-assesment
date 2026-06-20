@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import fs from 'fs';
+import path from 'path';
 
 // Helper to escape values in CSV to handle quotes, commas, and newlines safely
 function escapeCsvValue(val: any): string {
@@ -26,9 +28,12 @@ export async function GET(req: Request) {
         orderBy: { createdAt: 'desc' }
       });
 
-      // Header: Timestamp, UserID, Name, Gender, Campus, TotalScore, Q1, Q2, ..., Q25
+      const questionsPath = path.join(process.cwd(), 'src/app/assessment/madel5c/questions.json');
+      const questions = JSON.parse(fs.readFileSync(questionsPath, 'utf8'));
+
+      // Header: Timestamp, UserID, Name, Gender, Campus, TotalScore, Q1, Q2, ..., Q75
       let header = ["Timestamp", "UserID", "Name", "Gender", "Campus", "TotalScore"];
-      for (let i = 1; i <= 25; i++) {
+      for (let i = 1; i <= 75; i++) {
         header.push(`Q${i}`);
       }
       csvContent += header.join(",") + "\n";
@@ -50,8 +55,16 @@ export async function GET(req: Request) {
           answers = {};
         }
 
-        for (let i = 0; i < 25; i++) {
-          const val = answers[i] !== undefined ? answers[i] : "";
+        const idToScore: Record<number, any> = {};
+        questions.forEach((q: any, idx: number) => {
+          const val = answers[idx];
+          if (val !== undefined) {
+            idToScore[q.id] = val;
+          }
+        });
+
+        for (let id = 1; id <= 75; id++) {
+          const val = idToScore[id] !== undefined ? idToScore[id] : "";
           row.push(escapeCsvValue(val));
         }
 
@@ -156,9 +169,12 @@ export async function GET(req: Request) {
         orderBy: { createdAt: 'desc' }
       });
 
-      // Header: Timestamp, UserID, Name, Gender, Campus, Instrument, TotalScore, Q1, Q2, ..., Q30, Feedback
+      const questionsPath = path.join(process.cwd(), 'src/app/assessment/madel5c/questions.json');
+      const questions = JSON.parse(fs.readFileSync(questionsPath, 'utf8'));
+
+      // Header: Timestamp, UserID, Name, Gender, Campus, Instrument, TotalScore, Q1, Q2, ..., Q75, Feedback
       let header = ["Timestamp", "UserID", "Name", "Gender", "Campus", "Instrument", "TotalScore"];
-      for (let i = 1; i <= 30; i++) {
+      for (let i = 1; i <= 75; i++) {
         header.push(`Q${i}`);
       }
       header.push("Feedback");
@@ -182,9 +198,24 @@ export async function GET(req: Request) {
           answers = {};
         }
 
-        for (let i = 0; i < 30; i++) {
-          const val = answers[i] !== undefined ? answers[i] : "";
-          row.push(escapeCsvValue(val));
+        if (a.type === 'MADEL5C') {
+          const idToScore: Record<number, any> = {};
+          questions.forEach((q: any, idx: number) => {
+            const val = answers[idx];
+            if (val !== undefined) {
+              idToScore[q.id] = val;
+            }
+          });
+
+          for (let id = 1; id <= 75; id++) {
+            const val = idToScore[id] !== undefined ? idToScore[id] : "";
+            row.push(escapeCsvValue(val));
+          }
+        } else {
+          for (let i = 0; i < 75; i++) {
+            const val = answers[i] !== undefined ? answers[i] : "";
+            row.push(escapeCsvValue(val));
+          }
         }
 
         row.push(''); // Feedback column is empty for assessments
