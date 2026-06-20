@@ -87,10 +87,16 @@ export default function DashboardPage() {
         </div>
 
         <nav className="flex-1 p-2 space-y-1">
-          <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg bg-white/10 text-[10px] font-bold">
+          <button onClick={() => router.push("/dashboard")} className="w-full flex items-center gap-3 px-3 py-2 rounded-lg bg-white/10 text-[10px] font-bold text-left">
             <i className="fa-solid fa-house w-4"></i> DASHBOARD
           </button>
-          <button onClick={() => { localStorage.clear(); router.push("/login"); }} className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-rose-500/20 text-rose-300 text-[10px] font-medium transition-all">
+          <button onClick={() => router.push("/assessment/preliminary")} className="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-white/10 text-[10px] font-medium text-left transition-all">
+            <span className="flex items-center gap-3">
+              <i className="fa-solid fa-clipboard-check w-4"></i> PDI-DL (TES AWAL)
+            </span>
+            {isPdiDone && <i className="fa-solid fa-circle-check text-emerald-400 text-xs"></i>}
+          </button>
+          <button onClick={() => { localStorage.clear(); router.push("/login"); }} className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-rose-500/20 text-rose-300 text-[10px] font-medium text-left transition-all">
             <i className="fa-solid fa-power-off w-4"></i> KELUAR
           </button>
         </nav>
@@ -127,7 +133,7 @@ export default function DashboardPage() {
           </div>
 
           {/* PROGRESS CARDS / LAPORAN HASIL */}
-          {isMadelDone ? (
+          {(isMadelDone && isSurveyDone) ? (
             <AssessmentOverview
               userName={user.name}
               userCampus={user.campus}
@@ -142,51 +148,35 @@ export default function DashboardPage() {
           ) : (
             <>
               {/* PROGRESS CARDS */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                <div className="bg-white p-4 rounded-xl border-2 border-slate-200 shadow-md flex flex-col justify-between">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="bg-white p-5 rounded-2xl border-2 border-slate-200 shadow-md flex flex-col justify-between">
                    <div>
                       <div className="flex justify-between items-start mb-2">
                          <p className="text-[8px] font-black text-blue-600 uppercase tracking-widest">Tahap 1</p>
-                         {isPdiDone && <i className="fa-solid fa-circle-check text-emerald-500"></i>}
+                         {isMadelDone && <i className="fa-solid fa-circle-check text-emerald-500"></i>}
                       </div>
-                      <h4 className="text-[10px] font-black text-slate-900 uppercase leading-none">PDI-DL</h4>
-                      {isPdiDone && <p className="mt-2 text-xl font-black text-blue-600">Skor: {stats?.preliminary}</p>}
+                      <h4 className="text-[10px] font-black text-slate-900 uppercase leading-none">MADEL5C (SJT)</h4>
+                      {isMadelDone && <p className="mt-2 text-xl font-black text-blue-600">Skor: {stats?.madel5c}</p>}
                    </div>
-                   {isPdiDone ? (
-                     <button onClick={() => setShowReflection('pdi')} className="mt-4 py-2 bg-slate-100 text-slate-600 rounded-lg text-[8px] font-black uppercase tracking-widest">Lihat Refleksi</button>
+                   {isMadelDone ? (
+                     <button onClick={() => setShowReflection('madel')} className="mt-4 py-2.5 bg-slate-100 text-slate-600 rounded-lg text-[8px] font-black uppercase tracking-widest">Lihat Refleksi</button>
                    ) : (
-                     <button onClick={() => router.push("/assessment/preliminary")} className="mt-4 py-2 bg-blue-600 text-white rounded-lg text-[8px] font-black uppercase shadow-lg">Mulai</button>
+                     <button onClick={() => router.push("/assessment/madel5c")} className="mt-4 py-2.5 bg-[#4B5320] text-white rounded-lg text-[8px] font-black uppercase shadow-lg tracking-widest hover:bg-[#3B4119] transition-all">Mulai Asesmen</button>
                    )}
                 </div>
 
-                <div className={`bg-white p-4 rounded-xl border-2 shadow-md flex flex-col justify-between transition-all ${!isPdiDone ? 'opacity-50 grayscale' : 'border-amber-200'}`}>
+                <div className={`bg-white p-5 rounded-2xl border-2 shadow-md flex flex-col justify-between transition-all ${!isMadelDone ? 'opacity-50 grayscale border-slate-200' : 'border-amber-200'}`}>
                    <div>
                       <div className="flex justify-between items-start mb-2">
                          <p className="text-[8px] font-black text-amber-600 uppercase tracking-widest">Tahap 2</p>
                          {isSurveyDone && <i className="fa-solid fa-circle-check text-emerald-500"></i>}
                       </div>
-                      <h4 className="text-[10px] font-black text-slate-900 uppercase leading-none">Survey</h4>
+                      <h4 className="text-[10px] font-black text-slate-900 uppercase leading-none">Survey Kepuasan Sistem</h4>
                    </div>
-                   <button disabled={!isPdiDone} onClick={() => router.push("/survey")}
-                      className={`mt-4 py-2 rounded-lg text-[8px] font-black uppercase transition-all ${!isPdiDone ? "bg-slate-100 text-slate-400" : isSurveyDone ? "bg-emerald-50 text-emerald-600" : "bg-amber-500 text-white shadow-lg"}`}>
+                   <button disabled={!isMadelDone} onClick={() => router.push("/survey")}
+                      className={`mt-4 py-2.5 rounded-lg text-[8px] font-black uppercase transition-all ${!isMadelDone ? "bg-slate-100 text-slate-400" : isSurveyDone ? "bg-emerald-50 text-emerald-600" : "bg-amber-500 text-white shadow-lg hover:bg-amber-600"}`}>
                       {isSurveyDone ? "Selesai" : "Isi Survey"}
                    </button>
-                </div>
-
-                <div className={`bg-white p-4 rounded-xl border-2 shadow-md flex flex-col justify-between transition-all ${!isSurveyDone ? 'opacity-50 grayscale' : 'border-[#4B5320]/30'}`}>
-                   <div>
-                      <div className="flex justify-between items-start mb-2">
-                         <p className="text-[8px] font-black text-[#4B5320] uppercase tracking-widest">Tahap 3</p>
-                         {isMadelDone && <i className="fa-solid fa-circle-check text-emerald-500"></i>}
-                      </div>
-                      <h4 className="text-[10px] font-black text-slate-900 uppercase leading-none">MADEL5C</h4>
-                      {isMadelDone && <p className="mt-2 text-xl font-black text-[#4B5320]">Skor: {stats?.madel5c}</p>}
-                   </div>
-                   {isMadelDone ? (
-                     <button onClick={() => setShowReflection('madel')} className="mt-4 py-2 bg-slate-100 text-[#4B5320] rounded-lg text-[8px] font-black uppercase tracking-widest">Lihat Refleksi</button>
-                   ) : (
-                     <button disabled={!isSurveyDone} onClick={() => router.push("/assessment/madel5c")} className="mt-4 py-2 bg-[#4B5320] text-white rounded-lg text-[8px] font-black uppercase shadow-lg tracking-widest">Mulai</button>
-                   )}
                 </div>
               </div>
 
@@ -200,13 +190,13 @@ export default function DashboardPage() {
                         datasets: [{
                           label: 'Kompetensi',
                           data: stats?.radar || [0,0,0,0,0],
-                          backgroundColor: 'rgba(59, 130, 246, 0.2)',
-                          borderColor: '#2563eb',
+                          backgroundColor: 'rgba(75, 83, 32, 0.2)',
+                          borderColor: '#4B5320',
                           borderWidth: 2,
                           pointRadius: 3
                         }]
                       }} options={{
-                        scales: { r: { suggestedMin: 0, suggestedMax: 5, pointLabels: { font: { size: 9, weight: 'bold' } }, ticks: { display: false } } },
+                        scales: { r: { suggestedMin: 0, suggestedMax: 100, pointLabels: { font: { size: 9, weight: 'bold' } }, ticks: { display: false } } },
                         plugins: { legend: { display: false } }
                       }} />
                     </div>

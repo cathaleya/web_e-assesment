@@ -146,13 +146,13 @@ export default function Madel5cAssessment() {
               <h2 className="text-3xl font-black text-slate-900 uppercase tracking-tighter leading-tight mb-4 italic">TERIMA KASIH BANYAK!</h2>
               <div className="w-12 h-1.5 bg-emerald-500 mx-auto rounded-full mb-6"></div>
               <p className="text-sm font-bold text-slate-600 leading-relaxed mb-8">
-                Anda telah berhasil menyelesaikan seluruh rangkaian instrumen asesmen dan survey pada platform HDAP. Kontribusi Anda sangat berarti bagi pengembangan riset Literasi Digital ini.
+                Anda telah berhasil menyelesaikan instrumen asesmen MADEL5C. Silakan melanjutkan untuk mengisi survey evaluasi sistem.
               </p>
               <button 
-                onClick={() => router.push("/dashboard")}
-                className="w-full py-5 bg-slate-900 text-white rounded-2xl font-black text-[11px] uppercase tracking-widest shadow-2xl hover:bg-black transition-all active:scale-95"
+                onClick={() => router.push("/survey")}
+                className="w-full py-5 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-black text-[11px] uppercase tracking-widest shadow-2xl transition-all active:scale-95"
               >
-                KEMBALI KE DASHBOARD UTAMA <i className="fa-solid fa-house-chimney ml-2"></i>
+                LANJUT KE SURVEY KEPUASAN <i className="fa-solid fa-arrow-right ml-2"></i>
               </button>
             </motion.div>
           ) : showInstructions ? (

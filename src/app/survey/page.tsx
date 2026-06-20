@@ -58,8 +58,8 @@ export default function SurveyPage() {
         }),
       });
       
-      // LANGSUNG LANJUT KE MADEL5C sesuai instruksi Bapak
-      router.push("/assessment/madel5c");
+      // KEMBALI KE DASHBOARD UNTUK MELIHAT HASIL
+      router.push("/dashboard");
     } catch (err) { 
       console.error(err); 
       setIsSubmitting(false);
@@ -167,8 +167,8 @@ export default function SurveyPage() {
                    isComplete && !isSubmitting ? "bg-blue-600 text-white hover:bg-blue-700 active:scale-95" : "bg-slate-300 text-slate-500 cursor-not-allowed"
                  }`}
                >
-                 {isSubmitting ? "MENGIRIM DATA..." : "SIMPAN & LANJUT KE MADEL5C"} 
-                 {!isSubmitting && <i className="fa-solid fa-arrow-right ml-2"></i>}
+                 {isSubmitting ? "MENGIRIM DATA..." : "SIMPAN & LIHAT HASIL"} 
+                 {!isSubmitting && <i className="fa-solid fa-circle-check ml-2"></i>}
                </button>
             </motion.div>
           )}

@@ -43,14 +43,13 @@ export async function GET(request: Request) {
     const madel = userData.assessments.find((a) => a.type === 'MADEL5C');
     const surveyDone = userData.surveys && userData.surveys.length > 0;
 
-    const allDone = pdi && madel && surveyDone;
+    const allDone = madel && surveyDone;
 
     // Jika belum menyelesaikan seluruh instrumen, berikan petunjuk pengisian tanpa memanggil API Gemini
     if (!allDone) {
       let missingList = [];
-      if (!pdi) missingList.push('Tahap 1: PDI-DL');
+      if (!madel) missingList.push('Tahap 1: MADEL5C (SJT)');
       if (!surveyDone) missingList.push('Tahap 2: Survey Respon');
-      if (!madel) missingList.push('Tahap 3: MADEL5C');
 
       const message = `Halo ${userData.name}! Silakan selesaikan instrumen berikut agar diagnosis AI dapat dipetakan secara lengkap: ${missingList.join(', ')}.`;
       return NextResponse.json({ message });
@@ -58,23 +57,26 @@ export async function GET(request: Request) {
 
     // Jika seluruh instrumen telah lengkap, panggil Gemini AI Premium secara otomatis
     if (!apiKey) {
-      const baseMsg = `Halo ${userData.name}! GEMINI_API_KEY belum terkonfigurasi di file .env server Anda. (Skor PDI-DL: ${pdi.totalScore}, MADEL5C: ${madel.totalScore})`;
+      const baseMsg = `Halo ${userData.name}! GEMINI_API_KEY belum terkonfigurasi di file .env server Anda. (Skor MADEL5C: ${madel.totalScore}${pdi ? `, PDI-DL: ${pdi.totalScore}` : ''})`;
       return NextResponse.json({ message: baseMsg });
     }
 
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' }, { apiVersion: 'v1' });
 
-
-    const pdiLabel  = pdi.totalScore  >= 80 ? 'Sangat Tinggi' : pdi.totalScore  >= 60 ? 'Tinggi' : pdi.totalScore  >= 40 ? 'Cukup' : 'Rendah';
+    const pdiLabel  = pdi ? (pdi.totalScore  >= 80 ? 'Sangat Tinggi' : pdi.totalScore  >= 60 ? 'Tinggi' : pdi.totalScore  >= 40 ? 'Cukup' : 'Rendah') : 'Belum Diisi';
     const madelLabel = madel.totalScore >= 300 ? 'Sangat Tinggi' : madel.totalScore >= 225 ? 'Tinggi' : madel.totalScore >= 150 ? 'Cukup' : 'Rendah';
     
+    const pdiPromptText = pdi 
+      ? `- Skor PDI-DL (Tes Awal): ${pdi.totalScore} (Kategori: ${pdiLabel})`
+      : `- Tes Mandiri PDI-DL: Belum diikuti / diisi`;
+
     const prompt = `
 Anda adalah Pakar Psikometrika Digital dari Universitas Negeri Jakarta.
 Tulis diagnosis singkat (maksimal 3 sentences, bahasa Indonesia, akademis dan memotivasi) untuk mahasiswa bernama ${userData.name} yang telah MENYELESAIKAN seluruh rangkaian instrumen asesmen platform HDAP.
 
 Data hasil asesmen:
-- Skor PDI-DL  : ${pdi.totalScore}  (Kategori: ${pdiLabel})
+${pdiPromptText}
 - Skor MADEL5C : ${madel.totalScore} (Kategori: ${madelLabel})
 
 Panduan:
