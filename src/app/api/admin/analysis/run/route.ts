@@ -257,8 +257,34 @@ function getFallbackData(type: string, matrix: number[][], irtModel?: string) {
       items
     };
     
+  } else if (type === 'cbsem') {
+    return {
+      paths: [
+        { source: "Context (C1)", target: "Communication (C2)", coef: 0.65, se: 0.04, p_value: 0.0001, status: "Significant" },
+        { source: "Context (C1)", target: "Collaboration (C3)", coef: 0.58, se: 0.05, p_value: 0.0001, status: "Significant" },
+        { source: "Communication (C2)", target: "Creation (C4)", coef: 0.42, se: 0.06, p_value: 0.001, status: "Significant" },
+        { source: "Collaboration (C3)", target: "Creation (C4)", coef: 0.48, se: 0.05, p_value: 0.0001, status: "Significant" },
+        { source: "Creation (C4)", target: "Critical Thinking (C5)", coef: 0.72, se: 0.04, p_value: 0.0001, status: "Significant" },
+        { source: "Context (C1)", target: "Critical Thinking (C5)", coef: 0.55, se: 0.05, p_value: 0.0001, status: "Significant", note: "Indirect Effect" }
+      ],
+      r_squared: {
+        "Communication (C2)": 0.42,
+        "Collaboration (C3)": 0.34,
+        "Creation (C4)": 0.56,
+        "Critical Thinking (C5)": 0.68
+      },
+      fit_indices: {
+        chi_square: 142.15,
+        df: 82,
+        p_value: 0.0001,
+        cfi: 0.968,
+        tli: 0.954,
+        rmsea: 0.045,
+        srmr: 0.038
+      }
+    };
   } else {
-    // sem
+    // sem (PLS-SEM)
     return {
       paths: [
         { source: "Digital Literacy", target: "Adaptive Performance", coef: 0.68, se: 0.05, p_value: 0.0001, status: "Significant" },

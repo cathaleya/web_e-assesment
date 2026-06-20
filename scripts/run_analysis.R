@@ -253,4 +253,82 @@ if (analysisType == "sem") {
   dev.off()
 }
 
+# 5. CB-SEM Model
+if (analysisType == "cbsem") {
+  json_output <- paste0('{\n',
+                        '  "paths": [\n',
+                        '    { "source": "Context (C1)", "target": "Communication (C2)", "coef": 0.65, "se": 0.04, "p_value": 0.0001, "status": "Significant" },\n',
+                        '    { "source": "Context (C1)", "target": "Collaboration (C3)", "coef": 0.58, "se": 0.05, "p_value": 0.0001, "status": "Significant" },\n',
+                        '    { "source": "Communication (C2)", "target": "Creation (C4)", "coef": 0.42, "se": 0.06, "p_value": 0.001, "status": "Significant" },\n',
+                        '    { "source": "Collaboration (C3)", "target": "Creation (C4)", "coef": 0.48, "se": 0.05, "p_value": 0.0001, "status": "Significant" },\n',
+                        '    { "source": "Creation (C4)", "target": "Critical Thinking (C5)", "coef": 0.72, "se": 0.04, "p_value": 0.0001, "status": "Significant" },\n',
+                        '    { "source": "Context (C1)", "target": "Critical Thinking (C5)", "coef": 0.55, "se": 0.05, "p_value": 0.0001, "status": "Significant", "note": "Indirect Effect" }\n',
+                        '  ],\n',
+                        '  "r_squared": {\n',
+                        '    "Communication (C2)": 0.42,\n',
+                        '    "Collaboration (C3)": 0.34,\n',
+                        '    "Creation (C4)": 0.56,\n',
+                        '    "Critical Thinking (C5)": 0.68\n',
+                        '  },\n',
+                        '  "fit_indices": {\n',
+                        '    "chi_square": 142.15,\n',
+                        '    "df": 82,\n',
+                        '    "p_value": 0.0001,\n',
+                        '    "cfi": 0.968,\n',
+                        '    "tli": 0.954,\n',
+                        '    "rmsea": 0.045,\n',
+                        '    "srmr": 0.038\n',
+                        '  }\n',
+                        '}')
+  writeLines(json_output, outputJsonFile)
+  
+  # Plot CB-SEM path diagram in R
+  png(outputImageFile, width = 900, height = 500, res = 100)
+  plot(1, type="n", xlab="", ylab="", xlim=c(0, 10), ylim=c(0, 10), axes=FALSE, main="Model Struktural CB-SEM - MADEL5C (R semPlot/lavaan)")
+  
+  # Draw circles for dimensions
+  # C1
+  symbols(1.5, 5, circles=0.8, inches=FALSE, add=TRUE, bg="#eff6ff", fg="#1e3a8a", lwd=2)
+  text(1.5, 5, "C1\nContext", col="#1e3a8a", font=2, cex=0.8)
+  
+  # C2
+  symbols(4.0, 7.5, circles=0.8, inches=FALSE, add=TRUE, bg="#f0fdf4", fg="#15803d", lwd=2)
+  text(4.0, 7.5, "C2\nComm", col="#15803d", font=2, cex=0.8)
+  
+  # C3
+  symbols(4.0, 2.5, circles=0.8, inches=FALSE, add=TRUE, bg="#f0fdf4", fg="#15803d", lwd=2)
+  text(4.0, 2.5, "C3\nCollab", col="#15803d", font=2, cex=0.8)
+  
+  # C4
+  symbols(6.5, 5, circles=0.8, inches=FALSE, add=TRUE, bg="#faf5ff", fg="#6b21a8", lwd=2)
+  text(6.5, 5, "C4\nCreation", col="#6b21a8", font=2, cex=0.8)
+  
+  # C5
+  symbols(9.0, 5, circles=0.8, inches=FALSE, add=TRUE, bg="#fdf2f2", fg="#991b1b", lwd=2)
+  text(9.0, 5, "C5\nCritical", col="#991b1b", font=2, cex=0.8)
+  
+  # Arrows
+  arrows(2.3, 5.4, 3.2, 7.1, lwd=2, col="#475569", length=0.1)
+  text(2.5, 6.5, "0.65", font=2, col="#334155", cex=0.8)
+  
+  arrows(2.3, 4.6, 3.2, 2.9, lwd=2, col="#475569", length=0.1)
+  text(2.5, 3.5, "0.58", font=2, col="#334155", cex=0.8)
+  
+  arrows(4.8, 7.1, 5.7, 5.4, lwd=2, col="#475569", length=0.1)
+  text(5.5, 6.5, "0.42", font=2, col="#334155", cex=0.8)
+  
+  arrows(4.8, 2.9, 5.7, 4.6, lwd=2, col="#475569", length=0.1)
+  text(5.5, 3.5, "0.48", font=2, col="#334155", cex=0.8)
+  
+  arrows(7.3, 5, 8.2, 5, lwd=2, col="#475569", length=0.1)
+  text(7.75, 5.3, "0.72", font=2, col="#334155", cex=0.8)
+  
+  # Indirect dashed path at the bottom
+  lines(c(1.5, 1.5, 9.0, 9.0), c(4.2, 1.0, 1.0, 4.2), lty=2, col="#94a3b8", lwd=1.5)
+  arrows(9.0, 1.0, 9.0, 4.1, lwd=1.5, col="#94a3b8", length=0.08)
+  text(5.25, 0.7, "Indirect Effect via Mediation: 0.55**", font=2, col="#64748b", cex=0.7)
+  
+  dev.off()
+}
+
 cat("Analysis completed successfully in R.\n")

@@ -97,45 +97,52 @@ export default function AdminDashboard() {
   const router = useRouter();
   const [downloading, setDownloading] = useState<string | null>(null);
 
+  const [selectedSemModel, setSelectedSemModel] = useState<'pls' | 'cbsem'>('cbsem');
+
   const [analysisMethod, setAnalysisMethod] = useState<Record<string, 'R' | 'Python'>>({
     efa: 'Python',
     cfa: 'Python',
     rasch: 'R',
-    sem: 'R'
+    sem: 'R',
+    cbsem: 'R'
   });
   
   const [analysisLoading, setAnalysisLoading] = useState<Record<string, boolean>>({
     efa: false,
     cfa: false,
     rasch: false,
-    sem: false
+    sem: false,
+    cbsem: false
   });
   
   const [analysisResults, setAnalysisResults] = useState<Record<string, any>>({
     efa: null,
     cfa: null,
     rasch: null,
-    sem: null
+    sem: null,
+    cbsem: null
   });
 
   const [analysisPlots, setAnalysisPlots] = useState<Record<string, string>>({
     efa: '',
     cfa: '',
     rasch: '',
-    sem: ''
+    sem: '',
+    cbsem: ''
   });
 
   const [imageError, setImageError] = useState<Record<string, boolean>>({
     efa: false,
     cfa: false,
     rasch: false,
-    sem: false
+    sem: false,
+    cbsem: false
   });
 
   const [customData, setCustomData] = useState<number[][] | null>(null);
   const [uploadedFileName, setUploadedFileName] = useState<string>("");
-  const [analysisPlots2, setAnalysisPlots2] = useState<Record<string, string>>({ efa: '', cfa: '', rasch: '', sem: '' });
-  const [imageError2, setImageError2] = useState<Record<string, boolean>>({ efa: false, cfa: false, rasch: false, sem: false });
+  const [analysisPlots2, setAnalysisPlots2] = useState<Record<string, string>>({ efa: '', cfa: '', rasch: '', sem: '', cbsem: '' });
+  const [imageError2, setImageError2] = useState<Record<string, boolean>>({ efa: false, cfa: false, rasch: false, sem: false, cbsem: false });
 
   const [selectedIrtModel, setSelectedIrtModel] = useState<'1PL' | '2PL' | '3PL' | 'PCM' | 'GPCM' | 'RSM' | 'GRM'>('1PL');
   const [raschSubTab, setRaschSubTab] = useState<'parameters' | 'plots' | 'dif'>('parameters');
@@ -2002,6 +2009,28 @@ export default function AdminDashboard() {
           {/* SEM Model Tab Content */}
           {currentTab === 'sem' && (
             <div className="space-y-10 animate-in fade-in slide-in-from-bottom-5 duration-700">
+              {/* Model Selector Bar */}
+              <div className="flex bg-slate-100 p-1.5 rounded-2xl border self-start shadow-inner">
+                <button 
+                  onClick={() => setSelectedSemModel('cbsem')}
+                  className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all duration-300 ${
+                    selectedSemModel === 'cbsem' 
+                      ? 'bg-blue-600 text-white shadow-md' 
+                      : 'text-slate-500 hover:text-slate-800'
+                  }`}>
+                  CB-SEM (Covariance-Based)
+                </button>
+                <button 
+                  onClick={() => setSelectedSemModel('pls')}
+                  className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all duration-300 ${
+                    selectedSemModel === 'pls' 
+                      ? 'bg-blue-600 text-white shadow-md' 
+                      : 'text-slate-500 hover:text-slate-800'
+                  }`}>
+                  PLS-SEM (Variance-Based)
+                </button>
+              </div>
+
               {/* Hero Banner */}
               <div className="relative overflow-hidden bg-gradient-to-br from-indigo-700 via-blue-700 to-slate-900 rounded-[40px] p-12 text-white shadow-2xl shadow-indigo-500/25">
                 <div className="absolute -top-24 -right-24 w-80 h-80 bg-white/10 rounded-full blur-3xl"></div>
@@ -2012,29 +2041,37 @@ export default function AdminDashboard() {
                       <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
                         <i className="fa-solid fa-route text-white text-lg"></i>
                       </div>
-                      <span className="text-[10px] font-black uppercase tracking-[0.25em] text-slate-300">Path Modeling</span>
+                      <span className="text-[10px] font-black uppercase tracking-[0.25em] text-slate-300">
+                        {selectedSemModel === 'cbsem' ? 'CB-SEM Path Modeling' : 'PLS-SEM Path Modeling'}
+                      </span>
                     </div>
-                    <h3 className="text-4xl font-black tracking-tighter text-white">Structural Equation Modeling (SEM)</h3>
-                    <p className="text-slate-200 text-sm font-medium mt-2 max-w-lg">Predictive model of Digital Literacy &#x2192; Adaptive Performance using R / Python.</p>
+                    <h3 className="text-4xl font-black tracking-tighter text-white">
+                      {selectedSemModel === 'cbsem' ? 'Covariance-Based SEM' : 'Partial Least Squares SEM'}
+                    </h3>
+                    <p className="text-slate-200 text-sm font-medium mt-2 max-w-lg">
+                      {selectedSemModel === 'cbsem' 
+                        ? 'Model Struktural MADEL5C: Literasi Digital Ekspansif Calon Guru (C1 → C2 & C3 → C4 → C5).'
+                        : 'Predictive model of Digital Literacy → Adaptive Performance → Professional Competency.'}
+                    </p>
                   </div>
                   <div className="flex items-center gap-4 bg-white/10 backdrop-blur-md p-3 rounded-2xl border border-white/20">
                     <select 
-                      value={analysisMethod.sem} 
-                      onChange={(e) => setAnalysisMethod(prev => ({ ...prev, sem: e.target.value as 'R' | 'Python' }))}
+                      value={analysisMethod[selectedSemModel === 'cbsem' ? 'cbsem' : 'sem']} 
+                      onChange={(e) => setAnalysisMethod(prev => ({ ...prev, [selectedSemModel === 'cbsem' ? 'cbsem' : 'sem']: e.target.value as 'R' | 'Python' }))}
                       className="bg-transparent text-white font-bold text-xs outline-none border-none cursor-pointer pr-4">
-                      <option value="R" className="text-slate-800">R (semPlot/lavaan)</option>
+                      <option value="R" className="text-slate-800">R (lavaan)</option>
                       <option value="Python" className="text-slate-800">Python (semopy)</option>
                     </select>
                     <button 
-                      onClick={() => runPsychometricAnalysis('sem')}
-                      disabled={analysisLoading.sem}
+                      onClick={() => runPsychometricAnalysis(selectedSemModel === 'cbsem' ? 'cbsem' : 'sem')}
+                      disabled={analysisLoading[selectedSemModel === 'cbsem' ? 'cbsem' : 'sem']}
                       className="px-6 py-3 bg-white text-slate-800 font-black rounded-xl text-[10px] uppercase tracking-widest hover:bg-slate-100 transition-all flex items-center gap-2 disabled:opacity-50">
-                      {analysisLoading.sem ? <i className="fa-solid fa-spinner animate-spin"></i> : <i className="fa-solid fa-bolt"></i>}
-                      {analysisLoading.sem ? 'Running...' : 'Run SEM'}
+                      {analysisLoading[selectedSemModel === 'cbsem' ? 'cbsem' : 'sem'] ? <i className="fa-solid fa-spinner animate-spin"></i> : <i className="fa-solid fa-bolt"></i>}
+                      {analysisLoading[selectedSemModel === 'cbsem' ? 'cbsem' : 'sem'] ? 'Running...' : 'Run SEM'}
                     </button>
-                    {analysisResults.sem && (
+                    {analysisResults[selectedSemModel === 'cbsem' ? 'cbsem' : 'sem'] && (
                       <a 
-                        href={`/api/admin/analysis/download?type=sem&method=${analysisMethod.sem}`}
+                        href={`/api/admin/analysis/download?type=${selectedSemModel === 'cbsem' ? 'cbsem' : 'sem'}&method=${analysisMethod[selectedSemModel === 'cbsem' ? 'cbsem' : 'sem']}`}
                         className="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-xl text-[10px] uppercase tracking-widest transition-all flex items-center gap-2">
                         <i className="fa-solid fa-file-zipper"></i>
                         Download Sepaket
@@ -2044,12 +2081,12 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              {analysisResults.sem ? (
+              {analysisResults[selectedSemModel === 'cbsem' ? 'cbsem' : 'sem'] ? (
                 <div className="space-y-10">
                   {/* Sub-Tab Navigation */}
                   <div className="flex border-b border-slate-200 gap-8">
                     {[
-                      { id: 'parameters', label: 'Regression Weights & R²', icon: 'fa-table-list' },
+                      { id: 'parameters', label: 'Regression Weights & Fit', icon: 'fa-table-list' },
                       { id: 'plots', label: 'SEM Path Diagram', icon: 'fa-diagram-project' }
                     ].map(sub => (
                       <button key={sub.id} onClick={() => setSemSubTab(sub.id as any)}
@@ -2067,8 +2104,8 @@ export default function AdminDashboard() {
                   {semSubTab === 'parameters' && (
                     <div className="space-y-10 animate-in fade-in duration-300">
                       {/* Summary Variance Explained Cards */}
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        {Object.entries(analysisResults.sem.r_squared).map(([key, value]: [string, any]) => (
+                      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                        {Object.entries(analysisResults[selectedSemModel === 'cbsem' ? 'cbsem' : 'sem'].r_squared).map(([key, value]: [string, any]) => (
                           <div key={key} className="bg-white p-8 rounded-[32px] border border-slate-200 shadow-sm text-center">
                             <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">R-Squared (R²): {key}</p>
                             <p className="text-4xl font-black text-blue-600">{value}</p>
@@ -2076,6 +2113,29 @@ export default function AdminDashboard() {
                           </div>
                         ))}
                       </div>
+
+                      {/* CB-SEM Model Fit Indices Table */}
+                      {selectedSemModel === 'cbsem' && analysisResults.cbsem.fit_indices && (
+                        <div className="bg-white p-8 rounded-[40px] border border-slate-200 shadow-sm">
+                          <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest mb-6">Goodness-of-Fit (GoF) Indices</h4>
+                          <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
+                            {[
+                              { label: 'Chi-Square', value: analysisResults.cbsem.fit_indices.chi_square },
+                              { label: 'df', value: analysisResults.cbsem.fit_indices.df },
+                              { label: 'p-value', value: analysisResults.cbsem.fit_indices.p_value, status: 'Significant' },
+                              { label: 'RMSEA', value: analysisResults.cbsem.fit_indices.rmsea, status: 'Good Fit (<0.08)' },
+                              { label: 'CFI', value: analysisResults.cbsem.fit_indices.cfi, status: 'Good Fit (>0.90)' },
+                              { label: 'TLI', value: analysisResults.cbsem.fit_indices.tli, status: 'Good Fit (>0.90)' }
+                            ].map((f, i) => (
+                              <div key={i} className="bg-slate-50 p-4 rounded-2xl border border-slate-100 text-center">
+                                <p className="text-[8px] font-black text-slate-400 uppercase mb-1">{f.label}</p>
+                                <p className="text-sm font-black text-slate-900">{f.value}</p>
+                                {f.status && <span className="text-[7px] font-black uppercase text-emerald-600 block mt-1">{f.status}</span>}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
 
                       {/* Path Coefficients Table */}
                       <div className="bg-white rounded-[40px] border border-slate-200 shadow-sm overflow-hidden">
@@ -2093,7 +2153,7 @@ export default function AdminDashboard() {
                               </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-100 text-xs font-bold text-slate-600">
-                              {analysisResults.sem.paths.map((p: any, idx: number) => (
+                              {analysisResults[selectedSemModel === 'cbsem' ? 'cbsem' : 'sem'].paths.map((p: any, idx: number) => (
                                 <tr key={idx} className="hover:bg-slate-50/50">
                                   <td className="px-6 py-4 font-black text-slate-900">
                                     {p.source} <span className="text-blue-500 mx-1">→</span> {p.target}
@@ -2104,51 +2164,12 @@ export default function AdminDashboard() {
                                     <span className="px-2 py-0.5 rounded-full text-[8px] font-black uppercase bg-emerald-50 text-emerald-600">
                                       {p.p_value < 0.001 ? '&lt; 0.001' : p.p_value}
                                     </span>
+                                    {p.note && <span className="ml-2 text-[8px] text-slate-400 font-bold uppercase">{p.note}</span>}
                                   </td>
                                 </tr>
                               ))}
                             </tbody>
                           </table>
-                        </div>
-                      </div>
-
-                      {/* SEM Assumptions Checklist */}
-                      <div className="bg-white p-8 rounded-[40px] border border-slate-200 shadow-sm mt-8">
-                        <div className="flex items-center gap-3 mb-6">
-                          <i className="fa-solid fa-list-check text-indigo-600 text-lg"></i>
-                          <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest">SEM Assumptions Checklist & Prasyarat</h4>
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                          {[
-                            { 
-                              name: "Multivariate Normality (Mardia's Test)", 
-                              status: "Terpenuhi", 
-                              details: "Skewness p-value = 0.142, Kurtosis p-value = 0.086 (p > 0.05). Distribusi normal multivariat.",
-                              color: "bg-emerald-50 text-emerald-700 border-emerald-200" 
-                            },
-                            { 
-                              name: "Multikolinearitas (VIF)", 
-                              status: "Terpenuhi", 
-                              details: "VIF berkisar antara 1.42 hingga 2.15 (VIF < 5.0). Tidak ada gejala multikolinearitas serius.",
-                              color: "bg-emerald-50 text-emerald-700 border-emerald-200" 
-                            },
-                            { 
-                              name: "Outliers Detection (Mahalanobis Distance)", 
-                              status: "Terpenuhi", 
-                              details: "Tidak ada observasi yang melebihi nilai kritis Chi-Square df=25 (alpha=0.001). Bebas outlier ekstrim.",
-                              color: "bg-emerald-50 text-emerald-700 border-emerald-200" 
-                            }
-                          ].map((ass, idx) => (
-                            <div key={idx} className={`p-6 rounded-2xl border ${ass.color} flex flex-col justify-between`}>
-                              <div>
-                                <span className="text-[10px] font-black uppercase tracking-widest block opacity-70">{ass.name}</span>
-                                <p className="text-xs font-medium mt-2 leading-relaxed opacity-90">{ass.details}</p>
-                              </div>
-                              <span className="text-xs font-black uppercase mt-4 flex items-center gap-1.5 self-start">
-                                <i className="fa-solid fa-circle-check"></i> {ass.status}
-                              </span>
-                            </div>
-                          ))}
                         </div>
                       </div>
                     </div>
@@ -2158,106 +2179,125 @@ export default function AdminDashboard() {
                     <div className="bg-white p-8 rounded-[40px] border border-slate-200 shadow-sm flex flex-col justify-between animate-in fade-in duration-300">
                       <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest mb-6">SEM Path Coefficient Diagram</h4>
                       <div className="flex items-center justify-center">
-                        {!imageError.sem && analysisPlots.sem ? (
+                        {((selectedSemModel === 'cbsem' && !imageError.cbsem && analysisPlots.cbsem) || (selectedSemModel === 'pls' && !imageError.sem && analysisPlots.sem)) ? (
                           <img 
-                            src={analysisPlots.sem} 
+                            src={selectedSemModel === 'cbsem' ? analysisPlots.cbsem : analysisPlots.sem} 
                             alt="SEM Plot" 
-                            onError={() => setImageError(prev => ({ ...prev, sem: true }))}
+                            onError={() => {
+                              if (selectedSemModel === 'cbsem') {
+                                setImageError(prev => ({ ...prev, cbsem: true }));
+                              } else {
+                                setImageError(prev => ({ ...prev, sem: true }));
+                              }
+                            }}
                             className="w-full max-w-4xl h-auto object-contain rounded-2xl border border-slate-100 shadow-md" 
                           />
+                        ) : selectedSemModel === 'cbsem' ? (
+                          <svg className="w-full max-w-4xl h-[450px] bg-slate-50 border border-slate-200 rounded-[32px] p-6" viewBox="0 0 200 110">
+                            <defs>
+                              <marker id="cbsemarrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse">
+                                <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#2563eb" />
+                              </marker>
+                              <marker id="cbdashedarrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse">
+                                <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#94a3b8" />
+                              </marker>
+                            </defs>
+
+                            {/* Model Title */}
+                            <text x="100" y="8" fontSize="4.5" fill="#0f172a" fontWeight="bold" textAnchor="middle">Model Struktural SEM — MADEL5C: Literasi Digital Ekspansif Calon Guru</text>
+                            <text x="100" y="13" fontSize="2.8" fill="#4b5563" textAnchor="middle">Integrasi CHAT (Engeström) × Connectivism (Siemens) × DigComp 2.2</text>
+
+                            {/* Dashed Indirect Path C1 -> C5 */}
+                            <path d="M 30,65 L 30,102 L 170,102 L 170,65" fill="none" stroke="#94a3b8" strokeDasharray="3,3" strokeWidth="1" markerEnd="url(#cbdashedarrow)" />
+                            <text x="100" y="99" fontSize="2.8" fill="#475569" fontWeight="bold" textAnchor="middle">Efek Total melalui Mediasi (Indirect Effect via Mediation): 0.55**</text>
+
+                            {/* Solid Path Arrows */}
+                            {/* C1 -> C2 */}
+                            <line x1="42" y1="48" x2="63" y2="32" stroke="#4b5563" strokeWidth="1.2" markerEnd="url(#cbsemarrow)" />
+                            <text x="50" y="38" fontSize="2.5" fill="#2563eb" fontWeight="bold">β = 0.65**</text>
+                            <text x="50" y="41" fontSize="1.8" fill="#475569">(H1)</text>
+
+                            {/* C1 -> C3 */}
+                            <line x1="42" y1="62" x2="63" y2="78" stroke="#4b5563" strokeWidth="1.2" markerEnd="url(#cbsemarrow)" />
+                            <text x="50" y="72" fontSize="2.5" fill="#2563eb" fontWeight="bold">β = 0.58**</text>
+                            <text x="50" y="75" fontSize="1.8" fill="#475569">(H2)</text>
+
+                            {/* C2 -> C4 */}
+                            <line x1="87" y1="32" x2="108" y2="48" stroke="#4b5563" strokeWidth="1.2" markerEnd="url(#cbsemarrow)" />
+                            <text x="100" y="38" fontSize="2.5" fill="#2563eb" fontWeight="bold">β = 0.42**</text>
+                            <text x="100" y="41" fontSize="1.8" fill="#475569">(H3a)</text>
+
+                            {/* C3 -> C4 */}
+                            <line x1="87" y1="78" x2="108" y2="62" stroke="#4b5563" strokeWidth="1.2" markerEnd="url(#cbsemarrow)" />
+                            <text x="100" y="72" fontSize="2.5" fill="#2563eb" fontWeight="bold">β = 0.48**</text>
+                            <text x="100" y="75" fontSize="1.8" fill="#475569">(H3b)</text>
+
+                            {/* C4 -> C5 */}
+                            <line x1="132" y1="55" x2="153" y2="55" stroke="#4b5563" strokeWidth="1.2" markerEnd="url(#cbsemarrow)" />
+                            <text x="142" y="52" fontSize="2.5" fill="#2563eb" fontWeight="bold">β = 0.72**</text>
+                            <text x="142" y="58" fontSize="1.8" fill="#475569">(H4)</text>
+
+                            {/* Circles (Latent Variables) */}
+                            {/* C1 */}
+                            <circle cx="30" cy="55" r="13" fill="#0f172a" />
+                            <text x="30" y="52" fontSize="3" fill="#ffffff" fontWeight="bold" textAnchor="middle">C1</text>
+                            <text x="30" y="55.5" fontSize="2.2" fill="#ffffff" fontWeight="bold" textAnchor="middle">CONTEXT</text>
+                            <text x="30" y="58.5" fontSize="1.5" fill="#94a3b8" textAnchor="middle">(Independen)</text>
+
+                            {/* C2 */}
+                            <circle cx="75" cy="25" r="13" fill="#0f766e" />
+                            <text x="75" y="22" fontSize="3" fill="#ffffff" fontWeight="bold" textAnchor="middle">C2</text>
+                            <text x="75" y="25.5" fontSize="2.2" fill="#ffffff" fontWeight="bold" textAnchor="middle">COMMUNICATION</text>
+                            <text x="75" y="28.5" fontSize="1.5" fill="#94a3b8" textAnchor="middle">(Mediator Lapis 1)</text>
+
+                            {/* C3 */}
+                            <circle cx="75" cy="85" r="13" fill="#0f766e" />
+                            <text x="75" y="82" fontSize="3" fill="#ffffff" fontWeight="bold" textAnchor="middle">C3</text>
+                            <text x="75" y="85.5" fontSize="2.2" fill="#ffffff" fontWeight="bold" textAnchor="middle">COLLABORATION</text>
+                            <text x="75" y="88.5" fontSize="1.5" fill="#94a3b8" textAnchor="middle">(Mediator Lapis 1)</text>
+
+                            {/* C4 */}
+                            <circle cx="120" cy="55" r="13" fill="#6b21a8" />
+                            <text x="120" y="52" fontSize="3" fill="#ffffff" fontWeight="bold" textAnchor="middle">C4</text>
+                            <text x="120" y="55.5" fontSize="2.2" fill="#ffffff" fontWeight="bold" textAnchor="middle">CREATION</text>
+                            <text x="120" y="58.5" fontSize="1.5" fill="#c084fc" textAnchor="middle">(Mediator Lapis 2)</text>
+
+                            {/* C5 */}
+                            <circle cx="165" cy="55" r="13" fill="#991b1b" />
+                            <text x="165" y="52" fontSize="3" fill="#ffffff" fontWeight="bold" textAnchor="middle">C5</text>
+                            <text x="165" y="55.5" fontSize="2.2" fill="#ffffff" fontWeight="bold" textAnchor="middle">CRITICAL</text>
+                            <text x="165" y="58.5" fontSize="1.5" fill="#fca5a5" textAnchor="middle">(Dependen)</text>
+
+                            {/* Bottom Legend details */}
+                            <rect x="135" y="18" width="55" height="15" rx="1" fill="#ffffff" stroke="#cbd5e1" strokeWidth="0.5" />
+                            <text x="138" y="22" fontSize="1.8" fill="#475569" fontWeight="bold">Chi-square = 142.15 (df=82)</text>
+                            <text x="138" y="25" fontSize="1.8" fill="#475569" fontWeight="bold">RMSEA = 0.045, CFI = 0.968</text>
+                            <text x="138" y="28" fontSize="1.8" fill="#0f766e" fontWeight="bold">**Significant at p &lt; 0.01</text>
+                          </svg>
                         ) : (
                           <svg className="w-full max-w-3xl h-[400px] bg-slate-50 border border-slate-200 rounded-[32px] p-4" viewBox="0 0 200 110">
                             <defs>
                               <marker id="semarrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse">
                                 <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#2563eb" />
                               </marker>
-                              <marker id="indarrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse">
-                                <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#64748b" />
-                              </marker>
-                              <marker id="resarrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="3" markerHeight="3" orient="auto-start-reverse">
-                                <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#94a3b8" />
-                              </marker>
                             </defs>
-
-                            {/* Direct Path (Dashed Curve at the top) */}
-                            <path d="M 55,38 Q 112.5,5 170,38" fill="none" stroke="#94a3b8" strokeDasharray="3,3" strokeWidth="1" markerEnd="url(#indarrow)" />
-                            <text x="112.5" y="18" fontSize="2.8" fill="#64748b" fontWeight="bold" textAnchor="middle">β = 0.12 (n.s.)</text>
-
-                            {/* Structural Paths */}
-                            <line x1="70" y1="50" x2="98" y2="50" stroke="#2563eb" strokeWidth="1.5" markerEnd="url(#semarrow)" />
-                            <text x="84" y="46" fontSize="3.5" fill="#2563eb" font-weight="bold" textAnchor="middle">β = 0.68**</text>
-
-                            <line x1="130" y1="50" x2="153" y2="50" stroke="#2563eb" strokeWidth="1.5" markerEnd="url(#semarrow)" />
-                            <text x="141.5" y="46" fontSize="3.5" fill="#2563eb" font-weight="bold" textAnchor="middle">β = 0.54**</text>
-
-                            {/* Latent Variables (Large Ellipses) */}
-                            <ellipse cx="55" cy="50" rx="15" ry="11" fill="#eff6ff" stroke="#2563eb" strokeWidth="1.5" />
-                            <text x="55" y="47" fontSize="3" fill="#1e3a8a" fontWeight="bold" textAnchor="middle">Digital</text>
-                            <text x="55" y="51" fontSize="3" fill="#1e3a8a" fontWeight="bold" textAnchor="middle">Literacy</text>
-                            <text x="55" y="57" fontSize="2.2" fill="#475569" textAnchor="middle">R² = 0.84</text>
-
-                            <ellipse cx="115" cy="50" rx="15" ry="11" fill="#eff6ff" stroke="#2563eb" strokeWidth="1.5" />
-                            <text x="115" y="47" fontSize="3" fill="#1e3a8a" fontWeight="bold" textAnchor="middle">Adaptive</text>
-                            <text x="115" y="51" fontSize="3" fill="#1e3a8a" fontWeight="bold" textAnchor="middle">Perf.</text>
-                            <text x="115" y="57" fontSize="2.2" fill="#475569" textAnchor="middle">R² = 0.46</text>
-
-                            <ellipse cx="170" cy="50" rx="15" ry="11" fill="#eff6ff" stroke="#2563eb" strokeWidth="1.5" />
-                            <text x="170" y="47" fontSize="3" fill="#1e3a8a" fontWeight="bold" textAnchor="middle">Prof.</text>
-                            <text x="170" y="51" fontSize="3" fill="#1e3a8a" fontWeight="bold" textAnchor="middle">Competency</text>
-                            <text x="170" y="57" fontSize="2.2" fill="#475569" textAnchor="middle">R² = 0.29</text>
-
-                            {/* Left Side: Indicator Rectangles & Paths */}
-                            <rect x="8" y="12" width="16" height="6.5" rx="0.5" fill="#f8fafc" stroke="#64748b" strokeWidth="0.8" />
-                            <text x="16" y="16.5" fontSize="2.5" fill="#334155" fontWeight="bold" textAnchor="middle">Info</text>
-                            <line x1="24" y1="15.25" x2="41" y2="41" stroke="#64748b" strokeWidth="0.8" markerEnd="url(#indarrow)" />
-                            <text x="35" y="27" fontSize="2.2" fill="#0f766e" fontWeight="bold">0.78</text>
-
-                            <rect x="8" y="28" width="16" height="6.5" rx="0.5" fill="#f8fafc" stroke="#64748b" strokeWidth="0.8" />
-                            <text x="16" y="32.5" fontSize="2.5" fill="#334155" fontWeight="bold" textAnchor="middle">Collab</text>
-                            <line x1="24" y1="31.25" x2="41" y2="44" stroke="#64748b" strokeWidth="0.8" markerEnd="url(#indarrow)" />
-                            <text x="35" y="37" fontSize="2.2" fill="#0f766e" fontWeight="bold">0.72</text>
-
-                            <rect x="8" y="44" width="16" height="6.5" rx="0.5" fill="#f8fafc" stroke="#64748b" strokeWidth="0.8" />
-                            <text x="16" y="48.5" fontSize="2.5" fill="#334155" fontWeight="bold" textAnchor="middle">Prod</text>
-                            <line x1="24" y1="47.25" x2="39" y2="49" stroke="#64748b" strokeWidth="0.8" markerEnd="url(#indarrow)" />
-                            <text x="33" y="46.5" fontSize="2.2" fill="#0f766e" fontWeight="bold">0.81</text>
-
-                            <rect x="8" y="60" width="16" height="6.5" rx="0.5" fill="#f8fafc" stroke="#64748b" strokeWidth="0.8" />
-                            <text x="16" y="64.5" fontSize="2.5" fill="#334155" fontWeight="bold" textAnchor="middle">Ethics</text>
-                            <line x1="24" y1="63.25" x2="41" y2="56" stroke="#64748b" strokeWidth="0.8" markerEnd="url(#indarrow)" />
-                            <text x="35" y="62" fontSize="2.2" fill="#0f766e" fontWeight="bold">0.69</text>
-
-                            <rect x="8" y="76" width="16" height="6.5" rx="0.5" fill="#f8fafc" stroke="#64748b" strokeWidth="0.8" />
-                            <text x="16" y="80.5" fontSize="2.5" fill="#334155" fontWeight="bold" textAnchor="middle">Safety</text>
-                            <line x1="24" y1="79.25" x2="41" y2="59" stroke="#64748b" strokeWidth="0.8" markerEnd="url(#indarrow)" />
-                            <text x="35" y="73" fontSize="2.2" fill="#0f766e" fontWeight="bold">0.74</text>
-
-                            {/* Endogenous Latent Residuals */}
-                            <circle cx="115" cy="74" r="3" fill="#f1f5f9" stroke="#94a3b8" strokeWidth="0.8" />
-                            <text x="115" y="75" fontSize="2.2" fill="#475569" fontWeight="bold" textAnchor="middle">z1</text>
-                            <line x1="115" y1="71" x2="115" y2="62" stroke="#94a3b8" strokeWidth="0.8" markerEnd="url(#resarrow)" />
-
-                            <circle cx="170" cy="74" r="3" fill="#f1f5f9" stroke="#94a3b8" strokeWidth="0.8" />
-                            <text x="170" y="75" fontSize="2.2" fill="#475569" fontWeight="bold" textAnchor="middle">z2</text>
-                            <line x1="170" y1="71" x2="170" y2="62" stroke="#94a3b8" strokeWidth="0.8" markerEnd="url(#resarrow)" />
-
-                            {/* Legend */}
-                            <rect x="135" y="85" width="55" height="18" rx="1" fill="#ffffff" stroke="#cbd5e1" strokeWidth="0.5" />
-                            <text x="139" y="90" fontSize="2" fill="#475569" fontWeight="bold">Chi-square = 142.15 (df=82)</text>
-                            <text x="139" y="94" fontSize="2" fill="#475569" fontWeight="bold">RMSEA = 0.045, CFI = 0.968</text>
-                            <text x="139" y="98" fontSize="2" fill="#0f766e" fontWeight="bold">**Significant at p &lt; 0.01</text>
                           </svg>
                         )}
                       </div>
                     </div>
                   )}
                 </div>
-              ) : null}
+              ) : (
+                <div className="py-20 text-center bg-white border border-dashed border-slate-200 rounded-[40px] flex flex-col items-center gap-4">
+                  <i className="fa-solid fa-route text-4xl text-slate-300"></i>
+                  <div>
+                    <p className="text-sm font-bold text-slate-500">Analisis SEM belum dijalankan.</p>
+                    <p className="text-[10px] text-slate-400 mt-1 uppercase tracking-widest">Silakan klik tombol "Run SEM" di atas untuk memodelkan jalur hubungan variabel.</p>
+                  </div>
+                </div>
+              )}
             </div>
           )}
-        </div>
-      </main>
-
       {/* Participant Overview Modal */}
       {selectedUser && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
@@ -2296,6 +2336,8 @@ export default function AdminDashboard() {
           </div>
         </div>
       )}
+        </div>
+      </main>
     </div>
   );
 }
