@@ -31,9 +31,9 @@ export async function GET(req: Request) {
       const questionsPath = path.join(process.cwd(), 'src/app/assessment/madel5c/questions.json');
       const questions = JSON.parse(fs.readFileSync(questionsPath, 'utf8'));
 
-      // Header: Timestamp, UserID, Name, Gender, Campus, TotalScore, Q1, Q2, ..., Q75
+      // Header: Timestamp, UserID, Name, Gender, Campus, TotalScore, Q1, Q2, ..., Q30
       let header = ["Timestamp", "UserID", "Name", "Gender", "Campus", "TotalScore"];
-      for (let i = 1; i <= 75; i++) {
+      for (let i = 1; i <= 30; i++) {
         header.push(`Q${i}`);
       }
       csvContent += header.join(",") + "\n";
@@ -63,7 +63,7 @@ export async function GET(req: Request) {
           }
         });
 
-        for (let id = 1; id <= 75; id++) {
+        for (let id = 1; id <= 30; id++) {
           const val = idToScore[id] !== undefined ? idToScore[id] : "";
           row.push(escapeCsvValue(val));
         }
@@ -172,9 +172,9 @@ export async function GET(req: Request) {
       const questionsPath = path.join(process.cwd(), 'src/app/assessment/madel5c/questions.json');
       const questions = JSON.parse(fs.readFileSync(questionsPath, 'utf8'));
 
-      // Header: Timestamp, UserID, Name, Gender, Campus, Instrument, TotalScore, Q1, Q2, ..., Q75, Feedback
+      // Header: Timestamp, UserID, Name, Gender, Campus, Instrument, TotalScore, Q1, Q2, ..., Q30, Feedback
       let header = ["Timestamp", "UserID", "Name", "Gender", "Campus", "Instrument", "TotalScore"];
-      for (let i = 1; i <= 75; i++) {
+      for (let i = 1; i <= 30; i++) {
         header.push(`Q${i}`);
       }
       header.push("Feedback");
@@ -207,12 +207,12 @@ export async function GET(req: Request) {
             }
           });
 
-          for (let id = 1; id <= 75; id++) {
+          for (let id = 1; id <= 30; id++) {
             const val = idToScore[id] !== undefined ? idToScore[id] : "";
             row.push(escapeCsvValue(val));
           }
         } else {
-          for (let i = 0; i < 75; i++) {
+          for (let i = 0; i < 30; i++) {
             const val = answers[i] !== undefined ? answers[i] : "";
             row.push(escapeCsvValue(val));
           }

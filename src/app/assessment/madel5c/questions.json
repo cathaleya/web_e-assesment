@@ -2,142 +2,7 @@
   {
     "id": 1,
     "dim": "C1 - Context",
-    "scenario": "Siswa kelas magang Anda mengeluh di kolom komentar LMS: \"Pak, membaca modul PDF 50 halaman ini sangat membosankan dan melelahkan mata kami.\"\n\nTindakan apa yang Anda ambil pertama kali untuk mengidentifikasi konteks masalah ini?",
-    "options": [
-      {
-        "text": "Melakukan survei singkat gawai siswa, mengidentifikasi format bacaan yang disukai, lalu merancang modul interaktif berukuran lebih ringkas dan visual.",
-        "score": 5
-      },
-      {
-        "text": "Mengirim pesan teguran di grup WhatsApp agar siswa disiplin membaca dan tetap mengumpulkan rangkuman tugas tepat waktu minggu depan.",
-        "score": 2
-      },
-      {
-        "text": "Melaporkan keluhan siswa tersebut kepada guru pamong agar beliau menegur siswa yang malas membaca modul pelajaran di sekolah.",
-        "score": 1
-      },
-      {
-        "text": "Mengabaikan keluhan tersebut karena menganggap membaca teks panjang adalah kewajiban mutlak siswa untuk melatih konsentrasi belajar mereka.",
-        "score": 2
-      },
-      {
-        "text": "Memeriksa log aktivitas LMS untuk menganalisis rata-rata waktu baca siswa, lalu menanyakan kendala teknis mereka secara santai di kelas.",
-        "score": 4
-      }
-    ]
-  },
-  {
-    "id": 16,
-    "dim": "C2 - Communication",
-    "scenario": "Pukul 21.00 WIB, seorang orang tua siswa mengirim pesan di grup WA kelas: \"Tugas video ini sangat membebani kami! Anak saya harus terus-menerus membeli kuota internet hanya untuk mengunggah tugas yang Anda berikan!\"\n\nBagaimana langkah komunikasi awal Anda untuk mengelola situasi krisis ini?",
-    "options": [
-      {
-        "text": "Menghapus pesan protes tersebut secara sepihak dan mengeluarkan nomor orang tua siswa dari grup WhatsApp untuk ketertiban.",
-        "score": 1
-      },
-      {
-        "text": "Merespons santun di grup bahwa keluhan kuota akan dievaluasi, lalu mengundang wali murid berdiskusi daring merumuskan tugas alternatif.",
-        "score": 5
-      },
-      {
-        "text": "Menjawab sopan di grup keesokan harinya di jam kerja, lalu menghubungi orang tua tersebut secara pribadi untuk berdiskusi.",
-        "score": 4
-      },
-      {
-        "text": "Membalas langsung di grup WhatsApp malam itu juga dengan nada tegas untuk mempertahankan wibawa metode mengajar Anda.",
-        "score": 2
-      },
-      {
-        "text": "Mengabaikan pesan tersebut sepenuhnya karena merasa keluhan di luar jam sekolah bukanlah tanggung jawab guru untuk meresponnya.",
-        "score": 2
-      }
-    ]
-  },
-  {
-    "id": 31,
-    "dim": "C3 - Collaboration",
-    "scenario": "Rekan kelompok PPL mengeluh saat rapat daring: \"Kita semua terpisah di kota berbeda selama libur semester, bagaimana cara kita menyelesaikan draf RPP ini tepat waktu?\"\n\nBagaimana Anda mengorganisasi kerja kolaboratif kelompok ini?",
-    "options": [
-      {
-        "text": "Membuat folder kerja di Google Docs, membagi tugas penulisan secara adil, serta mengadakan rapat evaluasi 30 menit setiap malam.",
-        "score": 4
-      },
-      {
-        "text": "Memakai Google Docs untuk pengerjaan bersama, memanfaatkan Notion board untuk pembagian peran tugas, serta mengumpulkan aset visual di cloud.",
-        "score": 5
-      },
-      {
-        "text": "Membagi bab pengerjaan RPP di WhatsApp secara kaku, lalu meminta masing-masing anggota mengetik di Word lokal secara terpisah.",
-        "score": 3
-      },
-      {
-        "text": "Mewajibkan seluruh anggota kelompok untuk hadir di Zoom meeting selama 4 jam setiap malam untuk menulis materi RPP bersama.",
-        "score": 2
-      },
-      {
-        "text": "Memutuskan mengerjakan seluruh draf RPP tersebut sendirian dari awal hingga akhir agar tidak perlu repot berkoordinasi jarak jauh.",
-        "score": 2
-      }
-    ]
-  },
-  {
-    "id": 46,
-    "dim": "C4 - Creation",
-    "scenario": "Guru pamong mengingatkan Anda sebelum mengajar kelas SD: \"Besok pagi kamu mengajar materi Siklus Air, buatlah slide presentasi yang menarik untuk anak-anak.\"\n\nBagaimana Anda merancang presentasi visual pembelajaran ini?",
-    "options": [
-      {
-        "text": "Mengunduh template slide visual gratis dari Canva dan menyalin poin teks ajar tanpa mempersiapkan penjelasan lisan yang memadai.",
-        "score": 3
-      },
-      {
-        "text": "Menggunakan template animasi PowerPoint yang memiliki transisi mencolok dan warna tulisan yang sangat kontras di setiap slide.",
-        "score": 2
-      },
-      {
-        "text": "Menyalin seluruh teks penjelasan siklus air dari buku paket ke slide PowerPoint tanpa menyertakan gambar agar materi tersampaikan utuh.",
-        "score": 2
-      },
-      {
-        "text": "Merancang slide interaktif menggunakan platform Quizizz, menyisipkan diagram siklus, serta menambahkan pertanyaan kuis tipe menggambar di slide.",
-        "score": 5
-      },
-      {
-        "text": "Merancang slide presentasi visual dengan poin-poin ringkas, menyisipkan diagram proses yang jelas, serta menambahkan video animasi dari YouTube.",
-        "score": 4
-      }
-    ]
-  },
-  {
-    "id": 61,
-    "dim": "C5 - Critical Thinking",
-    "scenario": "Saat ujian proposal, dosen penguji menulis di kolom chat Google Meet: \"Suara presentasi Anda tidak terdengar sama sekali, padahal indikator mic menyala.\"\n\nBagaimana langkah pemecahan masalah teknis Anda secara tenang dan taktis?",
-    "options": [
-      {
-        "text": "Memohon izin waktu 2 menit di kolom chat untuk melakukan restart laptop dengan harapan driver mic pulih kembali.",
-        "score": 4
-      },
-      {
-        "text": "Mengecek cepat setelan input audio Google Meet, mengganti mikrofon ke earphone, atau melakukan double login menggunakan gawai.",
-        "score": 5
-      },
-      {
-        "text": "Terus berbicara menjelaskan slide presentasi dengan suara berteriak di depan laptop berharap suara mikrofon pulih secara otomatis.",
-        "score": 1
-      },
-      {
-        "text": "Menutup jendela laptop karena panik, lalu menangis karena merasa sesi presentasi ujian proposal Anda telah gagal secara total.",
-        "score": 2
-      },
-      {
-        "text": "Meminta izin dosen penguji untuk membatalkan presentasi daring hari ini dan menjadwalkan ulang ujian secara luring besok.",
-        "score": 2
-      }
-    ]
-  },
-  {
-    "id": 2,
-    "dim": "C1 - Context",
-    "scenario": "Anda menemukan draf modul digital di internet. Blog pembuat modul tersebut menulis: \"Ini adalah rumus cepat praktis mencari energi tanpa perlu memahami konsep dasar fisika yang berbelit-belit.\"\n\nBagaimana Anda memvalidasi keandalan bahan ajar tersebut sebelum digunakan di kelas Anda?",
+    "scenario": "Skenario:\nAnda menemukan draf modul digital di internet. Blog pembuat modul tersebut menulis: \"Ini adalah rumus cepat praktis mencari energi tanpa perlu memahami konsep dasar fisika yang berbelit-belit.\"\n\nPertanyaan:\nBagaimana Anda memvalidasi keandalan bahan ajar tersebut sebelum digunakan di kelas Anda?",
     "options": [
       {
         "text": "Langsung menggunakan modul tersebut karena tampilannya sangat menarik dan akan menghemat waktu Anda dalam mempersiapkan materi pelajaran besok.",
@@ -162,252 +27,9 @@
     ]
   },
   {
-    "id": 17,
-    "dim": "C2 - Communication",
-    "scenario": "Anda terpaksa absen presentasi karena sakit dan mengirim pesan izin via LMS ke dosen. Hingga siang hari belum ada balasan, dan Anda bergumam: \"Aduh, waktu presentasi kuliah sudah hampir habis, tetapi dosen belum juga membalas pesanku.\"\n\nTindakan komunikasi taktis apa yang Anda lakukan untuk menyelesaikan hambatan ini?",
-    "options": [
-      {
-        "text": "Menghubungi ketua kelas untuk menitipkan izin resmi saat dosen membuka kelas Zoom, sembari mengirimkan email resmi kampus.",
-        "score": 4
-      },
-      {
-        "text": "Melakukan panggilan telepon pribadi berulang kali ke nomor dosen untuk mendesak beliau agar segera membaca pesan Anda.",
-        "score": 1
-      },
-      {
-        "text": "Membiarkan situasi tersebut berlalu karena menganggap Anda telah menunaikan kewajiban mengirim pesan izin di sistem LMS kampus.",
-        "score": 2
-      },
-      {
-        "text": "Mengirim email akademik terstruktur, melampirkan surat dokter, memberi tahu ketua kelas, serta menyatakan kesiapan mengikuti ujian susulan.",
-        "score": 5
-      },
-      {
-        "text": "Menuliskan keluhan tentang dosen yang tidak responsif di media sosial pribadi Anda agar mendapat perhatian dari publik.",
-        "score": 1
-      }
-    ]
-  },
-  {
-    "id": 32,
-    "dim": "C3 - Collaboration",
-    "scenario": "Ketua kelompok mengeluh di grup koordinasi: \"Batas pengumpulan video profil sekolah tinggal 2 hari, tetapi satu anggota kelompok kita masih belum mengumpulkan draf naskahnya.\"\n\nBagaimana langkah Anda dalam mengelola pembagian kerja kelompok ini?",
-    "options": [
-      {
-        "text": "Mengadakan rapat kelompok virtual mengevaluasi beban kerja, membantu kendala teknis anggota pasif, lalu mencatat kontribusi riil di log tugas.",
-        "score": 5
-      },
-      {
-        "text": "Menegur anggota pasif tersebut di grup WhatsApp secara terbuka dengan kalimat kasar agar dia merasa malu dan segera bekerja.",
-        "score": 2
-      },
-      {
-        "text": "Menghapus nama anggota kelompok yang pasif tersebut dari lembar cover tugas laporan tanpa perlu melakukan konfirmasi dengannya.",
-        "score": 2
-      },
-      {
-        "text": "Mengerjakan naskah video bagian dia sendirian secara diam-diam demi kelancaran tugas kelompok sambil menyimpan rasa kesal mendalam.",
-        "score": 2
-      },
-      {
-        "text": "Menghubungi anggota tersebut secara pribadi untuk menanyakan kendalanya, menawarkan bantuan teknis ringan, serta menetapkan tenggat waktu baru.",
-        "score": 4
-      }
-    ]
-  },
-  {
-    "id": 47,
-    "dim": "C4 - Creation",
-    "scenario": "Rekan magang menyarankan saat Anda ingin menunjukkan video sejarah: \"Potong saja bagian video YouTube yang penting itu menggunakan aplikasi agar siswa tidak bosan.\"\n\nBagaimana langkah Anda mengintegrasikan konten video eksternal ini secara efektif?",
-    "options": [
-      {
-        "text": "Memutar video YouTube 60 menit tersebut dari awal di kelas, lalu membiarkan siswa menonton secara mandiri tanpa panduan.",
-        "score": 1
-      },
-      {
-        "text": "Memotong klip video menggunakan Edpuzzle, menyisipkan narasi penjelasan suara Anda, serta menambahkan pertanyaan pemahaman di tengah video.",
-        "score": 5
-      },
-      {
-        "text": "Mengunduh video menggunakan web downloader, memotong klip 5 menit di editor video lokal, lalu menyajikannya kepada siswa.",
-        "score": 4
-      },
-      {
-        "text": "Memberikan link video YouTube tersebut di papan tulis kelas dan meminta siswa untuk menontonnya sendiri di rumah.",
-        "score": 2
-      },
-      {
-        "text": "Memutar video di kelas, lalu Anda melompati durasi video secara manual saat presentasi untuk mencari bagian yang penting.",
-        "score": 3
-      }
-    ]
-  },
-  {
-    "id": 62,
-    "dim": "C5 - Critical Thinking",
-    "scenario": "Anda ingin mengadakan kuis Kahoot, namun aturan sekolah menulis di papan pengumuman: \"Siswa dilarang keras membawa gawai ke lingkungan sekolah.\"\n\nBagaimana langkah pemecahan masalah pedagogis yang Anda ambil mengatasi kontradiksi aturan ini?",
-    "options": [
-      {
-        "text": "Menyajikan kuis Kahoot di proyektor, lalu meminta siswa menuliskan huruf jawaban mereka di kertas untuk dikumpulkan dikoreksi.",
-        "score": 4
-      },
-      {
-        "text": "Membuka Kahoot di proyektor kelas, lalu menyuruh siswa berteriak menebak jawaban secara bersama-sama dari kursi mereka masing-masing.",
-        "score": 2
-      },
-      {
-        "text": "Meminta siswa secara rahasia menyelundupkan HP dari rumah khusus untuk jam pelajaran Anda tanpa sepengetahuan guru sekolah.",
-        "score": 1
-      },
-      {
-        "text": "Membatalkan penggunaan kuis digital Kahoot dan kembali mendiktekan soal latihan di buku tulis secara konvensional seperti biasa.",
-        "score": 2
-      },
-      {
-        "text": "Mengalihkan penggunaan Kahoot ke platform Plickers, membagikan kartu kode jawaban cetak, lalu memindai jawaban siswa menggunakan kamera HP.",
-        "score": 5
-      }
-    ]
-  },
-  {
-    "id": 3,
+    "id": 2,
     "dim": "C1 - Context",
-    "scenario": "Saat mengoreksi ujian matematika daring, guru pamong berkata: \"Siswa kelas kita mendapat nilai rata-rata 90 untuk hitungan pecahan langsung, tetapi hanya mendapat nilai 20 untuk soal cerita kontekstual.\"\n\nBagaimana Anda menafsirkan anomali data ini untuk merancang tindak lanjut?",
-    "options": [
-      {
-        "text": "Mengelompokkan siswa berdasarkan nilai terendah untuk diberikan sesi tambahan latihan soal cerita konvensional setelah jam sekolah berakhir.",
-        "score": 4
-      },
-      {
-        "text": "Menganalisis tingkat keterbacaan bahasa soal cerita di platform digital, lalu merancang pembelajaran berbasis masalah berbantuan visualisasi pecahan.",
-        "score": 5
-      },
-      {
-        "text": "Menyimpulkan bahwa siswa menyontek saat mengerjakan soal hitungan langsung karena nilainya tidak selaras dengan nilai soal cerita mereka.",
-        "score": 1
-      },
-      {
-        "text": "Memberikan remedial klasikal dengan memperbanyak latihan soal perhitungan pecahan langsung agar nilai rata-rata kelas tetap terjaga tinggi.",
-        "score": 3
-      },
-      {
-        "text": "Mengabaikan perbedaan nilai tersebut karena kurikulum harus terus berjalan cepat dan waktu remedial di sekolah sangat terbatas.",
-        "score": 2
-      }
-    ]
-  },
-  {
-    "id": 18,
-    "dim": "C2 - Communication",
-    "scenario": "Siswa magang Anda mengirim pesan DM di Instagram pribadi Anda: \"Kak, follow back dong, aku pengen tahu aktivitas harian kakak di luar sekolah.\"\n\nBagaimana langkah komunikasi Anda untuk menjaga batas profesional pendidik?",
-    "options": [
-      {
-        "text": "Menolak permintaan tersebut secara kasar dan menegur siswa tersebut di depan kelas agar siswa lain tidak ikut menirunya.",
-        "score": 2
-      },
-      {
-        "text": "Menerima permintaan mereka tetapi menyembunyikan semua postingan pribadi Anda agar tidak dapat dilihat oleh akun siswa tersebut.",
-        "score": 2
-      },
-      {
-        "text": "Membuat akun Instagram profesional khusus edukasi, lalu menjelaskan secara santun di kelas tentang pentingnya menjaga ruang pribadi.",
-        "score": 5
-      },
-      {
-        "text": "Menerima permintaan follow tersebut agar Anda dicap sebagai guru yang ramah dan dekat dengan kehidupan siswa Anda.",
-        "score": 1
-      },
-      {
-        "text": "Mengabaikan pesan DM siswa tersebut tanpa memberikan respon apa pun agar batasan guru dan murid tetap terjaga alami.",
-        "score": 3
-      }
-    ]
-  },
-  {
-    "id": 33,
-    "dim": "C3 - Collaboration",
-    "scenario": "Di kepanitiaan pameran karya siswa, koordinator humas mengeluh kepada Anda: \"Divisi desain terus mengunggah gambar ke Instagram sekolah tanpa persetujuan jadwal kami, sehingga umpan feeds kami berantakan ganda.\"\n\nBagaimana manuver Anda untuk mereorganisasi pembagian kerja digital ini?",
-    "options": [
-      {
-        "text": "Melaporkan masalah koordinasi ini langsung ke kepala sekolah agar beliau menegur kedua koordinator divisi di rapat sekolah.",
-        "score": 2
-      },
-      {
-        "text": "Mengambil alih semua akses akun Instagram sekolah dan mengunggah sendiri semua konten tanpa melibatkan kedua divisi tersebut lagi.",
-        "score": 2
-      },
-      {
-        "text": "Membiarkan konflik tersebut berlanjut karena menganggap persaingan antar divisi akan memicu produktivitas pembuatan konten di media sosial.",
-        "score": 1
-      },
-      {
-        "text": "Memediasi kedua divisi untuk merancang alur kerja visual menggunakan kalender konten bersama, menetapkan peran draf dan peran eksekusi postingan.",
-        "score": 5
-      },
-      {
-        "text": "Menyelenggarakan rapat koordinasi virtual untuk memperjelas wewenang masing-masing divisi dan menyepakati alur persetujuan sebelum konten diunggah.",
-        "score": 4
-      }
-    ]
-  },
-  {
-    "id": 48,
-    "dim": "C4 - Creation",
-    "scenario": "Rekan satu kelompok mengusulkan saat mengedit video microteaching: \"Pakai saja lagu pop terkenal yang sedang viral saat ini sebagai musik latar video kita.\"\n\nBagaimana tindakan Anda dalam memilih dan menggunakan musik tersebut secara etis?",
-    "options": [
-      {
-        "text": "Mencari musik instrumental berlisensi Creative Commons di platform legal, serta menuliskan atribusi kredit lengkap di deskripsi video.",
-        "score": 5
-      },
-      {
-        "text": "Merekam lagu pop tersebut menggunakan HP dari speaker laptop untuk dimasukkan ke video demi menyiasati deteksi hak cipta.",
-        "score": 2
-      },
-      {
-        "text": "Menggunakan lagu pop terkenal tetapi mempercepat temponya secara manual di aplikasi editor agar terhindar dari deteksi hak cipta.",
-        "score": 2
-      },
-      {
-        "text": "Menggunakan lagu pop terkenal yang sedang viral tersebut sebagai musik latar video laporan Anda tanpa mencantumkan sumber.",
-        "score": 1
-      },
-      {
-        "text": "Mengunduh musik bebas royalti dari YouTube Audio Library dan menggunakannya langsung sebagai musik latar belakang video laporan.",
-        "score": 4
-      }
-    ]
-  },
-  {
-    "id": 63,
-    "dim": "C5 - Critical Thinking",
-    "scenario": "Guru pamong menugaskan Anda saat magang: \"Tolong olah 1000 baris data nilai rapor kelas paralel ini menggunakan rumus VLOOKUP besok pagi.\" Anda belum pernah mempelajari rumus tersebut.\n\nBagaimana tindakan Anda untuk mengidentifikasi celah kompetensi dan menyelesaikan tugas ini?",
-    "options": [
-      {
-        "text": "Mempelajari tutorial rumus VLOOKUP di YouTube secara cepat, menguji rumus pada sampel data, lalu mengeksekusi pengolahan data mandiri.",
-        "score": 5
-      },
-      {
-        "text": "Membuka file data nilai secara berdampingan, lalu menyalin memindahkan nilai siswa satu per satu secara manual hingga pagi.",
-        "score": 2
-      },
-      {
-        "text": "Menyuruh rekan magang yang mahir IT menyelesaikan semua rekap nilai tersebut, lalu mengumpulkannya dengan mengaku sebagai hasil kerja sendiri.",
-        "score": 2
-      },
-      {
-        "text": "Mengembalikan file nilai tersebut ke guru pamong dan menyatakan tidak sanggup karena kampus tidak pernah mengajarkan pengolahan data.",
-        "score": 1
-      },
-      {
-        "text": "Menghubungi teman yang paham Excel meminta panduan via telepon, lalu mengerjakannya sambil sesekali bertanya jika ada rumus error.",
-        "score": 4
-      }
-    ]
-  },
-  {
-    "id": 4,
-    "dim": "C1 - Context",
-    "scenario": "Di akhir pelajaran sejarah, beberapa siswa mengeluh kepada Anda: \"Bu, pelajaran sejarah ini hanya menghafal tahun dan nama tokoh yang tidak ada gunanya untuk masa depan kami.\"\n\nLangkah pencarian informasi ilmiah apa yang Anda lakukan untuk menemukan solusi masalah ini?",
+    "scenario": "Skenario:\nDi akhir pelajaran sejarah, beberapa siswa mengeluh kepada Anda: \"Bu, pelajaran sejarah ini hanya menghafal tahun dan nama tokoh yang tidak ada gunanya untuk masa depan kami.\"\n\nPertanyaan:\nLangkah pencarian informasi ilmiah apa yang Anda lakukan untuk menemukan solusi masalah ini?",
     "options": [
       {
         "text": "Mencari jurnal penelitian tindakan kelas tentang penerapan pembelajaran sejarah digital di Google Scholar untuk mendapatkan ide-ide praktis mengajar.",
@@ -422,1605 +44,768 @@
         "score": 5
       },
       {
-        "text": "Menanyakan kepada teman sejawat di media sosial mengenai aplikasi game sejarah yang sedang tren dan langsung membelinya menggunakan uang pribadi.",
+        "text": "D.** Menanyakan kepada teman sejawat di media sosial mengenai aplikasi game sejarah yang sedang tren dan langsung membelinya menggunakan uang pribadi.",
         "score": 2
       },
       {
-        "text": "Menggunakan aplikasi ChatGPT dengan perintah singkat untuk merancang permainan sejarah lalu mempraktikkannya langsung di kelas tanpa persiapan matang.",
-        "score": 2
-      }
-    ]
-  },
-  {
-    "id": 19,
-    "dim": "C2 - Communication",
-    "scenario": "Rekan mahasiswa berkata kepada Anda saat menyusun presentasi: \"Salin saja diagram siklus hidrologi dari buku Profesor Hartono ini tanpa perlu menuliskan nama beliau agar slide presentasi bersih.\"\n\nTindakan komunikasi etis apa yang Anda lakukan dalam membagikan konten akademik ini?",
-    "options": [
-      {
-        "text": "Menggunakan gambar diagram tersebut, lalu mencantumkan nama Profesor Hartono, judul buku, tahun terbit, dan penerbit di bawah gambar.",
-        "score": 4
-      },
-      {
-        "text": "Menggambar ulang konsep diagram tersebut, menyesuaikannya dengan materi Anda, lalu menuliskan sumber inspirasi diagram asli secara lengkap.",
-        "score": 5
-      },
-      {
-        "text": "Mengunduh gambar diagram berbayar serupa dari internet secara ilegal untuk dimasukkan ke slide tanpa mempedulikan hak cipta.",
-        "score": 1
-      },
-      {
-        "text": "Mengikuti saran rekan mahasiswa untuk menyalin gambar utuh tanpa sitasi karena tujuan penggunaannya adalah untuk pembelajaran di kelas.",
-        "score": 2
-      },
-      {
-        "text": "Menyimpan slide presentasi tersebut hanya untuk keperluan pribadi agar terhindar dari tuduhan pelanggaran hak cipta di kampus.",
+        "text": "E.** Menggunakan aplikasi ChatGPT dengan perintah singkat untuk merancang permainan sejarah lalu mempraktikkannya langsung di kelas tanpa persiapan matang.",
         "score": 2
       }
     ]
   },
   {
-    "id": 34,
-    "dim": "C3 - Collaboration",
-    "scenario": "Rekan magang berteriak panik saat menulis laporan: \"Aduh, paragraf kesimpulan RPP yang baru kutulis terhapus oleh orang lain di Google Docs karena kita semua mengedit baris yang sama!\"\n\nBagaimana Anda mereorganisasi kolaborasi dokumen ini agar berjalan tertib?",
-    "options": [
-      {
-        "text": "Meminta anggota kelompok untuk bergantian mengedit Google Docs dengan jadwal satu orang per jam agar tidak terjadi tabrakan.",
-        "score": 3
-      },
-      {
-        "text": "Membagi dokumen ke dalam sub-bab berlabel nama penanggung jawab, mengaktifkan mode saran, serta memakai version history memulihkan paragraf.",
-        "score": 5
-      },
-      {
-        "text": "Membiarkan kekacauan tersebut berlanjut karena menganggap proses adaptasi penulisan kolaboratif memang membutuhkan fase konflik teks di awan.",
-        "score": 1
-      },
-      {
-        "text": "Melakukan panggilan telepon kelompok sembari mengedit, serta meminta setiap anggota kelompok menandai area penulisan dengan kolom komentar.",
-        "score": 4
-      },
-      {
-        "text": "Meminta semua anggota menutup Google Docs, mengunduh file ke format Word lokal, lalu menunjuk satu orang menggabungkannya manual.",
-        "score": 2
-      }
-    ]
-  },
-  {
-    "id": 49,
-    "dim": "C4 - Creation",
-    "scenario": "Orang tua siswa mengirim pesan WhatsApp kepada Anda: \"Suara penjelasan guru di video fisika kemarin kurang jelas terdengar karena kondisi rumah kami bising.\"\n\nLangkah modifikasi konten video apa yang Anda lakukan untuk menjaga aksesibilitas?",
-    "options": [
-      {
-        "text": "Memproses ulang video, menerapkan fitur noise reduction, serta menambahkan takarir teks otomatis di sepanjang video ajar fisika.",
-        "score": 5
-      },
-      {
-        "text": "Merekam ulang video penjelasan rumus fisika tersebut dengan berbicara jauh lebih keras di dalam ruangan yang sunyi.",
-        "score": 4
-      },
-      {
-        "text": "Menyarankan orang tua siswa untuk membelikan earphone baru untuk anaknya agar suara video penjelasan bisa terdengar lebih jelas.",
-        "score": 2
-      },
-      {
-        "text": "Mengabaikan keluhan orang tua siswa tersebut karena merasa kualitas rekaman audio video di HP Anda sudah cukup keras.",
-        "score": 1
-      },
-      {
-        "text": "Mengirimkan foto papan tulis rumus fisika ke grup WhatsApp sebagai materi pengganti video ajar tanpa penjelasan tambahan.",
-        "score": 3
-      }
-    ]
-  },
-  {
-    "id": 64,
-    "dim": "C5 - Critical Thinking",
-    "scenario": "Saat Anda menjadi proktor ujian digital, modem sekolah mati. Layar siswa menampilkan pesan eror: \"Koneksi ke server pusat terputus, silakan hubungi pengawas.\" Siswa mulai panik.\n\nLangkah penanganan krisis teknis dan psikologis apa yang Anda lakukan pertama kali?",
-    "options": [
-      {
-        "text": "Menenangkan siswa, mengaktifkan tethering hot-spot gawai proktor, beralih ke jaringan internet cadangan, serta mencatat tambahan waktu ujian.",
-        "score": 5
-      },
-      {
-        "text": "Meminta siswa duduk diam melarang mereka berbicara, dan Anda menunggu di meja proktor tanpa berkoordinasi dengan pihak lain.",
-        "score": 2
-      },
-      {
-        "text": "Meminta siswa segera mematikan komputer dengan menekan tombol power secara paksa agar data komputer tidak rusak kena virus.",
-        "score": 2
-      },
-      {
-        "text": "Membatalkan ujian ANBK hari itu secara sepihak dan menyuruh seluruh siswa untuk meninggalkan ruangan lab komputer untuk pulang.",
-        "score": 1
-      },
-      {
-        "text": "Menenangkan siswa, meminta teknisi memeriksa modem sekolah, serta melaporkan kendala teknis tersebut ke pusat bantuan ANBK dinas.",
-        "score": 4
-      }
-    ]
-  },
-  {
-    "id": 5,
+    "id": 3,
     "dim": "C1 - Context",
-    "scenario": "Rekan magang menunjukkan postingan Instagram dan berkata: \"Akun @GuruHebat memposting bahwa gamifikasi 100% menjamin kelulusan siswa tanpa perlu membaca buku teks cetak sekolah.\"\n\nBagaimana respon kritis Anda sebagai calon pendidik akademik?",
+    "scenario": "Skenario:\nRekan magang menunjukkan postingan Instagram dan berkata: \"Akun @GuruHebat memposting bahwa gamifikasi 100% menjamin kelulusan siswa tanpa perlu membaca buku teks cetak sekolah.\"\n\nPertanyaan:\nBagaimana respon kritis Anda sebagai calon pendidik akademik?",
     "options": [
       {
         "text": "Membaca kolom komentar di postingan tersebut untuk melihat apakah ada guru lain yang sudah membuktikan klaim itu sukses.",
         "score": 3
       },
       {
-        "text": "Menolak klaim tersebut secara mentah-mentah karena menganggap semua informasi di media sosial tidak ada yang bermanfaat untuk pendidikan.",
+        "text": "B.** Menolak klaim tersebut secara mentah-mentah karena menganggap semua informasi di media sosial tidak ada yang bermanfaat untuk pendidikan.",
         "score": 2
       },
       {
-        "text": "Mencari studi empiris di pangkalan data jurnal mengenai efektivitas gamifikasi, lalu mendiskusikan batasan penggunaannya bersama rekan magang.",
+        "text": "C.** Mencari studi empiris di pangkalan data jurnal mengenai efektivitas gamifikasi, lalu mendiskusikan batasan penggunaannya bersama rekan magang.",
         "score": 5
       },
       {
-        "text": "Ikut membagikan kembali postingan tersebut ke grup sekolah agar semua guru segera mengganti buku paket dengan game digital.",
+        "text": "D.** Ikut membagikan kembali postingan tersebut ke grup sekolah agar semua guru segera mengganti buku paket dengan game digital.",
         "score": 1
       },
       {
-        "text": "Mempercayai klaim tersebut secara langsung dan meminta guru pamong untuk membuang semua buku cetak di perpustakaan sekolah.",
+        "text": "E.** Mempercayai klaim tersebut secara langsung dan meminta guru pamong untuk membuang semua buku cetak di perpustakaan sekolah.",
         "score": 1
       }
     ]
   },
   {
-    "id": 20,
-    "dim": "C2 - Communication",
-    "scenario": "Di kolom komentar video praktek mengajar siswa, seorang siswa menulis: \"Presentasi kelompok 3 ini sangat buruk, penjelasannya membingungkan dan suaranya terdengar lucu.\"\n\nBagaimana respon komunikasi Anda sebagai guru yang bertanggung jawab atas ruang siber kelas?",
-    "options": [
-      {
-        "text": "Menghapus komentar tersebut dan langsung mematikan kolom komentar pada semua video agar tidak terjadi konflik antar siswa.",
-        "score": 2
-      },
-      {
-        "text": "Menghapus komentar tersebut, lalu memanggil siswa yang mengejek secara pribadi untuk menasehati perilakunya di ruang siber.",
-        "score": 4
-      },
-      {
-        "text": "Menghapus komentar negatif, menyelenggarakan diskusi etika netiket di kelas berikutnya, lalu merancang kesepakatan interaksi digital kelas.",
-        "score": 5
-      },
-      {
-        "text": "Membalas komentar tersebut dengan nada mengancam akan mengurangi nilai akademis siswa yang menulis ejekan tersebut di YouTube.",
-        "score": 2
-      },
-      {
-        "text": "Membiarkan saja komentar ejekan tersebut karena menganggap kritik dari teman sekelas berguna untuk melatih mental mental siswa.",
-        "score": 1
-      }
-    ]
-  },
-  {
-    "id": 35,
-    "dim": "C3 - Collaboration",
-    "scenario": "Anggota kelompok projek aplikasi ajar mulai cemas. Salah satu anggota berkata: \"Tugas pembuatan aplikasi web ini terlalu rumit, kita tidak tahu harus mulai bekerja dari bagian mana.\"\n\nBagaimana langkah Anda mendelegasikan tugas menggunakan alat digital?",
-    "options": [
-      {
-        "text": "Membuat grup koordinasi proyek di WhatsApp, menulis daftar pembagian tugas di deskripsi grup, dan meminta anggota mengonfirmasi kesiapan.",
-        "score": 4
-      },
-      {
-        "text": "Menulis daftar tugas panjang di kertas, memfotonya, lalu mengirimkan foto tersebut ke grup WhatsApp tanpa menunjuk penanggung jawab.",
-        "score": 2
-      },
-      {
-        "text": "Meminta dosen pengampu mata kuliah untuk membagi tugas kelompok Anda karena Anda merasa tidak memiliki wewenang mengatur teman.",
-        "score": 1
-      },
-      {
-        "text": "Mengambil alih semua tugas teknis pengkodean untuk Anda kerjakan sendiri, lalu menugaskan anggota kelompok lain menulis laporan.",
-        "score": 2
-      },
-      {
-        "text": "Membuat Trello board, memecah proyek menjadi kartu tugas kecil, menetapkan tenggat dan penanggung jawab, serta memantau pergerakan kolom.",
-        "score": 5
-      }
-    ]
-  },
-  {
-    "id": 50,
-    "dim": "C4 - Creation",
-    "scenario": "Dosen pembimbing berpesan sebelum Anda menyusun bahan ajar: \"Materi Biologi SMA ini cukup kompleks, rancanglah bahan ajar digital yang adaptif bagi siswa.\"\n\nBagaimana Anda mendesain konten bahan ajar digital biologi tersebut?",
-    "options": [
-      {
-        "text": "Menyediakan dua file ajar terpisah: satu file dokumen PDF materi untuk dibaca dan satu file rekaman penjelasan audio.",
-        "score": 3
-      },
-      {
-        "text": "Mengembangkan e-modul interaktif mengintegrasikan teks responsif, glosarium istilah klik, video animasi, serta tombol narasi suara untuk siswa.",
-        "score": 5
-      },
-      {
-        "text": "Membuat infografis visual satu halaman memuat rangkuman konsep biologi, dilampiri tautan video YouTube penjelasan proses materi ajar.",
-        "score": 4
-      },
-      {
-        "text": "Membuat file dokumen PDF berisi teks materi biologi setebal 40 halaman yang disalin langsung dari buku cetak sekolah.",
-        "score": 2
-      },
-      {
-        "text": "Membuat slide presentasi PowerPoint berisi ringkasan teks materi pelajaran, lalu membacakannya di depan kelas menggunakan proyektor sekolah.",
-        "score": 2
-      }
-    ]
-  },
-  {
-    "id": 65,
-    "dim": "C5 - Critical Thinking",
-    "scenario": "Tiga puluh menit sebelum ujian sekolah dimulai, monitor server utama menampilkan pesan: \"Your files are encrypted. Pay $300 to decrypt your database.\"\n\nBagaimana respon proaktif Anda menghadapi situasi krisis siber ini?",
-    "options": [
-      {
-        "text": "Menyuruh siswa mencoba login berulang kali ke komputer klien dengan harapan sistem server akan pulih dengan sendirinya otomatis.",
-        "score": 1
-      },
-      {
-        "text": "Menghubungi teknisi IT via telepon meminta panduan pemulihan server, serta melaporkan kejadian tersebut kepada kepala sekolah untuk arahan.",
-        "score": 4
-      },
-      {
-        "text": "Mengumumkan penundaan ujian sekolah sampai teknisi IT masuk kerja kembali minggu depan tanpa memikirkan alternatif solusi jangka pendek.",
-        "score": 2
-      },
-      {
-        "text": "Mentransfer sejumlah uang menggunakan rekening pribadi Anda ke peretas agar kunci dekripsi soal dikirim dan ujian tidak ditunda.",
-        "score": 1
-      },
-      {
-        "text": "Mencabut kabel LAN server, memulihkan database dari cold-backup luring di flashdisk terpisah, lalu mengalihkan ujian ke server cadangan.",
-        "score": 5
-      }
-    ]
-  },
-  {
-    "id": 6,
+    "id": 4,
     "dim": "C1 - Context",
-    "scenario": "Anda menyadari tumpukan file di komputer Anda berantakan dan bergumam: \"Ratusan file PDF materi kuliah dan RPP saya menumpuk acak di folder Downloads dengan nama file tidak jelas.\"\n\nBagaimana langkah pengelolaan data referensi digital yang Anda ambil?",
+    "scenario": "Skenario:\nAnda menyadari tumpukan file di komputer Anda berantakan dan bergumam: \"Ratusan file PDF materi kuliah dan RPP saya menumpuk acak di folder Downloads dengan nama file tidak jelas.\"\n\nPertanyaan:\nBagaimana langkah pengelolaan data referensi digital yang Anda ambil?",
     "options": [
       {
         "text": "Membuat hierarki folder yang rapi berdasarkan topik, mengganti nama file secara konsisten, lalu menyimpannya di harddisk eksternal.",
         "score": 4
       },
       {
-        "text": "Membuat beberapa folder baru berdasarkan nama mata kuliah dan memindahkan file ke dalamnya secara manual jika sempat.",
+        "text": "B.** Membuat beberapa folder baru berdasarkan nama mata kuliah dan memindahkan file ke dalamnya secara manual jika sempat.",
         "score": 3
       },
       {
-        "text": "Membiarkan file tetap menumpuk di folder Downloads dan mengandalkan fitur pencarian cepat Windows Explorer saat membutuhkan dokumen.",
+        "text": "C.** Membiarkan file tetap menumpuk di folder Downloads dan mengandalkan fitur pencarian cepat Windows Explorer saat membutuhkan dokumen.",
         "score": 2
       },
       {
-        "text": "Memindahkan semua file PDF ke satu folder baru bernama Bahan PTK agar desktop laptop terlihat lebih rapi bersih.",
+        "text": "D.** Memindahkan semua file PDF ke satu folder baru bernama Bahan PTK agar desktop laptop terlihat lebih rapi bersih.",
         "score": 2
       },
       {
-        "text": "Menggunakan manajer referensi Mendeley untuk mengindeks PDF otomatis, merapikan metadata, serta menyinkronkannya dengan penyimpanan awan demi keamanan.",
+        "text": "E.** Menggunakan manajer referensi Mendeley untuk mengindeks PDF otomatis, merapikan metadata, serta menyinkronkannya dengan penyimpanan awan demi keamanan.",
         "score": 5
       }
     ]
   },
   {
-    "id": 21,
-    "dim": "C2 - Communication",
-    "scenario": "Anda ingin mengirim email ke pakar pendidikan untuk berkonsultasi. Rekan Anda menyarankan: \"Tulis saja pesan singkat di LinkedIn: 'Halo pak, tolong kirimi RPP eksperimen virtual sains milik bapak'.\"\n\nBagaimana format komunikasi profesional awal yang Anda kirimkan untuk membangun hubungan?",
-    "options": [
-      {
-        "text": "Menulis komentar di postingan publik pakar tersebut secara berulang kali dengan nada mendesak agar beliau segera merespon Anda.",
-        "score": 3
-      },
-      {
-        "text": "Menulis pesan LinkedIn yang sangat panjang berisi riwayat hidup Anda sejak SD beserta IPK kuliah Anda saat ini.",
-        "score": 2
-      },
-      {
-        "text": "Mengirim pesan terstruktur yang memperkenalkan diri, mengapresiasi karyanya, mendeskripsikan kendala kelas Anda, serta menanyakan kesediaan beliau berdiskusi.",
-        "score": 5
-      },
-      {
-        "text": "Mengikuti saran rekan Anda untuk mengirim pesan singkat di LinkedIn agar pakar tersebut tidak membuang waktu membacanya.",
-        "score": 2
-      },
-      {
-        "text": "Mengirimkan email formal yang memperkenalkan nama, asal kampus LPTK, serta tujuan spesifik Anda untuk berkonsultasi mengenai eksperimen.",
-        "score": 4
-      }
-    ]
-  },
-  {
-    "id": 36,
-    "dim": "C3 - Collaboration",
-    "scenario": "Saat tahap akhir penggabungan materi presentasi kelompok di Canva, rekan Anda mengeluh: \"Ada anggota yang membuat slide presentasi rasio 16:9, ada yang mengedit gambar rasio 4:3, dan ada yang mengirim teks biasa.\"\n\nBagaimana langkah Anda melakukan konsolidasi aset digital ini?",
-    "options": [
-      {
-        "text": "Menggabungkan semua draf format tersebut apa adanya ke slide presentasi akhir meskipun tampilannya menjadi sangat tidak rapi.",
-        "score": 2
-      },
-      {
-        "text": "Meminta dosen memaklumi ketidakrapian presentasi kelompok karena anggota memiliki tingkat penguasaan aplikasi desain yang berbeda-beda di kelas.",
-        "score": 1
-      },
-      {
-        "text": "Meminta anggota kelompok mengirimkan teks mentahnya saja via WhatsApp untuk Anda salin ke template Canva secara manual.",
-        "score": 4
-      },
-      {
-        "text": "Membuang semua pekerjaan rekan kelompok Anda dan mendesain ulang seluruh slide presentasi sendirian agar formatnya seragam estetis.",
-        "score": 2
-      },
-      {
-        "text": "Membuat panduan gaya desain bersama di Canva kolaboratif, lalu membimbing anggota kelompok menyesuaikan rasio dan elemen visual secara mandiri.",
-        "score": 5
-      }
-    ]
-  },
-  {
-    "id": 51,
-    "dim": "C4 - Creation",
-    "scenario": "Rekan magang mengingatkan Anda saat menyusun buku saku mitigasi bencana: \"Gambar diagram evakuasi gempa ini dilabeli hak cipta terlindungi, jangan asal comot.\"\n\nTindakan pembuatan konten mana yang mencerminkan etika digital paling tinggi?",
-    "options": [
-      {
-        "text": "Mencari diagram evakuasi bencana alternatif yang berlisensi terbuka di situs penyedia gambar gratis bebas royalti secara legal.",
-        "score": 4
-      },
-      {
-        "text": "Mengunduh gambar tersebut, memotong label hak cipta di editor gambar, lalu memasukkannya ke dalam modul saku mitigasi.",
-        "score": 1
-      },
-      {
-        "text": "Menggambar ulang diagram evakuasi tersebut di aplikasi desain, menyesuaikan jalurnya dengan denah sekolah, serta mencantumkan referensi konsep.",
-        "score": 5
-      },
-      {
-        "text": "Mengirimkan email permohonan izin ke pemilik web, namun tetap menggunakan gambar tersebut meskipun email belum dibalas dinas.",
-        "score": 2
-      },
-      {
-        "text": "Menempelkan gambar diagram evakuasi tersebut secara utuh dan menuliskan alamat URL situs web asalnya di bawah gambar.",
-        "score": 3
-      }
-    ]
-  },
-  {
-    "id": 66,
-    "dim": "C5 - Critical Thinking",
-    "scenario": "Kepala sekolah tempat Anda magang di daerah pelosok 3T berkata: \"Di sini tidak ada jaringan internet dan listrik padam setiap pagi, tapi kamu harus mengajarkan cara kerja internet.\"\n\nBagaimana Anda merancang pembelajaran agar tujuan kurikulum tetap tercapai?",
-    "options": [
-      {
-        "text": "Memaksa wali murid membelikan modem satelit portabel berbiaya mahal agar anak mereka dapat mempraktikkan cara berkirim email di kelas.",
-        "score": 1
-      },
-      {
-        "text": "Menggambar tampilan antarmuka web pencarian Google di papan tulis, lalu meminta siswa mencatat langkah-langkah mengirim surat elektronik di buku.",
-        "score": 3
-      },
-      {
-        "text": "Menerapkan model pembelajaran digital unplugged menggunakan simulasi fisik aliran data, lalu mendemonstrasikannya menggunakan laptop pribadi bertenaga baterai.",
-        "score": 5
-      },
-      {
-        "text": "Meminta maaf kepada kepala sekolah karena tidak dapat mengajarkan materi tersebut dan melewati bab cara kerja internet secara penuh.",
-        "score": 2
-      },
-      {
-        "text": "Menggunakan laptop pribadi Anda yang baterainya penuh untuk menunjukkan video rekaman luring mengenai cara kerja jaringan komputer global.",
-        "score": 4
-      }
-    ]
-  },
-  {
-    "id": 7,
+    "id": 5,
     "dim": "C1 - Context",
-    "scenario": "Saat mengunduh data evaluasi pembelajaran daring, rekan magang mengamati: \"Ada 15 jawaban yang masuk dalam waktu bersamaan dengan skor penilaian yang seragam dan terlalu sempurna.\"\n\nTindakan apa yang Anda ambil untuk menjaga integritas analisis data evaluasi ini?",
-    "options": [
-      {
-        "text": "Melakukan data cleaning berdasarkan timestamp respons, mendokumentasikan eliminasi data secara transparan, lalu melakukan wawancara konfirmasi ke siswa.",
-        "score": 5
-      },
-      {
-        "text": "Menghentikan seluruh proses evaluasi pembelajaran digital tersebut dan membatalkan hasil penilaian kelas secara sepihak tanpa diskusi dengan siswa.",
-        "score": 2
-      },
-      {
-        "text": "Mengeluarkan respons tidak valid tersebut dari analisis data, lalu meminta siswa yang bersangkutan mengisi ulang secara luring.",
-        "score": 4
-      },
-      {
-        "text": "Memasukkan semua data tersebut ke dalam laporan akhir agar grafik penilaian kinerja mengajar Anda terlihat memuaskan bagi pihak kampus.",
-        "score": 1
-      },
-      {
-        "text": "Menghapus 15 data tersebut secara diam-diam tanpa mencantumkan alasannya di dalam laporan evaluasi kinerja mengajar yang Anda susun.",
-        "score": 3
-      }
-    ]
-  },
-  {
-    "id": 22,
-    "dim": "C2 - Communication",
-    "scenario": "Seorang mahasiswa memposting di forum diskusi Teams: \"Teman-teman, ini ada link unduhan gratis buku teks resmi, silakan di-klik sekarang.\" Anda mendeteksi link tersebut adalah situs spam.\n\nBagaimana tindakan intervensi komunikasi yang Anda lakukan di forum?",
-    "options": [
-      {
-        "text": "Mengomentari postingan tersebut dengan nada mengejek teman Anda sebagai orang yang mudah ditipu oleh situs di internet.",
-        "score": 2
-      },
-      {
-        "text": "Membiarkan postingan tersebut karena menganggap mahasiswa lain bertanggung jawab sendiri atas keamanan perangkat komputer masing-masing dari virus.",
-        "score": 1
-      },
-      {
-        "text": "Melaporkan link ke admin untuk dihapus, menulis klarifikasi bahaya phishing di forum, serta berkoordinasi memeriksa keamanan akun pembuat.",
-        "score": 5
-      },
-      {
-        "text": "Menghubungi pembuat postingan secara pribadi untuk memperingatkannya, lalu menulis pesan peringatan singkat di kolom komentar forum.",
-        "score": 4
-      },
-      {
-        "text": "Melaporkan postingan tersebut kepada admin sistem agar mahasiswa yang memposting dikeluarkan dari forum diskusi Teams secara sepihak.",
-        "score": 3
-      }
-    ]
-  },
-  {
-    "id": 37,
-    "dim": "C3 - Collaboration",
-    "scenario": "Di tengah rapat virtual pleno pembagian tugas, koordinator kelompok dari daerah terpencil mengirim SMS: \"Di sini listrik padam massal dan jaringan internet terputus, saya tidak bisa masuk Zoom lagi.\"\n\nBagaimana Anda menanggapi kendala kolaboratif sinkron ini?",
-    "options": [
-      {
-        "text": "Merekam jalannya rapat Zoom, menuliskan poin keputusan penting di grup WhatsApp, serta meminta konfirmasi persetujuannya via pesan teks.",
-        "score": 4
-      },
-      {
-        "text": "Memaksa anggota kelompok yang terputus tersebut untuk segera pergi mencari warnet terdekat malam itu juga agar rapat lancar.",
-        "score": 1
-      },
-      {
-        "text": "Merekam rapat, membuat dokumen risalah di Google Docs, mengirimkannya ke WhatsApp, serta memberi ruang masukan asinkron sebelum keputusan disahkan.",
-        "score": 5
-      },
-      {
-        "text": "Melanjutkan rapat dan mengambil keputusan pembagian tugas secara sepihak tanpa mempedulikan persetujuan anggota yang terputus tersebut.",
-        "score": 2
-      },
-      {
-        "text": "Menunda seluruh agenda rapat kelompok hingga minggu depan sampai anggota kelompok tersebut dipastikan mendapatkan aliran listrik kembali.",
-        "score": 2
-      }
-    ]
-  },
-  {
-    "id": 52,
-    "dim": "C4 - Creation",
-    "scenario": "Guru pamong menugaskan Anda saat magang: \"Buatlah kuis interaktif Pancasila di Wordwall untuk anak kelas 6 SD yang melatih berpikir kritis.\"\n\nBagaimana Anda merumuskan pertanyaan kuis digital tersebut?",
-    "options": [
-      {
-        "text": "Membuat soal studi kasus dilematis sederhana tentang perilaku sehari-hari siswa yang mencerminkan nilai-nilai luhur sila Pancasila.",
-        "score": 4
-      },
-      {
-        "text": "Menggunakan kuis Pancasila milik orang lain yang sudah tersedia di komunitas Wordwall tanpa melakukan modifikasi isi soal.",
-        "score": 3
-      },
-      {
-        "text": "Merumuskan soal skenario krisis lingkungan sekolah, meminta siswa menganalisis solusi terbaik yang berlandaskan sila Pancasila, serta menyisipkan gambar.",
-        "score": 5
-      },
-      {
-        "text": "Membuat kuis menjodohkan lambang sila Pancasila dengan bunyinya memakai visualisasi template Wordwall yang berwarna-warni dan menarik.",
-        "score": 2
-      },
-      {
-        "text": "Membuat 20 soal pilihan ganda mencocokkan definisi sila Pancasila secara literal sesuai dengan kalimat yang ada di buku.",
-        "score": 2
-      }
-    ]
-  },
-  {
-    "id": 67,
-    "dim": "C5 - Critical Thinking",
-    "scenario": "Siswa daring menulis chat di Google Meet: \"Pak, kami tidak bisa melihat tulisan rumus fisika di papan tulis karena kamera laptop bapak buram dan silau cahaya lampu.\"\n\nBagaimana langkah adaptasi teknis dan pedagogis Anda mengatasi kendala ini?",
-    "options": [
-      {
-        "text": "Berhenti menulis rumus di papan tulis, lalu menyuruh siswa di rumah mencari sendiri materi fisika tersebut di Google.",
-        "score": 2
-      },
-      {
-        "text": "Menulis rumus dengan ukuran huruf sangat besar di papan tulis, lalu memindahkan laptop lebih dekat ke papan tulis.",
-        "score": 4
-      },
-      {
-        "text": "Mematikan semua lampu kelas agar silau di papan tulis hilang meskipun siswa luring kesulitan menulis catatan dalam kegelapan.",
-        "score": 2
-      },
-      {
-        "text": "Menulis rumus fisika di papan tulis digital Google Jamboard via share screen Zoom sehingga siswa luring daring melihat jelas.",
-        "score": 5
-      },
-      {
-        "text": "Meminta siswa di Zoom memaklumi kondisi kamera laptop Anda karena prioritas utama mengajar adalah siswa yang hadir fisik.",
-        "score": 1
-      }
-    ]
-  },
-  {
-    "id": 8,
-    "dim": "C1 - Context",
-    "scenario": "Saat Anda mengetikkan perintah di ChatGPT untuk mencari judul proposal, ChatGPT menyarankan: \"Terapkan model pembelajaran inkuiri terbimbing berdasarkan jurnal ilmiah karya Profesor Ahmad yang terbit tahun 2022.\"\n\nBagaimana langkah Anda dalam menindaklanjuti informasi dari AI tersebut?",
-    "options": [
-      {
-        "text": "Mengabaikan saran ChatGPT karena menganggap teknologi AI generatif tidak dapat memberikan kontribusi ilmiah yang valid bagi mahasiswa.",
-        "score": 2
-      },
-      {
-        "text": "Memverifikasi keberadaan artikel tersebut di database resmi, membaca naskah aslinya, lalu menulis sintesis teoretis menggunakan kalimat sendiri.",
-        "score": 5
-      },
-      {
-        "text": "Meminta ChatGPT menuliskan seluruh isi latar belakang proposal penelitian tindakan kelas Anda agar tugas kuliah cepat selesai.",
-        "score": 1
-      },
-      {
-        "text": "Mencari nama Profesor Ahmad dan judul jurnal tersebut di Google untuk memastikan apakah artikel itu benar-benar ada.",
-        "score": 4
-      },
-      {
-        "text": "Menyalin judul dan kutipan jurnal yang disarankan ChatGPT langsung ke proposal Anda tanpa memeriksa keberadaan jurnal aslinya.",
-        "score": 1
-      }
-    ]
-  },
-  {
-    "id": 23,
-    "dim": "C2 - Communication",
-    "scenario": "Wali murid mengirim chat di grup WA: \"Tolong beri instruksi tugas proyek ecobrick ini secara sederhana saja, kami tidak mengerti file PDF 15 halaman yang dikirim kemarin.\"\n\nBagaimana cara Anda mengomunikasikan ulang instruksi proyek ini di grup WhatsApp?",
-    "options": [
-      {
-        "text": "Mengirimkan pesan suara berdurasi 10 menit di grup WhatsApp untuk menjelaskan langkah pembuatan ecobrick dari awal hingga akhir.",
-        "score": 1
-      },
-      {
-        "text": "Menulis pesan teks baru yang terstruktur berisi salam, alat bahan, langkah pembuatan ringkas, serta tenggat pengumpulan tugas.",
-        "score": 4
-      },
-      {
-        "text": "Menulis instruksi teks ringkas, melampirkan infografis visual satu halaman, menyertakan alternatif bahan, serta membuka sesi tanya jawab terbatas.",
-        "score": 5
-      },
-      {
-        "text": "Mengabaikan keluhan wali murid dan meminta mereka membaca ulang file PDF 15 halaman tersebut secara lebih teliti mandiri.",
-        "score": 2
-      },
-      {
-        "text": "Membatalkan tugas proyek ecobrick tersebut secara mendadak di grup WhatsApp agar Anda terhindar dari protes wali murid.",
-        "score": 2
-      }
-    ]
-  },
-  {
-    "id": 38,
-    "dim": "C3 - Collaboration",
-    "scenario": "Saat mengajar kelas Zoom besar bersama rekan magang, rekan Anda berbisik lirih: \"Kita sering saling memotong penjelasan materi karena pembagian peran presentasi dan moderasi kolom chat belum jelas.\"\n\nBagaimana Anda dan rekan mereorganisasi pembagian kerja di ruang virtual ini?",
-    "options": [
-      {
-        "text": "Membiarkan situasi mengajar berjalan apa adanya karena interaksi spontan yang saling memotong dinilai wajar bagi siswa daring.",
-        "score": 1
-      },
-      {
-        "text": "Merancang lesson plan digital kolaboratif, menetapkan presenter materi utama, serta menugaskan satu orang mengelola chat dan whiteboard.",
-        "score": 5
-      },
-      {
-        "text": "Menyepakati pembagian waktu mengajar secara tertulis sebelum kelas Zoom dimulai (misalnya Anda mengajar di setengah jam pertama).",
-        "score": 4
-      },
-      {
-        "text": "Meminta guru pamong untuk mengambil alih jalannya kelas Zoom sementara Anda berdua bertindak sebagai penonton pasif saja.",
-        "score": 1
-      },
-      {
-        "text": "Membagi kelas menjadi dua kelompok secara fisik dan mengajar di ruangan terpisah menggunakan metode ceramah konvensional kertas.",
-        "score": 2
-      }
-    ]
-  },
-  {
-    "id": 53,
-    "dim": "C4 - Creation",
-    "scenario": "Guru piket menegur Anda setelah infografis protokol disebarkan: \"Banyak siswa masih melanggar protokol karena mereka mengeluh teks infografis kekecilan di HP.\"\n\nBagaimana langkah Anda dalam mengevaluasi dan memperbaiki konten digital ini?",
-    "options": [
-      {
-        "text": "Menyebarkan kuesioner kegunaan singkat, mendesain ulang infografis berprinsip mobile-first, serta melakukan uji keterbacaan terbatas ke perwakilan siswa.",
-        "score": 5
-      },
-      {
-        "text": "Menyalahkan siswa karena malas memperbesar gambar di layar HP mereka masing-masing dan membiarkan desain infografis tetap sama.",
-        "score": 1
-      },
-      {
-        "text": "Menghapus infografis tersebut dari grup WhatsApp sekolah dan kembali menggunakan poster kertas fisik yang ditempel di dinding.",
-        "score": 2
-      },
-      {
-        "text": "Mengedit ukuran huruf pada infografis di Canva agar menjadi lebih besar, lalu membagikan kembali file gambar tersebut.",
-        "score": 4
-      },
-      {
-        "text": "Mengabaikan teguran tersebut karena Anda merasa tampilan visual infografis yang Anda buat sudah sangat estetik disukai dosen.",
-        "score": 2
-      }
-    ]
-  },
-  {
-    "id": 68,
-    "dim": "C5 - Critical Thinking",
-    "scenario": "Dosen penguji sudah masuk kelas virtual, tetapi tiba-tiba situs kuis digital yang Anda gunakan menampilkan pesan: \"Service Unavailable. Server is experiencing temporary issues.\"\n\nBagaimana Anda mengeksekusi rencana kontinjensi (*backup plan*) Anda?",
-    "options": [
-      {
-        "text": "Menuliskan soal-soal kuis tersebut di papan tulis kelas, lalu meminta siswa menuliskan jawaban di lembar kertas masing-masing pengawas.",
-        "score": 4
-      },
-      {
-        "text": "Mengeluh di depan siswa tentang buruknya sistem server web kuis dan menyalahkan penyedia aplikasi atas kegagalan presentasi Anda.",
-        "score": 1
-      },
-      {
-        "text": "Mencoba memuat ulang (*reload*) halaman web kuis tersebut berulang kali selama 30 menit sambil menyuruh siswa menunggu di depan laptop.",
-        "score": 1
-      },
-      {
-        "text": "Menghentikan kegiatan pembelajaran daring hari itu, lalu meminta maaf kepada dosen penguji bahwa ujian dibatalkan karena masalah teknis.",
-        "score": 2
-      },
-      {
-        "text": "Menenangkan siswa, membagikan naskah kuis cetak yang disiapkan sebagai cadangan darurat, lalu memimpin kuis secara manual memakai kartu.",
-        "score": 5
-      }
-    ]
-  },
-  {
-    "id": 9,
-    "dim": "C1 - Context",
-    "scenario": "Saat Anda mempersiapkan materi IPA, guru pamong senior berkata: \"Kamu harus mengajar IPA menggunakan metode menyalin tulisan dari papan tulis ke buku catatan siswa saja.\"\n\nBagaimana Anda menanggapi kontradiksi antara arahan guru pamong dengan teori pembelajaran aktif yang Anda pelajari?",
-    "options": [
-      {
-        "text": "Melawan instruksi guru pamong secara langsung di kelas dan menerapkan metode eksperimen digital tanpa persetujuan beliau sebelumnya.",
-        "score": 1
-      },
-      {
-        "text": "Menuliskan keluh kesah mengenai kolotnya metode mengajar guru pamong di media sosial pribadi agar mendapat simpati netizen.",
-        "score": 1
-      },
-      {
-        "text": "Mengikuti 100% instruksi guru pamong tanpa melakukan modifikasi RPP agar Anda mendapatkan nilai praktik mengajar yang aman.",
-        "score": 2
-      },
-      {
-        "text": "Meminta izin guru pamong untuk memodifikasi satu sesi pembelajaran agar dapat menerapkan simulasi eksperimen digital secara terbatas.",
-        "score": 4
-      },
-      {
-        "text": "Merancang aktivitas mencatat interaktif yang dipadukan dengan diskusi kelompok digital, lalu mendiskusikan rancangan RPP tersebut secara santun.",
-        "score": 5
-      }
-    ]
-  },
-  {
-    "id": 24,
-    "dim": "C2 - Communication",
-    "scenario": "Di tengah diskusi daring, presenter mengeluh via WhatsApp pribadi kepada Anda: \"Salah satu mahasiswa terus memotong penjelasanku dan mendominasi sesi tanya jawab dengan argumen berputar-putar.\"\n\nBagaimana tindakan moderasi komunikatif Anda di Google Meet?",
-    "options": [
-      {
-        "text": "Menyela pembicaraan mahasiswa tersebut dengan nada keras agar dia merasa malu dan segera menghentikan dominasi komunikasinya di forum.",
-        "score": 1
-      },
-      {
-        "text": "Mematikan mikrofon mahasiswa tersebut secara mendadak menggunakan fitur admin Google Meet tanpa memberikan penjelasan lisan di ruang.",
-        "score": 2
-      },
-      {
-        "text": "Mengapresiasi keaktifan mahasiswa, merangkum poin intinya, lalu mengalihkan giliran bicara ke peserta lain yang sedang mengantre raise hand.",
-        "score": 5
-      },
-      {
-        "text": "Menunggu mahasiswa tersebut jeda berbicara, mengingatkan sisa waktu diskusi secara sopan, lalu mempersilakan presenter untuk menanggapi pertanyaan.",
-        "score": 4
-      },
-      {
-        "text": "Membiarkan mahasiswa tersebut terus berbicara karena menghormati kebebasan berpendapat setiap peserta di dalam ruang diskusi kelas daring.",
-        "score": 2
-      }
-    ]
-  },
-  {
-    "id": 39,
-    "dim": "C3 - Collaboration",
-    "scenario": "Rekan kelompok tugas akhir mengeluh: \"Projek proposal PTK ini berat karena Si A tidak paham teknologi editing video, sedangkan Si B kurang menguasai teori pedagogi.\"\n\nBagaimana Anda membagi beban kognitif kelompok ini agar efisien?",
-    "options": [
-      {
-        "text": "Mengerjakan sendiri seluruh proposal akademik dan video simulasi agar kualitasnya terjamin sesuai dengan standar nilai tinggi Anda.",
-        "score": 2
-      },
-      {
-        "text": "Menganalisis kebutuhan kognitif tugas, membagi peran berbasis keahlian, menyelenggarakan sharing singkat antaranggota, lalu mengonsolidasikan file di Google Drive.",
-        "score": 5
-      },
-      {
-        "text": "Menugaskan Si A menulis draf proposal akademik, Si B mengedit video simulasi, dan Anda mengintegrasikan materi presentasi.",
-        "score": 4
-      },
-      {
-        "text": "Membagi rata tugas menulis draf dan mengedit video kepada semua anggota tanpa mempedulikan kompetensi khusus mereka agar adil.",
-        "score": 2
-      },
-      {
-        "text": "Memaksa semua anggota kelompok untuk mengerjakan semua bagian tugas secara mandiri lalu mengumpulkan satu tugas yang dinilai paling bagus.",
-        "score": 2
-      }
-    ]
-  },
-  {
-    "id": 54,
-    "dim": "C4 - Creation",
-    "scenario": "Kepala laboratorium komputer berkata kepada Anda: \"Lab kita hanya memiliki komputer dengan koneksi internet lambat, bagaimana cara eksperimen listrik tetap berjalan?\"\n\nBagaimana Anda mengintegrasikan simulasi interaktif ini di kelas?",
-    "options": [
-      {
-        "text": "Meminta siswa mengunduh aplikasi simulasi listrik di HP masing-masing menggunakan kuota internet pribadi siswa tanpa panduan praktikum.",
-        "score": 2
-      },
-      {
-        "text": "Menampilkan simulasi PhET di proyektor kelas, lalu Anda mempraktikkannya sendiri di depan kelas sementara siswa menonton pasif.",
-        "score": 4
-      },
-      {
-        "text": "Menyusun e-LKPD terintegrasi tautan simulasi PhET versi luring, memandu siswa melakukan eksperimen mandiri berpasangan, lalu menganalisis data.",
-        "score": 5
-      },
-      {
-        "text": "Mengurungkan rencana eksperimen dan meminta siswa menghafal rumus-rumus rangkaian listrik dinamis dari papan tulis ke buku catatan.",
-        "score": 1
-      },
-      {
-        "text": "Memutarkan video YouTube orang lain sedang melakukan eksperimen di laboratorium, lalu meminta siswa mencatat hasil pengamatan video.",
-        "score": 2
-      }
-    ]
-  },
-  {
-    "id": 69,
-    "dim": "C5 - Critical Thinking",
-    "scenario": "Anda mendapati draf nilai siswa di Google Sheets berubah anomali: \"Ada beberapa siswa mendapat nilai sempurna secara misterius pada jam 02.00 dini hari.\"\n\nBagaimana respon mitigasi keamanan data nilai yang Anda lakukan?",
-    "options": [
-      {
-        "text": "Mengumumkan nama-nama siswa yang dicurigai melakukan peretasan di grup WhatsApp kelas agar mereka merasa malu di depan temannya.",
-        "score": 2
-      },
-      {
-        "text": "Mengubah sandi akun, mencabut sesi aktif, melacak pelaku lewat riwayat revisi Sheets, serta melaporkannya ke guru pamong secara transparan.",
-        "score": 5
-      },
-      {
-        "text": "Mengabaikan perubahan nilai tersebut karena merasa kenaikan rata-rata nilai kelas akan membuat laporan magang Anda dinilai sukses.",
-        "score": 1
-      },
-      {
-        "text": "Mengubah semua nilai siswa tersebut menjadi nol secara sepihak agar mereka merasa takut dan tidak mengulangi perbuatannya lagi.",
-        "score": 2
-      },
-      {
-        "text": "Mengganti password akun Google, membatalkan link akses edit publik, serta membagikan akses edit khusus hanya ke email rekan.",
-        "score": 4
-      }
-    ]
-  },
-  {
-    "id": 10,
-    "dim": "C1 - Context",
-    "scenario": "Di forum diskusi LMS, seorang siswa menulis komentar terbuka: \"Kelas bapak membosankan sekali, aplikasinya susah dipakai dan bikin HP saya lemot, mendingan kembali ke kertas.\"\n\nBagaimana tindakan Anda dalam mengolah umpan balik yang tidak menyenangkan ini?",
-    "options": [
-      {
-        "text": "Mengabaikan komentar tersebut dan tetap menggunakan aplikasi pembelajaran yang sama di pertemuan berikutnya tanpa melakukan evaluasi.",
-        "score": 2
-      },
-      {
-        "text": "Menghapus komentar tersebut dan memberikan sanksi pengurangan nilai keaktifan kepada siswa yang menulisnya karena dinilai tidak sopan.",
-        "score": 1
-      },
-      {
-        "text": "Menghubungi siswa tersebut secara pribadi untuk menanyakan kendala teknis spesifik gawai yang digunakannya saat mengakses LMS.",
-        "score": 4
-      },
-      {
-        "text": "Menerima masukan dengan terbuka, memetakan spesifikasi gawai seluruh siswa, lalu merancang alternatif media ajar yang lebih ringan.",
-        "score": 5
-      },
-      {
-        "text": "Membalas komentar siswa tersebut di forum LMS dengan nada marah untuk mempertahankan wibawa Anda sebagai guru magang.",
-        "score": 2
-      }
-    ]
-  },
-  {
-    "id": 25,
-    "dim": "C2 - Communication",
-    "scenario": "Di rapat sekolah, guru senior berkata dengan ketus: \"Usulan ujian pakai Google Classroom ini merepotkan saja, kami sudah terbiasa pakai kertas fisik puluhan tahun dan terbukti sukses.\"\n\nBagaimana respon komunikasi verbal Anda menghadapi penolakan agresif ini?",
-    "options": [
-      {
-        "text": "Menerima kritik, berterima kasih atas masukan sejarah sekolah, lalu mendemonstrasikan kemudahan otomatisasi koreksi nilai di Google Classroom.",
-        "score": 4
-      },
-      {
-        "text": "Tetap memaksakan penerapan ujian daring khusus di kelas magang Anda tanpa mempedulikan keputusan resmi rapat dinas sekolah.",
-        "score": 1
-      },
-      {
-        "text": "Membatalkan usulan penggunaan teknologi ujian dan meminta maaf kepada guru senior agar rapat dinas berjalan damai tanpa ketegangan.",
-        "score": 2
-      },
-      {
-        "text": "Mengakui kenyamanan sistem kertas, menyajikan data efisiensi waktu koreksi, serta menawarkan uji coba terbatas di kelas magang Anda.",
-        "score": 5
-      },
-      {
-        "text": "Menjawab balik dengan nada tinggi dan menyatakan bahwa guru senior tersebut menghambat kemajuan sistem pendidikan digital di sekolah.",
-        "score": 1
-      }
-    ]
-  },
-  {
-    "id": 40,
-    "dim": "C3 - Collaboration",
-    "scenario": "Anggota kelompok mengklaim di grup WhatsApp: \"Aku sudah begadang semalaman menulis Bab 4 di Google Docs.\" Namun, Anda melihat kalimat di Bab 4 tersebut sangat mirip dengan artikel Wikipedia.\n\nBagaimana langkah Anda memanfaatkan alat digital untuk memverifikasi kebenaran klaim ini?",
-    "options": [
-      {
-        "text": "Melaporkan anggota tersebut kepada dosen pembimbing magang sebagai pelaku tindakan plagiarisme tanpa melakukan konfirmasi terlebih dahulu.",
-        "score": 2
-      },
-      {
-        "text": "Membiarkan laporan dikumpulkan apa adanya demi menjaga keharmonisan pertemanan kelompok meskipun nilai tugas terancam turun drastis.",
-        "score": 2
-      },
-      {
-        "text": "Memeriksa riwayat versi Docs, mengecek orisinalitas teks di Turnitin, lalu mengajak anggota tersebut berdiskusi pribadi merevisi tulisan.",
-        "score": 5
-      },
-      {
-        "text": "Membuka dokumen Google Docs, memeriksa menu Version History untuk melihat kontribusi ketikan asli dari akun anggota tersebut.",
-        "score": 4
-      },
-      {
-        "text": "Menghapus tulisan di Bab 4 tersebut secara diam-diam dan menulis ulang bagian itu sendirian tanpa memberitahu kelompok.",
-        "score": 2
-      }
-    ]
-  },
-  {
-    "id": 55,
-    "dim": "C4 - Creation",
-    "scenario": "Dosen menguji RPP microteaching Anda dan memberi saran: \"Anak kelas 2 SD mudah teralihkan konsentrasinya, buatlah video ajar yang sangat pendek.\"\n\nBagaimana Anda menyusun rancangan konten video tersebut?",
-    "options": [
-      {
-        "text": "Merekam penjelasan lisan Anda di depan papan tulis kelas selama 20 menit untuk menjelaskan rukun wudhu secara lengkap.",
-        "score": 2
-      },
-      {
-        "text": "Menyalin video wudhu milik orang lain dari YouTube secara penuh tanpa melakukan editing penyuntingan durasi ajar video.",
-        "score": 3
-      },
-      {
-        "text": "Membuat video wudhu berdurasi 5 menit menggunakan bahasa sederhana, menyisipkan gambar ilustrasi kartun, serta iringan musik ceria.",
-        "score": 4
-      },
-      {
-        "text": "Membuat satu video berdurasi 15 menit berisi gambar slide materi tata cara wudhu tanpa ditambahkan gerakan animasi.",
-        "score": 2
-      },
-      {
-        "text": "Merancang 3 video pendek berdurasi 1,5 menit fokus per gerakan, melampirkan teks instruksi, serta menambahkan kuis satu soal.",
-        "score": 5
-      }
-    ]
-  },
-  {
-    "id": 70,
-    "dim": "C5 - Critical Thinking",
-    "scenario": "Siswa mengirim SMS ke HP Anda menjelang batas akhir tugas di LMS: \"Pak, di rumah saya terjadi padam listrik akibat badai petir, saya tidak bisa upload video.\"\n\nBagaimana keputusan bijak Anda berdasarkan asas keadilan akses digital?",
-    "options": [
-      {
-        "text": "Memperpanjang batas waktu pengumpulan tugas di LMS khusus untuk akun siswa tersebut, serta mengizinkan pengiriman file ukuran kecil.",
-        "score": 5
-      },
-      {
-        "text": "Menolak permohonan tersebut dan memberikan nilai nol karena aturan batas waktu pengumpulan tugas di LMS bersifat mutlak mendidik disiplin.",
-        "score": 2
-      },
-      {
-        "text": "Memberikan toleransi perpanjangan waktu pengumpulan tugas di LMS selama satu hari khusus untuk siswa tersebut secara langsung lisan.",
-        "score": 4
-      },
-      {
-        "text": "Memberikan nilai nol untuk tugas video, namun mengizinkan siswa tersebut mengumpulkan tugas rangkuman tertulis kertas keesokan harinya.",
-        "score": 2
-      },
-      {
-        "text": "Menyuruh siswa mencari kafe internet atau warnet terdekat malam itu juga agar tugas videonya dapat terkirim tepat waktu.",
-        "score": 1
-      }
-    ]
-  },
-  {
-    "id": 11,
-    "dim": "C1 - Context",
-    "scenario": "Di grup WhatsApp angkatan, beredar pesan bertantai: \"Ini link bocoran soal ujian kelulusan PPG tahun ini, segera transfer biaya registrasi untuk mendapatkan kunci jawaban lengkap.\"\n\nLangkah kritis apa yang Anda lakukan pertama kali menyikapi informasi ini?",
+    "scenario": "Skenario:\nDi grup WhatsApp angkatan, beredar pesan bertantai: \"Ini link bocoran soal ujian kelulusan PPG tahun ini, segera transfer biaya registrasi untuk mendapatkan kunci jawaban lengkap.\"\n\nPertanyaan:\nLangkah kritis apa yang Anda lakukan pertama kali menyikapi informasi ini?",
     "options": [
       {
         "text": "Menyebarkan kembali pesan bertantai tersebut ke grup kelas magang agar mahasiswa lain tidak ketinggalan info penting ini.",
         "score": 1
       },
       {
-        "text": "Menelusuri portal resmi kementerian untuk memverifikasi regulasi ujian, mendeteksi potensi penipuan, lalu mengedukasi teman angkatan agar waspada.",
+        "text": "B.** Menelusuri portal resmi kementerian untuk memverifikasi regulasi ujian, mendeteksi potensi penipuan, lalu mengedukasi teman angkatan agar waspada.",
         "score": 5
       },
       {
-        "text": "Mengabaikan pesan tersebut secara pasif karena Anda yakin tingkat kemampuan belajar Anda sudah cukup untuk lulus ujian.",
+        "text": "C.** Mengabaikan pesan tersebut secara pasif karena Anda yakin tingkat kemampuan belajar Anda sudah cukup untuk lulus ujian.",
         "score": 2
       },
       {
-        "text": "Langsung mentransfer biaya yang diminta agar Anda segera mendapatkan kunci jawaban demi menjamin kelulusan ujian profesi Anda.",
+        "text": "D.** Langsung mentransfer biaya yang diminta agar Anda segera mendapatkan kunci jawaban demi menjamin kelulusan ujian profesi Anda.",
         "score": 1
       },
       {
-        "text": "Menanyakan keaslian pesan tersebut kepada admin koordinator program PPG di kampus untuk memastikan validitas link yang disebarkan.",
+        "text": "E.** Menanyakan keaslian pesan tersebut kepada admin koordinator program PPG di kampus untuk memastikan validitas link yang disebarkan.",
         "score": 4
       }
     ]
   },
   {
-    "id": 26,
-    "dim": "C2 - Communication",
-    "scenario": "Rekan mahasiswa mengeluh di perpustakaan: \"Teori kampus ini kurang aplikatif untuk mengajar nyata di era digital, bagaimana cara memperluas wawasan praktis di luar?\"\n\nWujud partisipasi komunitas digital mana yang paling produktif Anda sarankan?",
-    "options": [
-      {
-        "text": "Bergabung aktif di satu komunitas guru resmi seperti Ikatan Guru Indonesia dan mempraktikkan materi ajar inovatif dari sana.",
-        "score": 4
-      },
-      {
-        "text": "Bergabung di sepuluh grup Facebook guru hanya untuk mengunduh RPP gratisan tanpa pernah berkontribusi aktif dalam diskusi daring.",
-        "score": 3
-      },
-      {
-        "text": "Membangun profil profesional LinkedIn, membagikan refleksi hasil praktik mengajar, serta berdiskusi asinkron mengenai praktik terbaik dengan guru berprestasi.",
-        "score": 5
-      },
-      {
-        "text": "Menuliskan keluhan tentang buruknya kurikulum LPTK kampus di forum media sosial agar mendapat tanggapan dari netizen lainnya.",
-        "score": 1
-      },
-      {
-        "text": "Mengikuti semua webinar gratis di internet hanya untuk mengumpulkan sertifikat digital tanpa mempraktikkan ilmu yang diperoleh di kelas.",
-        "score": 2
-      }
-    ]
-  },
-  {
-    "id": 41,
-    "dim": "C3 - Collaboration",
-    "scenario": "Rekan kelompok PPL mengeluh saat menyusun modul sains: \"Waktu pembuatan bank soal sisa 3 hari, rasanya tidak mungkin 5 mahasiswa magang bisa membuat 100 soal HOTS berkualitas.\"\n\nBagaimana Anda memanfaatkan jaringan terbuka (*crowdsourcing*) secara etis dan kolaboratif?",
-    "options": [
-      {
-        "text": "Menyalin 100 soal langsung dari buku bank soal penerbit komersial tanpa izin dan mengklaimnya sebagai karya kelompok.",
-        "score": 1
-      },
-      {
-        "text": "Menyusun kisi-kisi, meminta draf soal di komunitas guru sains daring, menyeleksi draf tersebut, serta menuliskan kontribusi nama pembuat.",
-        "score": 5
-      },
-      {
-        "text": "Mewajibkan siswa sekolah magang membuat masing-masing 5 soal sains, lalu mengumpulkannya dan mengakuinya sebagai karya mahasiswa magang.",
-        "score": 2
-      },
-      {
-        "text": "Mempublikasikan postingan untuk mencari donatur pembuat soal sains dengan imbalan pulsa jika kelompok Anda mendapatkan nilai yang tinggi.",
-        "score": 2
-      },
-      {
-        "text": "Mencari bank soal berlisensi terbuka di forum guru, membaginya di antara anggota kelompok untuk dimodifikasi, dan mencantumkan sumber.",
-        "score": 4
-      }
-    ]
-  },
-  {
-    "id": 56,
-    "dim": "C4 - Creation",
-    "scenario": "Teman sejawat mengingatkan Anda saat Anda ingin mengunggah modul: \"Modul biologi buatanmu ini sangat lengkap, hati-hati disalahgunakan pihak komersial untuk dijual.\"\n\nBagaimana cara Anda melisensikan modul digital Anda secara etis?",
-    "options": [
-      {
-        "text": "Menyematkan lisensi CC BY-NC-SA pada halaman cover, mengizinkan penggunaan gratis non-komersial, serta mewajibkan pembagian lisensi serupa.",
-        "score": 5
-      },
-      {
-        "text": "Melabeli modul tersebut dengan lisensi Creative Commons Attribution yang mengizinkan penggunaan ulang secara bebas termasuk kepentingan komersial.",
-        "score": 4
-      },
-      {
-        "text": "Mengunggah modul di blog pribadi tanpa menuliskan keterangan lisensi apa pun pada dokumen maupun halaman web Anda.",
-        "score": 2
-      },
-      {
-        "text": "Menyimpan modul di drive terkunci dan hanya bersedia mengirimkannya kepada orang yang mau mentransfer sejumlah uang pribadi.",
-        "score": 1
-      },
-      {
-        "text": "Menuliskan kalimat larangan menyalin secara keras pada cover depan modul, yang mempersulit guru lain mengutip materi secara legal.",
-        "score": 3
-      }
-    ]
-  },
-  {
-    "id": 71,
-    "dim": "C5 - Critical Thinking",
-    "scenario": "Surat edaran sekolah menulis aturan secara tegas: \"Siswa dilarang keras menggunakan ChatGPT untuk menyelesaikan tugas sekolah karena merupakan plagiarisme.\" Padahal Anda mengajar materi dasar coding.\n\nBagaimana langkah pemecahan masalah instruksional Anda menghadapi kontradiksi aturan ini?",
-    "options": [
-      {
-        "text": "Melarang keras siswa membuka ChatGPT dan memberikan nilai nol jika ada siswa yang kedapatan meniru baris kode dari AI.",
-        "score": 2
-      },
-      {
-        "text": "Menjelaskan ke kepala sekolah urgensi AI untuk debugging, menyusun panduan penggunaan AI beretika, serta mewajibkan penyertaan log percakapan.",
-        "score": 5
-      },
-      {
-        "text": "Mengabaikan edaran sekolah secara penuh dan tetap mewajibkan penggunaan ChatGPT dalam pengerjaan tugas coding di lab komputer sekolah.",
-        "score": 1
-      },
-      {
-        "text": "Menyuruh siswa menggunakan ChatGPT secara diam-diam di rumah dan berpesan agar tidak memberitahu guru senior sekolah magang Anda.",
-        "score": 1
-      },
-      {
-        "text": "Menerima aturan sekolah, lalu mengajarkan metode pencarian kesalahan kode pemrograman secara manual menggunakan buku teks di perpustakaan.",
-        "score": 3
-      }
-    ]
-  },
-  {
-    "id": 12,
+    "id": 6,
     "dim": "C1 - Context",
-    "scenario": "Rekan mahasiswa magang berkata kepada Anda: \"Setel saja akses Google Sheets nilai ini ke siapa saja yang memiliki link agar kita semua gampang mengeditnya.\"\n\nTindakan pengamanan data nilai siswa apa yang Anda ambil?",
-    "options": [
-      {
-        "text": "Menyetujui saran tersebut dan langsung membagikan tautan edit bebas itu ke grup WhatsApp yang berisi siswa magang.",
-        "score": 1
-      },
-      {
-        "text": "Membatasi akses edit ke email rekan terverifikasi, memproteksi rentang sel nilai utama, serta memantau log riwayat versi.",
-        "score": 5
-      },
-      {
-        "text": "Mengirimkan file nilai yang diperbarui bolak-balik via email kelompok setiap kali ada anggota yang selesai melakukan pengeditan.",
-        "score": 3
-      },
-      {
-        "text": "Menyimpan file nilai secara luring di laptop pribadi Anda dan melarang mahasiswa magang lainnya untuk ikut menginput.",
-        "score": 2
-      },
-      {
-        "text": "Menyimpan file di Google Drive pribadi Anda, lalu membagikan akses edit khusus hanya ke email rekan magang.",
-        "score": 4
-      }
-    ]
-  },
-  {
-    "id": 27,
-    "dim": "C2 - Communication",
-    "scenario": "Dosen menulis di grup WhatsApp kelas: \"Saya tidak akan memeriksa tugas mahasiswa yang dikirimkan tanpa subjek email dan isi pesan pengantar yang sopan.\"\n\nBagaimana tindakan komunikasi Anda untuk memperbaiki kesalahan pengiriman tugas ini?",
-    "options": [
-      {
-        "text": "Melakukan protes di grup kelas WhatsApp karena menganggap dosen mempersulit pengumpulan tugas mahasiswa hanya karena masalah teknis administratif.",
-        "score": 1
-      },
-      {
-        "text": "Meminta ketua kelas untuk mengirimkan seluruh file tugas mahasiswa angkatan dalam satu folder zip besar tanpa pesan pengantar.",
-        "score": 2
-      },
-      {
-        "text": "Mengirim ulang email tugas dengan format subjek yang jelas, menulis pesan pengantar permohonan maaf, serta melampirkan file tugas.",
-        "score": 4
-      },
-      {
-        "text": "Mengirimkan ulang file tugas via email tanpa menuliskan subjek, namun menambahkan pesan pengantar singkat berisi permintaan maaf Anda.",
-        "score": 2
-      },
-      {
-        "text": "Mengirim ulang email sesuai format standar, meminta maaf atas kelalaian sebelumnya, serta melampirkan file tugas berformat nama yang konsisten.",
-        "score": 5
-      }
-    ]
-  },
-  {
-    "id": 42,
-    "dim": "C3 - Collaboration",
-    "scenario": "Koordinator kelompok LPTK lain mengirim pesan: \"Kita belum pernah bertemu fisik dan kesulitan menyatukan konsep ide acara seminar gabungan kita via chat grup WhatsApp.\"\n\nBagaimana Anda menginisiasi kolaborasi visual asinkron antarkampus ini?",
-    "options": [
-      {
-        "text": "Menginisiasi papan kerja visual Miro, mengundang seluruh anggota menempelkan sticky notes ide, lalu melakukan pemungutan suara daring memutuskan konsep.",
-        "score": 5
-      },
-      {
-        "text": "Meminta dosen pembimbing membatalkan rencana seminar gabungan karena kendala jarak komunikasi antarkampus yang terlalu jauh menyulitkan koordinasi.",
-        "score": 1
-      },
-      {
-        "text": "Mengirimkan file draf presentasi acara bolak-balik via WhatsApp gabungan untuk direvisi satu per satu oleh perwakilan anggota kelompok.",
-        "score": 2
-      },
-      {
-        "text": "Membuat satu dokumen Google Slides bersama dan meminta masing-masing kampus menulis ide acaranya di slide yang terpisah.",
-        "score": 3
-      },
-      {
-        "text": "Meminta perwakilan mahasiswa dari kampus lain untuk datang ke kota Anda menggunakan biaya pribadi mereka untuk rapat koordinasi.",
-        "score": 1
-      }
-    ]
-  },
-  {
-    "id": 57,
-    "dim": "C4 - Creation",
-    "scenario": "Rekan kelompok video drama mengeluh saat editing: \"File rekaman Si A potret 720p, Si B lanskap 4K, dan audio Si C sangat berisik.\"\n\nBagaimana langkah Anda menangani masalah format dan resolusi digital ini?",
-    "options": [
-      {
-        "text": "Menetapkan panduan format MP4 1080p lanskap, mengompresi file 4K, serta melakukan sinkronisasi audio eksternal via waveform sync.",
-        "score": 5
-      },
-      {
-        "text": "Menyamakan resolusi proyek menjadi 1080p horizontal, memberi latar buram pada video potret, serta menerapkan audio equalizer.",
-        "score": 4
-      },
-      {
-        "text": "Memaksa Si A dan Si C datang ke kos Anda untuk melakukan rekaman video ulang menggunakan HP milik Anda.",
-        "score": 1
-      },
-      {
-        "text": "Menolak menggunakan video kiriman Si A dan Si C, lalu membuat video baru hanya menggunakan rekaman klip Si B.",
-        "score": 2
-      },
-      {
-        "text": "Menyunting semua klip video tersebut apa adanya di timeline aplikasi tanpa melakukan penyesuaian rasio layar presentasi video.",
-        "score": 2
-      }
-    ]
-  },
-  {
-    "id": 72,
-    "dim": "C5 - Critical Thinking",
-    "scenario": "Anda mendapati file Excel tidak terkunci di komputer perpustakaan sekolah. Rekan magang di sebelah Anda mengintip layar lalu berbisik: \"Lihat, file Excel ini berisi data NIK, alamat, dan riwayat kesehatan semua siswa sekolah kita!\"\n\nBagaimana respon keamanan siber proaktif Anda terhadap temuan data pribadi ini?",
-    "options": [
-      {
-        "text": "Menghapus file Excel berisi data pribadi siswa tersebut secara permanen menggunakan perintah Shift+Delete dari komputer umum perpustakaan.",
-        "score": 4
-      },
-      {
-        "text": "Membiarkan file tersebut tetap tersimpan di folder downloads komputer perpustakaan karena merasa itu bukan tugas mahasiswa magang untuk mengurusnya.",
-        "score": 1
-      },
-      {
-        "text": "Mengambil foto layar komputer yang menampilkan data sensitif tersebut menggunakan HP Anda untuk dibagikan di grup chat pribadi.",
-        "score": 1
-      },
-      {
-        "text": "Memindahkan file ke folder aman, menghapusnya dari folder umum perpustakaan, lalu melaporkannya ke staf TU dan kepala sekolah.",
-        "score": 5
-      },
-      {
-        "text": "Menyalin file tersebut ke flashdisk pribadi Anda sebagai cadangan data kontak siswa jika suatu saat Anda membutuhkannya secara mendesak.",
-        "score": 2
-      }
-    ]
-  },
-  {
-    "id": 13,
-    "dim": "C1 - Context",
-    "scenario": "Ketua kelas magang melapor secara tertulis kepada Anda: \"Banyak teman-teman yang nilainya anjlok setelah metode ujian diganti menggunakan platform web baru yang belum pernah disosialisasikan.\"\n\nBagaimana langkah awal Anda dalam mendeteksi dan menyelesaikan masalah konteks ini?",
-    "options": [
-      {
-        "text": "Mengembalikan sistem ujian ke metode kertas fisik secara penuh dan membatalkan penggunaan platform digital untuk seterusnya di kelas.",
-        "score": 2
-      },
-      {
-        "text": "Menganalisis log durasi pengerjaan soal di platform web, lalu menanyakan kesulitan adaptasi teknologi siswa di grup kelas.",
-        "score": 4
-      },
-      {
-        "text": "Mengevaluasi tingkat kesulitan navigasi platform web, melakukan survei kendala teknis gawai, lalu memberikan sesi simulasi ujian ulang.",
-        "score": 5
-      },
-      {
-        "text": "Mengabaikan laporan tersebut dan tetap menggunakan platform web baru pada ujian berikutnya demi mengejar target efisiensi administrasi.",
-        "score": 2
-      },
-      {
-        "text": "Menyalahkan siswa yang tidak belajar dengan giat dan meminta mereka untuk membiasakan diri dengan perkembangan teknologi baru.",
-        "score": 1
-      }
-    ]
-  },
-  {
-    "id": 28,
-    "dim": "C2 - Communication",
-    "scenario": "Anda ingin berkonsultasi mengenai RPP via WhatsApp, namun guru pamong senior mengirim pesan ketus: \"Saya tidak suka memeriksa dokumen pelajaran yang panjang lewat HP, bikin mata lelah.\"\n\nBagaimana langkah Anda merespons kendala komunikasi dengan guru pamong tersebut?",
-    "options": [
-      {
-        "text": "Memohon izin mencetak RPP fisik untuk ditaruh di meja beliau, serta menawarkan asistensi koreksi tatap muka di sekolah.",
-        "score": 5
-      },
-      {
-        "text": "Mengabaikan pesan tersebut dan tetap mengirimkan file RPP berbentuk dokumen PDF di chat WhatsApp tanpa koordinasi lanjutan.",
-        "score": 1
-      },
-      {
-        "text": "Memutuskan untuk tidak mengonsultasikan RPP Anda lagi dan langsung mengajar di kelas dengan metode yang Anda susun sendiri.",
-        "score": 2
-      },
-      {
-        "text": "Menghubungi kepala sekolah untuk meminta guru pamong Anda diganti dengan guru lain yang lebih mahir menggunakan WhatsApp.",
-        "score": 1
-      },
-      {
-        "text": "Menelepon guru pamong untuk meminta maaf, menawarkan pengiriman draf ringkas, serta memohon jadwal pertemuan tatap muka di sekolah.",
-        "score": 4
-      }
-    ]
-  },
-  {
-    "id": 43,
-    "dim": "C3 - Collaboration",
-    "scenario": "Anggota kelompok projek menulis keluhan di grup chat: \"Sulit sekali menentukan waktu rapat kelompok daring yang pas karena jadwal mengajar magang kita semua berbeda-beda.\"\n\nBagaimana cara Anda menyepakati jadwal rapat menggunakan aplikasi digital?",
-    "options": [
-      {
-        "text": "Menanyakan ketersediaan waktu luang satu per satu anggota kelompok via chat grup WA yang akhirnya tertimbun obrolan lain.",
-        "score": 2
-      },
-      {
-        "text": "Menggunakan platform Doodle untuk mencantumkan slot waktu kosong, meminta anggota menandai waktu luang, lalu menyinkronkannya ke Google Calendar.",
-        "score": 5
-      },
-      {
-        "text": "Menentukan jadwal rapat sepihak sesuai dengan waktu luang Anda sendiri dan memaksa anggota kelompok lain untuk wajib mengikutinya.",
-        "score": 2
-      },
-      {
-        "text": "Membuat poling jadwal di grup WhatsApp dengan menyajikan beberapa pilihan hari dan jam untuk dipilih oleh anggota kelompok.",
-        "score": 4
-      },
-      {
-        "text": "Meminta dosen pengampu untuk menentukan jadwal rapat koordinasi kelompok Anda agar tidak terjadi konflik antar-anggota kelompok.",
-        "score": 1
-      }
-    ]
-  },
-  {
-    "id": 58,
-    "dim": "C4 - Creation",
-    "scenario": "Siswa magang mengeluh di grup kelas: \"Bu, kami kesulitan membaca peta konsep kimia di infografis karena teksnya terlalu kecil saat dibuka di layar HP.\"\n\nBagaimana langkah Anda memodifikasi desain konten visual peta konsep ini?",
-    "options": [
-      {
-        "text": "Mengabaikan keluhan tersebut karena menganggap siswa dapat memperbesar gambar secara manual menggunakan jari mereka di layar handphone.",
-        "score": 1
-      },
-      {
-        "text": "Mengubah ukuran tulisan pada infografis di Canva agar lebih besar dan mengurangi jumlah kotak informasi pada bagan.",
-        "score": 4
-      },
-      {
-        "text": "Mengirimkan file teks mentah materi kimia ke chat WhatsApp tanpa gambar bagan peta konsep untuk menggantikan infografis.",
-        "score": 2
-      },
-      {
-        "text": "Menyuruh siswa untuk mencetak infografis tersebut ke kertas berukuran A3 agar semua tulisan rumus kimianya dapat terbaca jelas.",
-        "score": 2
-      },
-      {
-        "text": "Merancang ulang tata letak infografis dengan format memanjang ke bawah, memperbesar ikon, serta membagi bagan menjadi beberapa potongan.",
-        "score": 5
-      }
-    ]
-  },
-  {
-    "id": 73,
-    "dim": "C5 - Critical Thinking",
-    "scenario": "Sepuluh menit sebelum mengajar daring, layar laptop Anda mendadak lumpuh memunculkan iklan pop-up tidak senonoh. Rekan magang Anda yang melihat layar berteriak panik: \"Aduh, kenapa layar laptopmu dipenuhi iklan porno seperti itu sesaat sebelum kelas dimulai?!\"\n\nBagaimana langkah penanganan masalah darurat yang Anda lakukan?",
-    "options": [
-      {
-        "text": "Memutus internet laptop, beralih login menggunakan HP untuk mengajar sementara, serta menjalankan Windows Defender offline scan di laptop.",
-        "score": 5
-      },
-      {
-        "text": "Mengeluh kepada dosen magang via chat WhatsApp bahwa Anda tidak bisa mengajar akibat sabotase teknis virus pada laptop Anda.",
-        "score": 2
-      },
-      {
-        "text": "Menutup laptop dan membatalkan kelas mengajar hari itu karena merasa laptop Anda sudah rusak parah terkena virus siber.",
-        "score": 2
-      },
-      {
-        "text": "Memutus koneksi internet laptop, melakukan pemindaian virus cepat menggunakan antivirus bawaan Windows Defender, lalu memulai ulang laptop.",
-        "score": 4
-      },
-      {
-        "text": "Tetap melakukan share screen di Zoom kelas daring meskipun iklan pop-up tidak senonoh tersebut terus bermunculan di layar.",
-        "score": 1
-      }
-    ]
-  },
-  {
-    "id": 14,
-    "dim": "C1 - Context",
-    "scenario": "Kepala sekolah bertanya kepada Anda di ruang guru: \"Bagaimana cara kita memetakan minat baca digital siswa kelas kita untuk menentukan alokasi anggaran pembelian e-book perpustakaan?\"\n\nLangkah pengumpulan data awal apa yang Anda usulkan kepada kepala sekolah?",
+    "scenario": "Skenario:\nKepala sekolah bertanya kepada Anda di ruang guru: \"Bagaimana cara kita memetakan minat baca digital siswa kelas kita untuk menentukan alokasi anggaran pembelian e-book perpustakaan?\"\n\nPertanyaan:\nLangkah pengumpulan data awal apa yang Anda usulkan kepada kepala sekolah?",
     "options": [
       {
         "text": "Menyarankan pembelian e-book secara acak berdasarkan judul buku fiksi yang saat ini sedang populer di media sosial.",
         "score": 2
       },
       {
-        "text": "Mengusulkan pengisian kuesioner kertas tentang kebiasaan membaca siswa yang dibagikan secara berkala di sela-sela jam istirahat sekolah.",
+        "text": "B.** Mengusulkan pengisian kuesioner kertas tentang kebiasaan membaca siswa yang dibagikan secara berkala di sela-sela jam istirahat sekolah.",
         "score": 3
       },
       {
-        "text": "Merancang survei daring sederhana menggunakan Google Form untuk mendata jenis buku digital yang sering dibaca siswa di rumah.",
+        "text": "C.** Merancang survei daring sederhana menggunakan Google Form untuk mendata jenis buku digital yang sering dibaca siswa di rumah.",
         "score": 4
       },
       {
-        "text": "Menyusun instrumen survei minat baca digital terintegrasi, menganalisis riwayat peminjaman buku perpustakaan, lalu menyusun rekomendasi katalog e-book.",
+        "text": "D.** Menyusun instrumen survei minat baca digital terintegrasi, menganalisis riwayat peminjaman buku perpustakaan, lalu menyusun rekomendasi katalog e-book.",
         "score": 5
       },
       {
-        "text": "Meminta guru kelas untuk mewajibkan setiap siswa menyumbang satu buku fisik bekas daripada memikirkan pembelian e-book digital.",
+        "text": "E.** Meminta guru kelas untuk mewajibkan setiap siswa menyumbang satu buku fisik bekas daripada memikirkan pembelian e-book digital.",
         "score": 1
       }
     ]
   },
   {
-    "id": 29,
+    "id": 7,
     "dim": "C2 - Communication",
-    "scenario": "Anda memodifikasi RPP berlisensi Creative Commons dari internet. Rekan magang berkata: \"Klaim saja RPP hasil modifikasi ini sebagai karya orisinalmu 100% agar mendapat nilai magang yang tinggi.\"\n\nBagaimana Anda menanggapi saran rekan magang tersebut secara etis?",
+    "scenario": "Skenario:\nRekan mahasiswa berkata kepada Anda saat menyusun presentasi: \"Salin saja diagram siklus hidrologi dari buku Profesor Hartono ini tanpa perlu menuliskan nama beliau agar slide presentasi bersih.\"\n\nPertanyaan:\nTindakan komunikasi etis apa yang Anda lakukan dalam membagikan konten akademik ini?",
     "options": [
       {
-        "text": "Menggunakan RPP tersebut dengan menuliskan atribusi lisensi CC asli, mencantumkan bagian yang dimodifikasi, serta melabelinya dengan lisensi serupa.",
-        "score": 5
-      },
-      {
-        "text": "Menolak menggunakan RPP tersebut dan memilih merancang RPP baru dari awal meskipun waktu persiapan Anda sudah sangat sempit.",
-        "score": 2
-      },
-      {
-        "text": "Mengikuti saran rekan Anda untuk mengklaim RPP tersebut sebagai karya orisinal agar Anda terhindar dari pengurangan nilai magang.",
-        "score": 1
-      },
-      {
-        "text": "Menggunakan RPP modifikasi dengan mencantumkan nama pembuat asli dan alamat URL sumber RPP tersebut pada bagian kaki dokumen.",
+        "text": "Menggunakan gambar diagram tersebut, lalu mencantumkan nama Profesor Hartono, judul buku, tahun terbit, dan penerbit di bawah gambar.",
         "score": 4
       },
       {
-        "text": "Menggunakan RPP tersebut tanpa menyebutkan nama pembuat asli, namun mengganti beberapa istilah materi ajar agar tampak berbeda.",
+        "text": "B.** Menggambar ulang konsep diagram tersebut, menyesuaikannya dengan materi Anda, lalu menuliskan sumber inspirasi diagram asli secara lengkap.",
+        "score": 5
+      },
+      {
+        "text": "C.** Mengunduh gambar diagram berbayar serupa dari internet secara ilegal untuk dimasukkan ke slide tanpa mempedulikan hak cipta.",
+        "score": 1
+      },
+      {
+        "text": "D.** Mengikuti saran rekan mahasiswa untuk menyalin gambar utuh tanpa sitasi karena tujuan penggunaannya adalah untuk pembelajaran di kelas.",
+        "score": 2
+      },
+      {
+        "text": "E.** Menyimpan slide presentasi tersebut hanya untuk keperluan pribadi agar terhindar dari tuduhan pelanggaran hak cipta di kampus.",
         "score": 2
       }
     ]
   },
   {
-    "id": 44,
-    "dim": "C3 - Collaboration",
-    "scenario": "Rekan kelompok PPL bertanya kepada Anda: \"Bagaimana cara kita menggabungkan 5 bagian laporan magang yang diketik menggunakan jenis font dan format dokumen berbeda?\"\n\nBagaimana langkah Anda melakukan konsolidasi format dokumen laporan ini?",
-    "options": [
-      {
-        "text": "Mengunggah semua draf laporan ke Google Docs, lalu merapikan jenis font dan ukuran margin secara manual satu per satu.",
-        "score": 4
-      },
-      {
-        "text": "Menyepakati lembar gaya dokumen di awal, mengunggah draf ke folder drive bersama, lalu menyunting format menggunakan template bawaan.",
-        "score": 5
-      },
-      {
-        "text": "Menggabungkan semua draf laporan tersebut apa adanya ke dalam satu file PDF meskipun jenis hurufnya terlihat tidak seragam.",
-        "score": 2
-      },
-      {
-        "text": "Meminta dosen pembimbing laporan magang untuk menerima draf apa adanya karena dikerjakan secara berkelompok oleh banyak orang.",
-        "score": 1
-      },
-      {
-        "text": "Menghapus tulisan 4 rekan kelompok Anda dan mengetik ulang seluruh isi laporan magang sendirian dari awal agar seragam.",
-        "score": 2
-      }
-    ]
-  },
-  {
-    "id": 59,
-    "dim": "C4 - Creation",
-    "scenario": "Dosen magang menyarankan kepada Anda saat menyusun angket: \"Buatlah kuesioner evaluasi pembelajaran daring yang memiliki antarmuka menarik agar siswa antusias mengisi.\"\n\nBagaimana Anda merancang bentuk kuesioner evaluasi pembelajaran tersebut?",
-    "options": [
-      {
-        "text": "Menggunakan kuesioner fisik kertas yang dicetak banyak dan membagikannya secara manual kepada siswa di akhir jam pelajaran.",
-        "score": 2
-      },
-      {
-        "text": "Mengetik pertanyaan kuesioner di lembar Microsoft Word, lalu membagikan file dokumen tersebut di WhatsApp untuk diisi secara luring.",
-        "score": 2
-      },
-      {
-        "text": "Merancang kuesioner menggunakan Google Form dengan menambahkan gambar ilustrasi kegiatan kelas dan membagi kuesioner menjadi beberapa bagian.",
-        "score": 4
-      },
-      {
-        "text": "Membuat formulir kuesioner standar di Google Form menggunakan template polos bawaan tanpa menambahkan gambar atau variasi jenis soal.",
-        "score": 3
-      },
-      {
-        "text": "Menggunakan platform Typeform berprinsip satu pertanyaan per layar, menambahkan gambar gif interaktif, serta menggunakan logika lompatan pertanyaan.",
-        "score": 5
-      }
-    ]
-  },
-  {
-    "id": 74,
-    "dim": "C5 - Critical Thinking",
-    "scenario": "Dosen penguji mengeluh saat presentasi proposal: \"File presentasi interaktif Canva Anda tidak bisa dibuka di laptop saya karena browser saya versi lama.\"\n\nBagaimana langkah pemecahan masalah taktis Anda agar ujian tetap berjalan lancar?",
-    "options": [
-      {
-        "text": "Membatalkan sesi presentasi proposal Anda hari ini dan meminta jadwal ulang ujian setelah dosen memperbarui sistem operasi laptopnya.",
-        "score": 2
-      },
-      {
-        "text": "Mengekspor cepat slide Canva Anda menjadi format file PDF statis standar, lalu mengirimkannya via WhatsApp kepada dosen penguji.",
-        "score": 4
-      },
-      {
-        "text": "Terus memaksa mengirimkan link Canva tersebut berulang kali melalui berbagai platform chat dengan harapan tautannya akan terbuka sendiri.",
-        "score": 2
-      },
-      {
-        "text": "Mengonversi cepat draf presentasi Canva ke file PDF statis, membagikan share screen laptop Anda, serta mengirimkan file PDF cadangan.",
-        "score": 5
-      },
-      {
-        "text": "Menyalahkan dosen penguji karena menggunakan laptop jadul dengan versi browser yang tidak diperbarui dan meminta beliau meminjam laptop lain.",
-        "score": 1
-      }
-    ]
-  },
-  {
-    "id": 15,
-    "dim": "C1 - Context",
-    "scenario": "Rekan magang membisiki Anda di sela istirahat: \"Situs web ini menyediakan kunci jawaban lengkap modul resmi sekolah kita, mari kita gunakan untuk mempermudah mengajar.\"\n\nBagaimana sikap kritis Anda menyikapi temuan situs web tersebut?",
-    "options": [
-      {
-        "text": "Melaporkan situs web tersebut kepada kepala sekolah agar pihak administrasi dapat memblokir akses internet situs itu di sekolah.",
-        "score": 4
-      },
-      {
-        "text": "Mengabaikan keberadaan situs tersebut dan tetap mengajar menggunakan modul resmi sekolah tanpa melakukan perubahan metode soal.",
-        "score": 2
-      },
-      {
-        "text": "Menggunakan kunci jawaban dari situs tersebut secara penuh untuk mempercepat proses penilaian tugas harian siswa di kelas.",
-        "score": 1
-      },
-      {
-        "text": "Membagikan alamat situs web kunci jawaban tersebut kepada siswa agar mereka bisa mencocokkan jawaban mereka sendiri di rumah.",
-        "score": 1
-      },
-      {
-        "text": "Menganalisis keaslian kunci jawaban di situs tersebut, memvariasikan soal modul agar tidak mudah dicontek, lalu mengedukasi siswa.",
-        "score": 5
-      }
-    ]
-  },
-  {
-    "id": 30,
+    "id": 8,
     "dim": "C2 - Communication",
-    "scenario": "Di forum diskusi umum daring sekolah, seorang siswa kelas magang Anda menulis: \"Kak, apakah benar bapak kepala sekolah sering melakukan pemotongan uang beasiswa prestasi siswa di sekolah ini?\"\n\nBagaimana langkah komunikasi tertulis Anda menghadapi pertanyaan sensitif ini?",
+    "scenario": "Skenario:\nDi kolom komentar video praktek mengajar siswa, seorang siswa menulis: \"Presentasi kelompok 3 ini sangat buruk, penjelasannya membingungkan dan suaranya terdengar lucu.\"\n\nPertanyaan:\nBagaimana respon komunikasi Anda sebagai guru yang bertanggung jawab atas ruang siber kelas?",
+    "options": [
+      {
+        "text": "Menghapus komentar tersebut dan langsung mematikan kolom komentar pada semua video agar tidak terjadi konflik antar siswa.",
+        "score": 2
+      },
+      {
+        "text": "B.** Menghapus komentar tersebut, lalu memanggil siswa yang mengejek secara pribadi untuk menasehati perilakunya di ruang siber.",
+        "score": 4
+      },
+      {
+        "text": "C.** Menghapus komentar negatif, menyelenggarakan diskusi etika netiket di kelas berikutnya, lalu merancang kesepakatan interaksi digital kelas.",
+        "score": 5
+      },
+      {
+        "text": "D.** Membalas komentar tersebut dengan nada mengancam akan mengurangi nilai akademis siswa yang menulis ejekan tersebut di YouTube.",
+        "score": 2
+      },
+      {
+        "text": "E.** Membiarkan saja komentar ejekan tersebut karena menganggap kritik dari teman sekelas berguna untuk melatih mental mental siswa.",
+        "score": 1
+      }
+    ]
+  },
+  {
+    "id": 9,
+    "dim": "C2 - Communication",
+    "scenario": "Skenario:\nDi rapat sekolah, guru senior berkata dengan ketus: \"Usulan ujian pakai Google Classroom ini merepotkan saja, kami sudah terbiasa pakai kertas fisik puluhan tahun dan terbukti sukses.\"\n\nPertanyaan:\nBagaimana respon komunikasi verbal Anda menghadapi penolakan agresif ini?",
+    "options": [
+      {
+        "text": "Menerima kritik, berterima kasih atas masukan sejarah sekolah, lalu mendemonstrasikan kemudahan otomatisasi koreksi nilai di Google Classroom.",
+        "score": 4
+      },
+      {
+        "text": "B.** Tetap memaksakan penerapan ujian daring khusus di kelas magang Anda tanpa mempedulikan keputusan resmi rapat dinas sekolah.",
+        "score": 1
+      },
+      {
+        "text": "C.** Membatalkan usulan penggunaan teknologi ujian dan meminta maaf kepada guru senior agar rapat dinas berjalan damai tanpa ketegangan.",
+        "score": 2
+      },
+      {
+        "text": "D.** Mengakui kenyamanan sistem kertas, menyajikan data efisiensi waktu koreksi, serta menawarkan uji coba terbatas di kelas magang Anda.",
+        "score": 5
+      },
+      {
+        "text": "E.** Menjawab balik dengan nada tinggi dan menyatakan bahwa guru senior tersebut menghambat kemajuan sistem pendidikan digital di sekolah.",
+        "score": 1
+      }
+    ]
+  },
+  {
+    "id": 10,
+    "dim": "C2 - Communication",
+    "scenario": "Skenario:\nDosen menulis di grup WhatsApp kelas: \"Saya tidak akan memeriksa tugas mahasiswa yang dikirimkan tanpa subjek email dan isi pesan pengantar yang sopan.\"\n\nPertanyaan:\nBagaimana tindakan komunikasi Anda untuk memperbaiki kesalahan pengiriman tugas ini?",
+    "options": [
+      {
+        "text": "Melakukan protes di grup kelas WhatsApp karena menganggap dosen mempersulit pengumpulan tugas mahasiswa hanya karena masalah teknis administratif.",
+        "score": 1
+      },
+      {
+        "text": "B.** Meminta ketua kelas untuk mengirimkan seluruh file tugas mahasiswa angkatan dalam satu folder zip besar tanpa pesan pengantar.",
+        "score": 2
+      },
+      {
+        "text": "C.** Mengirim ulang email tugas dengan format subjek yang jelas, menulis pesan pengantar permohonan maaf, serta melampirkan file tugas.",
+        "score": 4
+      },
+      {
+        "text": "D.** Mengirimkan ulang file tugas via email tanpa menuliskan subjek, namun menambahkan pesan pengantar singkat berisi permintaan maaf Anda.",
+        "score": 2
+      },
+      {
+        "text": "E.** Mengirim ulang email sesuai format standar, meminta maaf atas kelalaian sebelumnya, serta melampirkan file tugas berformat nama yang konsisten.",
+        "score": 5
+      }
+    ]
+  },
+  {
+    "id": 11,
+    "dim": "C2 - Communication",
+    "scenario": "Skenario:\nAnda ingin berkonsultasi mengenai RPP via WhatsApp, namun guru pamong senior mengirim pesan ketus: \"Saya tidak suka memeriksa dokumen pelajaran yang panjang lewat HP, bikin mata lelah.\"\n\nPertanyaan:\nBagaimana langkah Anda merespons kendala komunikasi dengan guru pamong tersebut?",
+    "options": [
+      {
+        "text": "Memohon izin mencetak RPP fisik untuk ditaruh di meja beliau, serta menawarkan asistensi koreksi tatap muka di sekolah.",
+        "score": 5
+      },
+      {
+        "text": "B.** Mengabaikan pesan tersebut dan tetap mengirimkan file RPP berbentuk dokumen PDF di chat WhatsApp tanpa koordinasi lanjutan.",
+        "score": 1
+      },
+      {
+        "text": "C.** Memutuskan untuk tidak mengonsultasikan RPP Anda lagi dan langsung mengajar di kelas dengan metode yang Anda susun sendiri.",
+        "score": 2
+      },
+      {
+        "text": "D.** Menghubungi kepala sekolah untuk meminta guru pamong Anda diganti dengan guru lain yang lebih mahir menggunakan WhatsApp.",
+        "score": 1
+      },
+      {
+        "text": "E.** Menelepon guru pamong untuk meminta maaf, menawarkan pengiriman draf ringkas, serta memohon jadwal pertemuan tatap muka di sekolah.",
+        "score": 4
+      }
+    ]
+  },
+  {
+    "id": 12,
+    "dim": "C2 - Communication",
+    "scenario": "Skenario:\nDi forum diskusi umum daring sekolah, seorang siswa kelas magang Anda menulis: \"Kak, apakah benar bapak kepala sekolah sering melakukan pemotongan uang beasiswa prestasi siswa di sekolah ini?\"\n\nPertanyaan:\nBagaimana langkah komunikasi tertulis Anda menghadapi pertanyaan sensitif ini?",
     "options": [
       {
         "text": "Menjelaskan batas topik forum secara edukatif, menghimbau konfirmasi ke jalur resmi sekolah, serta mengajak siswa berdiskusi secara luring.",
         "score": 5
       },
       {
-        "text": "Mengabaikan pertanyaan siswa tersebut dan pura-pura tidak melihatnya di forum diskusi agar posisi Anda sebagai mahasiswa aman.",
+        "text": "B.** Mengabaikan pertanyaan siswa tersebut dan pura-pura tidak melihatnya di forum diskusi agar posisi Anda sebagai mahasiswa aman.",
         "score": 2
       },
       {
-        "text": "Menghapus pertanyaan tersebut secara sepihak dan memblokir akun siswa yang bertanya agar tidak menimbulkan kegaduhan di forum publik.",
+        "text": "C.** Menghapus pertanyaan tersebut secara sepihak dan memblokir akun siswa yang bertanya agar tidak menimbulkan kegaduhan di forum publik.",
         "score": 2
       },
       {
-        "text": "Membenarkan pertanyaan tersebut di forum secara terbuka berdasarkan desas-desus yang Anda dengar dari staf tata usaha sekolah.",
+        "text": "D.** Membenarkan pertanyaan tersebut di forum secara terbuka berdasarkan desas-desus yang Anda dengar dari staf tata usaha sekolah.",
         "score": 1
       },
       {
-        "text": "Menjawab tertulis bahwa forum tersebut khusus materi ajar, lalu meminta siswa berkonsultasi langsung dengan guru BK di sekolah.",
+        "text": "E.** Menjawab tertulis bahwa forum tersebut khusus materi ajar, lalu meminta siswa berkonsultasi langsung dengan guru BK di sekolah.",
         "score": 4
       }
     ]
   },
   {
-    "id": 45,
+    "id": 13,
     "dim": "C3 - Collaboration",
-    "scenario": "Rekan satu kelompok magang berkata: \"Menyusun RPP tematik terpadu 3 mata pelajaran sekaligus sangat melelahkan jika kita semua memikirkan semua sub-materinya.\"\n\nBagaimana Anda mendistribusikan beban kognitif penyusunan RPP ini di kelompok?",
+    "scenario": "Skenario:\nKetua kelompok mengeluh di grup koordinasi: \"Batas pengumpulan video profil sekolah tinggal 2 hari, tetapi satu anggota kelompok kita masih belum mengumpulkan draf naskahnya.\"\n\nPertanyaan:\nBagaimana langkah Anda dalam mengelola pembagian kerja kelompok ini?",
+    "options": [
+      {
+        "text": "Mengadakan rapat kelompok virtual mengevaluasi beban kerja, membantu kendala teknis anggota pasif, lalu mencatat kontribusi riil di log tugas.",
+        "score": 5
+      },
+      {
+        "text": "B.** Menegur anggota pasif tersebut di grup WhatsApp secara terbuka dengan kalimat kasar agar dia merasa malu dan segera bekerja.",
+        "score": 2
+      },
+      {
+        "text": "C.** Menghapus nama anggota kelompok yang pasif tersebut dari lembar cover tugas laporan tanpa perlu melakukan konfirmasi dengannya.",
+        "score": 2
+      },
+      {
+        "text": "D.** Mengerjakan naskah video bagian dia sendirian secara diam-diam demi kelancaran tugas kelompok sambil menyimpan rasa kesal mendalam.",
+        "score": 2
+      },
+      {
+        "text": "E.** Menghubungi anggota tersebut secara pribadi untuk menanyakan kendalanya, menawarkan bantuan teknis ringan, serta menetapkan tenggat waktu baru.",
+        "score": 4
+      }
+    ]
+  },
+  {
+    "id": 14,
+    "dim": "C3 - Collaboration",
+    "scenario": "Skenario:\nDi kepanitiaan pameran karya siswa, koordinator humas mengeluh kepada Anda: \"Divisi desain terus mengunggah gambar ke Instagram sekolah tanpa persetujuan jadwal kami, sehingga umpan feeds kami berantakan ganda.\"\n\nPertanyaan:\nBagaimana manuver Anda untuk mereorganisasi pembagian kerja digital ini?",
+    "options": [
+      {
+        "text": "Melaporkan masalah koordinasi ini langsung ke kepala sekolah agar beliau menegur kedua koordinator divisi di rapat sekolah.",
+        "score": 2
+      },
+      {
+        "text": "B.** Mengambil alih semua akses akun Instagram sekolah dan mengunggah sendiri semua konten tanpa melibatkan kedua divisi tersebut lagi.",
+        "score": 2
+      },
+      {
+        "text": "C.** Membiarkan konflik tersebut berlanjut karena menganggap persaingan antar divisi akan memicu produktivitas pembuatan konten di media sosial.",
+        "score": 1
+      },
+      {
+        "text": "D.** Memediasi kedua divisi untuk merancang alur kerja visual menggunakan kalender konten bersama, menetapkan peran draf dan peran eksekusi postingan.",
+        "score": 5
+      },
+      {
+        "text": "E.** Menyelenggarakan rapat koordinasi virtual untuk memperjelas wewenang masing-masing divisi dan menyepakati alur persetujuan sebelum konten diunggah.",
+        "score": 4
+      }
+    ]
+  },
+  {
+    "id": 15,
+    "dim": "C3 - Collaboration",
+    "scenario": "Skenario:\nRekan magang berteriak panik saat menulis laporan: \"Aduh, paragraf kesimpulan RPP yang baru kutulis terhapus oleh orang lain di Google Docs karena kita semua mengedit baris yang sama!\"\n\nPertanyaan:\nBagaimana Anda mereorganisasi kolaborasi dokumen ini agar berjalan tertib?",
+    "options": [
+      {
+        "text": "Meminta anggota kelompok untuk bergantian mengedit Google Docs dengan jadwal satu orang per jam agar tidak terjadi tabrakan.",
+        "score": 3
+      },
+      {
+        "text": "B.** Membagi dokumen ke dalam sub-bab berlabel nama penanggung jawab, mengaktifkan mode saran, serta memakai version history memulihkan paragraf.",
+        "score": 5
+      },
+      {
+        "text": "C.** Membiarkan kekacauan tersebut berlanjut karena menganggap proses adaptasi penulisan kolaboratif memang membutuhkan fase konflik teks di awan.",
+        "score": 1
+      },
+      {
+        "text": "D.** Melakukan panggilan telepon kelompok sembari mengedit, serta meminta setiap anggota kelompok menandai area penulisan dengan kolom komentar.",
+        "score": 4
+      },
+      {
+        "text": "E.** Meminta semua anggota menutup Google Docs, mengunduh file ke format Word lokal, lalu menunjuk satu orang menggabungkannya manual.",
+        "score": 2
+      }
+    ]
+  },
+  {
+    "id": 16,
+    "dim": "C3 - Collaboration",
+    "scenario": "Skenario:\nAnggota kelompok projek aplikasi ajar mulai cemas. Salah satu anggota berkata: \"Tugas pembuatan aplikasi web ini terlalu rumit, kita tidak tahu harus mulai bekerja dari bagian mana.\"\n\nPertanyaan:\nBagaimana langkah Anda mendelegasikan tugas menggunakan alat digital?",
+    "options": [
+      {
+        "text": "Membuat grup koordinasi proyek di WhatsApp, menulis daftar pembagian tugas di deskripsi grup, dan meminta anggota mengonfirmasi kesiapan.",
+        "score": 4
+      },
+      {
+        "text": "B.** Menulis daftar tugas panjang di kertas, memfotonya, lalu mengirimkan foto tersebut ke grup WhatsApp tanpa menunjuk penanggung jawab.",
+        "score": 2
+      },
+      {
+        "text": "C.** Meminta dosen pengampu mata kuliah untuk membagi tugas kelompok Anda karena Anda merasa tidak memiliki wewenang mengatur teman.",
+        "score": 1
+      },
+      {
+        "text": "D.** Mengambil alih semua tugas teknis pengkodean untuk Anda kerjakan sendiri, lalu menugaskan anggota kelompok lain menulis laporan.",
+        "score": 2
+      },
+      {
+        "text": "E.** Membuat Trello board, memecah proyek menjadi kartu tugas kecil, menetapkan tenggat dan penanggung jawab, serta memantau pergerakan kolom.",
+        "score": 5
+      }
+    ]
+  },
+  {
+    "id": 17,
+    "dim": "C3 - Collaboration",
+    "scenario": "Skenario:\nAnggota kelompok mengklaim di grup WhatsApp: \"Aku sudah begadang semalaman menulis Bab 4 di Google Docs.\" Namun, Anda melihat kalimat di Bab 4 tersebut sangat mirip dengan artikel Wikipedia.\n\nPertanyaan:\nBagaimana langkah Anda memanfaatkan alat digital untuk memverifikasi kebenaran klaim ini?",
+    "options": [
+      {
+        "text": "Melaporkan anggota tersebut kepada dosen pembimbing magang sebagai pelaku tindakan plagiarisme tanpa melakukan konfirmasi terlebih dahulu.",
+        "score": 2
+      },
+      {
+        "text": "B.** Membiarkan laporan dikumpulkan apa adanya demi menjaga keharmonisan pertemanan kelompok meskipun nilai tugas terancam turun drastis.",
+        "score": 2
+      },
+      {
+        "text": "C.** Memeriksa riwayat versi Docs, mengecek orisinalitas teks di Turnitin, lalu mengajak anggota tersebut berdiskusi pribadi merevisi tulisan.",
+        "score": 5
+      },
+      {
+        "text": "D.** Membuka dokumen Google Docs, memeriksa menu Version History untuk melihat kontribusi ketikan asli dari akun anggota tersebut.",
+        "score": 4
+      },
+      {
+        "text": "E.** Menghapus tulisan di Bab 4 tersebut secara diam-diam dan menulis ulang bagian itu sendirian tanpa memberitahu kelompok.",
+        "score": 2
+      }
+    ]
+  },
+  {
+    "id": 18,
+    "dim": "C3 - Collaboration",
+    "scenario": "Skenario:\nRekan satu kelompok magang berkata: \"Menyusun RPP tematik terpadu 3 mata pelajaran sekaligus sangat melelahkan jika kita semua memikirkan semua sub-materinya.\"\n\nPertanyaan:\nBagaimana Anda mendistribusikan beban kognitif penyusunan RPP ini di kelompok?",
     "options": [
       {
         "text": "Meminta guru pamong untuk meminjamkan RPP tematik tahun lalu milik sekolah agar kelompok Anda cukup menyalin isinya.",
         "score": 2
       },
       {
-        "text": "Membagi tugas penulisan indikator ke Si A, materi ke Si B, dan evaluasi ke Si C melalui Google Docs.",
+        "text": "B.** Membagi tugas penulisan indikator ke Si A, materi ke Si B, dan evaluasi ke Si C melalui Google Docs.",
         "score": 4
       },
       {
-        "text": "Mengambil alih semua proses berpikir penyusunan RPP tematik tersebut agar isi dan kualitasnya sesuai standar nilai Anda.",
+        "text": "C.** Mengambil alih semua proses berpikir penyusunan RPP tematik tersebut agar isi dan kualitasnya sesuai standar nilai Anda.",
         "score": 2
       },
       {
-        "text": "Mendiskusikan peta konsep tematik bersama, membagi fokus kajian materi berbasis kompetensi anggota, lalu menyatukan draf di drive kolaboratif.",
+        "text": "D.** Mendiskusikan peta konsep tematik bersama, membagi fokus kajian materi berbasis kompetensi anggota, lalu menyatukan draf di drive kolaboratif.",
         "score": 5
       },
       {
-        "text": "Membagi RPP menjadi 3 bagian terpisah untuk ditulis secara mandiri oleh 3 orang tanpa perlu diintegrasikan kembali.",
+        "text": "E.** Membagi RPP menjadi 3 bagian terpisah untuk ditulis secara mandiri oleh 3 orang tanpa perlu diintegrasikan kembali.",
         "score": 2
       }
     ]
   },
   {
-    "id": 60,
+    "id": 19,
     "dim": "C4 - Creation",
-    "scenario": "Rekan mahasiswa magang memperingatkan Anda di sekolah: \"Video mengajar buatanku diunggah ulang oleh akun bimbingan belajar lain tanpa izin dan tanpa kredit.\"\n\nLangkah pencegahan apa yang Anda lakukan saat membuat video pembelajaran di masa depan?",
+    "scenario": "Skenario:\nGuru pamong mengingatkan Anda sebelum mengajar kelas SD: \"Besok pagi kamu mengajar materi Siklus Air, buatlah slide presentasi yang menarik untuk anak-anak.\"\n\nPertanyaan:\nBagaimana Anda merancang presentasi visual pembelajaran ini?",
+    "options": [
+      {
+        "text": "Mengunduh template slide visual gratis dari Canva dan menyalin poin teks ajar tanpa mempersiapkan penjelasan lisan yang memadai.",
+        "score": 3
+      },
+      {
+        "text": "B.** Menggunakan template animasi PowerPoint yang memiliki transisi mencolok dan warna tulisan yang sangat kontras di setiap slide.",
+        "score": 2
+      },
+      {
+        "text": "C.** Menyalin seluruh teks penjelasan siklus air dari buku paket ke slide PowerPoint tanpa menyertakan gambar agar materi tersampaikan utuh.",
+        "score": 2
+      },
+      {
+        "text": "D.** Merancang slide interaktif menggunakan platform Quizizz, menyisipkan diagram siklus, serta menambahkan pertanyaan kuis tipe menggambar di slide.",
+        "score": 5
+      },
+      {
+        "text": "E.** Merancang slide presentasi visual dengan poin-poin ringkas, menyisipkan diagram proses yang jelas, serta menambahkan video animasi dari YouTube.",
+        "score": 4
+      }
+    ]
+  },
+  {
+    "id": 20,
+    "dim": "C4 - Creation",
+    "scenario": "Skenario:\nRekan magang menyarankan saat Anda ingin menunjukkan video sejarah: \"Potong saja bagian video YouTube yang penting itu menggunakan aplikasi agar siswa tidak bosan.\"\n\nPertanyaan:\nBagaimana langkah Anda mengintegrasikan konten video eksternal ini secara efektif?",
+    "options": [
+      {
+        "text": "Memutar video YouTube 60 menit tersebut dari awal di kelas, lalu membiarkan siswa menonton secara mandiri tanpa panduan.",
+        "score": 1
+      },
+      {
+        "text": "B.** Memotong klip video menggunakan Edpuzzle, menyisipkan narasi penjelasan suara Anda, serta menambahkan pertanyaan pemahaman di tengah video.",
+        "score": 5
+      },
+      {
+        "text": "C.** Mengunduh video menggunakan web downloader, memotong klip 5 menit di editor video lokal, lalu menyajikannya kepada siswa.",
+        "score": 4
+      },
+      {
+        "text": "D.** Memberikan link video YouTube tersebut di papan tulis kelas dan meminta siswa untuk menontonnya sendiri di rumah.",
+        "score": 2
+      },
+      {
+        "text": "E.** Memutar video di kelas, lalu Anda melompati durasi video secara manual saat presentasi untuk mencari bagian yang penting.",
+        "score": 3
+      }
+    ]
+  },
+  {
+    "id": 21,
+    "dim": "C4 - Creation",
+    "scenario": "Skenario:\nOrang tua siswa mengirim pesan WhatsApp kepada Anda: \"Suara penjelasan guru di video fisika kemarin kurang jelas terdengar karena kondisi rumah kami bising.\"\n\nPertanyaan:\nLangkah modifikasi konten video apa yang Anda lakukan untuk menjaga aksesibilitas?",
+    "options": [
+      {
+        "text": "Memproses ulang video, menerapkan fitur noise reduction, serta menambahkan takarir teks otomatis di sepanjang video ajar fisika.",
+        "score": 5
+      },
+      {
+        "text": "B.** Merekam ulang video penjelasan rumus fisika tersebut dengan berbicara jauh lebih keras di dalam ruangan yang sunyi.",
+        "score": 4
+      },
+      {
+        "text": "C.** Menyarankan orang tua siswa untuk membelikan earphone baru untuk anaknya agar suara video penjelasan bisa terdengar lebih jelas.",
+        "score": 2
+      },
+      {
+        "text": "D.** Mengabaikan keluhan orang tua siswa tersebut karena merasa kualitas rekaman audio video di HP Anda sudah cukup keras.",
+        "score": 1
+      },
+      {
+        "text": "E.** Mengirimkan foto papan tulis rumus fisika ke grup WhatsApp sebagai materi pengganti video ajar tanpa penjelasan tambahan.",
+        "score": 3
+      }
+    ]
+  },
+  {
+    "id": 22,
+    "dim": "C4 - Creation",
+    "scenario": "Skenario:\nDosen pembimbing berpesan sebelum Anda menyusun bahan ajar: \"Materi Biologi SMA ini cukup kompleks, rancanglah bahan ajar digital yang adaptif bagi siswa.\"\n\nPertanyaan:\nBagaimana Anda mendesain konten bahan ajar digital biologi tersebut?",
+    "options": [
+      {
+        "text": "Menyediakan dua file ajar terpisah: satu file dokumen PDF materi untuk dibaca dan satu file rekaman penjelasan audio.",
+        "score": 3
+      },
+      {
+        "text": "B.** Mengembangkan e-modul interaktif mengintegrasikan teks responsif, glosarium istilah klik, video animasi, serta tombol narasi suara untuk siswa.",
+        "score": 5
+      },
+      {
+        "text": "C.** Membuat infografis visual satu halaman memuat rangkuman konsep biologi, dilampiri tautan video YouTube penjelasan proses materi ajar.",
+        "score": 4
+      },
+      {
+        "text": "D.** Membuat file dokumen PDF berisi teks materi biologi setebal 40 halaman yang disalin langsung dari buku cetak sekolah.",
+        "score": 2
+      },
+      {
+        "text": "E.** Membuat slide presentasi PowerPoint berisi ringkasan teks materi pelajaran, lalu membacakannya di depan kelas menggunakan proyektor sekolah.",
+        "score": 2
+      }
+    ]
+  },
+  {
+    "id": 23,
+    "dim": "C4 - Creation",
+    "scenario": "Skenario:\nRekan magang mengingatkan Anda saat menyusun buku saku mitigasi bencana: \"Gambar diagram evakuasi gempa ini dilabeli hak cipta terlindungi, jangan asal comot.\"\n\nPertanyaan:\nTindakan pembuatan konten mana yang mencerminkan etika digital paling tinggi?",
+    "options": [
+      {
+        "text": "Mencari diagram evakuasi bencana alternatif yang berlisensi terbuka di situs penyedia gambar gratis bebas royalti secara legal.",
+        "score": 4
+      },
+      {
+        "text": "B.** Mengunduh gambar tersebut, memotong label hak cipta di editor gambar, lalu memasukkannya ke dalam modul saku mitigasi.",
+        "score": 1
+      },
+      {
+        "text": "C.** Menggambar ulang diagram evakuasi tersebut di aplikasi desain, menyesuaikan jalurnya dengan denah sekolah, serta mencantumkan referensi konsep.",
+        "score": 5
+      },
+      {
+        "text": "D.** Mengirimkan email permohonan izin ke pemilik web, namun tetap menggunakan gambar tersebut meskipun email belum dibalas dinas.",
+        "score": 2
+      },
+      {
+        "text": "E.** Menempelkan gambar diagram evakuasi tersebut secara utuh dan menuliskan alamat URL situs web asalnya di bawah gambar.",
+        "score": 3
+      }
+    ]
+  },
+  {
+    "id": 24,
+    "dim": "C4 - Creation",
+    "scenario": "Skenario:\nRekan mahasiswa magang memperingatkan Anda di sekolah: \"Video mengajar buatanku diunggah ulang oleh akun bimbingan belajar lain tanpa izin dan tanpa kredit.\"\n\nPertanyaan:\nLangkah pencegahan apa yang Anda lakukan saat membuat video pembelajaran di masa depan?",
     "options": [
       {
         "text": "Mengabaikan hal tersebut karena menganggap penyebaran video Anda di luar secara ilegal merupakan bentuk amal ibadah pendidikan.",
         "score": 2
       },
       {
-        "text": "Menghentikan pembuatan video pembelajaran digital secara total dan hanya mengajar menggunakan metode ceramah konvensional di kelas luring.",
+        "text": "B.** Menghentikan pembuatan video pembelajaran digital secara total dan hanya mengajar menggunakan metode ceramah konvensional di kelas luring.",
         "score": 1
       },
       {
-        "text": "Melaporkan akun bimbingan belajar tersebut ke polisi secara sepihak tanpa mengumpulkan bukti penulisan dan tanpa koordinasi sekolah.",
+        "text": "C.** Melaporkan akun bimbingan belajar tersebut ke polisi secara sepihak tanpa mengumpulkan bukti penulisan dan tanpa koordinasi sekolah.",
         "score": 2
       },
       {
-        "text": "Menyematkan watermark transparan nama Anda, mencantumkan teks klaim lisensi non-komersial, serta menyertakan credit bumper di akhir video.",
+        "text": "D.** Menyematkan watermark transparan nama Anda, mencantumkan teks klaim lisensi non-komersial, serta menyertakan credit bumper di akhir video.",
         "score": 5
       },
       {
-        "text": "Menyisipkan logo universitas LPTK Anda di pojok kanan atas video sepanjang durasi penayangan di aplikasi editing video.",
+        "text": "E.** Menyisipkan logo universitas LPTK Anda di pojok kanan atas video sepanjang durasi penayangan di aplikasi editing video.",
         "score": 4
       }
     ]
   },
   {
-    "id": 75,
+    "id": 25,
     "dim": "C5 - Critical Thinking",
-    "scenario": "Di malam batas pengumpulan laporan magang, server LMS kampus mendadak lumpuh memunculkan pesan eror: \"Database connection failed. Please try again later.\"\n\nBagaimana manuver Anda untuk memastikan tugas tetap terdata secara resmi?",
+    "scenario": "Skenario:\nGuru pamong menugaskan Anda saat magang: \"Tolong olah 1000 baris data nilai rapor kelas paralel ini menggunakan rumus VLOOKUP besok pagi.\" Anda belum pernah mempelajari rumus tersebut.\n\nPertanyaan:\nBagaimana tindakan Anda untuk mengidentifikasi celah kompetensi dan menyelesaikan tugas ini?",
     "options": [
       {
-        "text": "Menulis pesan kemarahan di grup kelas WhatsApp dengan menandai akun dosen untuk menyalahkan kualitas infrastruktur server IT kampus Anda.",
-        "score": 1
-      },
-      {
-        "text": "Mendokumentasikan tangkapan layar eror LMS, mengunggah laporan ke Google Drive, mengirimkan link ke dosen via email, serta lapor admin.",
+        "text": "Mempelajari tutorial rumus VLOOKUP di YouTube secara cepat, menguji rumus pada sampel data, lalu mengeksekusi pengolahan data mandiri.",
         "score": 5
       },
       {
-        "text": "Mengambil screenshot layar eror LMS, lalu mengirimkan file laporan magang tersebut ke email resmi dosen pengampu mata kuliah.",
+        "text": "B.** Membuka file data nilai secara berdampingan, lalu menyalin memindahkan nilai siswa satu per satu secara manual hingga pagi.",
+        "score": 2
+      },
+      {
+        "text": "C.** Menyuruh rekan magang yang mahir IT menyelesaikan semua rekap nilai tersebut, lalu mengumpulkannya dengan mengaku sebagai hasil kerja sendiri.",
+        "score": 2
+      },
+      {
+        "text": "D.** Mengembalikan file nilai tersebut ke guru pamong dan menyatakan tidak sanggup karena kampus tidak pernah mengajarkan pengolahan data.",
+        "score": 1
+      },
+      {
+        "text": "E.** Menghubungi teman yang paham Excel meminta panduan via telepon, lalu mengerjakannya sambil sesekali bertanya jika ada rumus error.",
+        "score": 4
+      }
+    ]
+  },
+  {
+    "id": 26,
+    "dim": "C5 - Critical Thinking",
+    "scenario": "Skenario:\nSaat Anda menjadi proktor ujian digital, modem sekolah mati. Layar siswa menampilkan pesan eror: \"Koneksi ke server pusat terputus, silakan hubungi pengawas.\" Siswa mulai panik.\n\nPertanyaan:\nLangkah penanganan krisis teknis dan psikologis apa yang Anda lakukan pertama kali?",
+    "options": [
+      {
+        "text": "Menenangkan siswa, mengaktifkan tethering hot-spot gawai proktor, beralih ke jaringan internet cadangan, serta mencatat tambahan waktu ujian.",
+        "score": 5
+      },
+      {
+        "text": "B.** Meminta siswa duduk diam melarang mereka berbicara, dan Anda menunggu di meja proktor tanpa berkoordinasi dengan pihak lain.",
+        "score": 2
+      },
+      {
+        "text": "C.** Meminta siswa segera mematikan komputer dengan menekan tombol power secara paksa agar data komputer tidak rusak kena virus.",
+        "score": 2
+      },
+      {
+        "text": "D.** Membatalkan ujian ANBK hari itu secara sepihak dan menyuruh seluruh siswa untuk meninggalkan ruangan lab komputer untuk pulang.",
+        "score": 1
+      },
+      {
+        "text": "E.** Menenangkan siswa, meminta teknisi memeriksa modem sekolah, serta melaporkan kendala teknis tersebut ke pusat bantuan ANBK dinas.",
+        "score": 4
+      }
+    ]
+  },
+  {
+    "id": 27,
+    "dim": "C5 - Critical Thinking",
+    "scenario": "Skenario:\nKepala sekolah tempat Anda magang di daerah pelosok 3T berkata: \"Di sini tidak ada jaringan internet dan listrik padam setiap pagi, tapi kamu harus mengajarkan cara kerja internet.\"\n\nPertanyaan:\nBagaimana Anda merancang pembelajaran agar tujuan kurikulum tetap tercapai?",
+    "options": [
+      {
+        "text": "Memaksa wali murid membelikan modem satelit portabel berbiaya mahal agar anak mereka dapat mempraktikkan cara berkirim email di kelas.",
+        "score": 1
+      },
+      {
+        "text": "B.** Menggambar tampilan antarmuka web pencarian Google di papan tulis, lalu meminta siswa mencatat langkah-langkah mengirim surat elektronik di buku.",
+        "score": 3
+      },
+      {
+        "text": "C.** Menerapkan model pembelajaran digital unplugged menggunakan simulasi fisik aliran data, lalu mendemonstrasikannya menggunakan laptop pribadi bertenaga baterai.",
+        "score": 5
+      },
+      {
+        "text": "D.** Meminta maaf kepada kepala sekolah karena tidak dapat mengajarkan materi tersebut dan melewati bab cara kerja internet secara penuh.",
+        "score": 2
+      },
+      {
+        "text": "E.** Menggunakan laptop pribadi Anda yang baterainya penuh untuk menunjukkan video rekaman luring mengenai cara kerja jaringan komputer global.",
+        "score": 4
+      }
+    ]
+  },
+  {
+    "id": 28,
+    "dim": "C5 - Critical Thinking",
+    "scenario": "Skenario:\nDosen penguji sudah masuk kelas virtual, tetapi tiba-tiba situs kuis digital yang Anda gunakan menampilkan pesan: \"Service Unavailable. Server is experiencing temporary issues.\"\n\nPertanyaan:\nBagaimana Anda mengeksekusi rencana kontinjensi (*backup plan*) Anda?",
+    "options": [
+      {
+        "text": "Menuliskan soal-soal kuis tersebut di papan tulis kelas, lalu meminta siswa menuliskan jawaban di lembar kertas masing-masing pengawas.",
         "score": 4
       },
       {
-        "text": "Mengirimkan file laporan akhir magang ke email pribadi teman sekelas Anda dengan asumsi dia dapat mewakili pengumpulan tugas Anda.",
+        "text": "B.** Mengeluh di depan siswa tentang buruknya sistem server web kuis dan menyalahkan penyedia aplikasi atas kegagalan presentasi Anda.",
+        "score": 1
+      },
+      {
+        "text": "C.** Mencoba memuat ulang (*reload*) halaman web kuis tersebut berulang kali selama 30 menit sambil menyuruh siswa menunggu di depan laptop.",
+        "score": 1
+      },
+      {
+        "text": "D.** Menghentikan kegiatan pembelajaran daring hari itu, lalu meminta maaf kepada dosen penguji bahwa ujian dibatalkan karena masalah teknis.",
         "score": 2
       },
       {
-        "text": "Membiarkan tugas tidak terkirim malam itu, lalu pasrah menerima pengurangan nilai keterlambatan tugas dari pihak dosen keesokan harinya.",
+        "text": "E.** Menenangkan siswa, membagikan naskah kuis cetak yang disiapkan sebagai cadangan darurat, lalu memimpin kuis secara manual memakai kartu.",
+        "score": 5
+      }
+    ]
+  },
+  {
+    "id": 29,
+    "dim": "C5 - Critical Thinking",
+    "scenario": "Skenario:\nSepuluh menit sebelum mengajar daring, layar laptop Anda mendadak lumpuh memunculkan iklan pop-up tidak senonoh. Rekan magang Anda yang melihat layar berteriak panik: \"Aduh, kenapa layar laptopmu dipenuhi iklan porno seperti itu sesaat sebelum kelas dimulai?!\"\n\nPertanyaan:\nBagaimana langkah penanganan masalah darurat yang Anda lakukan?",
+    "options": [
+      {
+        "text": "Memutus internet laptop, beralih login menggunakan HP untuk mengajar sementara, serta menjalankan Windows Defender offline scan di laptop.",
+        "score": 5
+      },
+      {
+        "text": "B.** Mengeluh kepada dosen magang via chat WhatsApp bahwa Anda tidak bisa mengajar akibat sabotase teknis virus pada laptop Anda.",
         "score": 2
+      },
+      {
+        "text": "C.** Menutup laptop dan membatalkan kelas mengajar hari itu karena merasa laptop Anda sudah rusak parah terkena virus siber.",
+        "score": 2
+      },
+      {
+        "text": "D.** Memutus koneksi internet laptop, melakukan pemindaian virus cepat menggunakan antivirus bawaan Windows Defender, lalu memulai ulang laptop.",
+        "score": 4
+      },
+      {
+        "text": "E.** Tetap melakukan share screen di Zoom kelas daring meskipun iklan pop-up tidak senonoh tersebut terus bermunculan di layar.",
+        "score": 1
+      }
+    ]
+  },
+  {
+    "id": 30,
+    "dim": "C5 - Critical Thinking",
+    "scenario": "Skenario:\nDosen penguji mengeluh saat presentasi proposal: \"File presentasi interaktif Canva Anda tidak bisa dibuka di laptop saya karena browser saya versi lama.\"\n\nPertanyaan:\nBagaimana langkah pemecahan masalah taktis Anda agar ujian tetap berjalan lancar?",
+    "options": [
+      {
+        "text": "Membatalkan sesi presentasi proposal Anda hari ini dan meminta jadwal ulang ujian setelah dosen memperbarui sistem operasi laptopnya.",
+        "score": 2
+      },
+      {
+        "text": "B.** Mengekspor cepat slide Canva Anda menjadi format file PDF statis standar, lalu mengirimkannya via WhatsApp kepada dosen penguji.",
+        "score": 4
+      },
+      {
+        "text": "C.** Terus memaksa mengirimkan link Canva tersebut berulang kali melalui berbagai platform chat dengan harapan tautannya akan terbuka sendiri.",
+        "score": 2
+      },
+      {
+        "text": "D.** Mengonversi cepat draf presentasi Canva ke file PDF statis, membagikan share screen laptop Anda, serta mengirimkan file PDF cadangan.",
+        "score": 5
+      },
+      {
+        "text": "E.** Menyalahkan dosen penguji karena menggunakan laptop jadul dengan versi browser yang tidak diperbarui dan meminta beliau meminjam laptop lain.",
+        "score": 1
       }
     ]
   }

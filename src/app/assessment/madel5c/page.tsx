@@ -93,10 +93,10 @@ export default function Madel5cAssessment() {
     const newAnswers = { ...answers, [currentStep]: selectedOption.score };
     setAnswers(newAnswers);
     setTimeout(() => {
-      if (currentStep === 24) {
+      if (currentStep === 9) {
         setBreakStage(1);
         setShowStageBreak(true);
-      } else if (currentStep === 49) {
+      } else if (currentStep === 19) {
         setBreakStage(2);
         setShowStageBreak(true);
       } else if (currentStep < questions.length - 1) { 
@@ -176,7 +176,7 @@ export default function Madel5cAssessment() {
                 <div className="p-4 bg-blue-50 rounded-2xl border border-blue-100">
                   <h3 className="text-[11px] font-black text-blue-900 uppercase mb-1">Struktur Pengisian:</h3>
                   <p className="text-[10px] font-bold text-blue-800 leading-relaxed">
-                    Instrumen terdiri dari **75 butir** yang dibagi menjadi **3 tahap pengisian** (masing-masing 25 butir) dengan sebaran dimensi yang seimbang. Anda dapat beristirahat sejenak di sela-sela perpindahan tahap.
+                    Instrumen terdiri dari **30 butir** yang dibagi menjadi **3 tahap pengisian** (masing-masing 10 butir) dengan sebaran dimensi yang seimbang. Anda dapat beristirahat sejenak di sela-sela perpindahan tahap.
                   </p>
                 </div>
               </div>
@@ -209,11 +209,11 @@ export default function Madel5cAssessment() {
             <motion.div key="assessment" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
               <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xl flex justify-between items-center">
                 <div>
-                   <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]">Tahap {Math.floor(currentStep / 25) + 1} dari 3</p>
-                   <span className="text-lg font-black text-slate-900 italic">Skenario #{(currentStep % 25) + 1} dari 25</span>
+                   <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]">Tahap {Math.floor(currentStep / 10) + 1} dari 3</p>
+                   <span className="text-lg font-black text-slate-900 italic">Skenario #{(currentStep % 10) + 1} dari 10</span>
                 </div>
                 <div className="w-24 h-2 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
-                   <div className="h-full bg-[#4B5320] transition-all duration-500" style={{ width: `${(((currentStep % 25) + 1) / 25) * 100}%` }}></div>
+                   <div className="h-full bg-[#4B5320] transition-all duration-500" style={{ width: `${(((currentStep % 10) + 1) / 10) * 100}%` }}></div>
                 </div>
               </div>
 

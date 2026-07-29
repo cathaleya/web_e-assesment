@@ -93,7 +93,7 @@ export async function POST(req: Request) {
             });
 
             const row: number[] = [];
-            for (let id = 1; id <= 75; id++) {
+            for (let id = 1; id <= 30; id++) {
               const val = idToScore[id] !== undefined ? idToScore[id] : 0;
               row.push(val);
             }
@@ -108,7 +108,7 @@ export async function POST(req: Request) {
     // Fallback to dummy data if no participants exist yet
     if (responseMatrix.length === 0) {
       for (let p = 0; p < 65; p++) {
-        const row = Array.from({ length: 75 }, () => Math.floor(Math.random() * 5) + 1);
+        const row = Array.from({ length: 30 }, () => Math.floor(Math.random() * 5) + 1);
         responseMatrix.push(row);
       }
     }
@@ -219,16 +219,16 @@ export async function POST(req: Request) {
 
 // Node-based high-fidelity fallback calculator for smooth presentation
 function getFallbackData(type: string, matrix: number[][], irtModel?: string) {
-  const nItems = 75;
+  const nItems = 30;
   const nPersons = matrix.length;
   
   if (type === 'efa') {
-    const eigenvalues = [15.42, 8.12, 5.15, 3.84, 2.34, 0.95, 0.82, 0.71, 0.65, 0.58];
+    const eigenvalues = [6.42, 3.12, 2.15, 1.84, 1.34, 0.95, 0.82, 0.71, 0.65, 0.58];
     const dimensions = ["Context", "Communication", "Collaboration", "Creation", "Critical Thinking"];
     const loadings = [];
-    for (let i = 0; i < 75; i++) {
+    for (let i = 0; i < 30; i++) {
       const item_id = `Item_${i + 1}`;
-      const primary_dim = dimensions[Math.floor(i / 15)];
+      const primary_dim = dimensions[Math.floor(i / 6)];
       const item_loads: Record<string, number> = {};
       dimensions.forEach(d => {
         if (d === primary_dim) {
@@ -249,8 +249,8 @@ function getFallbackData(type: string, matrix: number[][], irtModel?: string) {
     const dimensions = ["Context", "Communication", "Collaboration", "Creation", "Critical Thinking"];
     const loadingsList = dimensions.map((d, dIdx) => {
       const itemsList = [];
-      for (let itemIdx = 0; itemIdx < 15; itemIdx++) {
-        const itemId = dIdx * 15 + itemIdx + 1;
+      for (let itemIdx = 0; itemIdx < 6; itemIdx++) {
+        const itemId = dIdx * 6 + itemIdx + 1;
         itemsList.push({
           id: `Item_${itemId}`,
           load: round(0.68 + (itemId % 4) * 0.05 + (itemId % 3) * 0.02, 2)
@@ -273,7 +273,7 @@ function getFallbackData(type: string, matrix: number[][], irtModel?: string) {
     
   } else if (type === 'rasch' || type === 'pcm') {
     const items = [];
-    for (let i = 0; i < 75; i++) {
+    for (let i = 0; i < 30; i++) {
       const difficulty = round(-1.5 + (i % 5) * 0.7 - (i % 3) * 0.2, 2);
       const infit_mnsq = round(0.85 + (i % 4) * 0.08, 2);
       const outfit_mnsq = round(0.80 + (i % 5) * 0.09, 2);

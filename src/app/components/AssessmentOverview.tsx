@@ -56,8 +56,8 @@ export default function AssessmentOverview({
 
   // Mean & SD reference values for norm-referenced classification (Mean=225, SD=37.5)
   // Tinggi: > 262, Sedang: 187 s.d 262, Rendah: < 187
-  const actualScore = madelScore > 0 ? madelScore : 245; // Fallback to 245 (Sedang) if 0
-  const globalScorePercent = Math.round((actualScore / 375) * 100);
+  const actualScore = madelScore > 0 ? madelScore : 98; // Fallback to 98 (Sedang) if 0
+  const globalScorePercent = Math.round((actualScore / 150) * 100);
   
   let predictionText = "SEDANG (ADAPTIVE)";
   let predictionCategory = "Sedang";
@@ -66,14 +66,14 @@ export default function AssessmentOverview({
   let bgGradientCard = "from-amber-500/10 to-orange-500/10 border-amber-200";
   let predictionColor = "text-amber-600";
 
-  if (actualScore > 262) {
+  if (actualScore > 105) {
     predictionText = "TINGGI (ADAPTIVE)";
     predictionCategory = "Tinggi";
     predictionDesc = "Kesiapan adaptif Anda dalam literasi digital sangat baik.";
     bgGradient = "from-emerald-500 to-teal-600 shadow-emerald-500/20";
     bgGradientCard = "from-emerald-500/10 to-teal-600/10 border-emerald-200";
     predictionColor = "text-emerald-600";
-  } else if (actualScore < 187) {
+  } else if (actualScore < 75) {
     predictionText = "RENDAH (ADAPTIVE)";
     predictionCategory = "Rendah";
     predictionDesc = "Kesiapan adaptif Anda dalam literasi digital perlu ditingkatkan.";
@@ -161,9 +161,9 @@ export default function AssessmentOverview({
                   </div>
 
                   <div className="space-y-1">
-                    <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Skor Total (75 - 375)</p>
+                    <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Skor Total (30 - 150)</p>
                     <h3 className="text-5xl md:text-6xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-100 to-slate-300">
-                      {actualScore} <span className="text-lg font-medium text-slate-400">/ 375</span>
+                      {actualScore} <span className="text-lg font-medium text-slate-400">/ 150</span>
                     </h3>
                   </div>
 
@@ -180,7 +180,7 @@ export default function AssessmentOverview({
 
                 <div className="mt-6 text-[9px] text-slate-400 bg-white/5 p-3 rounded-lg border border-white/10 leading-relaxed">
                   <span className="font-bold text-white uppercase block mb-1">Acuan Rumus Norma:</span>
-                  Tinggi: &gt; 262 | Sedang: 187 s.d 262 | Rendah: &lt; 187 (Rata-rata teoritis dengan SD)
+                  Tinggi: &gt; 105 | Sedang: 75 s.d 105 | Rendah: &lt; 75 (Rata-rata teoritis dengan SD)
                 </div>
 
                 <p className="mt-4 text-xs font-bold leading-relaxed italic text-slate-300 border-l-2 border-blue-500 pl-3">

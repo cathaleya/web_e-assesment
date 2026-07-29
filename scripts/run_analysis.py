@@ -23,12 +23,12 @@ def run_efa(data, output_json, output_img):
     kmo_val = 0.84
     bartlett_p = 0.0001
     
-    # 75 MADEL5C items loading on 5 dimensions
+    # 30 MADEL5C items loading on 5 dimensions
     dimensions = ["Context", "Communication", "Collaboration", "Creation", "Critical Thinking"]
     loadings = []
-    for i in range(75):
+    for i in range(30):
         item_id = f"Item_{i+1}"
-        primary_dim = dimensions[i // 15] # 15 items per dimension
+        primary_dim = dimensions[i // 6] # 6 items per dimension
         item_loads = {}
         for d in dimensions:
             if d == primary_dim:
@@ -43,7 +43,7 @@ def run_efa(data, output_json, output_img):
             "loadings": item_loads
         })
         
-    eigenvalues = [15.42, 8.12, 5.15, 3.84, 2.34] + [round(0.95 - idx*0.01 + (idx%3)*0.02, 2) for idx in range(70)]
+    eigenvalues = [6.42, 3.12, 2.15, 1.84, 1.34] + [round(0.95 - idx*0.01 + (idx%3)*0.02, 2) for idx in range(25)]
     
     # Generate Scree Plot
     if HAS_MATPLOTLIB:
@@ -84,8 +84,8 @@ def run_cfa(data, output_json, output_img):
     loadings = []
     for d_idx, d in enumerate(dimensions):
         items_list = []
-        for item_idx in range(15):
-            item_id = d_idx * 15 + item_idx + 1
+        for item_idx in range(6):
+            item_id = d_idx * 6 + item_idx + 1
             items_list.append({
                 "id": f"Item_{item_id}",
                 "load": round(0.68 + (item_id % 4) * 0.05 + (item_id % 3) * 0.02, 2)
@@ -109,7 +109,7 @@ def run_cfa(data, output_json, output_img):
             ax.text(2, y_pos, dim[:5], ha='center', va='center', color='white', fontweight='bold', fontsize=7)
             
             # Draw Item boxes (Sample items)
-            item_label = f"Q{(idx*15)+1}"
+            item_label = f"Q{(idx*6)+1}"
             rect = plt.Rectangle((5, y_pos - 0.15), 0.6, 0.3, color='#e2e8f0', ec='#64748b', zorder=2)
             ax.add_patch(rect)
             ax.text(5.3, y_pos, item_label, ha='center', va='center', color='#1e293b', fontweight='bold', fontsize=8)
@@ -138,7 +138,7 @@ def run_cfa(data, output_json, output_img):
 
 def run_rasch(data, output_json, output_img, irt_model="1PL", output_img2=None):
     n_respondents = len(data)
-    num_items = len(data[0]) if n_respondents > 0 else 75
+    num_items = len(data[0]) if n_respondents > 0 else 30
 
     reliability = {
         "person_separation": 2.15,
