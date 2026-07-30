@@ -296,6 +296,30 @@ function getFallbackData(type: string, matrix: number[][], irtModel?: string) {
         status: (infit_mnsq >= 0.7 && infit_mnsq <= 1.3) ? "FIT" : "MISFIT"
       });
     }
+    const genderDif = [
+      { item: "Item_12", refGroup: 1.25, focGroup: 0.40, contrast: 0.85, p_value: 0.002, status: "Significant Bias against Females", color: "text-rose-600 bg-rose-50" },
+      { item: "Item_24", refGroup: -0.10, focGroup: 0.32, contrast: -0.42, p_value: 0.041, status: "Moderate Bias against Males", color: "text-amber-600 bg-amber-50" },
+      { item: "Item_3", refGroup: 0.50, focGroup: 0.52, contrast: -0.02, p_value: 0.892, status: "No Bias (Neutral)", color: "text-slate-500 bg-slate-50" },
+      { item: "Item_7", refGroup: -0.80, focGroup: -0.75, contrast: -0.05, p_value: 0.723, status: "No Bias (Neutral)", color: "text-slate-500 bg-slate-50" },
+      { item: "Item_18", refGroup: 1.10, focGroup: 1.05, contrast: 0.05, p_value: 0.654, status: "No Bias (Neutral)", color: "text-slate-500 bg-slate-50" }
+    ];
+    
+    const multiculturalDif = [
+      { item: "Item_5", refGroup: 0.82, focGroup: 0.12, contrast: 0.70, p_value: 0.004, status: "Significant Bias against Luar Jawa", color: "text-rose-600 bg-rose-50" },
+      { item: "Item_15", refGroup: -0.35, focGroup: 0.15, contrast: -0.50, p_value: 0.015, status: "Moderate Bias against Jawa", color: "text-amber-600 bg-amber-50" },
+      { item: "Item_1", refGroup: 0.20, focGroup: 0.22, contrast: -0.02, p_value: 0.912, status: "No Bias (Neutral)", color: "text-slate-500 bg-slate-50" },
+      { item: "Item_10", refGroup: -0.45, focGroup: -0.42, contrast: -0.03, p_value: 0.854, status: "No Bias (Neutral)", color: "text-slate-500 bg-slate-50" },
+      { item: "Item_22", refGroup: 0.95, focGroup: 0.90, contrast: 0.05, p_value: 0.712, status: "No Bias (Neutral)", color: "text-slate-500 bg-slate-50" }
+    ];
+    
+    const inclusionDif = [
+      { item: "Item_18", refGroup: 1.45, focGroup: 0.55, contrast: 0.90, p_value: 0.001, status: "Significant Bias against Inklusi (Ya)", color: "text-rose-600 bg-rose-50" },
+      { item: "Item_9", refGroup: -0.20, focGroup: 0.25, contrast: -0.45, p_value: 0.032, status: "Moderate Bias against Inklusi (Tidak)", color: "text-amber-600 bg-amber-50" },
+      { item: "Item_2", refGroup: 0.35, focGroup: 0.38, contrast: -0.03, p_value: 0.884, status: "No Bias (Neutral)", color: "text-slate-500 bg-slate-50" },
+      { item: "Item_14", refGroup: -0.60, focGroup: -0.58, contrast: -0.02, p_value: 0.923, status: "No Bias (Neutral)", color: "text-slate-500 bg-slate-50" },
+      { item: "Item_29", refGroup: 0.70, focGroup: 0.73, contrast: -0.03, p_value: 0.784, status: "No Bias (Neutral)", color: "text-slate-500 bg-slate-50" }
+    ];
+
     return {
       reliability: {
         person_separation: 2.15,
@@ -303,7 +327,10 @@ function getFallbackData(type: string, matrix: number[][], irtModel?: string) {
         item_separation: 4.56,
         item_reliability: 0.95
       },
-      items
+      items,
+      genderDif,
+      multiculturalDif,
+      inclusionDif
     };
     
   } else if (type === 'cbsem') {

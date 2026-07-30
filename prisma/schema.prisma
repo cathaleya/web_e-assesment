@@ -8,11 +8,13 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  name      String
-  campus    String
-  gender    String
-  createdAt DateTime @default(now())
+  id           String   @id @default(uuid())
+  name         String
+  campus       String
+  gender       String
+  origin       String   @default("")
+  specialNeeds String   @default("tidak")
+  createdAt    DateTime @default(now())
 
   assessments Assessment[]
   surveys     Survey[]

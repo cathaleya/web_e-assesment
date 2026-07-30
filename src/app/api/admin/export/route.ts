@@ -31,8 +31,8 @@ export async function GET(req: Request) {
       const questionsPath = path.join(process.cwd(), 'src/app/assessment/madel5c/questions.json');
       const questions = JSON.parse(fs.readFileSync(questionsPath, 'utf8'));
 
-      // Header: Timestamp, UserID, Name, Gender, Campus, TotalScore, Q1, Q2, ..., Q30
-      let header = ["Timestamp", "UserID", "Name", "Gender", "Campus", "TotalScore"];
+      // Header: Timestamp, UserID, Name, Gender, Campus, Origin, SpecialNeeds, TotalScore, Q1, Q2, ..., Q30
+      let header = ["Timestamp", "UserID", "Name", "Gender", "Campus", "Origin", "SpecialNeeds", "TotalScore"];
       for (let i = 1; i <= 30; i++) {
         header.push(`Q${i}`);
       }
@@ -45,6 +45,8 @@ export async function GET(req: Request) {
           a.user.name,
           a.user.gender,
           a.user.campus,
+          a.user.origin,
+          a.user.specialNeeds,
           a.totalScore
         ].map(escapeCsvValue);
 
@@ -80,8 +82,8 @@ export async function GET(req: Request) {
         orderBy: { createdAt: 'desc' }
       });
 
-      // Header: Timestamp, UserID, Name, Gender, Campus, TotalScore, Q1, Q2, ..., Q8
-      let header = ["Timestamp", "UserID", "Name", "Gender", "Campus", "TotalScore"];
+      // Header: Timestamp, UserID, Name, Gender, Campus, Origin, SpecialNeeds, TotalScore, Q1, Q2, ..., Q8
+      let header = ["Timestamp", "UserID", "Name", "Gender", "Campus", "Origin", "SpecialNeeds", "TotalScore"];
       for (let i = 1; i <= 8; i++) {
         header.push(`Q${i}`);
       }
@@ -94,6 +96,8 @@ export async function GET(req: Request) {
           a.user.name,
           a.user.gender,
           a.user.campus,
+          a.user.origin,
+          a.user.specialNeeds,
           a.totalScore
         ].map(escapeCsvValue);
 
@@ -120,8 +124,8 @@ export async function GET(req: Request) {
         orderBy: { createdAt: 'desc' }
       });
 
-      // Header: Timestamp, UserID, Name, Gender, Campus, TotalScore, Q1, Q2, ..., Q10, Feedback
-      let header = ["Timestamp", "UserID", "Name", "Gender", "Campus", "TotalScore"];
+      // Header: Timestamp, UserID, Name, Gender, Campus, Origin, SpecialNeeds, TotalScore, Q1, Q2, ..., Q10, Feedback
+      let header = ["Timestamp", "UserID", "Name", "Gender", "Campus", "Origin", "SpecialNeeds", "TotalScore"];
       for (let i = 1; i <= 10; i++) {
         header.push(`Q${i}`);
       }
@@ -135,6 +139,8 @@ export async function GET(req: Request) {
           s.user.name,
           s.user.gender,
           s.user.campus,
+          s.user.origin,
+          s.user.specialNeeds,
           s.totalScore
         ].map(escapeCsvValue);
 
@@ -172,8 +178,8 @@ export async function GET(req: Request) {
       const questionsPath = path.join(process.cwd(), 'src/app/assessment/madel5c/questions.json');
       const questions = JSON.parse(fs.readFileSync(questionsPath, 'utf8'));
 
-      // Header: Timestamp, UserID, Name, Gender, Campus, Instrument, TotalScore, Q1, Q2, ..., Q30, Feedback
-      let header = ["Timestamp", "UserID", "Name", "Gender", "Campus", "Instrument", "TotalScore"];
+      // Header: Timestamp, UserID, Name, Gender, Campus, Origin, SpecialNeeds, Instrument, TotalScore, Q1, Q2, ..., Q30, Feedback
+      let header = ["Timestamp", "UserID", "Name", "Gender", "Campus", "Origin", "SpecialNeeds", "Instrument", "TotalScore"];
       for (let i = 1; i <= 30; i++) {
         header.push(`Q${i}`);
       }
@@ -187,6 +193,8 @@ export async function GET(req: Request) {
           a.user.name,
           a.user.gender,
           a.user.campus,
+          a.user.origin,
+          a.user.specialNeeds,
           a.type,
           a.totalScore
         ].map(escapeCsvValue);
@@ -230,6 +238,8 @@ export async function GET(req: Request) {
           s.user.name,
           s.user.gender,
           s.user.campus,
+          s.user.origin,
+          s.user.specialNeeds,
           "SURVEY-SUS",
           s.totalScore
         ].map(escapeCsvValue);

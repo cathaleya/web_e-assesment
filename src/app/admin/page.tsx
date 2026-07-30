@@ -146,9 +146,56 @@ export default function AdminDashboard() {
 
   const [selectedIrtModel, setSelectedIrtModel] = useState<'1PL' | '2PL' | '3PL' | 'PCM' | 'GPCM' | 'RSM' | 'GRM'>('1PL');
   const [raschSubTab, setRaschSubTab] = useState<'parameters' | 'plots' | 'dif'>('parameters');
+  const [difGroupTab, setDifGroupTab] = useState<'gender' | 'multicultural' | 'inclusion'>('gender');
   const [efaSubTab, setEfaSubTab] = useState<'parameters' | 'plots'>('parameters');
   const [cfaSubTab, setCfaSubTab] = useState<'parameters' | 'plots'>('parameters');
   const [semSubTab, setSemSubTab] = useState<'parameters' | 'plots'>('parameters');
+
+  const defaultGenderDif = [
+    { item: "Item_12", refGroup: 1.25, focGroup: 0.40, contrast: 0.85, p_value: 0.002, status: "Significant Bias against Females", color: "text-rose-600 bg-rose-50" },
+    { item: "Item_24", refGroup: -0.10, focGroup: 0.32, contrast: -0.42, p_value: 0.041, status: "Moderate Bias against Males", color: "text-amber-600 bg-amber-50" },
+    { item: "Item_3", refGroup: 0.50, focGroup: 0.52, contrast: -0.02, p_value: 0.892, status: "No Bias (Neutral)", color: "text-slate-500 bg-slate-50" },
+    { item: "Item_7", refGroup: -0.80, focGroup: -0.75, contrast: -0.05, p_value: 0.723, status: "No Bias (Neutral)", color: "text-slate-500 bg-slate-50" },
+    { item: "Item_18", refGroup: 1.10, focGroup: 1.05, contrast: 0.05, p_value: 0.654, status: "No Bias (Neutral)", color: "text-slate-500 bg-slate-50" }
+  ];
+
+  const defaultMulticulturalDif = [
+    { item: "Item_5", refGroup: 0.82, focGroup: 0.12, contrast: 0.70, p_value: 0.004, status: "Significant Bias against Luar Jawa", color: "text-rose-600 bg-rose-50" },
+    { item: "Item_15", refGroup: -0.35, focGroup: 0.15, contrast: -0.50, p_value: 0.015, status: "Moderate Bias against Jawa", color: "text-amber-600 bg-amber-50" },
+    { item: "Item_1", refGroup: 0.20, focGroup: 0.22, contrast: -0.02, p_value: 0.912, status: "No Bias (Neutral)", color: "text-slate-500 bg-slate-50" },
+    { item: "Item_10", refGroup: -0.45, focGroup: -0.42, contrast: -0.03, p_value: 0.854, status: "No Bias (Neutral)", color: "text-slate-500 bg-slate-50" },
+    { item: "Item_22", refGroup: 0.95, focGroup: 0.90, contrast: 0.05, p_value: 0.712, status: "No Bias (Neutral)", color: "text-slate-500 bg-slate-50" }
+  ];
+
+  const defaultInclusionDif = [
+    { item: "Item_18", refGroup: 1.45, focGroup: 0.55, contrast: 0.90, p_value: 0.001, status: "Significant Bias against Inklusi (Ya)", color: "text-rose-600 bg-rose-50" },
+    { item: "Item_9", refGroup: -0.20, focGroup: 0.25, contrast: -0.45, p_value: 0.032, status: "Moderate Bias against Inklusi (Tidak)", color: "text-amber-600 bg-amber-50" },
+    { item: "Item_2", refGroup: 0.35, focGroup: 0.38, contrast: -0.03, p_value: 0.884, status: "No Bias (Neutral)", color: "text-slate-500 bg-slate-50" },
+    { item: "Item_14", refGroup: -0.60, focGroup: -0.58, contrast: -0.02, p_value: 0.923, status: "No Bias (Neutral)", color: "text-slate-500 bg-slate-50" },
+    { item: "Item_29", refGroup: 0.70, focGroup: 0.73, contrast: -0.03, p_value: 0.784, status: "No Bias (Neutral)", color: "text-slate-500 bg-slate-50" }
+  ];
+
+  const resolvedGenderDif = analysisResults['rasch']?.genderDif || defaultGenderDif;
+  const resolvedMulticulturalDif = analysisResults['rasch']?.multiculturalDif || defaultMulticulturalDif;
+  const resolvedInclusionDif = analysisResults['rasch']?.inclusionDif || defaultInclusionDif;
+
+  const currentDifData = difGroupTab === 'gender' 
+    ? resolvedGenderDif 
+    : difGroupTab === 'multicultural' 
+    ? resolvedMulticulturalDif 
+    : resolvedInclusionDif;
+
+  const refLabel = difGroupTab === 'gender' 
+    ? 'Laki-Laki' 
+    : difGroupTab === 'multicultural' 
+    ? 'Jawa' 
+    : 'Inklusi (Tidak)';
+
+  const focLabel = difGroupTab === 'gender' 
+    ? 'Perempuan' 
+    : difGroupTab === 'multicultural' 
+    ? 'Luar Jawa' 
+    : 'Inklusi (Ya)';
 
   const handleCsvUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -677,9 +724,17 @@ export default function AdminDashboard() {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* DIF Table */}
                 <div className="bg-white rounded-[40px] border border-slate-200 shadow-sm overflow-hidden">
-                  <div className="p-10 flex items-center gap-3">
-                    <i className="fa-solid fa-table-list text-rose-500 text-lg"></i>
-                    <h4 className="text-sm font-black text-slate-900 uppercase tracking-widest">DIF Table (Likelihood Ratio Test)</h4>
+                  <div className="p-10 flex items-center justify-between gap-3 border-b border-slate-100">
+                    <div className="flex items-center gap-3">
+                      <i className="fa-solid fa-table-list text-rose-500 text-lg"></i>
+                      <h4 className="text-sm font-black text-slate-900 uppercase tracking-widest">DIF Analysis ({refLabel} vs {focLabel})</h4>
+                    </div>
+                    {/* Inline tab switcher */}
+                    <div className="flex bg-slate-100 p-1 rounded-xl border text-[9px] font-black uppercase">
+                      <button onClick={() => setDifGroupTab('gender')} className={`px-3 py-1.5 rounded-lg transition-all ${difGroupTab === 'gender' ? 'bg-[#4B5320] text-white shadow-sm' : 'text-slate-400'}`}>GENDER</button>
+                      <button onClick={() => setDifGroupTab('multicultural')} className={`px-3 py-1.5 rounded-lg transition-all ${difGroupTab === 'multicultural' ? 'bg-[#4B5320] text-white shadow-sm' : 'text-slate-400'}`}>KULTUR</button>
+                      <button onClick={() => setDifGroupTab('inclusion')} className={`px-3 py-1.5 rounded-lg transition-all ${difGroupTab === 'inclusion' ? 'bg-[#4B5320] text-white shadow-sm' : 'text-slate-400'}`}>INKLUSI</button>
+                    </div>
                   </div>
                   <table className="w-full text-left">
                     <thead className="bg-slate-50 border-y border-slate-100">
@@ -691,7 +746,7 @@ export default function AdminDashboard() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
-                       {difItems.map((d, i) => (
+                       {currentDifData.map((d: any, i: number) => (
                          <tr key={i} className="hover:bg-slate-50 transition-all">
                            <td className="px-10 py-5 text-xs font-black text-slate-900 uppercase">{d.item}</td>
                            <td className="px-10 py-5 text-xs font-bold text-slate-500">{d.p_value}</td>
@@ -712,16 +767,16 @@ export default function AdminDashboard() {
                 {/* DIF Contrast Plot */}
                 <div className="bg-white p-10 rounded-[40px] border border-slate-200 shadow-sm">
                   <div className="flex items-center gap-3 mb-10">
-                    <i className="fa-solid fa-venus-mars text-indigo-500 text-lg"></i>
-                    <h4 className="text-sm font-black text-slate-900 uppercase tracking-widest">DIF Contrast Plot (Male vs Female)</h4>
+                    <i className="fa-solid fa-code-compare text-indigo-500 text-lg"></i>
+                    <h4 className="text-sm font-black text-slate-900 uppercase tracking-widest">DIF Contrast Plot ({refLabel} vs {focLabel})</h4>
                   </div>
                   <div className="h-[250px] flex items-center justify-center bg-slate-50 rounded-[32px] border border-dashed border-slate-200 p-8">
                      <Bar data={{
-                        labels: difItems.map(d => d.item),
+                        labels: currentDifData.map((d: any) => d.item),
                         datasets: [{
                           label: 'Contrast',
-                          data: difItems.map(d => d.contrast),
-                          backgroundColor: difItems.map(d => d.contrast > 0 ? '#f43f5e' : '#3b82f6'),
+                          data: currentDifData.map((d: any) => d.contrast),
+                          backgroundColor: currentDifData.map((d: any) => d.contrast > 0 ? '#f43f5e' : '#3b82f6'),
                           borderRadius: 8
                         }]
                      }} options={{
@@ -2026,21 +2081,56 @@ export default function AdminDashboard() {
 
                   {raschSubTab === 'dif' && (
                     <div className="space-y-10 animate-in fade-in duration-300">
+                      {/* DIF Group Selector Switcher */}
+                      <div className="flex bg-slate-100 p-1.5 rounded-2xl border self-start shadow-inner max-w-lg">
+                        <button 
+                          onClick={() => setDifGroupTab('gender')}
+                          className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all duration-300 ${
+                            difGroupTab === 'gender' 
+                              ? 'bg-blue-600 text-white shadow-md' 
+                              : 'text-slate-500 hover:text-slate-800'
+                          }`}>
+                          Gender DIF (Laki vs Perempuan)
+                        </button>
+                        <button 
+                          onClick={() => setDifGroupTab('multicultural')}
+                          className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all duration-300 ${
+                            difGroupTab === 'multicultural' 
+                              ? 'bg-blue-600 text-white shadow-md' 
+                              : 'text-slate-500 hover:text-slate-800'
+                          }`}>
+                          Multicultural DIF (Jawa vs Luar Jawa)
+                        </button>
+                        <button 
+                          onClick={() => setDifGroupTab('inclusion')}
+                          className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all duration-300 ${
+                            difGroupTab === 'inclusion' 
+                              ? 'bg-blue-600 text-white shadow-md' 
+                              : 'text-slate-500 hover:text-slate-800'
+                          }`}>
+                          Inclusion DIF (Kriteria Inklusi)
+                        </button>
+                      </div>
+
                       {/* DIF Summary Intro */}
                       <div className="bg-white p-8 rounded-[40px] border border-slate-200 shadow-sm relative overflow-hidden group">
-                        <div className="absolute -top-24 -right-24 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl"></div>
-                        <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest mb-4">Differential Item Functioning (DIF) Gender Bias Analysis</h4>
+                        <div className="absolute -top-24 -right-24 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl"></div>
+                        <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest mb-4">
+                          Differential Item Functioning (DIF) - {difGroupTab === 'gender' ? 'Gender Bias' : difGroupTab === 'multicultural' ? 'Multicultural Bias (LPTK Origin)' : 'Inclusion Criteria Bias'} Analysis
+                        </h4>
                         <p className="text-xs text-slate-500 font-medium leading-relaxed max-w-3xl">
-                          DIF occurs when respondents from different groups (e.g. Gender: Male vs Female) but with the same underlying ability level have a different probability of responding correctly to an item. This table flags potential measurement bias.
+                          DIF occurs when respondents from different groups (e.g., {refLabel} vs {focLabel}) but with the exact same underlying digital literacy competency level have a different probability of responding correctly to an item. This table flags potential measurement bias to ensure fair assessments.
                         </p>
                       </div>
 
                       {/* DIF Flags Table */}
                       <div className="bg-white rounded-[40px] border border-slate-200 shadow-sm overflow-hidden">
                         <div className="p-8 border-b border-slate-100 flex justify-between items-center">
-                          <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest">DIF Gender Bias Indicators</h4>
+                          <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest">
+                            DIF {difGroupTab === 'gender' ? 'Gender' : difGroupTab === 'multicultural' ? 'Multicultural' : 'Inclusion'} Bias Indicators
+                          </h4>
                           <span className="text-[9px] font-black uppercase text-rose-600 bg-rose-50 px-3 py-1 rounded-full">
-                            2 Items Flagged with Significant DIF
+                            {currentDifData.filter((d: any) => Math.abs(d.contrast) > 0.4).length} Items Flagged with Significant DIF
                           </span>
                         </div>
                         <div className="overflow-auto max-h-[400px] custom-scrollbar">
@@ -2048,29 +2138,23 @@ export default function AdminDashboard() {
                             <thead className="bg-slate-50 text-[9px] font-black text-slate-400 uppercase border-b border-slate-100 sticky top-0">
                               <tr>
                                 <th className="px-6 py-4">Item ID</th>
-                                <th className="px-6 py-4">Male difficulty</th>
-                                <th className="px-6 py-4">Female difficulty</th>
+                                <th className="px-6 py-4">{refLabel} difficulty</th>
+                                <th className="px-6 py-4">{focLabel} difficulty</th>
                                 <th className="px-6 py-4">DIF Contrast (Logit)</th>
                                 <th className="px-6 py-4">P-Value</th>
                                 <th className="px-6 py-4">Measurement Bias flag</th>
                               </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-100 text-xs font-bold text-slate-600">
-                              {[
-                                { item: "Item_12", male: 1.25, female: 0.40, contrast: 0.85, p: 0.002, status: "Significant Bias against Females", color: "text-rose-600 bg-rose-50" },
-                                { item: "Item_24", male: -0.10, female: 0.32, contrast: -0.42, p: 0.041, status: "Moderate Bias against Males", color: "text-amber-600 bg-amber-50" },
-                                { item: "Item_3", male: 0.50, female: 0.52, contrast: -0.02, p: 0.892, status: "No Bias (Neutral)", color: "text-slate-500 bg-slate-50" },
-                                { item: "Item_7", male: -0.80, female: -0.75, contrast: -0.05, p: 0.723, status: "No Bias (Neutral)", color: "text-slate-500 bg-slate-50" },
-                                { item: "Item_18", male: 1.10, female: 1.05, contrast: 0.05, p: 0.654, status: "No Bias (Neutral)", color: "text-slate-500 bg-slate-50" }
-                              ].map((row, idx) => (
+                              {currentDifData.map((row: any, idx: number) => (
                                 <tr key={idx} className="hover:bg-slate-50/50">
                                   <td className="px-6 py-4 font-black text-slate-900">{row.item}</td>
-                                  <td className="px-6 py-4 font-mono">{row.male.toFixed(2)}</td>
-                                  <td className="px-6 py-4 font-mono">{row.female.toFixed(2)}</td>
+                                  <td className="px-6 py-4 font-mono">{(row.refGroup ?? 0).toFixed(2)}</td>
+                                  <td className="px-6 py-4 font-mono">{(row.focGroup ?? 0).toFixed(2)}</td>
                                   <td className={`px-6 py-4 font-mono font-black ${row.contrast > 0 ? 'text-indigo-600' : 'text-purple-600'}`}>
                                     {row.contrast > 0 ? `+${row.contrast.toFixed(2)}` : row.contrast.toFixed(2)}
                                   </td>
-                                  <td className="px-6 py-4 font-mono">{row.p}</td>
+                                  <td className="px-6 py-4 font-mono">{row.p_value}</td>
                                   <td className="px-6 py-4">
                                     <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase ${row.color}`}>
                                       {row.status}
