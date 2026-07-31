@@ -1458,8 +1458,14 @@ export default function AdminDashboard() {
                           Download ZIP
                         </a>
                         <a 
-                          href={`/analysis/outputs/efa_${analysisMethod.efa.toLowerCase()}_output.json`}
-                          download={`EFA_${analysisMethod.efa}_Output.json`}
+                          href={`/api/admin/analysis/download?type=efa&method=${analysisMethod.efa}&format=text`}
+                          className="px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white font-black rounded-xl text-[10px] uppercase tracking-widest transition-all flex items-center gap-1.5"
+                          title="Download Laporan Format R / SPSS (Teks)">
+                          <i className="fa-solid fa-file-lines"></i>
+                          Laporan R/SPSS
+                        </a>
+                        <a 
+                          href={`/api/admin/analysis/download?type=efa&method=${analysisMethod.efa}&format=json`}
                           className="px-4 py-3 bg-slate-600 hover:bg-slate-700 text-white font-black rounded-xl text-[10px] uppercase tracking-widest transition-all flex items-center gap-1.5"
                           title="Download File Output JSON">
                           <i className="fa-solid fa-file-code"></i>
@@ -1721,8 +1727,14 @@ export default function AdminDashboard() {
                           Download ZIP
                         </a>
                         <a 
-                          href={`/analysis/outputs/cfa_${analysisMethod.cfa.toLowerCase()}_output.json`}
-                          download={`CFA_${analysisMethod.cfa}_Output.json`}
+                          href={`/api/admin/analysis/download?type=cfa&method=${analysisMethod.cfa}&format=text`}
+                          className="px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white font-black rounded-xl text-[10px] uppercase tracking-widest transition-all flex items-center gap-1.5"
+                          title="Download Laporan Format R / SPSS (Teks)">
+                          <i className="fa-solid fa-file-lines"></i>
+                          Laporan R/SPSS
+                        </a>
+                        <a 
+                          href={`/api/admin/analysis/download?type=cfa&method=${analysisMethod.cfa}&format=json`}
                           className="px-4 py-3 bg-slate-600 hover:bg-slate-700 text-white font-black rounded-xl text-[10px] uppercase tracking-widest transition-all flex items-center gap-1.5"
                           title="Download File Output JSON">
                           <i className="fa-solid fa-file-code"></i>
@@ -1989,8 +2001,14 @@ export default function AdminDashboard() {
                           Download ZIP
                         </a>
                         <a 
-                          href={`/analysis/outputs/rasch_${analysisMethod.rasch.toLowerCase()}_output.json`}
-                          download={`Rasch_${analysisMethod.rasch}_Output.json`}
+                          href={`/api/admin/analysis/download?type=rasch&method=${analysisMethod.rasch}&format=text`}
+                          className="px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white font-black rounded-xl text-[10px] uppercase tracking-widest transition-all flex items-center gap-1.5"
+                          title="Download Laporan Format R / SPSS (Teks)">
+                          <i className="fa-solid fa-file-lines"></i>
+                          Laporan R/SPSS
+                        </a>
+                        <a 
+                          href={`/api/admin/analysis/download?type=rasch&method=${analysisMethod.rasch}&format=json`}
                           className="px-4 py-3 bg-slate-600 hover:bg-slate-700 text-white font-black rounded-xl text-[10px] uppercase tracking-widest transition-all flex items-center gap-1.5"
                           title="Download File Output JSON">
                           <i className="fa-solid fa-file-code"></i>
@@ -2438,8 +2456,14 @@ export default function AdminDashboard() {
                           Download ZIP
                         </a>
                         <a 
-                          href={`/analysis/outputs/${selectedSemModel === 'cbsem' ? 'cbsem' : 'sem'}_${analysisMethod[selectedSemModel === 'cbsem' ? 'cbsem' : 'sem'].toLowerCase()}_output.json`}
-                          download={`${selectedSemModel === 'cbsem' ? 'CB-SEM' : 'PLS-SEM'}_${analysisMethod[selectedSemModel === 'cbsem' ? 'cbsem' : 'sem']}_Output.json`}
+                          href={`/api/admin/analysis/download?type=${selectedSemModel === 'cbsem' ? 'cbsem' : 'sem'}&method=${analysisMethod[selectedSemModel === 'cbsem' ? 'cbsem' : 'sem']}&format=text`}
+                          className="px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white font-black rounded-xl text-[10px] uppercase tracking-widest transition-all flex items-center gap-1.5"
+                          title="Download Laporan Format R / SPSS (Teks)">
+                          <i className="fa-solid fa-file-lines"></i>
+                          Laporan R/SPSS
+                        </a>
+                        <a 
+                          href={`/api/admin/analysis/download?type=${selectedSemModel === 'cbsem' ? 'cbsem' : 'sem'}&method=${analysisMethod[selectedSemModel === 'cbsem' ? 'cbsem' : 'sem']}&format=json`}
                           className="px-4 py-3 bg-slate-600 hover:bg-slate-700 text-white font-black rounded-xl text-[10px] uppercase tracking-widest transition-all flex items-center gap-1.5"
                           title="Download File Output JSON">
                           <i className="fa-solid fa-file-code"></i>

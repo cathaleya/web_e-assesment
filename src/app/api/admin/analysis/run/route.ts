@@ -32,12 +32,12 @@ export async function GET(req: Request) {
         const typeAndMethod = file.replace('_plot.png', '');
         const lastUnderscore = typeAndMethod.lastIndexOf('_');
         const type = typeAndMethod.substring(0, lastUnderscore);
-        plots[type] = `/analysis/outputs/${file}?t=${Date.now()}`;
+        plots[type] = `/api/admin/analysis/image?file=${file}&t=${Date.now()}`;
       } else if (file.endsWith('_plot2.png')) {
         const typeAndMethod = file.replace('_plot2.png', '');
         const lastUnderscore = typeAndMethod.lastIndexOf('_');
         const type = typeAndMethod.substring(0, lastUnderscore);
-        plots2[type] = `/analysis/outputs/${file}?t=${Date.now()}`;
+        plots2[type] = `/api/admin/analysis/image?file=${file}&t=${Date.now()}`;
       }
     });
 
@@ -131,9 +131,9 @@ export async function POST(req: Request) {
     const outputImgPath = path.join(outputDir, `${analysisType}_${method.toLowerCase()}_plot.png`);
     const outputImg2Path = path.join(outputDir, `${analysisType}_${method.toLowerCase()}_plot2.png`);
     
-    // Relative image paths for frontend img src
-    const relativeImgUrl = `/analysis/outputs/${analysisType}_${method.toLowerCase()}_plot.png?t=${Date.now()}`;
-    const relativeImg2Url = `/analysis/outputs/${analysisType}_${method.toLowerCase()}_plot2.png?t=${Date.now()}`;
+    // Relative image paths for frontend img src (routing through streaming API)
+    const relativeImgUrl = `/api/admin/analysis/image?file=${analysisType}_${method.toLowerCase()}_plot.png&t=${Date.now()}`;
+    const relativeImg2Url = `/api/admin/analysis/image?file=${analysisType}_${method.toLowerCase()}_plot2.png&t=${Date.now()}`;
 
     // 3. Construct commands
     let command = '';
