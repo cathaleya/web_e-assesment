@@ -1,7 +1,21 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
+const fs = require('fs');
+const path = require('path');
 
 async function main() {
+  // Clear cached analysis outputs
+  const outputDir = path.join(__dirname, '..', 'public', 'analysis', 'outputs');
+  if (fs.existsSync(outputDir)) {
+    const files = fs.readdirSync(outputDir);
+    files.forEach(file => {
+      const filePath = path.join(outputDir, file);
+      if (fs.statSync(filePath).isFile()) {
+        fs.unlinkSync(filePath);
+      }
+    });
+    console.log(`Cleared ${files.length} cached analysis files in public/analysis/outputs.`);
+  }
   // Cutoff date is July 31, 2026, 00:00:00 in UTC+7 (Jakarta time)
   // Which is July 30, 2026, 17:00:00 UTC
   const cutoff = new Date('2026-07-30T17:00:00.000Z');

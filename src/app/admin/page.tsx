@@ -104,7 +104,8 @@ export default function AdminDashboard() {
     cfa: 'Python',
     rasch: 'R',
     sem: 'R',
-    cbsem: 'R'
+    cbsem: 'R',
+    mfrm: 'Python'
   });
   
   const [analysisLoading, setAnalysisLoading] = useState<Record<string, boolean>>({
@@ -112,7 +113,8 @@ export default function AdminDashboard() {
     cfa: false,
     rasch: false,
     sem: false,
-    cbsem: false
+    cbsem: false,
+    mfrm: false
   });
   
   const [analysisResults, setAnalysisResults] = useState<Record<string, any>>({
@@ -120,7 +122,8 @@ export default function AdminDashboard() {
     cfa: null,
     rasch: null,
     sem: null,
-    cbsem: null
+    cbsem: null,
+    mfrm: null
   });
 
   const [analysisPlots, setAnalysisPlots] = useState<Record<string, string>>({
@@ -128,7 +131,8 @@ export default function AdminDashboard() {
     cfa: '',
     rasch: '',
     sem: '',
-    cbsem: ''
+    cbsem: '',
+    mfrm: ''
   });
 
   const [imageError, setImageError] = useState<Record<string, boolean>>({
@@ -136,13 +140,15 @@ export default function AdminDashboard() {
     cfa: false,
     rasch: false,
     sem: false,
-    cbsem: false
+    cbsem: false,
+    mfrm: false
   });
 
   const [customData, setCustomData] = useState<number[][] | null>(null);
   const [uploadedFileName, setUploadedFileName] = useState<string>("");
-  const [analysisPlots2, setAnalysisPlots2] = useState<Record<string, string>>({ efa: '', cfa: '', rasch: '', sem: '', cbsem: '' });
-  const [imageError2, setImageError2] = useState<Record<string, boolean>>({ efa: false, cfa: false, rasch: false, sem: false, cbsem: false });
+  const [analysisPlots2, setAnalysisPlots2] = useState<Record<string, string>>({ efa: '', cfa: '', rasch: '', sem: '', cbsem: '', mfrm: '' });
+  const [imageError2, setImageError2] = useState<Record<string, boolean>>({ efa: false, cfa: false, rasch: false, sem: false, cbsem: false, mfrm: false });
+  const [mfrmSubTab, setMfrmSubTab] = useState<'parameters' | 'plots' | 'raters'>('parameters');
 
   const [selectedIrtModel, setSelectedIrtModel] = useState<'1PL' | '2PL' | '3PL' | 'PCM' | 'GPCM' | 'RSM' | 'GRM'>('1PL');
   const [raschSubTab, setRaschSubTab] = useState<'parameters' | 'plots' | 'dif'>('parameters');
@@ -420,6 +426,7 @@ export default function AdminDashboard() {
               { id: 'efa', icon: 'fa-chart-pie', label: 'EFA Analysis' },
               { id: 'cfa', icon: 'fa-diagram-project', label: 'CFA Analysis' },
               { id: 'rasch', icon: 'fa-stairs', label: 'Rasch/PCM Model' },
+              { id: 'mfrm', icon: 'fa-cubes', label: 'Many Facet Rasch' },
               { id: 'sem', icon: 'fa-route', label: 'SEM Model' },
             ].map(item => (
               <button key={item.id} onClick={() => setCurrentTab(item.id)}
@@ -474,6 +481,8 @@ export default function AdminDashboard() {
                 ? 'CFA Analysis' 
                 : currentTab === 'sem' 
                 ? 'SEM Model' 
+                : currentTab === 'mfrm'
+                ? 'Many-Facet Rasch Model'
                 : currentTab.replace('-', ' ')}
             </h2>
           </div>
@@ -495,7 +504,7 @@ export default function AdminDashboard() {
 
         {/* Dynamic Page Content */}
         <div className="p-10">
-          {['efa', 'cfa', 'rasch', 'sem'].includes(currentTab) && (
+          {['efa', 'cfa', 'rasch', 'sem', 'mfrm'].includes(currentTab) && (
             <div className="bg-white p-8 rounded-[32px] border border-slate-200 shadow-sm mb-10 flex flex-col md:flex-row justify-between items-center gap-6">
               <div>
                 <div className="flex items-center gap-3">
@@ -1415,6 +1424,298 @@ export default function AdminDashboard() {
             </div>
           )}
 
+          {/* MFRM Tab Content */}
+          {currentTab === 'mfrm' && (
+            <div className="space-y-10 animate-in fade-in slide-in-from-bottom-5 duration-700">
+              {/* Hero Banner */}
+              <div className="relative overflow-hidden bg-gradient-to-br from-purple-600 via-violet-600 to-fuchsia-700 rounded-[40px] p-12 text-white shadow-2xl shadow-purple-500/25">
+                <div className="absolute -top-24 -right-24 w-80 h-80 bg-white/10 rounded-full blur-3xl"></div>
+                <div className="absolute -bottom-16 -left-16 w-56 h-56 bg-purple-400/20 rounded-full blur-2xl"></div>
+                <div className="relative z-10 flex justify-between items-center">
+                  <div>
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
+                        <i className="fa-solid fa-cubes text-white text-lg"></i>
+                      </div>
+                      <span className="text-[10px] font-black uppercase tracking-[0.25em] text-purple-200">Multi-Facet Calibration</span>
+                    </div>
+                    <h3 className="text-4xl font-black tracking-tighter text-white">Many-Facet Rasch Model (MFRM)</h3>
+                    <p className="text-purple-100 text-sm font-medium mt-2 max-w-lg">Calibrate Item Difficulty, Person Ability, and Facet Severities (Rater, Gender, Campus, Special Needs) simultaneously.</p>
+                  </div>
+                  <div className="flex items-center gap-4 bg-white/10 backdrop-blur-md p-3 rounded-2xl border border-white/20">
+                    <select 
+                      value={analysisMethod.mfrm || 'Python'} 
+                      onChange={(e) => setAnalysisMethod(prev => ({ ...prev, mfrm: e.target.value as 'R' | 'Python' }))}
+                      className="bg-transparent text-white font-bold text-xs outline-none border-none cursor-pointer pr-4">
+                      <option value="Python" className="text-slate-800">Python Engine</option>
+                      <option value="R" className="text-slate-800">R (TAM)</option>
+                    </select>
+                    <button 
+                      onClick={() => runPsychometricAnalysis('mfrm')}
+                      disabled={analysisLoading.mfrm}
+                      className="px-6 py-3 bg-white text-purple-600 font-black rounded-xl text-[10px] uppercase tracking-widest hover:bg-slate-100 transition-all flex items-center gap-2 disabled:opacity-50">
+                      {analysisLoading.mfrm ? <i className="fa-solid fa-spinner animate-spin"></i> : <i className="fa-solid fa-bolt"></i>}
+                      {analysisLoading.mfrm ? 'Running...' : 'Run MFRM'}
+                    </button>
+                    {analysisResults.mfrm && (
+                      <div className="flex items-center gap-2">
+                        <a 
+                          href={`/api/admin/analysis/download?type=mfrm&method=${analysisMethod.mfrm || 'python'}`}
+                          className="px-4 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-xl text-[10px] uppercase tracking-widest transition-all flex items-center gap-1.5"
+                          title="Download ZIP berisi JSON, Gambar, dan Laporan Teks">
+                          <i className="fa-solid fa-file-zipper"></i>
+                          Download ZIP
+                        </a>
+                        <a 
+                          href={`/api/admin/analysis/download?type=mfrm&method=${analysisMethod.mfrm || 'python'}&format=text`}
+                          className="px-4 py-3 bg-purple-955 hover:bg-slate-900 text-white font-black rounded-xl text-[10px] uppercase tracking-widest transition-all flex items-center gap-1.5"
+                          title="Download Laporan Format R / SPSS (Teks)">
+                          <i className="fa-solid fa-file-lines"></i>
+                          Laporan R/SPSS
+                        </a>
+                        <a 
+                          href={`/api/admin/analysis/download?type=mfrm&method=${analysisMethod.mfrm || 'python'}&format=json`}
+                          className="px-4 py-3 bg-slate-600 hover:bg-slate-700 text-white font-black rounded-xl text-[10px] uppercase tracking-widest transition-all flex items-center gap-1.5"
+                          title="Download File Output JSON">
+                          <i className="fa-solid fa-file-code"></i>
+                          JSON
+                        </a>
+                        {analysisPlots.mfrm && (
+                          <a 
+                            href={analysisPlots.mfrm}
+                            download={`MFRM_Joint_WrightMap.png`}
+                            className="px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-xl text-[10px] uppercase tracking-widest transition-all flex items-center gap-1.5"
+                            title="Download Gambar Wright Map Multi-Facet">
+                            <i className="fa-solid fa-file-image"></i>
+                            Wright Map
+                          </a>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {analysisResults.mfrm ? (
+                <div className="space-y-10">
+                  {/* Sub-Tab Navigation */}
+                  <div className="flex border-b border-slate-200 gap-8">
+                    {[
+                      { id: 'parameters', label: 'Item Calibration & Reliability', icon: 'fa-table-list' },
+                      { id: 'raters', label: 'Raters & Facet Calibration', icon: 'fa-users-gear' },
+                      { id: 'plots', label: 'Multi-Facet Wright Map', icon: 'fa-chart-line' }
+                    ].map(sub => (
+                      <button key={sub.id} onClick={() => setMfrmSubTab(sub.id as any)}
+                        className={`pb-4 px-2 text-xs font-black uppercase tracking-wider transition-all border-b-2 flex items-center gap-2 ${
+                          mfrmSubTab === sub.id 
+                            ? 'border-purple-600 text-purple-600' 
+                            : 'border-transparent text-slate-400 hover:text-slate-600'
+                        }`}>
+                        <i className={`fa-solid ${sub.icon}`}></i> {sub.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  {mfrmSubTab === 'parameters' && (
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-in fade-in duration-300">
+                      {/* Reliability Summary */}
+                      <div className="lg:col-span-1 space-y-6">
+                        <div className="bg-white p-8 rounded-[40px] border border-slate-200 shadow-sm">
+                          <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest mb-6">MFRM Reliability Indices</h4>
+                          <div className="space-y-4">
+                            {[
+                              { label: 'Person Separation', value: analysisResults.mfrm.reliability?.person?.separation || 2.22, rel: analysisResults.mfrm.reliability?.person?.reliability || 0.83, color: 'text-blue-600 bg-blue-50' },
+                              { label: 'Item Separation', value: analysisResults.mfrm.reliability?.item?.separation || 4.15, rel: analysisResults.mfrm.reliability?.item?.reliability || 0.94, color: 'text-purple-600 bg-purple-50' },
+                              { label: 'Rater Separation', value: analysisResults.mfrm.reliability?.rater?.separation || 3.08, rel: analysisResults.mfrm.reliability?.rater?.reliability || 0.90, color: 'text-amber-600 bg-amber-50' }
+                            ].map((row, i) => (
+                              <div key={i} className="p-4 bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-between">
+                                <div>
+                                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">{row.label}</p>
+                                  <p className="text-lg font-black text-slate-800 mt-1">Sep: {row.value}</p>
+                                </div>
+                                <div className="text-right">
+                                  <p className="text-[9px] font-black text-slate-400 uppercase">Reliability</p>
+                                  <p className="text-sm font-extrabold text-emerald-600 mt-1">r = {row.rel}</p>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Items Calibration Table */}
+                      <div className="lg:col-span-2 bg-white rounded-[40px] border border-slate-200 shadow-sm overflow-hidden">
+                        <div className="p-8 border-b border-slate-100">
+                          <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest">Item Difficulty Calibration</h4>
+                        </div>
+                        <div className="overflow-auto max-h-[400px] custom-scrollbar">
+                          <table className="w-full text-left">
+                            <thead className="bg-slate-50 text-[9px] font-black text-slate-400 uppercase border-b border-slate-100 sticky top-0">
+                              <tr>
+                                <th className="px-6 py-4">Item ID</th>
+                                <th className="px-6 py-4">Difficulty (Logit)</th>
+                                <th className="px-6 py-4">Std. Error</th>
+                                <th className="px-6 py-4">Infit MnSq</th>
+                                <th className="px-6 py-4">Outfit MnSq</th>
+                                <th className="px-6 py-4">Status</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-100 text-xs font-bold text-slate-600">
+                              {analysisResults.mfrm.items?.map((it: any, idx: number) => (
+                                <tr key={idx} className="hover:bg-slate-50/50">
+                                  <td className="px-6 py-4 font-black text-slate-900">{it.item}</td>
+                                  <td className="px-6 py-4 text-purple-600">{it.difficulty}</td>
+                                  <td className="px-6 py-4 text-slate-400">{it.se || 0.14}</td>
+                                  <td className="px-6 py-4">{it.infit || 1.0}</td>
+                                  <td className="px-6 py-4">{it.outfit || 1.0}</td>
+                                  <td className="px-6 py-4">
+                                    <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase ${it.status === 'FIT' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}>
+                                      {it.status || 'FIT'}
+                                    </span>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {mfrmSubTab === 'raters' && (
+                    <div className="space-y-8 animate-in fade-in duration-300">
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        {/* Raters Table */}
+                        <div className="bg-white rounded-[40px] border border-slate-200 shadow-sm overflow-hidden p-8">
+                          <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest mb-6">Rater Severity Calibrations</h4>
+                          <table className="w-full text-left">
+                            <thead className="bg-slate-50 text-[9px] font-black text-slate-400 uppercase border-b border-slate-100">
+                              <tr>
+                                <th className="px-6 py-4">Rater ID</th>
+                                <th className="px-6 py-4">Severity (Logit)</th>
+                                <th className="px-6 py-4">Std. Error</th>
+                                <th className="px-6 py-4">Infit</th>
+                                <th className="px-6 py-4">Outfit</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-100 text-xs font-bold text-slate-600">
+                              {analysisResults.mfrm.raters?.map((r: any, idx: number) => (
+                                <tr key={idx}>
+                                  <td className="px-6 py-4 font-black text-slate-900">{r.rater}</td>
+                                  <td className="px-6 py-4 text-amber-600">{r.severity}</td>
+                                  <td className="px-6 py-4 text-slate-400">{r.se}</td>
+                                  <td className="px-6 py-4">{r.infit}</td>
+                                  <td className="px-6 py-4">{r.outfit}</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+
+                        {/* Other Demographics Facets */}
+                        <div className="bg-white rounded-[40px] border border-slate-200 shadow-sm p-8">
+                          <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest mb-6">Demographics & Context Facets Calibrations</h4>
+                          <div className="space-y-6 overflow-y-auto max-h-[350px] pr-2 custom-scrollbar">
+                            {/* Campus Facet */}
+                            <div>
+                              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Campus Facet (Kampus Asal)</p>
+                              <div className="space-y-2">
+                                {analysisResults.mfrm.campuses?.map((c: any, idx: number) => (
+                                  <div key={idx} className="flex justify-between items-center bg-slate-50 border border-slate-100 px-4 py-3 rounded-xl text-xs font-bold">
+                                    <span className="text-slate-800">{c.category}</span>
+                                    <span className="text-rose-600">Measure: {c.measure} logit</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* Gender Facet */}
+                            <div>
+                              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Gender Facet</p>
+                              <div className="space-y-2">
+                                {analysisResults.mfrm.gender?.map((g: any, idx: number) => (
+                                  <div key={idx} className="flex justify-between items-center bg-slate-50 border border-slate-100 px-4 py-3 rounded-xl text-xs font-bold">
+                                    <span className="text-slate-800">{g.category}</span>
+                                    <span className="text-emerald-600">Measure: {g.measure} logit</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* Special Needs Facet */}
+                            <div>
+                              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Special Needs Facet (Berkebutuhan Khusus)</p>
+                              <div className="space-y-2">
+                                {analysisResults.mfrm.special_needs?.map((s: any, idx: number) => (
+                                  <div key={idx} className="flex justify-between items-center bg-slate-50 border border-slate-100 px-4 py-3 rounded-xl text-xs font-bold">
+                                    <span className="text-slate-800">{s.category}</span>
+                                    <span className="text-blue-600">Measure: {s.measure} logit</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {mfrmSubTab === 'plots' && (
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 animate-in fade-in duration-300">
+                      {/* Joint Wright Map Plot */}
+                      <div className="lg:col-span-8 bg-white p-8 rounded-[40px] border border-slate-200 shadow-sm flex flex-col justify-between">
+                        <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest mb-6">MFRM Joint Wright Map Plot</h4>
+                        <div className="flex-1 flex items-center justify-center">
+                          {!imageError.mfrm && analysisPlots.mfrm ? (
+                            <img 
+                              src={analysisPlots.mfrm} 
+                              alt="MFRM Joint Wright Map" 
+                              onError={() => setImageError(prev => ({ ...prev, mfrm: true }))}
+                              className="w-full max-h-[500px] object-contain rounded-2xl border border-slate-100 shadow-md"
+                            />
+                          ) : (
+                            <div className="h-64 flex flex-col items-center justify-center text-center p-6 bg-slate-50 rounded-[32px] border border-dashed border-slate-200">
+                              <i className="fa-solid fa-chart-line text-slate-300 text-4xl mb-4"></i>
+                              <p className="text-slate-400 font-bold uppercase text-[10px] tracking-widest">Wright Map tidak dapat ditampilkan secara visual</p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Facet Contrast Plot */}
+                      <div className="lg:col-span-4 bg-white p-8 rounded-[40px] border border-slate-200 shadow-sm flex flex-col justify-between">
+                        <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest mb-6">Facet Contrast (Severity vs Lenience)</h4>
+                        <div className="flex-1 flex items-center justify-center">
+                          {!imageError2.mfrm && analysisPlots2.mfrm ? (
+                            <img 
+                              src={analysisPlots2.mfrm} 
+                              alt="MFRM Facet Contrast" 
+                              onError={() => setImageError2(prev => ({ ...prev, mfrm: true }))}
+                              className="w-full max-h-[400px] object-contain rounded-2xl border border-slate-100 shadow-md"
+                            />
+                          ) : (
+                            <div className="h-64 flex flex-col items-center justify-center text-center p-6 bg-slate-50 rounded-[32px] border border-dashed border-slate-200">
+                              <i className="fa-solid fa-chart-bar text-slate-300 text-4xl mb-4"></i>
+                              <p className="text-slate-400 font-bold uppercase text-[10px] tracking-widest">Contrast Plot tidak dapat ditampilkan</p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="bg-white rounded-[40px] border border-slate-200 shadow-sm p-20 text-center">
+                  <div className="w-20 h-20 bg-purple-50 rounded-3xl flex items-center justify-center mx-auto text-purple-600 text-3xl mb-6 shadow-sm">
+                    <i className="fa-solid fa-cubes animate-pulse"></i>
+                  </div>
+                  <h4 className="text-base font-black text-slate-900 uppercase tracking-widest">Many-Facet Rasch Model</h4>
+                  <p className="text-slate-500 text-sm font-medium mt-2 max-w-md mx-auto">Sistem belum menemukan data analisis Many-Facet Rasch. Silakan pilih Engine R atau Python lalu klik tombol **Run MFRM** untuk memproses.</p>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* EFA Analysis Tab Content */}
           {currentTab === 'efa' && (
             <div className="space-y-10 animate-in fade-in slide-in-from-bottom-5 duration-700">
@@ -1539,21 +1840,29 @@ export default function AdminDashboard() {
                               <tr>
                                 <th className="px-6 py-4">Item ID</th>
                                 <th className="px-6 py-4">Dimension</th>
-                                <th className="px-6 py-4">F1</th>
-                                <th className="px-6 py-4">F2</th>
-                                <th className="px-6 py-4">F3</th>
+                                {Object.keys(analysisResults.efa.loadings[0]?.loadings || {}).map(f => (
+                                  <th key={f} className="px-6 py-4">{f}</th>
+                                ))}
                               </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-100 text-xs font-bold text-slate-600">
-                              {analysisResults.efa.loadings.map((load: any, idx: number) => (
-                                <tr key={idx} className="hover:bg-slate-50/50">
-                                  <td className="px-6 py-4 font-black text-slate-900">{load.item}</td>
-                                  <td className="px-6 py-4 uppercase text-[10px] text-slate-400">{load.dimension}</td>
-                                  <td className="px-6 py-4 text-emerald-600">{load.loadings.Information}</td>
-                                  <td className="px-6 py-4 text-blue-600">{load.loadings.Collaboration}</td>
-                                  <td className="px-6 py-4 text-purple-600">{load.loadings.Productivity}</td>
-                                </tr>
-                              ))}
+                              {analysisResults.efa.loadings.map((load: any, idx: number) => {
+                                const factorKeys = Object.keys(load.loadings || {});
+                                return (
+                                  <tr key={idx} className="hover:bg-slate-50/50">
+                                    <td className="px-6 py-4 font-black text-slate-900">{load.item}</td>
+                                    <td className="px-6 py-4 uppercase text-[10px] text-slate-400">{load.dimension}</td>
+                                    {factorKeys.map(f => {
+                                      const isPrimary = load.dimension === f || (f.toLowerCase().includes(load.dimension.toLowerCase().substring(0,4)));
+                                      return (
+                                        <td key={f} className={`px-6 py-4 ${isPrimary ? 'text-emerald-600 font-extrabold' : 'text-slate-400 font-medium'}`}>
+                                          {(load.loadings[f] !== undefined ? load.loadings[f] : 0.05).toFixed(3)}
+                                        </td>
+                                      );
+                                    })}
+                                  </tr>
+                                );
+                              })}
                             </tbody>
                           </table>
                         </div>

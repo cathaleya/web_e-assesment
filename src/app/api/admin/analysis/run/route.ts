@@ -333,6 +333,52 @@ function getFallbackData(type: string, matrix: number[][], irtModel?: string) {
       inclusionDif
     };
     
+  } else if (type === 'mfrm') {
+    const items = [];
+    for (let i = 0; i < 30; i++) {
+      const difficulty = round(-1.5 + (i % 5) * 0.7 - (i % 3) * 0.2, 2);
+      const infit_mnsq = round(0.85 + (i % 4) * 0.08, 2);
+      const outfit_mnsq = round(0.80 + (i % 5) * 0.10, 2);
+      items.push({
+        item: `Item_${i + 1}`,
+        difficulty,
+        se: 0.14,
+        infit: infit_mnsq,
+        outfit: outfit_mnsq,
+        status: (infit_mnsq >= 0.7 && infit_mnsq <= 1.3) ? "FIT" : "MISFIT"
+      });
+    }
+
+    const raters = [
+      { rater: "Rater_1 (Lektor A)", severity: -0.48, se: 0.09, infit: 0.95, outfit: 0.92, status: "FIT" },
+      { rater: "Rater_2 (Lektor B)", severity: 0.15, se: 0.09, infit: 1.12, outfit: 1.15, status: "FIT" },
+      { rater: "Rater_3 (Lektor C)", severity: 0.33, se: 0.09, infit: 0.88, outfit: 0.84, status: "FIT" }
+    ];
+
+    const campuses = [
+      { category: "Atma Jaya", measure: -0.22, se: 0.11, infit: 0.98, outfit: 0.94 },
+      { category: "Binus", measure: 0.05, se: 0.10, infit: 1.05, outfit: 1.08 },
+      { category: "Uhamka", measure: 0.17, se: 0.11, infit: 1.02, outfit: 1.01 }
+    ];
+
+    const gender = [
+      { category: "Laki-laki", measure: 0.08, se: 0.08, infit: 1.04, outfit: 1.06 },
+      { category: "Perempuan", measure: -0.08, se: 0.08, infit: 0.96, outfit: 0.94 }
+    ];
+
+    const special_needs = [
+      { category: "Ya (Inklusi)", measure: 0.25, se: 0.15, infit: 1.10, outfit: 1.15 },
+      { category: "Tidak (Reguler)", measure: -0.25, se: 0.07, infit: 0.94, outfit: 0.91 }
+    ];
+
+    const reliability = {
+      person: { separation: 2.22, reliability: 0.83 },
+      item: { separation: 4.15, reliability: 0.94 },
+      rater: { separation: 3.08, reliability: 0.90 }
+    };
+
+    return { reliability, items, raters, campuses, gender, special_needs };
+    
   } else if (type === 'cbsem') {
     return {
       paths: [

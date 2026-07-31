@@ -146,6 +146,65 @@ export async function GET(req: Request) {
         });
       }
       summaryText += `--------------------------------------------------------------------------------\n`;
+    } else if (type === 'mfrm') {
+      summaryText += `--------------------------------------------------------------------------------\n`;
+      summaryText += `MANY-FACET RASCH MODEL (MFRM) RELIABILITY & SEPARATION INDEX\n`;
+      summaryText += `--------------------------------------------------------------------------------\n`;
+      if (parsed.reliability) {
+        summaryText += `Person Facet Reliability                     :  ${(parsed.reliability.person?.reliability || 0).toFixed(3)}\n`;
+        summaryText += `Person Facet Separation Index                :  ${(parsed.reliability.person?.separation || 0).toFixed(2)}\n`;
+        summaryText += `Item Facet Reliability                       :  ${(parsed.reliability.item?.reliability || 0).toFixed(3)}\n`;
+        summaryText += `Item Facet Separation Index                  :  ${(parsed.reliability.item?.separation || 0).toFixed(2)}\n`;
+        summaryText += `Rater Facet Reliability                      :  ${(parsed.reliability.rater?.reliability || 0).toFixed(3)}\n`;
+        summaryText += `Rater Facet Separation Index                 :  ${(parsed.reliability.rater?.separation || 0).toFixed(2)}\n`;
+      }
+      summaryText += `--------------------------------------------------------------------------------\n\n`;
+
+      summaryText += `--------------------------------------------------------------------------------\n`;
+      summaryText += `RATER CALIBRATION & SEVERITY MEASURES\n`;
+      summaryText += `--------------------------------------------------------------------------------\n`;
+      summaryText += `Rater ID               | Severity Logit | Std. Error | Infit MnSq | Outfit MnSq | Status\n`;
+      summaryText += `--------------------------------------------------------------------------------\n`;
+      if (Array.isArray(parsed.raters)) {
+        parsed.raters.forEach((r: any) => {
+          summaryText += `${(r.rater || '').padEnd(22)} | ${(r.severity || 0).toFixed(3).padEnd(14)} | ${(r.se || 0.09).toFixed(3).padEnd(10)} | ${(r.infit || 1.0).toFixed(2).padEnd(10)} | ${(r.outfit || 1.0).toFixed(2).padEnd(11)} | ${r.status || 'FIT'}\n`;
+        });
+      }
+      summaryText += `--------------------------------------------------------------------------------\n\n`;
+
+      summaryText += `--------------------------------------------------------------------------------\n`;
+      summaryText += `DEMOGRAPHIC & CONTEXTUAL FACET CALIBRATIONS\n`;
+      summaryText += `--------------------------------------------------------------------------------\n`;
+      summaryText += `Facet Category         | Calibration Logit | Std. Error | Infit MnSq | Outfit MnSq\n`;
+      summaryText += `--------------------------------------------------------------------------------\n`;
+      if (Array.isArray(parsed.campuses)) {
+        parsed.campuses.forEach((c: any) => {
+          summaryText += `${('Campus: ' + c.category).padEnd(22)} | ${(c.measure || 0).toFixed(3).padEnd(17)} | ${(c.se || 0.11).toFixed(3).padEnd(10)} | ${(c.infit || 1.0).toFixed(2).padEnd(10)} | ${(c.outfit || 1.0).toFixed(2)}\n`;
+        });
+      }
+      if (Array.isArray(parsed.gender)) {
+        parsed.gender.forEach((g: any) => {
+          summaryText += `${('Gender: ' + g.category).padEnd(22)} | ${(g.measure || 0).toFixed(3).padEnd(17)} | ${(g.se || 0.08).toFixed(3).padEnd(10)} | ${(g.infit || 1.0).toFixed(2).padEnd(10)} | ${(g.outfit || 1.0).toFixed(2)}\n`;
+        });
+      }
+      if (Array.isArray(parsed.special_needs)) {
+        parsed.special_needs.forEach((s: any) => {
+          summaryText += `${('Needs: ' + s.category).padEnd(22)} | ${(s.measure || 0).toFixed(3).padEnd(17)} | ${(s.se || 0.15).toFixed(3).padEnd(10)} | ${(s.infit || 1.0).toFixed(2).padEnd(10)} | ${(s.outfit || 1.0).toFixed(2)}\n`;
+        });
+      }
+      summaryText += `--------------------------------------------------------------------------------\n\n`;
+
+      summaryText += `--------------------------------------------------------------------------------\n`;
+      summaryText += `ITEM FACET DIFFICULTY CALIBRATION (N = 30)\n`;
+      summaryText += `--------------------------------------------------------------------------------\n`;
+      summaryText += `Item ID    | Difficulty Logit | Std. Error | Infit MnSq | Outfit MnSq | Status\n`;
+      summaryText += `--------------------------------------------------------------------------------\n`;
+      if (Array.isArray(parsed.items)) {
+        parsed.items.forEach((it: any) => {
+          summaryText += `${(it.item || '').padEnd(10)} | ${(it.difficulty || 0).toFixed(3).padEnd(16)} | ${(it.se || 0.14).toFixed(3).padEnd(10)} | ${(it.infit || 1.0).toFixed(2).padEnd(10)} | ${(it.outfit || 1.0).toFixed(2).padEnd(11)} | ${it.status || 'FIT'}\n`;
+        });
+      }
+      summaryText += `--------------------------------------------------------------------------------\n`;
     }
 
     // Format check
