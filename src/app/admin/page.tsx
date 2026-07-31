@@ -151,6 +151,12 @@ export default function AdminDashboard() {
   const [cfaSubTab, setCfaSubTab] = useState<'parameters' | 'plots'>('parameters');
   const [semSubTab, setSemSubTab] = useState<'parameters' | 'plots'>('parameters');
 
+  const [editingInstrument, setEditingInstrument] = useState<string | null>(null);
+  const [editingQuestionIndex, setEditingQuestionIndex] = useState<number | null>(null);
+  const [editQuestionText, setEditQuestionText] = useState<string>("");
+  const [editOptions, setEditOptions] = useState<any[]>([]);
+  const [savingInstrument, setSavingInstrument] = useState<string | null>(null);
+
   const defaultGenderDif = [
     { item: "Item_12", refGroup: 1.25, focGroup: 0.40, contrast: 0.85, p_value: 0.002, status: "Significant Bias against Females", color: "text-rose-600 bg-rose-50" },
     { item: "Item_24", refGroup: -0.10, focGroup: 0.32, contrast: -0.42, p_value: 0.041, status: "Moderate Bias against Males", color: "text-amber-600 bg-amber-50" },
@@ -219,6 +225,38 @@ export default function AdminDashboard() {
       if (parsed.length > 0) setCustomData(parsed);
     };
     reader.readAsText(file);
+  };
+
+  const getStem = (q: any) => q.scenario || q.text || q.question || q.stem || "";
+  
+  const setStem = (q: any, val: string) => {
+    if (q.scenario !== undefined) q.scenario = val;
+    else if (q.text !== undefined) q.text = val;
+    else if (q.question !== undefined) q.question = val;
+    else if (q.stem !== undefined) q.stem = val;
+    else q.text = val;
+  };
+
+  const saveInstrumentToServer = async (instKey: string) => {
+    setSavingInstrument(instKey);
+    try {
+      const qs = instrumentQuestions[instKey as keyof typeof instrumentQuestions] || [];
+      const res = await fetch(`/api/questions?type=${instKey}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(qs)
+      });
+      if (res.ok) {
+        alert("Sukses menyimpan perubahan instrumen ke server!");
+      } else {
+        alert("Gagal menyimpan perubahan instrumen ke server.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Terjadi kesalahan koneksi.");
+    } finally {
+      setSavingInstrument(null);
+    }
   };
 
   const runPsychometricAnalysis = async (type: string) => {
@@ -1116,16 +1154,162 @@ export default function AdminDashboard() {
                         {qs.length === 0 ? (
                           <p className="text-slate-400 text-sm font-bold text-center py-8">Tidak ada data butir soal.</p>
                         ) : (
-                          <div className="space-y-4 max-h-[400px] overflow-y-auto">
-                            {qs.map((q: any, i: number) => (
-                              <div key={i} className="flex gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                                <span className={`w-8 h-8 flex-shrink-0 ${inst.bg} ${inst.color} rounded-xl flex items-center justify-center text-[11px] font-black`}>{i+1}</span>
-                                <div className="flex-1">
-                                  <p className="text-xs font-bold text-slate-700 leading-relaxed">{q.text || q.question || q.stem || JSON.stringify(q).substring(0,120)}</p>
-                                  {q.options && <p className="text-[10px] text-slate-400 font-medium mt-1">{q.options.length} pilihan jawaban</p>}
-                                </div>
+                          <div className="space-y-6">
+                            {/* Save to Server bar */}
+                            <div className="flex justify-between items-center bg-slate-50 p-6 rounded-[24px] border border-slate-200 shadow-sm gap-4">
+                              <div className="flex items-center gap-3">
+                                <i className="fa-solid fa-circle-info text-blue-500 text-lg"></i>
+                                <span className="text-xs font-bold text-slate-500">
+                                  Klik &quot;Simpan Sementara&quot; pada setiap butir, lalu klik tombol ini untuk menyimpan permanen ke server.
+                                </span>
                               </div>
-                            ))}
+                              <button
+                                onClick={() => saveInstrumentToServer(inst.key)}
+                                disabled={savingInstrument === inst.key}
+                                className="px-6 py-3 bg-[#4B5320] hover:bg-[#3d441a] text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg flex items-center gap-2"
+                              >
+                                {savingInstrument === inst.key ? (
+                                  <>
+                                    <i className="fa-solid fa-circle-notch animate-spin"></i> MENYIMPAN...
+                                  </>
+                                ) : (
+                                  <>
+                                    <i className="fa-solid fa-cloud-arrow-up"></i> SIMPAN PERUBAHAN KE SERVER
+                                  </>
+                                )}
+                              </button>
+                            </div>
+
+                            <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
+                              {qs.map((q: any, i: number) => {
+                                const isEditing = editingInstrument === inst.key && editingQuestionIndex === i;
+                                return (
+                                  <div key={i} className="p-6 bg-slate-50 rounded-[24px] border border-slate-200 shadow-sm space-y-4">
+                                    <div className="flex justify-between items-start gap-4">
+                                      <div className="flex gap-4 items-center">
+                                        <span className={`w-8 h-8 flex-shrink-0 ${inst.bg} ${inst.color} rounded-xl flex items-center justify-center text-xs font-black shadow-sm`}>
+                                          {i+1}
+                                        </span>
+                                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">
+                                          Butir Soal {i+1}
+                                        </span>
+                                      </div>
+                                      {!isEditing && (
+                                        <button
+                                          onClick={() => {
+                                            setEditingInstrument(inst.key);
+                                            setEditingQuestionIndex(i);
+                                            setEditQuestionText(getStem(q));
+                                            setEditOptions(q.options ? JSON.parse(JSON.stringify(q.options)) : []);
+                                          }}
+                                          className="px-4 py-1.5 bg-blue-50 border border-blue-200 text-blue-600 rounded-lg text-[9px] font-black uppercase tracking-wider hover:bg-blue-100 transition-all flex items-center gap-1.5"
+                                        >
+                                          <i className="fa-solid fa-pen-to-square"></i> Edit
+                                        </button>
+                                      )}
+                                    </div>
+
+                                    {isEditing ? (
+                                      <div className="space-y-4 animate-in fade-in duration-200">
+                                        <div className="space-y-1">
+                                          <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Pertanyaan (Stem)</label>
+                                          <textarea
+                                            value={editQuestionText}
+                                            onChange={(e) => setEditQuestionText(e.target.value)}
+                                            rows={3}
+                                            className="w-full bg-white border border-slate-200 rounded-xl p-4 text-xs font-bold text-slate-800 focus:border-blue-500 outline-none transition-all"
+                                          />
+                                        </div>
+
+                                        {editOptions.length > 0 && (
+                                          <div className="space-y-3">
+                                            <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Pilihan Jawaban & Skor</label>
+                                            <div className="space-y-2">
+                                              {editOptions.map((opt: any, optIdx: number) => (
+                                                <div key={optIdx} className="flex gap-2 items-center">
+                                                  <span className="text-[10px] font-black text-slate-400 w-6 text-center">{String.fromCharCode(65 + optIdx)}</span>
+                                                  <input
+                                                    type="text"
+                                                    value={opt.text}
+                                                    onChange={(e) => {
+                                                      const updated = [...editOptions];
+                                                      updated[optIdx].text = e.target.value;
+                                                      setEditOptions(updated);
+                                                    }}
+                                                    className="flex-1 bg-white border border-slate-200 rounded-xl px-4 py-2 text-xs font-bold text-slate-800 focus:border-blue-500 outline-none"
+                                                  />
+                                                  <div className="flex items-center gap-1.5 bg-slate-100 px-3 py-2 rounded-xl border border-slate-200">
+                                                    <span className="text-[8px] font-black text-slate-400 uppercase">Skor</span>
+                                                    <input
+                                                      type="number"
+                                                      min="1"
+                                                      max="5"
+                                                      value={opt.score}
+                                                      onChange={(e) => {
+                                                        const updated = [...editOptions];
+                                                        updated[optIdx].score = parseInt(e.target.value) || 1;
+                                                        setEditOptions(updated);
+                                                      }}
+                                                      className="w-8 bg-transparent text-center text-xs font-black text-slate-850 outline-none"
+                                                    />
+                                                  </div>
+                                                </div>
+                                              ))}
+                                            </div>
+                                          </div>
+                                        )}
+
+                                        <div className="flex justify-end gap-2 pt-2">
+                                          <button
+                                            onClick={() => {
+                                              setEditingInstrument(null);
+                                              setEditingQuestionIndex(null);
+                                            }}
+                                            className="px-4 py-2 bg-slate-200 hover:bg-slate-350 text-slate-650 rounded-xl text-[9px] font-black uppercase tracking-widest"
+                                          >
+                                            Batal
+                                          </button>
+                                          <button
+                                            onClick={() => {
+                                              const updatedQs = [...(instrumentQuestions[inst.key as keyof typeof instrumentQuestions] || [])];
+                                              setStem(updatedQs[i], editQuestionText);
+                                              if (updatedQs[i].options) {
+                                                updatedQs[i].options = editOptions;
+                                              }
+                                              setInstrumentQuestions(prev => ({
+                                                ...prev,
+                                                [inst.key]: updatedQs
+                                              }));
+                                              setEditingInstrument(null);
+                                              setEditingQuestionIndex(null);
+                                            }}
+                                            className="px-4 py-2 bg-blue-600 hover:bg-blue-750 text-white rounded-xl text-[9px] font-black uppercase tracking-widest shadow-md"
+                                          >
+                                            Simpan Sementara
+                                          </button>
+                                        </div>
+                                      </div>
+                                    ) : (
+                                      <div className="space-y-3">
+                                        <p className="text-xs font-bold text-slate-750 leading-relaxed pl-1">{getStem(q)}</p>
+                                        {q.options && (
+                                          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 pl-1">
+                                            {q.options.map((opt: any, optIdx: number) => (
+                                              <div key={optIdx} className="bg-white border border-slate-100 p-3 rounded-xl flex items-center justify-between shadow-xs">
+                                                <span className="text-[10px] text-slate-600 font-medium leading-relaxed">
+                                                  <strong className="text-slate-400 mr-2">{String.fromCharCode(65 + optIdx)}.</strong> {opt.text}
+                                                </span>
+                                                <span className="bg-slate-50 border border-slate-200 text-slate-400 text-[8px] font-black px-2 py-0.5 rounded-md uppercase">Skor {opt.score}</span>
+                                              </div>
+                                            ))}
+                                          </div>
+                                        )}
+                                      </div>
+                                    )}
+                                  </div>
+                                );
+                              })}
+                            </div>
                           </div>
                         )}
                       </div>

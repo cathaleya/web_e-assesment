@@ -176,7 +176,7 @@ export default function Madel5cAssessment() {
                 <div className="p-4 bg-blue-50 rounded-2xl border border-blue-100">
                   <h3 className="text-[11px] font-black text-blue-900 uppercase mb-1">Struktur Pengisian:</h3>
                   <p className="text-[10px] font-bold text-blue-800 leading-relaxed">
-                    Instrumen terdiri dari **30 butir** yang dibagi menjadi **3 tahap pengisian** (masing-masing 10 butir) dengan sebaran dimensi yang seimbang. Anda dapat beristirahat sejenak di sela-sela perpindahan tahap.
+                    Instrumen terdiri dari <strong className="font-black text-blue-900">30 butir</strong> yang dibagi menjadi <strong className="font-black text-blue-900">3 tahap pengisian</strong> (masing-masing 10 butir) dengan sebaran dimensi yang seimbang. Anda dapat beristirahat sejenak di sela-sela perpindahan tahap.
                   </p>
                 </div>
               </div>
