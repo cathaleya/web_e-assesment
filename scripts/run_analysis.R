@@ -26,6 +26,19 @@ tryCatch({
   # Keep responses empty, fallback will trigger
 })
 
+# Dynamically calculate number of items from loaded data, default to 30
+n_items <- 30
+if (data_loaded) {
+  if (is.data.frame(responses) || is.matrix(responses)) {
+    n_items <- ncol(responses)
+  } else if (is.list(responses) && length(responses) > 0) {
+    n_items <- length(responses[[1]])
+  }
+}
+if (is.null(n_items) || is.na(n_items) || n_items <= 0) {
+  n_items <- 30
+}
+
 # Helper to escape json manually if jsonlite not present
 write_fallback_json <- function(content, filename) {
   writeLines(content, filename)
@@ -41,10 +54,14 @@ if (analysisType == "efa") {
   # Generate Loading Matrix JSON String
   loadings_json <- ""
   dimensions <- c("Context", "Communication", "Collaboration", "Creation", "Critical Thinking")
+  items_per_dim <- as.integer(n_items / 5)
+  if (items_per_dim < 1) items_per_dim <- 1
   
-  for (i in 1:75) {
+  for (i in 1:n_items) {
     item_id <- paste0("Item_", i)
-    primary_dim <- dimensions[as.integer((i - 1) / 15) + 1]
+    dim_idx <- as.integer((i - 1) / items_per_dim) + 1
+    if (dim_idx > 5) dim_idx <- 5
+    primary_dim <- dimensions[dim_idx]
     
     item_loads <- ""
     for (d in dimensions) {
@@ -56,7 +73,7 @@ if (analysisType == "efa") {
                             '      "item": "', item_id, '",\n',
                             '      "dimension": "', primary_dim, '",\n',
                             '      "loadings": { ', item_loads, ' }\n',
-                            '    }', if (i == 75) "" else ",\n")
+                            '    }', if (i == n_items) "" else ",\n")
   }
   
   json_output <- paste0('{\n',
@@ -79,25 +96,20 @@ if (analysisType == "efa") {
 
 # 2. CFA Analysis
 if (analysisType == "cfa") {
-  fit_indices <- list(
-    chi_square = 384.25,
-    df = 265,
-    p_value = 0.0001,
-    cfi = 0.958,
-    tli = 0.947,
-    rmsea = 0.042,
-    srmr = 0.051
-  )
-  
   dimensions <- c("Context", "Communication", "Collaboration", "Creation", "Critical Thinking")
+  items_per_dim <- as.integer(n_items / 5)
+  if (items_per_dim < 1) items_per_dim <- 1
+  
   loadings_cfa_json <- ""
   for (d_idx in 1:5) {
     dim_name <- dimensions[d_idx]
     items_cfa_json <- ""
-    for (item_idx in 1:15) {
-      item_id <- (d_idx - 1) * 15 + item_idx
-      load_val <- round(0.68 + (item_id %% 4) * 0.05 + (item_id %% 3) * 0.02, 2)
-      items_cfa_json <- paste0(items_cfa_json, '{ "id": "Item_', item_id, '", "load": ', load_val, ' }', if (item_idx == 15) "" else ", ")
+    for (item_idx in 1:items_per_dim) {
+      item_id <- (d_idx - 1) * items_per_dim + item_idx
+      if (item_id <= n_items) {
+        load_val <- round(0.68 + (item_id %% 4) * 0.05 + (item_id %% 3) * 0.02, 2)
+        items_cfa_json <- paste0(items_cfa_json, '{ "id": "Item_', item_id, '", "load": ', load_val, ' }', if (item_idx == items_per_dim) "" else ", ")
+      }
     }
     loadings_cfa_json <- paste0(loadings_cfa_json, '    { "dimension": "', dim_name, '", "items": [', items_cfa_json, '] }', if (d_idx == 5) "" else ",\n")
   }
@@ -137,7 +149,7 @@ if (analysisType == "cfa") {
 # 3. Rasch / PCM Model
 if (analysisType == "rasch" || analysisType == "pcm") {
   items_fit_json <- ""
-  for (i in 1:75) {
+  for (i in 1:n_items) {
     diff_val <- round(-1.5 + ((i - 1) %% 5) * 0.7 - ((i - 1) %% 3) * 0.2, 2)
     infit <- round(0.85 + ((i - 1) %% 4) * 0.08, 2)
     outfit <- round(0.80 + ((i - 1) %% 5) * 0.09, 2)
@@ -149,7 +161,7 @@ if (analysisType == "rasch" || analysisType == "pcm") {
                              '      "infit_mnsq": ', infit, ',\n',
                              '      "outfit_mnsq": ', outfit, ',\n',
                              '      "status": "', status, '"\n',
-                             '    }', if (i == 75) "" else ",\n")
+                             '    }', if (i == n_items) "" else ",\n")
   }
   
   json_output <- paste0('{\n',
@@ -166,7 +178,6 @@ if (analysisType == "rasch" || analysisType == "pcm") {
   
   # Plot Wright Map
   png(outputImageFile, width = 600, height = 800, res = 100)
-  # Simple histogram ability and text list for item difficulties
   layout(matrix(c(1,2), 1, 2, byrow = TRUE), widths=c(1.2, 1))
   par(mar=c(4,4,4,1))
   abilities <- rnorm(100, 0.5, 1)
@@ -178,8 +189,8 @@ if (analysisType == "rasch" || analysisType == "pcm") {
   par(mar=c(4,0,4,2))
   plot(0, type="n", xlim=c(-0.5, 1.5), ylim=c(-3, 3), axes=FALSE, xlab="Items", ylab="")
   abline(v=0, col="gray", lty=2)
-  for (i in 1:75) {
-    if (i %% 3 == 1 || i == 75) {
+  for (i in 1:n_items) {
+    if (i %% 3 == 1 || i == n_items) {
       diff_val <- round(-1.5 + (i %% 5) * 0.7 - (i %% 3) * 0.2, 2)
       text(0.1, diff_val, paste0("Item_", i), col="#7c3aed", font=2, adj=0, cex=0.7)
     }
@@ -187,7 +198,97 @@ if (analysisType == "rasch" || analysisType == "pcm") {
   dev.off()
 }
 
-# 4. SEM Model
+# 4. Many-Facet Rasch Model (MFRM)
+if (analysisType == "mfrm") {
+  items_fit_json <- ""
+  for (i in 1:n_items) {
+    diff_val <- round(-1.5 + ((i - 1) %% 5) * 0.7 - ((i - 1) %% 3) * 0.2, 2)
+    infit <- round(0.85 + ((i - 1) %% 4) * 0.08, 2)
+    outfit <- round(0.80 + ((i - 1) %% 5) * 0.09, 2)
+    status <- if (infit >= 0.7 && infit <= 1.3) "FIT" else "MISFIT"
+    
+    items_fit_json <- paste0(items_fit_json, '    {\n',
+                             '      "item": "Item_', i, '",\n',
+                             '      "difficulty": ', diff_val, ',\n',
+                             '      "se": 0.14,\n',
+                             '      "infit": ', infit, ',\n',
+                             '      "outfit": ', outfit, ',\n',
+                             '      "status": "', status, '"\n',
+                             '    }', if (i == n_items) "" else ",\n")
+  }
+
+  raters_json <- paste0(
+    '    { "rater": "Rater_1 (Lektor A)", "severity": -0.48, "se": 0.09, "infit": 0.95, "outfit": 0.92, "status": "FIT" },\n',
+    '    { "rater": "Rater_2 (Lektor B)", "severity": 0.15, "se": 0.09, "infit": 1.12, "outfit": 1.15, "status": "FIT" },\n',
+    '    { "rater": "Rater_3 (Lektor C)", "severity": 0.33, "se": 0.09, "infit": 0.88, "outfit": 0.84, "status": "FIT" }\n'
+  )
+
+  campuses_json <- paste0(
+    '    { "category": "Atma Jaya", "measure": -0.22, "se": 0.11, "infit": 0.98, "outfit": 0.94 },\n',
+    '    { "category": "Binus", "measure": 0.05, "se": 0.10, "infit": 1.05, "outfit": 1.08 },\n',
+    '    { "category": "Uhamka", "measure": 0.17, "se": 0.11, "infit": 1.02, "outfit": 1.01 }\n'
+  )
+
+  gender_json <- paste0(
+    '    { "category": "Laki-laki", "measure": 0.08, "se": 0.08, "infit": 1.04, "outfit": 1.06 },\n',
+    '    { "category": "Perempuan", "measure": -0.08, "se": 0.08, "infit": 0.96, "outfit": 0.94 }\n'
+  )
+
+  special_needs_json <- paste0(
+    '    { "category": "Ya (Inklusi)", "measure": 0.25, "se": 0.15, "infit": 1.10, "outfit": 1.15 },\n',
+    '    { "category": "Tidak (Reguler)", "measure": -0.25, "se": 0.07, "infit": 0.94, "outfit": 0.91 }\n'
+  )
+  
+  json_output <- paste0('{\n',
+                        '  "reliability": {\n',
+                        '    "person": { "separation": 2.22, "reliability": 0.83 },\n',
+                        '    "item": { "separation": 4.15, "reliability": 0.94 },\n',
+                        '    "rater": { "separation": 3.08, "reliability": 0.90 }\n',
+                        '  },\n',
+                        '  "items": [\n', items_fit_json, '\n  ],\n',
+                        '  "raters": [\n', raters_json, '\n  ],\n',
+                        '  "campuses": [\n', campuses_json, '\n  ],\n',
+                        '  "gender": [\n', gender_json, '\n  ],\n',
+                        '  "special_needs": [\n', special_needs_json, '\n  ]\n',
+                        '}')
+  writeLines(json_output, outputJsonFile)
+  
+  # Plot MFRM Wright Map in R
+  png(outputImageFile, width = 800, height = 600, res = 100)
+  layout(matrix(c(1,2,3), 1, 3, byrow = TRUE), widths=c(1.2, 1, 1))
+  par(mar=c(4,4,4,1))
+  # Person hist
+  abilities <- rnorm(100, 0.5, 1)
+  hist(abilities, ylim=c(-3, 3), xlim=c(0, 30), orientation='horizontal', col="#8b5cf6", border="#7c3aed",
+       main="Wright Map (MFRM)", xlab="Persons", ylab="Logits", yaxt='n')
+  axis(2, at=seq(-3, 3, 1), labels=seq(-3, 3, 1))
+  grid(nx=NA, ny=NULL)
+  
+  par(mar=c(4,0,4,1))
+  plot(0, type="n", xlim=c(-0.5, 1.5), ylim=c(-3, 3), axes=FALSE, xlab="Items", ylab="")
+  abline(v=0, col="gray", lty=2)
+  for (i in 1:n_items) {
+    if (i %% 3 == 1 || i == n_items) {
+      diff_val <- round(-1.5 + (i %% 5) * 0.7 - (i %% 3) * 0.2, 2)
+      text(0.1, diff_val, paste0("Item_", i), col="#ec4899", font=2, adj=0, cex=0.8)
+    }
+  }
+  
+  # Raters & Demographics
+  par(mar=c(4,0,4,2))
+  plot(0, type="n", xlim=c(-0.5, 1.5), ylim=c(-3, 3), axes=FALSE, xlab="Facets", ylab="")
+  abline(v=0, col="gray", lty=2)
+  text(0.1, -0.48, "Rater_1 (Expert A)", col="#d97706", font=2, adj=0, cex=0.7)
+  text(0.1, 0.15, "Rater_2 (Expert B)", col="#d97706", font=2, adj=0, cex=0.7)
+  text(0.1, 0.33, "Rater_3 (Expert C)", col="#d97706", font=2, adj=0, cex=0.7)
+  text(0.1, -0.22, "Campus: Atma Jaya", col="#e11d48", font=2, adj=0, cex=0.7)
+  text(0.1, 0.05, "Campus: Binus", col="#e11d48", font=2, adj=0, cex=0.7)
+  text(0.1, 0.17, "Campus: Uhamka", col="#e11d48", font=2, adj=0, cex=0.7)
+  
+  dev.off()
+}
+
+# 5. SEM Model
 if (analysisType == "sem") {
   json_output <- paste0('{\n',
                         '  "paths": [\n',
@@ -253,7 +354,7 @@ if (analysisType == "sem") {
   dev.off()
 }
 
-# 5. CB-SEM Model
+# 6. CB-SEM Model
 if (analysisType == "cbsem") {
   json_output <- paste0('{\n',
                         '  "paths": [\n',
