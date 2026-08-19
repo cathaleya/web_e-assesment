@@ -195,7 +195,7 @@ export default function Madel5cAssessment() {
               </h2>
               <div className="w-12 h-1 bg-amber-500 mx-auto rounded-full mb-4"></div>
               <p className="text-[12px] font-bold text-slate-600 leading-relaxed mb-6">
-                Hebat! Anda telah menyelesaikan 25 butir pada Tahap {breakStage}. 
+                Hebat! Anda telah menyelesaikan 10 butir pada Tahap {breakStage}. 
                 Istirahatlah sejenak untuk mengistirahatkan mata dan meregangkan tubuh Anda sebelum melanjutkan ke Tahap {breakStage + 1}.
               </p>
               <button 
