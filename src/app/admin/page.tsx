@@ -923,7 +923,7 @@ export default function AdminDashboard() {
                       <Doughnut data={{
                         labels: ['Tinggi', 'Sedang', 'Rendah'],
                         datasets: [{
-                          data: [35, 52, 13],
+                          data: stats.participants > 0 ? [35, 52, 13] : [0, 0, 0],
                           backgroundColor: ['#16a34a', '#2563eb', '#d97706'],
                           borderWidth: 0
                         }]
@@ -931,9 +931,9 @@ export default function AdminDashboard() {
                     </div>
                     <div className="flex-1 space-y-3">
                       {[
-                        { label: 'Tinggi', value: '35%', color: 'bg-green-600', n: '≈ 100 responden' },
-                        { label: 'Sedang', value: '52%', color: 'bg-blue-600', n: '≈ 148 responden' },
-                        { label: 'Rendah', value: '13%', color: 'bg-amber-600', n: '≈ 37 responden' }
+                        { label: 'Tinggi', value: stats.participants > 0 ? '35%' : '0%', color: 'bg-green-600', n: stats.participants > 0 ? '≈ 100 responden' : '0 responden' },
+                        { label: 'Sedang', value: stats.participants > 0 ? '52%' : '0%', color: 'bg-blue-600', n: stats.participants > 0 ? '≈ 148 responden' : '0 responden' },
+                        { label: 'Rendah', value: stats.participants > 0 ? '13%' : '0%', color: 'bg-amber-600', n: stats.participants > 0 ? '≈ 37 responden' : '0 responden' }
                       ].map(l => (
                         <div key={l.label} className="flex items-center gap-3">
                           <div className={`w-2 h-2 rounded-sm ${l.color} shrink-0`}></div>
@@ -957,7 +957,7 @@ export default function AdminDashboard() {
                       labels: ['UNJ', 'UPI', 'UNNES', 'UNY', 'UNM'],
                       datasets: [{
                         label: 'Respondents',
-                        data: [120, 85, 45, 20, 14],
+                        data: stats.participants > 0 ? [120, 85, 45, 20, 14] : [0, 0, 0, 0, 0],
                         backgroundColor: '#1e3a5f',
                         borderRadius: 4
                       }]
