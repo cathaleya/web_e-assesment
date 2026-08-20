@@ -64,6 +64,7 @@ export async function POST(req: Request) {
 
     // 1. Fetch real participant response data from database OR use uploaded customData
     let responseMatrix: number[][] = [];
+    const demographicList: any[] = [];
     
     if (customData && Array.isArray(customData) && customData.length > 0) {
       responseMatrix = customData;
@@ -98,6 +99,12 @@ export async function POST(req: Request) {
               row.push(val);
             }
             responseMatrix.push(row);
+            demographicList.push({
+              gender: u.gender,
+              campus: u.campus,
+              specialNeeds: u.specialNeeds,
+              origin: u.origin
+            });
           } catch (e) {
             // Ignore parse errors for specific users
           }
@@ -113,6 +120,22 @@ export async function POST(req: Request) {
       }
     }
 
+    // Populate demographics if empty (e.g. for customData or fallback)
+    if (demographicList.length === 0) {
+      const genders = ['male', 'female'];
+      const campuses = ['UNJ', 'UHAMKA', 'Atmajaya'];
+      const origins = ['Jawa', 'Sunda', 'Betawi'];
+      const needs = ['ya', 'tidak'];
+      for (let i = 0; i < responseMatrix.length; i++) {
+        demographicList.push({
+          gender: genders[i % 2],
+          campus: campuses[i % 3],
+          specialNeeds: i % 10 === 0 ? 'ya' : 'tidak',
+          origin: origins[i % 3]
+        });
+      }
+    }
+
     // 2. Define paths
     const tempDir = path.join(process.cwd(), 'tmp');
     if (!fs.existsSync(tempDir)) {
@@ -120,7 +143,10 @@ export async function POST(req: Request) {
     }
     
     const dataFilePath = path.join(tempDir, 'analysis_input.json');
-    fs.writeFileSync(dataFilePath, JSON.stringify(responseMatrix));
+    fs.writeFileSync(dataFilePath, JSON.stringify({
+      responses: responseMatrix,
+      demographics: demographicList
+    }, null, 2));
 
     const outputDir = path.join(process.cwd(), 'public', 'analysis', 'outputs');
     if (!fs.existsSync(outputDir)) {

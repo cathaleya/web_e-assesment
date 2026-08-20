@@ -89,6 +89,7 @@ export default function AdminDashboard() {
   const [cfaLoadings, setCfaLoadings] = useState<number[]>([0.85, 0.78, 0.92, 0.81, 0.88]);
   const [aiDiagnostic, setAiDiagnostic] = useState<string>("");
   const [loadingAi, setLoadingAi] = useState<boolean>(false);
+  const [isResetting, setIsResetting] = useState<boolean>(false);
   const [instrumentQuestions, setInstrumentQuestions] = useState<{preliminary: any[], survey: any[], madel5c: any[]}>({preliminary: [], survey: [], madel5c: []});
   const [expandedInstrument, setExpandedInstrument] = useState<string | null>(null);
   const [sysSettings, setSysSettings] = useState<any>({});
@@ -330,6 +331,39 @@ export default function AdminDashboard() {
     setLoadingAi(false);
   };
 
+  const handleResetDatabase = async () => {
+    const confirmReset = window.confirm("Apakah Anda yakin ingin menghapus seluruh data responden (User, Assessment, Survey) dan cache analisis di VPS? Tindakan ini tidak dapat dibatalkan.");
+    if (!confirmReset) return;
+
+    setIsResetting(true);
+    try {
+      const res = await fetch('/api/admin/reset', { method: 'POST' });
+      const data = await res.json();
+      if (data.success) {
+        alert("Database dan cache analisis berhasil dibersihkan!");
+        setUsers([]);
+        setAssessments([]);
+        setAnalysisResults({
+          efa: null, cfa: null, rasch: null, sem: null, cbsem: null, mfrm: null
+        });
+        setAnalysisPlots({
+          efa: '', cfa: '', rasch: '', sem: '', cbsem: '', mfrm: ''
+        });
+        setAnalysisPlots2({
+          efa: '', cfa: '', rasch: '', sem: '', cbsem: '', mfrm: ''
+        });
+        setStats(prev => ({ ...prev, participants: 0 }));
+      } else {
+        alert(data.error || "Gagal mereset database.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Terjadi kesalahan jaringan saat mencoba mereset database.");
+    } finally {
+      setIsResetting(false);
+    }
+  };
+
   const fetchData = useCallback(async () => {
     try {
       const [assRes, userRes, settingsRes, qPrelRes, qSurvRes, qMadelRes] = await Promise.all([ 
@@ -487,6 +521,13 @@ export default function AdminDashboard() {
             </h2>
           </div>
           <div className="flex items-center gap-4">
+            <button 
+              onClick={handleResetDatabase} 
+              disabled={isResetting}
+              className="h-12 px-5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-wider shadow-lg shadow-rose-600/20 disabled:opacity-50 transition-all mr-2">
+              <i className="fa-solid fa-trash-can"></i>
+              {isResetting ? "RESETTING..." : "RESET DATABASE"}
+            </button>
             <div className="flex flex-col items-end mr-4">
               <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">System Status</span>
               <span className="flex items-center gap-2 text-emerald-500 text-[11px] font-bold">
