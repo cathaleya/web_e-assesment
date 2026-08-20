@@ -523,6 +523,46 @@ export default function AdminDashboard() {
       .catch(err => console.error("Error loading analysis status:", err));
   }, [fetchData]);
 
+  // Sync analysisResults to UI state
+  useEffect(() => {
+    if (analysisResults.cfa) {
+      const cfa = analysisResults.cfa;
+      if (cfa.fit_indices) {
+        setStats(prev => ({
+          ...prev,
+          rmsea: cfa.fit_indices.rmsea || prev.rmsea,
+          cfi: cfa.fit_indices.cfi || prev.cfi,
+          tli: cfa.fit_indices.tli || prev.tli,
+        }));
+      }
+      if (cfa.loadings) {
+        setCfaLoadings(cfa.loadings);
+      }
+    }
+    
+    if (analysisResults.rasch) {
+      const rasch = analysisResults.rasch;
+      if (rasch.reliability) {
+        setStats(prev => ({
+          ...prev,
+          alpha: rasch.reliability.person_reliability || prev.alpha,
+          omega: rasch.reliability.item_reliability || prev.omega // Mock omega with item reliability if absent
+        }));
+      }
+      if (rasch.dif_gender) {
+        const biased = rasch.dif_gender.filter((d: any) => Math.abs(d.contrast) > 0.4);
+        setStats(prev => ({ ...prev, difCount: biased.length }));
+        setDifItems(rasch.dif_gender);
+      }
+      if (rasch.items_fit && rasch.thetas) {
+        setRaschData({
+          items: rasch.items_fit.map((i: any) => i.difficulty),
+          persons: rasch.thetas
+        });
+      }
+    }
+  }, [analysisResults]);
+
   if (!isMounted) return null;
 
   // ── Tab metadata ────────────────────────────────────────────────────────
