@@ -197,15 +197,13 @@ export default function AdminDashboard() {
   }, [selectedUser]);
 
   const [stats, setStats] = useState<AdminStats>({
-    participants: 284, alpha: 0.86, omega: 0.88, rmsea: 0.045, cfi: 0.962, tli: 0.941, difCount: 2, predictiveValidity: 0.75
+    participants: 0, alpha: 0, omega: 0, rmsea: 0, cfi: 0, tli: 0, difCount: 0, predictiveValidity: 0
   });
   
   const [questions, setQuestions] = useState<any[]>([]);
   const [assessments, setAssessments] = useState<any[]>([]);
-  const [difItems, setDifItems] = useState<any[]>([
-    { item: "Item 12", p_value: 0.002, contrast: 0.85 },
-    { item: "Item 24", p_value: 0.041, contrast: -0.42 }
-  ]);
+  // difItems: hanya diisi dari hasil analisis Rasch, default kosong agar tidak tampil data palsu
+  const [difItems, setDifItems] = useState<any[]>([]);
   const [raschData, setRaschData] = useState<{items: number[], persons: number[]}>({ 
     items: [0.5, 1.2, -0.8, 2.1, -1.5, 0.2, 1.8, -1.1, 0.7, -0.4], 
     persons: [1.2, 2.5, 0.8, -0.5, -1.2, 1.9, 0.3, -2.1, 1.5, 0.1] 
@@ -475,7 +473,9 @@ export default function AdminDashboard() {
         setAnalysisPlots2({
           efa: '', cfa: '', rasch: '', sem: '', cbsem: '', mfrm: ''
         });
-        setStats(prev => ({ ...prev, participants: 0 }));
+        setStats({
+          participants: 0, alpha: 0, omega: 0, rmsea: 0, cfi: 0, tli: 0, difCount: 0, predictiveValidity: 0
+        });
       } else {
         alert(data.error || "Gagal mereset database.");
       }
@@ -787,7 +787,7 @@ export default function AdminDashboard() {
                 <MetricCard label="Participants" value={stats.participants} sub="Instrument phase" icon="fa-users-viewfinder" accent="bg-blue-50 text-blue-600" />
                 <MetricCard label="SJT Items" value={instrumentQuestions.madel5c.length || 30} sub="Expert-validated" icon="fa-list-check" accent="bg-teal-50 text-teal-600" />
                 <MetricCard label="Cronbach's α" value={stats.alpha} sub="● Reliable (> 0.70)" icon="fa-vial-circle-check" accent="bg-purple-50 text-purple-600" />
-                <MetricCard label="DIF Bias Items" value={stats.difCount} sub="Review recommended" icon="fa-triangle-exclamation" accent="bg-rose-50 text-rose-600" />
+                <MetricCard label="DIF Bias Items" value={currentDifData ? currentDifData.filter((d: any) => Math.abs(d.contrast) > 0.4).length : 0} sub="Review recommended" icon="fa-triangle-exclamation" accent="bg-rose-50 text-rose-600" />
               </div>
 
               {/* Row 2: Structural Validity (CFA) + Reliability */}
