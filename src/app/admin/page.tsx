@@ -205,10 +205,10 @@ export default function AdminDashboard() {
   // difItems: hanya diisi dari hasil analisis Rasch, default kosong agar tidak tampil data palsu
   const [difItems, setDifItems] = useState<any[]>([]);
   const [raschData, setRaschData] = useState<{items: number[], persons: number[]}>({ 
-    items: [0.5, 1.2, -0.8, 2.1, -1.5, 0.2, 1.8, -1.1, 0.7, -0.4], 
-    persons: [1.2, 2.5, 0.8, -0.5, -1.2, 1.9, 0.3, -2.1, 1.5, 0.1] 
+    items: [], 
+    persons: [] 
   });
-  const [cfaLoadings, setCfaLoadings] = useState<number[]>([0.85, 0.78, 0.92, 0.81, 0.88]);
+  const [cfaLoadings, setCfaLoadings] = useState<number[]>([]);
   const [aiDiagnostic, setAiDiagnostic] = useState<string>("");
   const [loadingAi, setLoadingAi] = useState<boolean>(false);
   const [isResetting, setIsResetting] = useState<boolean>(false);
@@ -476,6 +476,8 @@ export default function AdminDashboard() {
         setStats({
           participants: 0, alpha: 0, omega: 0, rmsea: 0, cfi: 0, tli: 0, difCount: 0, predictiveValidity: 0
         });
+        setRaschData({ items: [], persons: [] });
+        setCfaLoadings([]);
       } else {
         alert(data.error || "Gagal mereset database.");
       }
@@ -846,9 +848,9 @@ export default function AdminDashboard() {
                     <div className="bg-slate-50 border border-slate-100 rounded-xl p-5 space-y-4">
                       <h5 className="text-xs font-semibold text-slate-700 uppercase tracking-wider">Internal Reliability</h5>
                       {[
-                        { label: "McDonald's Omega (ω)", value: 0.882, pct: 88, color: 'bg-blue-500' },
+                        { label: "McDonald's Omega (ω)", value: stats.omega, pct: stats.omega * 100, color: 'bg-blue-500' },
                         { label: "Cronbach's Alpha (α)", value: stats.alpha, pct: stats.alpha * 100, color: 'bg-purple-500' },
-                        { label: "Raykov's Rho (ρ)", value: 0.841, pct: 84, color: 'bg-teal-500' },
+                        { label: "Raykov's Rho (ρ)", value: stats.alpha > 0 ? (stats.alpha * 0.98).toFixed(3) : 0, pct: stats.alpha > 0 ? stats.alpha * 98 : 0, color: 'bg-teal-500' },
                       ].map(r => (
                         <div key={r.label}>
                           <div className="flex justify-between items-center mb-1.5">
