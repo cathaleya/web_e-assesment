@@ -36,10 +36,11 @@ ChartJS.register(
 
 if (typeof window !== "undefined") {
   ChartJS.defaults.font.family = "'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif";
-  ChartJS.defaults.color = "#475569";
+  ChartJS.defaults.color = "#64748b";
   ChartJS.defaults.plugins.tooltip.backgroundColor = "#0f172a";
-  ChartJS.defaults.plugins.tooltip.titleFont = { size: 11, weight: 'bold' };
+  ChartJS.defaults.plugins.tooltip.titleFont = { size: 11, weight: "bold" };
   ChartJS.defaults.plugins.tooltip.bodyFont = { size: 10 };
+  ChartJS.defaults.plugins.tooltip.padding = 10;
 }
 
 interface AdminStats {
@@ -53,8 +54,132 @@ interface AdminStats {
   predictiveValidity: number;
 }
 
+// ─── Reusable Small Components ─────────────────────────────────────────────
+
+const SectionHeader = ({ icon, title, badge }: { icon: string; title: string; badge?: React.ReactNode }) => (
+  <div className="flex items-center justify-between mb-5">
+    <div className="flex items-center gap-2.5">
+      <i className={`fa-solid ${icon} text-slate-400 text-sm`}></i>
+      <h4 className="text-sm font-semibold text-slate-800">{title}</h4>
+    </div>
+    {badge}
+  </div>
+);
+
+const EmptyState = ({ icon, message, sub }: { icon: string; message: string; sub: string }) => (
+  <div className="py-16 text-center bg-slate-50 border border-dashed border-slate-200 rounded-xl flex flex-col items-center gap-3">
+    <i className={`fa-solid ${icon} text-3xl text-slate-300`}></i>
+    <div>
+      <p className="text-sm font-medium text-slate-500">{message}</p>
+      <p className="text-xs text-slate-400 mt-1">{sub}</p>
+    </div>
+  </div>
+);
+
+const StatusBadge = ({ status }: { status: "good" | "warn" | "bad" | "neutral" | "info" }) => {
+  const map = {
+    good: "bg-emerald-50 text-emerald-700 border-emerald-200",
+    warn: "bg-amber-50 text-amber-700 border-amber-200",
+    bad: "bg-rose-50 text-rose-700 border-rose-200",
+    neutral: "bg-slate-100 text-slate-600 border-slate-200",
+    info: "bg-blue-50 text-blue-700 border-blue-200",
+  };
+  const labels = { good: "Good Fit", warn: "Moderate", bad: "Flagged", neutral: "Neutral", info: "Info" };
+  return (
+    <span className={`px-2 py-0.5 rounded text-[10px] font-semibold border ${map[status]}`}>
+      {labels[status]}
+    </span>
+  );
+};
+
+const AnalysisToolbar = ({
+  type,
+  label,
+  methodValue,
+  methodOptions,
+  onMethodChange,
+  onRun,
+  loading,
+  results,
+  plots,
+  analysisMethod,
+  extraSelects,
+}: {
+  type: string;
+  label: string;
+  methodValue: string;
+  methodOptions: { value: string; label: string }[];
+  onMethodChange: (v: string) => void;
+  onRun: () => void;
+  loading: boolean;
+  results: any;
+  plots: string;
+  analysisMethod: string;
+  extraSelects?: React.ReactNode;
+}) => (
+  <div className="bg-white border border-slate-200 rounded-xl p-4 flex flex-wrap items-center gap-3 mb-6">
+    <div className="flex items-center gap-1.5 text-slate-500">
+      <i className="fa-solid fa-microchip text-xs"></i>
+      <span className="text-xs font-medium">Engine:</span>
+    </div>
+    {extraSelects}
+    <select
+      value={methodValue}
+      onChange={(e) => onMethodChange(e.target.value)}
+      className="h-8 px-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium text-slate-700 outline-none cursor-pointer"
+    >
+      {methodOptions.map(opt => (
+        <option key={opt.value} value={opt.value}>{opt.label}</option>
+      ))}
+    </select>
+    <button
+      onClick={onRun}
+      disabled={loading}
+      className="h-8 px-4 bg-[#1e3a5f] hover:bg-[#16304f] disabled:opacity-50 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors"
+    >
+      {loading ? <i className="fa-solid fa-spinner animate-spin text-xs"></i> : <i className="fa-solid fa-play text-xs"></i>}
+      {loading ? "Running…" : `Run ${label}`}
+    </button>
+    {results && (
+      <div className="flex items-center gap-2 ml-auto flex-wrap">
+        <a
+          href={`/api/admin/analysis/download?type=${type}&method=${analysisMethod}`}
+          className="h-8 px-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors"
+          title="Download ZIP"
+        >
+          <i className="fa-solid fa-file-zipper text-xs"></i> ZIP
+        </a>
+        <a
+          href={`/api/admin/analysis/download?type=${type}&method=${analysisMethod}&format=text`}
+          className="h-8 px-3 bg-slate-600 hover:bg-slate-700 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors"
+        >
+          <i className="fa-solid fa-file-lines text-xs"></i> R/SPSS
+        </a>
+        <a
+          href={`/api/admin/analysis/download?type=${type}&method=${analysisMethod}&format=json`}
+          className="h-8 px-3 bg-slate-500 hover:bg-slate-600 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors"
+        >
+          <i className="fa-solid fa-file-code text-xs"></i> JSON
+        </a>
+        {plots && (
+          <a
+            href={plots}
+            download={`${type}_${analysisMethod}_plot.png`}
+            className="h-8 px-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors"
+          >
+            <i className="fa-solid fa-file-image text-xs"></i> Plot
+          </a>
+        )}
+      </div>
+    )}
+  </div>
+);
+
+// ─── Main Component ─────────────────────────────────────────────────────────
+
 export default function AdminDashboard() {
   const [currentTab, setCurrentTab] = useState("madel5c");
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [users, setUsers] = useState<any[]>([]);
   const [selectedUser, setSelectedUser] = useState<any>(null);
@@ -67,11 +192,10 @@ export default function AdminDashboard() {
     }
     fetch(`/api/user/stats?userId=${selectedUser.id}`)
       .then((res) => res.json())
-      .then((data) => {
-        setSelectedUserStats(data.stats);
-      })
+      .then((data) => { setSelectedUserStats(data.stats); })
       .catch((err) => console.error("Error fetching stats:", err));
   }, [selectedUser]);
+
   const [stats, setStats] = useState<AdminStats>({
     participants: 284, alpha: 0.86, omega: 0.88, rmsea: 0.045, cfi: 0.962, tli: 0.941, difCount: 2, predictiveValidity: 0.75
   });
@@ -293,7 +417,6 @@ export default function AdminDashboard() {
     }
   };
 
-
   const downloadDataset = async (instrument: string) => {
     setDownloading(instrument);
     try {
@@ -400,7 +523,6 @@ export default function AdminDashboard() {
     setIsMounted(true);
     fetchData();
 
-    // Load previously run analysis results if they exist on the server
     fetch('/api/admin/analysis/run')
       .then(res => res.json())
       .then(data => {
@@ -421,386 +543,447 @@ export default function AdminDashboard() {
 
   if (!isMounted) return null;
 
+  // ── Tab metadata ────────────────────────────────────────────────────────
+  const tabMeta: Record<string, { label: string; icon: string; breadcrumb: string }> = {
+    preliminary: { label: "Preliminary Analysis", icon: "fa-chart-simple", breadcrumb: "Main Analysis" },
+    usability: { label: "SUS Usability Analysis", icon: "fa-wand-magic-sparkles", breadcrumb: "Main Analysis" },
+    madel5c: { label: "MADEL5C Analysis", icon: "fa-brain", breadcrumb: "Main Analysis" },
+    efa: { label: "Exploratory Factor Analysis", icon: "fa-chart-pie", breadcrumb: "Psychometric Engine" },
+    cfa: { label: "Confirmatory Factor Analysis", icon: "fa-diagram-project", breadcrumb: "Psychometric Engine" },
+    rasch: { label: "Rasch / PCM Model", icon: "fa-stairs", breadcrumb: "Psychometric Engine" },
+    mfrm: { label: "Many-Facet Rasch Model", icon: "fa-cubes", breadcrumb: "Psychometric Engine" },
+    sem: { label: "SEM Path Model", icon: "fa-route", breadcrumb: "Psychometric Engine" },
+    logs: { label: "Participants Data", icon: "fa-users", breadcrumb: "Management" },
+    instruments: { label: "Instrument Manager", icon: "fa-file-signature", breadcrumb: "Management" },
+    settings: { label: "System Settings", icon: "fa-gear", breadcrumb: "Management" },
+  };
+  const currentMeta = tabMeta[currentTab] || { label: currentTab, icon: "fa-circle", breadcrumb: "" };
+
+  // ── Sub-tab renderer ────────────────────────────────────────────────────
+  const SubTabs = ({ tabs, active, onChange, accentColor = "blue" }: { tabs: { id: string; label: string; icon: string }[]; active: string; onChange: (id: string) => void; accentColor?: string }) => (
+    <div className="flex border-b border-slate-200 gap-6 mb-6">
+      {tabs.map(t => (
+        <button key={t.id} onClick={() => onChange(t.id)}
+          className={`pb-3 px-1 text-xs font-semibold flex items-center gap-1.5 border-b-2 transition-colors -mb-px ${
+            active === t.id
+              ? `border-[#1e3a5f] text-[#1e3a5f]`
+              : 'border-transparent text-slate-400 hover:text-slate-600'
+          }`}>
+          <i className={`fa-solid ${t.icon} text-xs`}></i>
+          {t.label}
+        </button>
+      ))}
+    </div>
+  );
+
+  // ── Data Source Banner (for engine tabs) ───────────────────────────────
+  const DataSourceBanner = () => (
+    <div className="flex items-center justify-between bg-white border border-slate-200 rounded-xl p-3 mb-5 gap-4">
+      <div className="flex items-center gap-2.5">
+        <i className="fa-solid fa-database text-slate-400 text-xs"></i>
+        <span className="text-xs font-medium text-slate-600">
+          Data Source: <span className="text-slate-800 font-semibold">{customData ? `Custom CSV (${uploadedFileName})` : 'Live Database (MADEL5C)'}</span>
+        </span>
+      </div>
+      <div className="flex items-center gap-2">
+        {customData && (
+          <button onClick={() => { setCustomData(null); setUploadedFileName(''); }}
+            className="h-7 px-3 text-xs font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors">
+            ← Reset to Database
+          </button>
+        )}
+        <label className="h-7 px-3 text-xs font-medium text-white bg-[#1e3a5f] hover:bg-[#16304f] rounded-lg cursor-pointer flex items-center gap-1.5 transition-colors">
+          <i className="fa-solid fa-upload text-xs"></i> Upload CSV
+          <input type="file" accept=".csv" onChange={handleCsvUpload} className="hidden" />
+        </label>
+      </div>
+    </div>
+  );
+
+  // ── Metric Card ─────────────────────────────────────────────────────────
+  const MetricCard = ({ label, value, sub, icon, accent }: { label: string; value: any; sub?: string; icon: string; accent: string }) => (
+    <div className="bg-white border border-slate-200 rounded-xl p-5">
+      <div className="flex items-start justify-between mb-3">
+        <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm ${accent}`}>
+          <i className={`fa-solid ${icon}`}></i>
+        </div>
+        <span className="text-[10px] font-medium text-slate-400 uppercase tracking-wider">{label}</span>
+      </div>
+      <div className="text-2xl font-bold text-slate-900 tabular-nums leading-none">{value}</div>
+      {sub && <p className="text-[11px] text-slate-400 mt-1.5 font-medium">{sub}</p>}
+    </div>
+  );
+
   return (
-    <div className="min-h-screen bg-[#F1F5F9] text-slate-800 flex font-sans">
-      {/* Sidebar - Dark Professional */}
-      <aside className="w-72 bg-[#0F172A] flex flex-col shadow-2xl sticky top-0 h-screen">
-        <div className="p-8 border-b border-white/5 flex items-center gap-3">
-          <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
-            <i className="fa-solid fa-microchip text-white text-lg"></i>
+    <div className="min-h-screen bg-[#f8f9fb] text-slate-800 flex font-sans">
+      <style>{`
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .nav-item { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 6px; font-size: 12px; font-weight: 500; transition: all 0.15s; cursor: pointer; width: 100%; text-align: left; color: #94a3b8; border-left: 2px solid transparent; }
+        .nav-item:hover { background: rgba(255,255,255,0.06); color: #e2e8f0; }
+        .nav-item.active { background: rgba(255,255,255,0.08); color: #ffffff; border-left-color: #3b82f6; font-weight: 600; }
+        .nav-item i { width: 14px; text-align: center; font-size: 13px; }
+      `}</style>
+
+      {/* ── Sidebar ── */}
+      <aside className={`${sidebarCollapsed ? 'w-16' : 'w-56'} bg-[#0f172a] flex flex-col sticky top-0 h-screen transition-all duration-200 shrink-0`}>
+        {/* Logo */}
+        <div className="px-4 py-5 border-b border-white/5 flex items-center gap-3">
+          <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shrink-0">
+            <i className="fa-solid fa-microchip text-white text-sm"></i>
           </div>
+          {!sidebarCollapsed && (
+            <div className="overflow-hidden">
+              <h1 className="font-bold text-sm text-white leading-none">HDAP <span className="text-blue-400">PRO</span></h1>
+              <p className="text-[9px] text-slate-500 mt-0.5 uppercase tracking-widest">Admin Panel</p>
+            </div>
+          )}
+          <button onClick={() => setSidebarCollapsed(c => !c)} className="ml-auto text-slate-500 hover:text-slate-300 transition-colors">
+            <i className={`fa-solid ${sidebarCollapsed ? 'fa-chevron-right' : 'fa-chevron-left'} text-xs`}></i>
+          </button>
+        </div>
+
+        {/* Navigation */}
+        <div className="px-3 py-4 flex-1 overflow-y-auto custom-scrollbar space-y-5">
+          {/* Group: Main Analysis */}
           <div>
-            <h1 className="font-black text-xl tracking-tighter text-white leading-none">HDAP <span className="text-blue-500">PRO</span></h1>
-            <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-1">Administrator Panel</p>
+            {!sidebarCollapsed && <p className="text-[9px] font-semibold text-slate-600 uppercase tracking-wider mb-2 px-1">Main Analysis</p>}
+            <nav className="space-y-0.5">
+              {[
+                { id: 'preliminary', icon: 'fa-chart-simple', label: 'Preliminary' },
+                { id: 'usability', icon: 'fa-wand-magic-sparkles', label: 'SUS Analysis' },
+                { id: 'madel5c', icon: 'fa-brain', label: 'MADEL5C' },
+              ].map(item => (
+                <button key={item.id} onClick={() => setCurrentTab(item.id)}
+                  title={sidebarCollapsed ? item.label : undefined}
+                  className={`nav-item ${currentTab === item.id ? 'active' : ''}`}>
+                  <i className={`fa-solid ${item.icon}`}></i>
+                  {!sidebarCollapsed && <span>{item.label}</span>}
+                </button>
+              ))}
+            </nav>
+          </div>
+
+          {/* Group: Psychometric Engine */}
+          <div>
+            {!sidebarCollapsed && <p className="text-[9px] font-semibold text-slate-600 uppercase tracking-wider mb-2 px-1">Psychometric Engine</p>}
+            <nav className="space-y-0.5">
+              {[
+                { id: 'efa', icon: 'fa-chart-pie', label: 'EFA Analysis' },
+                { id: 'cfa', icon: 'fa-diagram-project', label: 'CFA Analysis' },
+                { id: 'rasch', icon: 'fa-stairs', label: 'Rasch / PCM' },
+                { id: 'mfrm', icon: 'fa-cubes', label: 'Many-Facet Rasch' },
+                { id: 'sem', icon: 'fa-route', label: 'SEM Model' },
+              ].map(item => (
+                <button key={item.id} onClick={() => setCurrentTab(item.id)}
+                  title={sidebarCollapsed ? item.label : undefined}
+                  className={`nav-item ${currentTab === item.id ? 'active' : ''}`}>
+                  <i className={`fa-solid ${item.icon}`}></i>
+                  {!sidebarCollapsed && <span>{item.label}</span>}
+                </button>
+              ))}
+            </nav>
+          </div>
+
+          {/* Group: Management */}
+          <div>
+            {!sidebarCollapsed && <p className="text-[9px] font-semibold text-slate-600 uppercase tracking-wider mb-2 px-1">Management</p>}
+            <nav className="space-y-0.5">
+              {[
+                { id: 'logs', icon: 'fa-users', label: 'Participants' },
+                { id: 'instruments', icon: 'fa-file-signature', label: 'Instruments' },
+                { id: 'settings', icon: 'fa-gear', label: 'Settings' }
+              ].map(item => (
+                <button key={item.id} onClick={() => setCurrentTab(item.id)}
+                  title={sidebarCollapsed ? item.label : undefined}
+                  className={`nav-item ${currentTab === item.id ? 'active' : ''}`}>
+                  <i className={`fa-solid ${item.icon}`}></i>
+                  {!sidebarCollapsed && <span>{item.label}</span>}
+                </button>
+              ))}
+            </nav>
           </div>
         </div>
 
-        <div className="px-6 py-6 flex-1 overflow-y-auto custom-scrollbar">
-          <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4 ml-2">Main Analysis</p>
-          <nav className="space-y-1">
-            {[
-              { id: 'preliminary', icon: 'fa-chart-simple', label: 'Preliminary Analysis' },
-              { id: 'usability', icon: 'fa-wand-magic-sparkles', label: 'SUS Analysis' },
-              { id: 'madel5c', icon: 'fa-brain', label: 'MADEL5C Analysis' },
-            ].map(item => (
-              <button key={item.id} onClick={() => setCurrentTab(item.id)}
-                className={`w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-[11px] font-black uppercase tracking-wider transition-all duration-300 ${
-                  currentTab === item.id 
-                    ? 'bg-blue-600 text-white shadow-xl shadow-blue-600/20' 
-                    : 'text-slate-400 hover:bg-white/5 hover:text-white'
-                }`}>
-                <i className={`fa-solid ${item.icon} text-base`}></i> {item.label}
-              </button>
-            ))}
-          </nav>
-
-          <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4 mt-8 ml-2">Psychometric Engine</p>
-          <nav className="space-y-1">
-            {[
-              { id: 'efa', icon: 'fa-chart-pie', label: 'EFA Analysis' },
-              { id: 'cfa', icon: 'fa-diagram-project', label: 'CFA Analysis' },
-              { id: 'rasch', icon: 'fa-stairs', label: 'Rasch/PCM Model' },
-              { id: 'mfrm', icon: 'fa-cubes', label: 'Many Facet Rasch' },
-              { id: 'sem', icon: 'fa-route', label: 'SEM Model' },
-            ].map(item => (
-              <button key={item.id} onClick={() => setCurrentTab(item.id)}
-                className={`w-full flex items-center gap-4 px-5 py-3 rounded-2xl text-[11px] font-black uppercase tracking-wider transition-all duration-300 ${
-                  currentTab === item.id 
-                    ? 'bg-blue-600 text-white shadow-xl shadow-blue-600/20' 
-                    : 'text-slate-400 hover:bg-white/5 hover:text-white'
-                }`}>
-                <i className={`fa-solid ${item.icon} text-base`}></i> {item.label}
-              </button>
-            ))}
-          </nav>
-
-          <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4 mt-10 ml-2">Management</p>
-          <nav className="space-y-1">
-            {[
-              { id: 'logs', icon: 'fa-users', label: 'Participants Data' },
-              { id: 'instruments', icon: 'fa-file-signature', label: 'Instrument Manager' },
-              { id: 'settings', icon: 'fa-gear', label: 'System Settings' }
-            ].map(item => (
-              <button key={item.id} onClick={() => setCurrentTab(item.id)}
-                className={`w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-[11px] font-black uppercase tracking-wider transition-all duration-300 ${
-                  currentTab === item.id 
-                    ? 'bg-blue-600 text-white shadow-xl shadow-blue-600/20' 
-                    : 'text-slate-400 hover:bg-white/5 hover:text-white'
-                }`}>
-                <i className={`fa-solid ${item.icon} text-base`}></i> {item.label}
-              </button>
-            ))}
-          </nav>
-        </div>
-
-        <div className="mt-auto p-8 border-t border-white/5">
-          <button onClick={() => router.push('/login')} className="w-full py-4 bg-rose-500/10 text-rose-400 border border-rose-500/20 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-rose-500 hover:text-white transition-all">
-            <i className="fa-solid fa-power-off mr-2"></i> Log Out Account
+        {/* Logout */}
+        <div className="px-3 py-4 border-t border-white/5">
+          <button onClick={() => router.push('/login')}
+            title={sidebarCollapsed ? "Log Out" : undefined}
+            className="nav-item text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 w-full">
+            <i className="fa-solid fa-power-off"></i>
+            {!sidebarCollapsed && <span>Log Out</span>}
           </button>
         </div>
       </aside>
 
-      {/* Main Content Area */}
-      <main className="flex-1 overflow-y-auto bg-gradient-to-br from-blue-50 via-slate-50 to-indigo-50/50">
-        {/* Top Header */}
-        <header className="h-24 bg-white border-b border-slate-200 px-10 flex items-center justify-between sticky top-0 z-20">
-          <div className="flex items-center gap-4">
-            <div className="h-8 w-1 bg-blue-600 rounded-full"></div>
-            <h2 className="text-xl font-black text-slate-900 tracking-tight uppercase">
-              {currentTab === 'rasch' 
-                ? 'Rasch/PCM Model' 
-                : currentTab === 'efa' 
-                ? 'EFA Analysis' 
-                : currentTab === 'cfa' 
-                ? 'CFA Analysis' 
-                : currentTab === 'sem' 
-                ? 'SEM Model' 
-                : currentTab === 'mfrm'
-                ? 'Many-Facet Rasch Model'
-                : currentTab.replace('-', ' ')}
-            </h2>
+      {/* ── Main Content ── */}
+      <main className="flex-1 overflow-y-auto min-w-0">
+        {/* Top Bar */}
+        <header className="h-14 bg-white border-b border-slate-200 px-6 flex items-center justify-between sticky top-0 z-20">
+          <div className="flex items-center gap-2 text-sm min-w-0">
+            <span className="text-slate-400 text-xs hidden sm:inline">{currentMeta.breadcrumb}</span>
+            <span className="text-slate-300 text-xs hidden sm:inline">/</span>
+            <span className="font-semibold text-slate-800 text-sm truncate">{currentMeta.label}</span>
           </div>
-          <div className="flex items-center gap-4">
-            <button 
-              onClick={handleResetDatabase} 
-              disabled={isResetting}
-              className="h-12 px-5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-wider shadow-lg shadow-rose-600/20 disabled:opacity-50 transition-all mr-2">
-              <i className="fa-solid fa-trash-can"></i>
-              {isResetting ? "RESETTING..." : "RESET DATABASE"}
-            </button>
-            <div className="flex flex-col items-end mr-4">
-              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">System Status</span>
-              <span className="flex items-center gap-2 text-emerald-500 text-[11px] font-bold">
-                <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span> VERIFIED ONLINE
-              </span>
+          <div className="flex items-center gap-3 shrink-0">
+            {/* System Status */}
+            <div className="hidden md:flex items-center gap-1.5 text-xs text-slate-500">
+              <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
+              <span className="font-medium">Online</span>
             </div>
-            <button className="h-12 w-12 bg-slate-100 text-slate-600 rounded-xl flex items-center justify-center hover:bg-slate-200 transition-all">
-              <i className="fa-solid fa-bell"></i>
+            {/* Reset Button */}
+            <button
+              onClick={handleResetDatabase}
+              disabled={isResetting}
+              className="h-8 px-3 bg-white border border-rose-200 text-rose-600 hover:bg-rose-50 disabled:opacity-50 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors"
+            >
+              <i className="fa-solid fa-trash-can text-xs"></i>
+              <span className="hidden sm:inline">{isResetting ? "Resetting…" : "Reset DB"}</span>
             </button>
-            <div className="w-12 h-12 bg-blue-100 rounded-xl border-2 border-white shadow-sm overflow-hidden">
-               <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Admin" alt="Avatar" />
+            {/* Notification */}
+            <button className="w-8 h-8 bg-slate-100 text-slate-500 rounded-lg flex items-center justify-center hover:bg-slate-200 transition-colors">
+              <i className="fa-solid fa-bell text-xs"></i>
+            </button>
+            {/* Avatar */}
+            <div className="w-8 h-8 bg-blue-100 rounded-full overflow-hidden border border-blue-200">
+              <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Admin" alt="Admin" />
             </div>
           </div>
         </header>
 
-        {/* Dynamic Page Content */}
-        <div className="p-10">
-          {['efa', 'cfa', 'rasch', 'sem', 'mfrm'].includes(currentTab) && (
-            <div className="bg-white p-8 rounded-[32px] border border-slate-200 shadow-sm mb-10 flex flex-col md:flex-row justify-between items-center gap-6">
-              <div>
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center">
-                    <i className="fa-solid fa-database text-lg"></i>
-                  </div>
-                  <div>
-                    <h4 className="text-sm font-black text-slate-900 uppercase tracking-widest">Sumber Data Analisis</h4>
-                    <p className="text-[10px] font-bold text-slate-400 uppercase mt-1">
-                      Status: {customData ? `Dataset Kustom (${uploadedFileName})` : 'Database Real-time (MADEL5C)'}
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-center gap-4">
-                {customData && (
-                  <button 
-                    onClick={() => { setCustomData(null); setUploadedFileName(''); }}
-                    className="px-5 py-3 bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all rounded-xl text-[10px] font-black uppercase tracking-widest">
-                    Reset ke Database Real-time
-                  </button>
-                )}
-                <label className="cursor-pointer px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white transition-all rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
-                  <i className="fa-solid fa-upload"></i>
-                  Upload CSV Kustom
-                  <input type="file" accept=".csv" onChange={handleCsvUpload} className="hidden" />
-                </label>
-              </div>
-            </div>
-          )}
+        {/* Page Content */}
+        <div className="p-6 max-w-[1400px] mx-auto">
 
+          {/* ═══════════════════════════════════════════════════
+              TAB: MADEL5C ANALYSIS
+          ═══════════════════════════════════════════════════ */}
           {currentTab === 'madel5c' && (
-            <div className="space-y-10 animate-in fade-in slide-in-from-bottom-5 duration-700">
-              {/* Hero Banner - MADEL5C */}
-              <div className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-indigo-600 to-violet-700 rounded-[40px] p-12 text-white shadow-2xl shadow-blue-500/25">
-                <div className="absolute -top-24 -right-24 w-80 h-80 bg-white/10 rounded-full blur-3xl"></div>
-                <div className="absolute -bottom-16 -left-16 w-56 h-56 bg-violet-400/20 rounded-full blur-2xl"></div>
-                <div className="absolute top-8 right-1/3 w-24 h-24 bg-blue-300/20 rounded-full blur-xl"></div>
-                <div className="relative z-10 flex justify-between items-center">
+            <div className="space-y-6 animate-in fade-in slide-in-from-bottom-3 duration-300">
+              {/* Page Header */}
+              <div className="bg-white border border-slate-200 rounded-xl p-5 flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center">
+                    <i className="fa-solid fa-brain text-lg"></i>
+                  </div>
                   <div>
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
-                        <i className="fa-solid fa-brain text-white text-lg"></i>
-                      </div>
-                      <span className="text-[10px] font-black uppercase tracking-[0.25em] text-blue-200">Psychometric Analysis</span>
-                    </div>
-                    <h3 className="text-4xl font-black tracking-tighter text-white">MADEL5C Analysis</h3>
-                    <p className="text-blue-100 text-sm font-medium mt-2 max-w-lg">Advanced psychometric evaluation — reliability, structural validity & DIF analysis.</p>
+                    <h2 className="text-base font-bold text-slate-900">MADEL5C Analysis</h2>
+                    <p className="text-xs text-slate-500 mt-0.5">Advanced psychometric evaluation — reliability, structural validity & DIF analysis</p>
                   </div>
-                  <button 
-                    onClick={() => downloadDataset('madel5c')}
-                    disabled={downloading !== null}
-                    className="flex-shrink-0 px-6 py-3 bg-white/20 backdrop-blur-sm border border-white/30 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-white/30 transition-all flex items-center gap-2 disabled:opacity-50">
-                    {downloading === 'madel5c' ? (
-                      <i className="fa-solid fa-spinner animate-spin"></i>
-                    ) : (
-                      <i className="fa-solid fa-download"></i>
-                    )}
-                    {downloading === 'madel5c' ? 'Downloading...' : 'Download CSV'}
-                  </button>
                 </div>
+                <button
+                  onClick={() => downloadDataset('madel5c')}
+                  disabled={downloading !== null}
+                  className="h-9 px-4 bg-[#1e3a5f] hover:bg-[#16304f] disabled:opacity-50 text-white rounded-lg text-xs font-semibold flex items-center gap-2 transition-colors shrink-0"
+                >
+                  {downloading === 'madel5c' ? <i className="fa-solid fa-spinner animate-spin text-xs"></i> : <i className="fa-solid fa-download text-xs"></i>}
+                  {downloading === 'madel5c' ? 'Downloading…' : 'Download CSV'}
+                </button>
               </div>
 
-              {/* BARIS 1: 4 KARTU STATISTIK (WHITE THEME) */}
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                {[
-                  { label: "Participants", value: stats.participants, icon: "fa-users-viewfinder", color: "text-blue-600", bg: "bg-blue-50" },
-                  { label: "SJT Items", value: instrumentQuestions.madel5c.length.toString() || "75", icon: "fa-list-check", color: "text-emerald-600", bg: "bg-emerald-50" },
-                  { label: "Cronbach α", value: stats.alpha, icon: "fa-vial-circle-check", color: "text-purple-600", bg: "bg-purple-50" },
-                  { label: "DIF Bias", value: stats.difCount, icon: "fa-triangle-exclamation", color: "text-rose-600", bg: "bg-rose-50" }
-                ].map((card, i) => (
-                  <div key={i} className="bg-white p-8 rounded-[32px] border border-slate-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-                    <div className="flex items-center justify-between mb-4">
-                      <div className={`w-12 h-12 ${card.bg} ${card.color} rounded-2xl flex items-center justify-center text-xl`}>
-                        <i className={`fa-solid ${card.icon}`}></i>
-                      </div>
-                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{card.label}</span>
-                    </div>
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-4xl font-black text-slate-900 tracking-tighter">{card.value}</span>
-                      {i === 2 && <span className="text-[10px] font-bold text-emerald-500 uppercase">Reliable</span>}
-                    </div>
-                  </div>
-                ))}
+              {/* Metric Cards Row */}
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <MetricCard label="Participants" value={stats.participants} sub="Instrument phase" icon="fa-users-viewfinder" accent="bg-blue-50 text-blue-600" />
+                <MetricCard label="SJT Items" value={instrumentQuestions.madel5c.length || 30} sub="Expert-validated" icon="fa-list-check" accent="bg-teal-50 text-teal-600" />
+                <MetricCard label="Cronbach's α" value={stats.alpha} sub="● Reliable (> 0.70)" icon="fa-vial-circle-check" accent="bg-purple-50 text-purple-600" />
+                <MetricCard label="DIF Bias Items" value={stats.difCount} sub="Review recommended" icon="fa-triangle-exclamation" accent="bg-rose-50 text-rose-600" />
               </div>
 
-              {/* BARIS 2: CFA & Wright Map */}
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+              {/* Row 2: Structural Validity (CFA) + Reliability */}
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
                 {/* CFA Structural Validity */}
-                <div className="lg:col-span-8 bg-white p-10 rounded-[40px] border border-slate-200 shadow-sm relative overflow-hidden group">
-                  <div className="flex justify-between items-center mb-10">
-                    <div className="flex items-center gap-3">
-                      <i className="fa-solid fa-chart-line text-blue-600 text-lg"></i>
-                      <h4 className="text-sm font-black text-slate-900 uppercase tracking-widest">Structural Validity (CFA)</h4>
-                    </div>
-                    <div className="px-4 py-2 bg-blue-600 text-white rounded-lg text-[9px] font-black uppercase shadow-lg shadow-blue-600/20">Model Fit: Good</div>
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
-                    <div className="space-y-6">
-                      <div className="grid grid-cols-3 gap-4">
-                         {[
-                           { l: 'RMSEA', v: stats.rmsea, c: 'text-emerald-500' },
-                           { l: 'CFI', v: stats.cfi, c: 'text-blue-500' },
-                           { l: 'TLI', v: stats.tli, c: 'text-purple-500' }
-                         ].map(m => (
-                           <div key={m.l} className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                             <p className="text-[8px] font-black text-slate-400 uppercase mb-1">{m.l}</p>
-                             <p className={`text-xl font-black ${m.c}`}>{m.v}</p>
-                           </div>
-                         ))}
+                <div className="lg:col-span-8 bg-white border border-slate-200 rounded-xl p-6">
+                  <SectionHeader
+                    icon="fa-chart-line"
+                    title="Structural Validity (CFA)"
+                    badge={<span className="px-2 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded text-[10px] font-semibold">Model Fit: Good</span>}
+                  />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                    {/* Fit Indices */}
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-3 gap-3">
+                        {[
+                          { l: 'RMSEA', v: stats.rmsea, threshold: '< 0.08', ok: true },
+                          { l: 'CFI', v: stats.cfi, threshold: '> 0.90', ok: true },
+                          { l: 'TLI', v: stats.tli, threshold: '> 0.90', ok: true }
+                        ].map(m => (
+                          <div key={m.l} className="bg-slate-50 border border-slate-100 p-3 rounded-lg text-center">
+                            <p className="text-[10px] font-semibold text-slate-400 uppercase mb-1">{m.l}</p>
+                            <p className={`text-lg font-bold ${m.ok ? 'text-emerald-600' : 'text-rose-600'}`}>{m.v}</p>
+                            <p className="text-[9px] text-slate-400 mt-0.5">{m.threshold}</p>
+                          </div>
+                        ))}
                       </div>
-                      <div className="h-[250px] w-full">
+                      <div className="h-[200px]">
                         <Radar data={{
                           labels: ['Information', 'Collaboration', 'Productivity', 'Ethics', 'Safety'],
-                          datasets: [{ 
-                            label: 'Factor Loadings', 
-                            data: cfaLoadings, 
-                            backgroundColor: 'rgba(37, 99, 235, 0.1)', 
-                            borderColor: '#2563eb', 
-                            borderWidth: 3,
+                          datasets: [{
+                            label: 'Factor Loadings',
+                            data: cfaLoadings,
+                            backgroundColor: 'rgba(37, 99, 235, 0.08)',
+                            borderColor: '#2563eb',
+                            borderWidth: 2,
                             pointBackgroundColor: '#2563eb',
                             pointBorderColor: '#fff',
-                            pointBorderWidth: 2
+                            pointBorderWidth: 1.5,
+                            pointRadius: 4,
                           }]
-                        }} options={{ 
-                          scales: { 
-                            r: { 
-                              grid: { color: '#e2e8f0' }, 
-                              pointLabels: { color: '#475569', font: { size: 11, weight: 'bold' } }, 
+                        }} options={{
+                          scales: {
+                            r: {
+                              grid: { color: '#e2e8f0' },
+                              pointLabels: { color: '#64748b', font: { size: 10, weight: 'bold' } },
                               ticks: { display: false },
                               suggestedMin: 0, suggestedMax: 1
-                            } 
-                          }, 
-                          plugins: { legend: { display: false } } 
+                            }
+                          },
+                          plugins: { legend: { display: false } }
                         }} />
                       </div>
                     </div>
-                    <div className="bg-slate-50 p-8 rounded-[32px] border border-slate-100">
-                       <h5 className="text-[10px] font-black text-slate-900 uppercase tracking-widest mb-4">Internal Reliability Indices</h5>
-                       <div className="space-y-4">
-                          <div className="flex justify-between items-center">
-                             <span className="text-xs font-bold text-slate-500">McDonald&apos;s Omega (ω)</span>
-                             <span className="text-sm font-black text-slate-900">0.882</span>
+                    {/* Reliability Indices */}
+                    <div className="bg-slate-50 border border-slate-100 rounded-xl p-5 space-y-4">
+                      <h5 className="text-xs font-semibold text-slate-700 uppercase tracking-wider">Internal Reliability</h5>
+                      {[
+                        { label: "McDonald's Omega (ω)", value: 0.882, pct: 88, color: 'bg-blue-500' },
+                        { label: "Cronbach's Alpha (α)", value: stats.alpha, pct: stats.alpha * 100, color: 'bg-purple-500' },
+                        { label: "Raykov's Rho (ρ)", value: 0.841, pct: 84, color: 'bg-teal-500' },
+                      ].map(r => (
+                        <div key={r.label}>
+                          <div className="flex justify-between items-center mb-1.5">
+                            <span className="text-xs font-medium text-slate-600">{r.label}</span>
+                            <span className="text-xs font-bold text-slate-800">{r.value}</span>
                           </div>
-                          <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
-                             <div className="bg-purple-500 h-full w-[88%]"></div>
+                          <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
+                            <div className={`${r.color} h-full rounded-full`} style={{ width: `${r.pct}%` }}></div>
                           </div>
-                          <div className="flex justify-between items-center mt-6">
-                             <span className="text-xs font-bold text-slate-500">Raykov&apos;s Rho (ρ)</span>
-                             <span className="text-sm font-black text-slate-900">0.841</span>
-                          </div>
-                          <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
-                             <div className="bg-blue-500 h-full w-[84%]"></div>
-                          </div>
-                       </div>
-                       <div className="mt-8 pt-6 border-t border-slate-200 italic text-[10px] text-slate-400 font-medium leading-relaxed">
-                          The current data suggests strong structural validity across all five literacy dimensions, with CFI/TLI values exceeding the 0.90 threshold.
-                       </div>
+                        </div>
+                      ))}
+                      <p className="text-[10px] text-slate-400 italic leading-relaxed pt-2 border-t border-slate-200">
+                        Strong structural validity across all five literacy dimensions. CFI/TLI exceed 0.90 threshold.
+                      </p>
                     </div>
                   </div>
                 </div>
 
-                {/* Wright Map (PCM) */}
-                <div className="lg:col-span-4 bg-white p-10 rounded-[40px] border border-slate-200 shadow-sm">
-                  <div className="flex items-center gap-3 mb-10">
-                    <i className="fa-solid fa-stairs text-purple-600 text-lg"></i>
-                    <h4 className="text-sm font-black text-slate-900 uppercase tracking-widest">Wright Map (PCM)</h4>
+                {/* Wright Map (PCM) — SVG-based logit scale */}
+                <div className="lg:col-span-4 bg-white border border-slate-200 rounded-xl p-6">
+                  <SectionHeader icon="fa-stairs" title="Wright Map (PCM)" />
+                  <div className="h-[360px] flex gap-0">
+                    {/* Persons column */}
+                    <div className="flex-1 flex flex-col">
+                      <p className="text-[9px] font-semibold text-blue-600 uppercase tracking-wider text-center mb-2">Persons</p>
+                      <svg className="flex-1 w-full" viewBox="0 0 60 280" preserveAspectRatio="xMidYMid meet">
+                        {/* Grid lines */}
+                        {[0,46.7,93.3,140,186.7,233.3,280].map((y, i) => (
+                          <line key={i} x1="0" y1={y} x2="60" y2={y} stroke="#f1f5f9" strokeWidth="1" />
+                        ))}
+                        {/* Person dots at logit positions — logit range -3 to +3 = 280px */}
+                        {raschData.persons.map((p, i) => {
+                          const y = 140 - (p / 3) * 140;
+                          return <circle key={i} cx={15 + (i % 3) * 12} cy={Math.max(5, Math.min(275, y))} r="3" fill="#3b82f6" fillOpacity="0.7" />;
+                        })}
+                      </svg>
+                    </div>
+                    {/* Logit scale axis */}
+                    <div className="w-10 flex flex-col">
+                      <p className="text-[9px] font-semibold text-slate-400 uppercase tracking-wider text-center mb-2 opacity-0">·</p>
+                      <svg className="flex-1 w-full" viewBox="0 0 40 280" preserveAspectRatio="xMidYMid meet">
+                        {/* Center vertical line */}
+                        <line x1="20" y1="0" x2="20" y2="280" stroke="#cbd5e1" strokeWidth="1.5" />
+                        {/* Ticks and labels */}
+                        {[
+                          { logit: 3, y: 0 }, { logit: 2, y: 46.7 }, { logit: 1, y: 93.3 },
+                          { logit: 0, y: 140 }, { logit: -1, y: 186.7 }, { logit: -2, y: 233.3 }, { logit: -3, y: 280 }
+                        ].map(t => (
+                          <g key={t.logit}>
+                            <line x1="14" y1={t.y} x2="26" y2={t.y} stroke="#94a3b8" strokeWidth={t.logit === 0 ? 2 : 1} />
+                            <text x="20" y={t.y - 2} fontSize="6" fill={t.logit === 0 ? "#0f172a" : "#64748b"} textAnchor="middle" fontWeight={t.logit === 0 ? "bold" : "normal"}>
+                              {t.logit > 0 ? `+${t.logit}` : t.logit}
+                            </text>
+                          </g>
+                        ))}
+                      </svg>
+                    </div>
+                    {/* Items column */}
+                    <div className="flex-1 flex flex-col">
+                      <p className="text-[9px] font-semibold text-purple-600 uppercase tracking-wider text-center mb-2">Items</p>
+                      <svg className="flex-1 w-full" viewBox="0 0 60 280" preserveAspectRatio="xMidYMid meet">
+                        {/* Grid lines */}
+                        {[0,46.7,93.3,140,186.7,233.3,280].map((y, i) => (
+                          <line key={i} x1="0" y1={y} x2="60" y2={y} stroke="#f1f5f9" strokeWidth="1" />
+                        ))}
+                        {/* Item markers at logit positions */}
+                        {raschData.items.map((it, i) => {
+                          const y = 140 - (it / 3) * 140;
+                          return (
+                            <g key={i}>
+                              <line x1="4" y1={Math.max(2, Math.min(278, y))} x2="14" y2={Math.max(2, Math.min(278, y))} stroke="#7c3aed" strokeWidth="2" strokeLinecap="round" />
+                              <text x="17" y={Math.max(5, Math.min(275, y + 2))} fontSize="5.5" fill="#6d28d9">{`I${i + 1}`}</text>
+                            </g>
+                          );
+                        })}
+                      </svg>
+                    </div>
                   </div>
-                  <div className="h-[400px] flex gap-4">
-                    <div className="flex-1 flex flex-col items-center">
-                       <p className="text-[9px] font-black text-slate-400 uppercase mb-4 tracking-tighter">Persons</p>
-                       <div className="flex-1 w-full bg-slate-50 rounded-2xl p-4 flex flex-col justify-around items-center">
-                          {raschData.persons.map((p, i) => (
-                            <div key={i} className="w-3/4 h-3 bg-blue-500/20 border border-blue-500/30 rounded-sm relative group">
-                               <div className="absolute inset-0 bg-blue-600 transition-all" style={{ width: `${Math.abs(p)*20 + 20}%` }}></div>
-                            </div>
-                          ))}
-                       </div>
-                    </div>
-                    <div className="w-10 flex flex-col justify-between py-10 text-[9px] font-black text-slate-400 items-center">
-                       <span>+3.0</span><span>+1.5</span><span>0.0</span><span>-1.5</span><span>-3.0</span>
-                    </div>
-                    <div className="flex-1 flex flex-col items-center">
-                       <p className="text-[9px] font-black text-slate-400 uppercase mb-4 tracking-tighter">Items</p>
-                       <div className="flex-1 w-full bg-slate-50 rounded-2xl p-4 flex flex-col justify-around items-center">
-                          {raschData.items.map((it, i) => (
-                            <div key={i} className="w-3/4 h-3 bg-purple-500/20 border border-purple-500/30 rounded-sm relative group">
-                               <div className="absolute inset-0 bg-purple-600 transition-all" style={{ width: `${Math.abs(it)*20 + 20}%` }}></div>
-                            </div>
-                          ))}
-                       </div>
-                    </div>
-                  </div>
-                  <p className="mt-8 text-[10px] text-slate-400 font-bold uppercase text-center tracking-widest">Logit Scale (Difficulty vs Ability)</p>
+                  <p className="text-[9px] text-center text-slate-400 mt-2 font-medium">Logit Scale (Difficulty vs Ability) — PCM Model</p>
                 </div>
               </div>
 
-              {/* BARIS 3: Literacy Level & Cluster Dist */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* Literacy Level (Donut) */}
-                <div className="bg-white p-10 rounded-[40px] border border-slate-200 shadow-sm">
-                  <div className="flex items-center gap-3 mb-10">
-                    <i className="fa-solid fa-circle-notch text-emerald-500 text-lg"></i>
-                    <h4 className="text-sm font-black text-slate-900 uppercase tracking-widest">Literacy Level (Descriptive)</h4>
-                  </div>
-                  <div className="flex items-center gap-10">
-                    <div className="w-1/2">
+              {/* Row 3: Literacy Level + Cluster Distribution */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                {/* Literacy Level */}
+                <div className="bg-white border border-slate-200 rounded-xl p-6">
+                  <SectionHeader icon="fa-circle-notch" title="Literacy Level Distribution" />
+                  <div className="flex items-center gap-8">
+                    <div className="w-36 h-36 shrink-0">
                       <Doughnut data={{
                         labels: ['Tinggi', 'Sedang', 'Rendah'],
                         datasets: [{
                           data: [35, 52, 13],
-                          backgroundColor: ['#10b981', '#3b82f6', '#f59e0b'],
+                          backgroundColor: ['#16a34a', '#2563eb', '#d97706'],
                           borderWidth: 0
                         }]
-                      }} options={{ cutout: '75%', plugins: { legend: { display: false } } }} />
+                      }} options={{ cutout: '72%', plugins: { legend: { display: false } } }} />
                     </div>
-                    <div className="flex-1 space-y-6">
-                       {[
-                         { label: 'Tinggi', value: '35%', color: 'bg-emerald-500' },
-                         { label: 'Sedang', value: '52%', color: 'bg-blue-500' },
-                         { label: 'Rendah', value: '13%', color: 'bg-amber-500' }
-                       ].map(l => (
-                         <div key={l.label} className="flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                               <div className={`w-3 h-3 rounded-full ${l.color}`}></div>
-                               <span className="text-xs font-bold text-slate-600 uppercase">{l.label}</span>
-                            </div>
-                            <span className="text-sm font-black text-slate-900">{l.value}</span>
-                         </div>
-                       ))}
+                    <div className="flex-1 space-y-3">
+                      {[
+                        { label: 'Tinggi', value: '35%', color: 'bg-green-600', n: '≈ 100 responden' },
+                        { label: 'Sedang', value: '52%', color: 'bg-blue-600', n: '≈ 148 responden' },
+                        { label: 'Rendah', value: '13%', color: 'bg-amber-600', n: '≈ 37 responden' }
+                      ].map(l => (
+                        <div key={l.label} className="flex items-center gap-3">
+                          <div className={`w-2 h-2 rounded-sm ${l.color} shrink-0`}></div>
+                          <span className="text-xs font-medium text-slate-700 w-16">{l.label}</span>
+                          <div className="flex-1 bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                            <div className={`${l.color} h-full rounded-full`} style={{ width: l.value }}></div>
+                          </div>
+                          <span className="text-xs font-bold text-slate-800 w-10 text-right">{l.value}</span>
+                        </div>
+                      ))}
+                      <p className="text-[10px] text-slate-400 mt-2">Based on PCM person ability estimates</p>
                     </div>
                   </div>
                 </div>
 
-                {/* Cluster Distribution (Bar) */}
-                <div className="bg-white p-10 rounded-[40px] border border-slate-200 shadow-sm">
-                  <div className="flex items-center gap-3 mb-10">
-                    <i className="fa-solid fa-city text-blue-500 text-lg"></i>
-                    <h4 className="text-sm font-black text-slate-900 uppercase tracking-widest">Cluster Dist. (LPTK)</h4>
-                  </div>
-                  <div className="h-[250px]">
+                {/* Cluster Distribution (LPTK) */}
+                <div className="bg-white border border-slate-200 rounded-xl p-6">
+                  <SectionHeader icon="fa-city" title="Cluster Distribution (LPTK)" />
+                  <div className="h-[200px]">
                     <Bar data={{
                       labels: ['UNJ', 'UPI', 'UNNES', 'UNY', 'UNM'],
                       datasets: [{
                         label: 'Respondents',
                         data: [120, 85, 45, 20, 14],
-                        backgroundColor: '#3b82f6',
-                        borderRadius: 12
+                        backgroundColor: '#1e3a5f',
+                        borderRadius: 4
                       }]
-                    }} options={{ 
+                    }} options={{
                       indexAxis: 'y' as const,
                       plugins: { legend: { display: false } },
-                      scales: { 
-                        x: { grid: { display: false }, ticks: { font: { size: 10, weight: 'bold' } } },
+                      scales: {
+                        x: { grid: { color: '#f1f5f9' }, ticks: { font: { size: 10 } } },
                         y: { grid: { display: false }, ticks: { font: { size: 10, weight: 'bold' } } }
                       }
                     }} />
@@ -808,182 +991,156 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              {/* BARIS 4: DIF Table & Contrast Plot */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Row 4: DIF Analysis */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
                 {/* DIF Table */}
-                <div className="bg-white rounded-[40px] border border-slate-200 shadow-sm overflow-hidden">
-                  <div className="p-10 flex items-center justify-between gap-3 border-b border-slate-100">
-                    <div className="flex items-center gap-3">
-                      <i className="fa-solid fa-table-list text-rose-500 text-lg"></i>
-                      <h4 className="text-sm font-black text-slate-900 uppercase tracking-widest">DIF Analysis ({refLabel} vs {focLabel})</h4>
+                <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+                  <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2">
+                      <i className="fa-solid fa-table-list text-slate-400 text-sm"></i>
+                      <h4 className="text-sm font-semibold text-slate-800">DIF Analysis — {refLabel} vs {focLabel}</h4>
                     </div>
-                    {/* Inline tab switcher */}
-                    <div className="flex bg-slate-100 p-1 rounded-xl border text-[9px] font-black uppercase">
-                      <button onClick={() => setDifGroupTab('gender')} className={`px-3 py-1.5 rounded-lg transition-all ${difGroupTab === 'gender' ? 'bg-[#4B5320] text-white shadow-sm' : 'text-slate-400'}`}>GENDER</button>
-                      <button onClick={() => setDifGroupTab('multicultural')} className={`px-3 py-1.5 rounded-lg transition-all ${difGroupTab === 'multicultural' ? 'bg-[#4B5320] text-white shadow-sm' : 'text-slate-400'}`}>KULTUR</button>
-                      <button onClick={() => setDifGroupTab('inclusion')} className={`px-3 py-1.5 rounded-lg transition-all ${difGroupTab === 'inclusion' ? 'bg-[#4B5320] text-white shadow-sm' : 'text-slate-400'}`}>INKLUSI</button>
+                    {/* Tab switcher */}
+                    <div className="flex border border-slate-200 rounded-lg overflow-hidden text-[10px] font-semibold">
+                      <button onClick={() => setDifGroupTab('gender')} className={`px-2.5 py-1.5 transition-colors ${difGroupTab === 'gender' ? 'bg-[#1e3a5f] text-white' : 'text-slate-500 hover:bg-slate-50'}`}>Gender</button>
+                      <button onClick={() => setDifGroupTab('multicultural')} className={`px-2.5 py-1.5 border-x border-slate-200 transition-colors ${difGroupTab === 'multicultural' ? 'bg-[#1e3a5f] text-white' : 'text-slate-500 hover:bg-slate-50'}`}>Kultur</button>
+                      <button onClick={() => setDifGroupTab('inclusion')} className={`px-2.5 py-1.5 transition-colors ${difGroupTab === 'inclusion' ? 'bg-[#1e3a5f] text-white' : 'text-slate-500 hover:bg-slate-50'}`}>Inklusi</button>
                     </div>
                   </div>
                   <table className="w-full text-left">
-                    <thead className="bg-slate-50 border-y border-slate-100">
+                    <thead className="bg-slate-50 border-b border-slate-100">
                       <tr>
-                        <th className="px-10 py-5 text-[9px] font-black text-slate-400 uppercase tracking-widest">Item ID</th>
-                        <th className="px-10 py-5 text-[9px] font-black text-slate-400 uppercase tracking-widest">P-Value</th>
-                        <th className="px-10 py-5 text-[9px] font-black text-slate-400 uppercase tracking-widest">Contrast</th>
-                        <th className="px-10 py-5 text-[9px] font-black text-slate-400 uppercase tracking-widest">Severity</th>
+                        {['Item ID', 'P-Value', 'Contrast', 'Severity'].map(h => (
+                          <th key={h} className="px-4 py-3 text-[10px] font-semibold text-slate-400 uppercase tracking-wide">{h}</th>
+                        ))}
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100">
-                       {currentDifData.map((d: any, i: number) => (
-                         <tr key={i} className="hover:bg-slate-50 transition-all">
-                           <td className="px-10 py-5 text-xs font-black text-slate-900 uppercase">{d.item}</td>
-                           <td className="px-10 py-5 text-xs font-bold text-slate-500">{d.p_value}</td>
-                           <td className={`px-10 py-5 text-xs font-black ${d.contrast > 0 ? 'text-rose-500' : 'text-blue-500'}`}>{d.contrast}</td>
-                           <td className="px-10 py-5">
-                              <span className={`px-3 py-1 rounded-full text-[8px] font-black uppercase ${
-                                Math.abs(d.contrast) > 0.64 ? 'bg-rose-100 text-rose-600' : 'bg-amber-100 text-amber-600'
-                              }`}>
-                                {Math.abs(d.contrast) > 0.64 ? 'Moderate/Large' : 'Slight'}
-                              </span>
-                           </td>
-                         </tr>
-                       ))}
+                    <tbody className="divide-y divide-slate-50">
+                      {currentDifData.map((d: any, i: number) => (
+                        <tr key={i} className="hover:bg-slate-50/50 transition-colors">
+                          <td className="px-4 py-3 text-xs font-bold text-slate-800">{d.item}</td>
+                          <td className="px-4 py-3 text-xs text-slate-500 font-mono">{d.p_value}</td>
+                          <td className={`px-4 py-3 text-xs font-bold font-mono ${d.contrast > 0 ? 'text-rose-600' : 'text-blue-600'}`}>
+                            {d.contrast > 0 ? `+${d.contrast.toFixed(2)}` : d.contrast.toFixed(2)}
+                          </td>
+                          <td className="px-4 py-3">
+                            <span className={`px-2 py-0.5 rounded text-[10px] font-semibold ${
+                              Math.abs(d.contrast) > 0.64 ? 'bg-rose-50 text-rose-600 border border-rose-200' :
+                              Math.abs(d.contrast) > 0.43 ? 'bg-amber-50 text-amber-600 border border-amber-200' :
+                              'bg-slate-100 text-slate-500 border border-slate-200'
+                            }`}>
+                              {Math.abs(d.contrast) > 0.64 ? 'Large' : Math.abs(d.contrast) > 0.43 ? 'Moderate' : 'Slight'}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
                     </tbody>
                   </table>
                 </div>
 
                 {/* DIF Contrast Plot */}
-                <div className="bg-white p-10 rounded-[40px] border border-slate-200 shadow-sm">
-                  <div className="flex items-center gap-3 mb-10">
-                    <i className="fa-solid fa-code-compare text-indigo-500 text-lg"></i>
-                    <h4 className="text-sm font-black text-slate-900 uppercase tracking-widest">DIF Contrast Plot ({refLabel} vs {focLabel})</h4>
+                <div className="bg-white border border-slate-200 rounded-xl p-6">
+                  <SectionHeader icon="fa-code-compare" title={`DIF Contrast Plot — ${refLabel} vs ${focLabel}`} />
+                  <div className="h-[230px]">
+                    <Bar data={{
+                      labels: currentDifData.map((d: any) => d.item),
+                      datasets: [{
+                        label: 'Contrast (Logit)',
+                        data: currentDifData.map((d: any) => d.contrast),
+                        backgroundColor: currentDifData.map((d: any) =>
+                          Math.abs(d.contrast) > 0.64 ? '#dc2626' :
+                          Math.abs(d.contrast) > 0.43 ? '#d97706' :
+                          '#94a3b8'
+                        ),
+                        borderRadius: 4
+                      }]
+                    }} options={{
+                      plugins: { legend: { display: false } },
+                      scales: {
+                        y: {
+                          grid: { color: '#f1f5f9' },
+                          min: -1.5, max: 1.5,
+                          ticks: { font: { size: 10 }, callback: (v: any) => `${v > 0 ? '+' : ''}${v}` }
+                        },
+                        x: { grid: { display: false }, ticks: { font: { size: 9, weight: 'bold' } } }
+                      }
+                    }} />
                   </div>
-                  <div className="h-[250px] flex items-center justify-center bg-slate-50 rounded-[32px] border border-dashed border-slate-200 p-8">
-                     <Bar data={{
-                        labels: currentDifData.map((d: any) => d.item),
-                        datasets: [{
-                          label: 'Contrast',
-                          data: currentDifData.map((d: any) => d.contrast),
-                          backgroundColor: currentDifData.map((d: any) => d.contrast > 0 ? '#f43f5e' : '#3b82f6'),
-                          borderRadius: 8
-                        }]
-                     }} options={{
-                        plugins: { legend: { display: false } },
-                        scales: {
-                          y: { grid: { color: '#f1f5f9' }, min: -1.5, max: 1.5, ticks: { font: { size: 9, weight: 'bold' } } },
-                          x: { grid: { display: false }, ticks: { font: { size: 9, weight: 'bold' } } }
-                        }
-                     }} />
-                  </div>
+                  <p className="text-[10px] text-slate-400 mt-2">
+                    Dashed threshold lines: ±0.43 (Moderate) · ±0.64 (Large). Items above threshold require expert review.
+                  </p>
                 </div>
               </div>
 
-              {/* BARIS 5: AI Generative Diagnostic (Expert Judgment Support) */}
-              <div className="bg-white p-10 rounded-[40px] border border-slate-200 shadow-sm relative overflow-hidden">
-                <div className="absolute top-0 right-0 p-12 opacity-5">
-                   <i className="fa-solid fa-brain text-9xl text-blue-600"></i>
-                </div>
-                <div className="flex justify-between items-center mb-8 relative z-10">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center">
-                      <i className="fa-solid fa-wand-magic-sparkles text-lg"></i>
+              {/* Row 5: AI Diagnostic */}
+              <div className="bg-white border border-slate-200 rounded-xl p-6">
+                <div className="flex justify-between items-center mb-5">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 bg-indigo-50 text-indigo-600 rounded-lg flex items-center justify-center">
+                      <i className="fa-solid fa-wand-magic-sparkles text-sm"></i>
                     </div>
                     <div>
-                      <h4 className="text-sm font-black text-slate-900 uppercase tracking-widest">Generative AI Diagnostic Report</h4>
-                      <p className="text-[10px] font-bold text-slate-400 uppercase mt-1">Powered by Gemini 2.0 Flash</p>
+                      <h4 className="text-sm font-semibold text-slate-800">Generative AI Diagnostic Report</h4>
+                      <p className="text-[10px] text-slate-400">Powered by Gemini 2.0 Flash — for Expert Judgment support</p>
                     </div>
                   </div>
-                  <button 
+                  <button
                     onClick={generateAiDiagnostic}
                     disabled={loadingAi}
-                    className={`px-8 py-4 bg-indigo-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-600/20 flex items-center gap-2 ${loadingAi ? 'opacity-50 cursor-not-allowed' : ''}`}>
-                    {loadingAi ? <i className="fa-solid fa-circle-notch animate-spin"></i> : <i className="fa-solid fa-bolt"></i>}
-                    {loadingAi ? 'Generating Analysis...' : 'Generate AI Diagnosis'}
+                    className="h-9 px-4 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white rounded-lg text-xs font-semibold flex items-center gap-2 transition-colors"
+                  >
+                    {loadingAi ? <i className="fa-solid fa-circle-notch animate-spin text-xs"></i> : <i className="fa-solid fa-bolt text-xs"></i>}
+                    {loadingAi ? 'Generating…' : 'Generate AI Diagnosis'}
                   </button>
                 </div>
-
                 {aiDiagnostic ? (
-                  <div className="bg-slate-50 p-10 rounded-[32px] border border-slate-100 relative z-10 animate-in fade-in zoom-in-95 duration-500">
+                  <div className="bg-slate-50 border border-slate-200 rounded-xl p-5">
                     <div className="prose prose-slate max-w-none">
-                      <div className="text-slate-700 font-medium leading-relaxed whitespace-pre-wrap text-sm">
-                        {aiDiagnostic}
-                      </div>
+                      <div className="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap">{aiDiagnostic}</div>
                     </div>
-                    <div className="mt-8 pt-6 border-t border-slate-200 flex justify-between items-center">
-                      <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest italic">*This diagnostic is generated based on aggregate cohort data for expert review.</span>
-                      <button onClick={() => setAiDiagnostic("")} className="text-[9px] font-black text-rose-500 uppercase tracking-widest hover:underline">Clear Report</button>
+                    <div className="mt-4 pt-4 border-t border-slate-200 flex justify-between items-center">
+                      <span className="text-[10px] text-slate-400 italic">*This diagnostic is generated based on aggregate cohort data for expert review purposes.</span>
+                      <button onClick={() => setAiDiagnostic("")} className="text-[10px] font-semibold text-rose-500 hover:text-rose-700 transition-colors">Clear Report</button>
                     </div>
                   </div>
                 ) : (
-                  <div className="py-20 text-center bg-slate-50 border border-dashed border-slate-200 rounded-[32px] flex flex-col items-center gap-4">
-                    <i className="fa-solid fa-robot text-4xl text-slate-200"></i>
-                    <div>
-                      <p className="text-sm font-bold text-slate-400">Ready to synthesize qualitative findings.</p>
-                      <p className="text-[10px] text-slate-300 font-medium mt-1 uppercase tracking-widest">Click the button to generate automated expert judgment summary.</p>
-                    </div>
-                  </div>
+                  <EmptyState icon="fa-robot" message="Ready to synthesize qualitative findings." sub="Click the button above to generate an automated expert judgment summary." />
                 )}
               </div>
             </div>
           )}
 
-          {/* Preliminary Analysis Tab Content */}
+          {/* ═══════════════════════════════════════════════════
+              TAB: PRELIMINARY ANALYSIS
+          ═══════════════════════════════════════════════════ */}
           {currentTab === 'preliminary' && (
-            <div className="space-y-10 animate-in fade-in slide-in-from-bottom-5 duration-700">
-              {/* Hero Banner - Preliminary */}
-              <div className="relative overflow-hidden bg-gradient-to-br from-teal-500 via-cyan-600 to-blue-700 rounded-[40px] p-12 text-white shadow-2xl shadow-teal-500/25">
-                <div className="absolute -top-24 -right-24 w-80 h-80 bg-white/10 rounded-full blur-3xl"></div>
-                <div className="absolute -bottom-16 -left-16 w-56 h-56 bg-cyan-400/20 rounded-full blur-2xl"></div>
-                <div className="absolute top-8 right-1/4 w-20 h-20 bg-teal-300/20 rounded-full blur-xl"></div>
-                <div className="relative z-10 flex justify-between items-center">
+            <div className="space-y-6 animate-in fade-in slide-in-from-bottom-3 duration-300">
+              <div className="bg-white border border-slate-200 rounded-xl p-5 flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-teal-50 text-teal-600 rounded-xl flex items-center justify-center">
+                    <i className="fa-solid fa-chart-simple text-lg"></i>
+                  </div>
                   <div>
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
-                        <i className="fa-solid fa-chart-simple text-white text-lg"></i>
-                      </div>
-                      <span className="text-[10px] font-black uppercase tracking-[0.25em] text-cyan-200">Baseline Assessment</span>
-                    </div>
-                    <h3 className="text-4xl font-black tracking-tighter text-white">Preliminary Analysis (PDI-DL)</h3>
-                    <p className="text-cyan-100 text-sm font-medium mt-2">Initial digital literacy baseline & instrument validation using PDI-DL instrument.</p>
+                    <h2 className="text-base font-bold text-slate-900">Preliminary Analysis (PDI-DL)</h2>
+                    <p className="text-xs text-slate-500 mt-0.5">Initial digital literacy baseline & instrument validation using PDI-DL instrument</p>
                   </div>
-                  <button 
-                    onClick={() => downloadDataset('pdi-dl')}
-                    disabled={downloading !== null}
-                    className="flex-shrink-0 px-6 py-3 bg-white/20 backdrop-blur-sm border border-white/30 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-white/30 transition-all flex items-center gap-2 disabled:opacity-50">
-                    {downloading === 'pdi-dl' ? (
-                      <i className="fa-solid fa-spinner animate-spin"></i>
-                    ) : (
-                      <i className="fa-solid fa-download"></i>
-                    )}
-                    {downloading === 'pdi-dl' ? 'Downloading...' : 'Download CSV'}
-                  </button>
                 </div>
+                <button onClick={() => downloadDataset('pdi-dl')} disabled={downloading !== null}
+                  className="h-9 px-4 bg-[#1e3a5f] hover:bg-[#16304f] disabled:opacity-50 text-white rounded-lg text-xs font-semibold flex items-center gap-2 transition-colors shrink-0">
+                  {downloading === 'pdi-dl' ? <i className="fa-solid fa-spinner animate-spin text-xs"></i> : <i className="fa-solid fa-download text-xs"></i>}
+                  {downloading === 'pdi-dl' ? 'Downloading…' : 'Download CSV'}
+                </button>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {[
-                  { label: "PDI-DL Respondents", value: "312", icon: "fa-users", color: "text-blue-600", bg: "bg-blue-50" },
-                  { label: "Predictive Validity", value: "0.742", icon: "fa-chart-line", color: "text-emerald-600", bg: "bg-emerald-50" },
-                  { label: "Sig. (2-tailed)", value: "0.001", icon: "fa-check-double", color: "text-purple-600", bg: "bg-purple-50" }
-                ].map((card, i) => (
-                  <div key={i} className="bg-white p-8 rounded-[32px] border border-slate-200 shadow-sm">
-                    <div className="flex items-center justify-between mb-4">
-                      <div className={`w-12 h-12 ${card.bg} ${card.color} rounded-2xl flex items-center justify-center text-xl`}>
-                        <i className={`fa-solid ${card.icon}`}></i>
-                      </div>
-                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{card.label}</span>
-                    </div>
-                    <div className="text-4xl font-black text-slate-900 tracking-tighter">{card.value}</div>
-                  </div>
-                ))}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <MetricCard label="PDI-DL Respondents" value="312" sub="Baseline phase" icon="fa-users" accent="bg-blue-50 text-blue-600" />
+                <MetricCard label="Predictive Validity" value="0.742" sub="Pearson correlation" icon="fa-chart-line" accent="bg-emerald-50 text-emerald-600" />
+                <MetricCard label="Sig. (2-tailed)" value="0.001" sub="p < 0.05 — Significant" icon="fa-check-double" accent="bg-purple-50 text-purple-600" />
               </div>
 
-              <div className="bg-white p-10 rounded-[40px] border border-slate-200 shadow-sm">
-                <div className="flex items-center gap-3 mb-10">
-                  <i className="fa-solid fa-diagram-project text-blue-600 text-lg"></i>
-                  <h4 className="text-sm font-black text-slate-900 uppercase tracking-widest">PDI-DL vs MADEL5C Correlation</h4>
-                </div>
-                <div className="h-[300px] bg-slate-50 rounded-[32px] border border-slate-100 p-4">
+              <div className="bg-white border border-slate-200 rounded-xl p-6">
+                <SectionHeader icon="fa-diagram-project" title="PDI-DL vs MADEL5C Correlation (Scatter Plot)" />
+                <div className="h-[300px] bg-slate-50 rounded-xl border border-slate-100 p-3">
                   {(() => {
                     const pairs = users.reduce((acc: {x:number,y:number}[], user: any) => {
                       const ua = assessments.filter((a:any) => a.userId === user.id);
@@ -992,13 +1149,22 @@ export default function AdminDashboard() {
                       if (pdi && madel) acc.push({ x: pdi.totalScore, y: madel.totalScore });
                       return acc;
                     }, []);
-                    if (pairs.length === 0) return <div className="h-full flex items-center justify-center"><p className="text-slate-400 font-bold uppercase text-[10px] tracking-widest">Scatter Plot: Menunggu data PDI-DL & MADEL5C (r = 0.742)</p></div>;
+                    if (pairs.length === 0) return (
+                      <div className="h-full flex items-center justify-center">
+                        <p className="text-xs text-slate-400 font-medium">Awaiting PDI-DL & MADEL5C paired data (r = 0.742)</p>
+                      </div>
+                    );
                     return (
-                      <Scatter data={{ datasets: [{ label: 'PDI-DL vs MADEL5C', data: pairs, backgroundColor: 'rgba(37,99,235,0.6)', pointRadius: 6 }] }}
-                        options={{ scales: {
-                          x: { title: { display: true, text: 'PDI-DL Score', font: { size: 10, weight: 'bold' } }, grid: { color: '#f1f5f9' } },
-                          y: { title: { display: true, text: 'MADEL5C Score', font: { size: 10, weight: 'bold' } }, grid: { color: '#f1f5f9' } }
-                        }, plugins: { legend: { display: false } } }} />
+                      <Scatter
+                        data={{ datasets: [{ label: 'PDI-DL vs MADEL5C', data: pairs, backgroundColor: 'rgba(30,58,95,0.5)', pointRadius: 5 }] }}
+                        options={{
+                          scales: {
+                            x: { title: { display: true, text: 'PDI-DL Score', font: { size: 10, weight: 'bold' } }, grid: { color: '#f1f5f9' } },
+                            y: { title: { display: true, text: 'MADEL5C Score', font: { size: 10, weight: 'bold' } }, grid: { color: '#f1f5f9' } }
+                          },
+                          plugins: { legend: { display: false } }
+                        }}
+                      />
                     );
                   })()}
                 </div>
@@ -1006,350 +1172,260 @@ export default function AdminDashboard() {
             </div>
           )}
 
-          {/* SUS Analysis Tab Content */}
+          {/* ═══════════════════════════════════════════════════
+              TAB: SUS USABILITY ANALYSIS
+          ═══════════════════════════════════════════════════ */}
           {currentTab === 'usability' && (
-            <div className="space-y-10 animate-in fade-in slide-in-from-bottom-5 duration-700">
-              {/* Hero Banner - SUS */}
-              <div className="relative overflow-hidden bg-gradient-to-br from-emerald-500 via-green-600 to-teal-700 rounded-[40px] p-12 text-white shadow-2xl shadow-emerald-500/25">
-                <div className="absolute -top-24 -right-24 w-80 h-80 bg-white/10 rounded-full blur-3xl"></div>
-                <div className="absolute -bottom-16 -left-16 w-56 h-56 bg-green-400/20 rounded-full blur-2xl"></div>
-                <div className="absolute top-8 right-1/3 w-24 h-24 bg-emerald-300/20 rounded-full blur-xl"></div>
-                <div className="relative z-10 flex justify-between items-center">
+            <div className="space-y-6 animate-in fade-in slide-in-from-bottom-3 duration-300">
+              <div className="bg-white border border-slate-200 rounded-xl p-5 flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center">
+                    <i className="fa-solid fa-wand-magic-sparkles text-lg"></i>
+                  </div>
                   <div>
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
-                        <i className="fa-solid fa-wand-magic-sparkles text-white text-lg"></i>
-                      </div>
-                      <span className="text-[10px] font-black uppercase tracking-[0.25em] text-emerald-200">Usability Evaluation</span>
+                    <h2 className="text-base font-bold text-slate-900">SUS Usability Analysis</h2>
+                    <p className="text-xs text-slate-500 mt-0.5">System Usability Scale — grade, acceptability & learnability from Phase 1</p>
+                  </div>
+                </div>
+                <button onClick={() => downloadDataset('sus')} disabled={downloading !== null}
+                  className="h-9 px-4 bg-[#1e3a5f] hover:bg-[#16304f] disabled:opacity-50 text-white rounded-lg text-xs font-semibold flex items-center gap-2 transition-colors shrink-0">
+                  {downloading === 'sus' ? <i className="fa-solid fa-spinner animate-spin text-xs"></i> : <i className="fa-solid fa-download text-xs"></i>}
+                  {downloading === 'sus' ? 'Downloading…' : 'Download CSV'}
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="md:col-span-2 bg-[#1e3a5f] rounded-xl p-6 text-white">
+                  <p className="text-[10px] font-medium text-white/50 uppercase tracking-wider mb-3">Average SUS Score</p>
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-5xl font-bold tabular-nums">75.5</span>
+                    <span className="text-base text-white/60">/ 100</span>
+                  </div>
+                  <div className="flex gap-2 mt-4">
+                    <span className="px-2.5 py-1 bg-white/10 border border-white/20 rounded-lg text-[10px] font-semibold">Grade: B</span>
+                    <span className="px-2.5 py-1 bg-white/10 border border-white/20 rounded-lg text-[10px] font-semibold">Adjective: Good</span>
+                  </div>
+                </div>
+                <MetricCard label="Acceptability" value="Acceptable" sub="SUS ≥ 70" icon="fa-circle-check" accent="bg-emerald-50 text-emerald-600" />
+                <MetricCard label="Learnability Score" value="72.4" sub="Above average" icon="fa-graduation-cap" accent="bg-blue-50 text-blue-600" />
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                <div className="bg-white border border-slate-200 rounded-xl p-6">
+                  <SectionHeader icon="fa-chart-bar" title="Score Distribution" />
+                  <div className="h-[220px]">
+                    <Bar data={{
+                      labels: ['0–50', '51–60', '61–70', '71–80', '81–90', '91–100'],
+                      datasets: [{ label: 'Respondents', data: [2, 5, 12, 18, 10, 4], backgroundColor: '#1e3a5f', borderRadius: 4 }]
+                    }} options={{ plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, ticks: { font: { size: 10 } } }, y: { grid: { color: '#f1f5f9' }, ticks: { font: { size: 10 } } } } }} />
+                  </div>
+                </div>
+                <div className="bg-white border border-slate-200 rounded-xl p-6 flex flex-col items-center justify-center text-center">
+                  <div className="w-36 h-36 rounded-full border-[10px] border-slate-100 flex items-center justify-center relative">
+                    <div className="absolute inset-0 rounded-full border-[10px] border-emerald-500 border-t-transparent border-r-transparent -rotate-45"></div>
+                    <div>
+                      <p className="text-3xl font-bold text-slate-900">85%</p>
+                      <p className="text-[9px] font-semibold text-slate-400 uppercase tracking-wider">Positive Net</p>
                     </div>
-                    <h3 className="text-4xl font-black tracking-tighter text-white">SUS Usability Analysis</h3>
-                    <p className="text-emerald-100 text-sm font-medium mt-2">System Usability Scale evaluation from Phase 1 participants — grade, acceptability & learnability score.</p>
                   </div>
-                  <button 
-                    onClick={() => downloadDataset('sus')}
-                    disabled={downloading !== null}
-                    className="flex-shrink-0 px-6 py-3 bg-white/20 backdrop-blur-sm border border-white/30 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-white/30 transition-all flex items-center gap-2 disabled:opacity-50">
-                    {downloading === 'sus' ? (
-                      <i className="fa-solid fa-spinner animate-spin"></i>
-                    ) : (
-                      <i className="fa-solid fa-download"></i>
-                    )}
-                    {downloading === 'sus' ? 'Downloading...' : 'Download CSV'}
-                  </button>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <div className="md:col-span-2 bg-gradient-to-br from-blue-600 to-indigo-700 p-10 rounded-[40px] text-white shadow-xl">
-                  <p className="text-[10px] font-black opacity-60 uppercase tracking-widest mb-4">Average SUS Score</p>
-                  <div className="flex items-baseline gap-4">
-                    <h3 className="text-8xl font-black tracking-tighter">75.5</h3>
-                    <span className="text-xl font-bold opacity-80 italic">/ 100</span>
-                  </div>
-                  <div className="mt-8 flex gap-3">
-                    <span className="px-4 py-2 bg-white/20 rounded-xl text-[10px] font-black uppercase tracking-widest">Grade: B</span>
-                    <span className="px-4 py-2 bg-white/20 rounded-xl text-[10px] font-black uppercase tracking-widest">Adjective: Good</span>
-                  </div>
-                </div>
-
-                <div className="bg-white p-8 rounded-[32px] border border-slate-200 shadow-sm flex flex-col justify-center text-center">
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Acceptability</p>
-                  <h4 className="text-2xl font-black text-slate-900 uppercase">Acceptable</h4>
-                  <div className="w-full bg-slate-100 h-2 rounded-full mt-4">
-                    <div className="bg-emerald-500 h-full w-[85%] rounded-full"></div>
-                  </div>
-                </div>
-
-                <div className="bg-white p-8 rounded-[32px] border border-slate-200 shadow-sm flex flex-col justify-center text-center">
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Learnability Score</p>
-                  <h4 className="text-2xl font-black text-slate-900 uppercase">72.4</h4>
-                  <p className="text-[9px] font-bold text-blue-500 uppercase mt-1 tracking-widest">Above Average</p>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div className="bg-white p-10 rounded-[40px] border border-slate-200 shadow-sm">
-                   <h4 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-8">Score Distribution</h4>
-                   <div className="h-[250px]">
-                     <Bar data={{
-                       labels: ['0-50', '51-60', '61-70', '71-80', '81-90', '91-100'],
-                       datasets: [{
-                         label: 'Respondents',
-                         data: [2, 5, 12, 18, 10, 4],
-                         backgroundColor: '#3b82f6',
-                         borderRadius: 8
-                       }]
-                     }} options={{ plugins: { legend: { display: false } } }} />
-                   </div>
-                </div>
-                <div className="bg-white p-10 rounded-[40px] border border-slate-200 shadow-sm flex flex-col justify-center items-center text-center">
-                   <div className="w-48 h-48 rounded-full border-[12px] border-slate-100 flex items-center justify-center relative">
-                      <div className="absolute inset-0 rounded-full border-[12px] border-emerald-500 border-t-transparent -rotate-45"></div>
-                      <div>
-                        <p className="text-4xl font-black text-slate-900">85%</p>
-                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Positive Net</p>
-                      </div>
-                   </div>
-                   <p className="mt-8 text-sm font-bold text-slate-600 max-w-xs leading-relaxed">Most participants found the AI-integrated platform easy to use without external support.</p>
+                  <p className="mt-5 text-sm text-slate-600 font-medium max-w-xs leading-relaxed">
+                    Most participants found the AI-integrated platform easy to use without external support.
+                  </p>
                 </div>
               </div>
             </div>
           )}
 
-          {/* Participants Logs Content */}
+          {/* ═══════════════════════════════════════════════════
+              TAB: PARTICIPANTS DATA
+          ═══════════════════════════════════════════════════ */}
           {currentTab === 'logs' && (
-            <div className="bg-white rounded-[40px] border border-slate-200 shadow-sm overflow-hidden animate-in fade-in duration-500">
-               <div className="p-10 border-b border-slate-100 flex justify-between items-center">
-                  <div className="flex items-center gap-3">
-                    <i className="fa-solid fa-users text-blue-600 text-lg"></i>
-                    <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest">Participants Data Logs</h3>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <button 
-                      onClick={() => downloadDataset('all')}
-                      disabled={downloading !== null}
-                      className="px-4 py-2 bg-slate-900 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-black transition-all flex items-center gap-2 disabled:opacity-50">
-                      {downloading === 'all' ? (
-                        <i className="fa-solid fa-spinner animate-spin"></i>
-                      ) : (
-                        <i className="fa-solid fa-download"></i>
-                      )}
-                      {downloading === 'all' ? 'Downloading...' : 'Download All CSV'}
-                    </button>
-                    <span className="px-4 py-2 bg-blue-50 text-blue-600 rounded-xl text-[10px] font-black uppercase tracking-widest">{users.length} Total Users</span>
-                  </div>
-               </div>
-               <div className="overflow-x-auto">
-                 <table className="w-full text-left">
-                   <thead className="bg-slate-50 text-[9px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">
-                     <tr>
-                       <th className="px-10 py-6">Identity</th>
-                       <th className="px-10 py-6">Institution</th>
-                       <th className="px-10 py-6">PDI-DL</th>
-                       <th className="px-10 py-6">Survey</th>
-                       <th className="px-10 py-6">MADEL5C</th>
-                       <th className="px-10 py-6">Status</th>
-                     </tr>
-                   </thead>
-                   <tbody className="divide-y divide-slate-100">
-                      {users.length > 0 ? users.map((user, idx) => {
-                          const userAssessments = assessments.filter((a: any) => a.userId === user.id);
-                          const pdiScore = userAssessments.find((a: any) => a.type === 'PDI-DL')?.totalScore;
-                          const madelScore = userAssessments.find((a: any) => a.type === 'MADEL5C')?.totalScore;
-                          const surveyScore = userAssessments.find((a: any) => a.type === 'SURVEY')?.totalScore;
-                          const completedCount = [pdiScore, madelScore, surveyScore].filter(s => s !== undefined).length;
-                          const status = completedCount === 3 ? 'Complete' : completedCount > 0 ? 'Partial' : 'Pending';
-                          const statusStyle = status === 'Complete' 
-                            ? 'bg-emerald-100 text-emerald-700' 
-                            : status === 'Partial' 
-                            ? 'bg-amber-100 text-amber-700' 
-                            : 'bg-slate-100 text-slate-500';
-                          return (
-                          <tr key={idx} onClick={() => setSelectedUser(user)} className="hover:bg-slate-50/50 transition-all cursor-pointer">
-                            <td className="px-10 py-6 font-bold text-slate-900 text-xs">{user.name}</td>
-                            <td className="px-10 py-6 text-[11px] font-bold text-slate-500 uppercase">{user.campus}</td>
-                            <td className="px-10 py-6 font-black text-blue-600 text-xs">{pdiScore ?? <span className="text-slate-300">—</span>}</td>
-                            <td className="px-10 py-6 font-black text-amber-600 text-xs">{surveyScore ?? <span className="text-slate-300">—</span>}</td>
-                            <td className="px-10 py-6 font-black text-purple-600 text-xs">{madelScore ?? <span className="text-slate-300">—</span>}</td>
-                            <td className="px-10 py-6">
-                               <span className={`px-3 py-1 rounded-lg text-[9px] font-black uppercase ${statusStyle}`}>{status}</span>
-                            </td>
-                          </tr>
-                          );
-                      }) : (
-                         <tr>
-                           <td colSpan={6} className="px-10 py-20 text-center text-slate-400 font-bold uppercase text-[10px] tracking-widest italic">No participants found in database</td>
-                         </tr>
-                      )}
-                   </tbody>
-                 </table>
-               </div>
+            <div className="bg-white border border-slate-200 rounded-xl overflow-hidden animate-in fade-in duration-300">
+              <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center">
+                <div className="flex items-center gap-2">
+                  <i className="fa-solid fa-users text-slate-400 text-sm"></i>
+                  <h3 className="text-sm font-semibold text-slate-800">Participants Data Logs</h3>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button onClick={() => downloadDataset('all')} disabled={downloading !== null}
+                    className="h-8 px-3 bg-[#1e3a5f] hover:bg-[#16304f] disabled:opacity-50 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors">
+                    {downloading === 'all' ? <i className="fa-solid fa-spinner animate-spin text-xs"></i> : <i className="fa-solid fa-download text-xs"></i>}
+                    {downloading === 'all' ? 'Downloading…' : 'Download All CSV'}
+                  </button>
+                  <span className="px-2.5 py-1.5 bg-blue-50 border border-blue-200 text-blue-700 rounded-lg text-[10px] font-semibold">{users.length} Users</span>
+                </div>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left">
+                  <thead className="bg-slate-50 border-b border-slate-100">
+                    <tr>
+                      {['Identity', 'Institution', 'PDI-DL', 'Survey', 'MADEL5C', 'Status'].map(h => (
+                        <th key={h} className="px-5 py-3 text-[10px] font-semibold text-slate-400 uppercase tracking-wide">{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-50">
+                    {users.length > 0 ? users.map((user, idx) => {
+                      const userAssessments = assessments.filter((a: any) => a.userId === user.id);
+                      const pdiScore = userAssessments.find((a: any) => a.type === 'PDI-DL')?.totalScore;
+                      const madelScore = userAssessments.find((a: any) => a.type === 'MADEL5C')?.totalScore;
+                      const surveyScore = userAssessments.find((a: any) => a.type === 'SURVEY')?.totalScore;
+                      const completedCount = [pdiScore, madelScore, surveyScore].filter(s => s !== undefined).length;
+                      const status = completedCount === 3 ? 'Complete' : completedCount > 0 ? 'Partial' : 'Pending';
+                      const statusStyle = status === 'Complete'
+                        ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                        : status === 'Partial'
+                        ? 'bg-amber-50 text-amber-700 border-amber-200'
+                        : 'bg-slate-100 text-slate-500 border-slate-200';
+                      return (
+                        <tr key={idx} onClick={() => setSelectedUser(user)} className="hover:bg-slate-50/50 transition-colors cursor-pointer">
+                          <td className="px-5 py-3.5 text-xs font-semibold text-slate-800">{user.name}</td>
+                          <td className="px-5 py-3.5 text-xs text-slate-500">{user.campus}</td>
+                          <td className="px-5 py-3.5 text-xs font-bold text-blue-600 font-mono">{pdiScore ?? <span className="text-slate-300">—</span>}</td>
+                          <td className="px-5 py-3.5 text-xs font-bold text-amber-600 font-mono">{surveyScore ?? <span className="text-slate-300">—</span>}</td>
+                          <td className="px-5 py-3.5 text-xs font-bold text-purple-600 font-mono">{madelScore ?? <span className="text-slate-300">—</span>}</td>
+                          <td className="px-5 py-3.5">
+                            <span className={`px-2 py-0.5 rounded text-[10px] font-semibold border ${statusStyle}`}>{status}</span>
+                          </td>
+                        </tr>
+                      );
+                    }) : (
+                      <tr>
+                        <td colSpan={6} className="px-5 py-16 text-center text-xs text-slate-400">No participants found in database</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
           )}
 
-          {/* Instrument Manager Tab */}
+          {/* ═══════════════════════════════════════════════════
+              TAB: INSTRUMENT MANAGER
+          ═══════════════════════════════════════════════════ */}
           {currentTab === 'instruments' && (
-            <div className="space-y-8 animate-in fade-in slide-in-from-bottom-5 duration-700">
+            <div className="space-y-4 animate-in fade-in slide-in-from-bottom-3 duration-300">
               <div>
-                <h3 className="text-2xl font-black text-slate-900 tracking-tight">Instrument Manager</h3>
-                <p className="text-slate-500 text-sm font-medium mt-1">Kelola butir soal instrumen yang tampil di dashboard mahasiswa.</p>
+                <h3 className="text-base font-bold text-slate-900">Instrument Manager</h3>
+                <p className="text-xs text-slate-500 mt-0.5">Kelola butir soal instrumen yang tampil di dashboard mahasiswa.</p>
               </div>
               {[
-                { key: 'preliminary', label: 'PDI-DL', icon: 'fa-list-ol', color: 'text-blue-600', bg: 'bg-blue-50', border: 'border-blue-200', desc: 'Pre-Digital Literacy Instrument (Tes Awal)' },
-                { key: 'survey', label: 'Survey Respon', icon: 'fa-clipboard-question', color: 'text-amber-600', bg: 'bg-amber-50', border: 'border-amber-200', desc: 'Angket Respon Mahasiswa (Skala Likert)' },
-                { key: 'madel5c', label: 'MADEL5C', icon: 'fa-brain', color: 'text-purple-600', bg: 'bg-purple-50', border: 'border-purple-200', desc: `Main Assessment - SJT ${instrumentQuestions.madel5c.length || 75} Butir` },
+                { key: 'preliminary', label: 'PDI-DL', icon: 'fa-list-ol', accentBg: 'bg-blue-50', accentText: 'text-blue-600', border: 'border-blue-100', desc: 'Pre-Digital Literacy Instrument (Tes Awal)' },
+                { key: 'survey', label: 'Survey Respon', icon: 'fa-clipboard-question', accentBg: 'bg-amber-50', accentText: 'text-amber-600', border: 'border-amber-100', desc: 'Angket Respon Mahasiswa (Skala Likert)' },
+                { key: 'madel5c', label: 'MADEL5C', icon: 'fa-brain', accentBg: 'bg-purple-50', accentText: 'text-purple-600', border: 'border-purple-100', desc: `Main Assessment — SJT ${instrumentQuestions.madel5c.length || 75} Butir` },
               ].map(inst => {
                 const qs = instrumentQuestions[inst.key as keyof typeof instrumentQuestions] || [];
                 const isOpen = expandedInstrument === inst.key;
                 return (
-                  <div key={inst.key} className={`bg-white rounded-[32px] border ${inst.border} shadow-sm overflow-hidden`}>
+                  <div key={inst.key} className={`bg-white border rounded-xl overflow-hidden ${inst.border}`}>
                     <button onClick={() => setExpandedInstrument(isOpen ? null : inst.key)}
-                      className="w-full p-8 flex items-center justify-between hover:bg-slate-50 transition-all">
-                      <div className="flex items-center gap-4">
-                        <div className={`w-12 h-12 ${inst.bg} ${inst.color} rounded-2xl flex items-center justify-center text-xl`}>
-                          <i className={`fa-solid ${inst.icon}`}></i>
+                      className="w-full px-5 py-4 flex items-center justify-between hover:bg-slate-50 transition-colors">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-9 h-9 ${inst.accentBg} ${inst.accentText} rounded-lg flex items-center justify-center`}>
+                          <i className={`fa-solid ${inst.icon} text-sm`}></i>
                         </div>
                         <div className="text-left">
-                          <p className="text-sm font-black text-slate-900 uppercase tracking-widest">{inst.label}</p>
-                          <p className="text-[10px] font-bold text-slate-400 mt-1">{inst.desc}</p>
+                          <p className="text-sm font-semibold text-slate-800">{inst.label}</p>
+                          <p className="text-[10px] text-slate-400 mt-0.5">{inst.desc}</p>
                         </div>
                       </div>
-                      <div className="flex items-center gap-4">
-                        <span className={`px-4 py-2 ${inst.bg} ${inst.color} rounded-xl text-[10px] font-black uppercase`}>{qs.length} Butir</span>
-                        <i className={`fa-solid fa-chevron-${isOpen ? 'up' : 'down'} text-slate-400`}></i>
+                      <div className="flex items-center gap-3">
+                        <span className={`px-2 py-0.5 ${inst.accentBg} ${inst.accentText} rounded text-[10px] font-semibold`}>{qs.length} Butir</span>
+                        <i className={`fa-solid fa-chevron-${isOpen ? 'up' : 'down'} text-slate-400 text-xs`}></i>
                       </div>
                     </button>
                     {isOpen && (
-                      <div className="border-t border-slate-100 p-8">
+                      <div className="border-t border-slate-100 p-5">
                         {qs.length === 0 ? (
-                          <p className="text-slate-400 text-sm font-bold text-center py-8">Tidak ada data butir soal.</p>
+                          <p className="text-sm text-slate-400 text-center py-8">Tidak ada data butir soal.</p>
                         ) : (
-                          <div className="space-y-6">
-                            {/* Save to Server bar */}
-                            <div className="flex justify-between items-center bg-slate-50 p-6 rounded-[24px] border border-slate-200 shadow-sm gap-4">
-                              <div className="flex items-center gap-3">
-                                <i className="fa-solid fa-circle-info text-blue-500 text-lg"></i>
-                                <span className="text-xs font-bold text-slate-500">
-                                  Klik &quot;Simpan Sementara&quot; pada setiap butir, lalu klik tombol ini untuk menyimpan permanen ke server.
-                                </span>
+                          <div className="space-y-4">
+                            <div className="flex justify-between items-center bg-slate-50 border border-slate-200 p-4 rounded-xl gap-4">
+                              <div className="flex items-center gap-2">
+                                <i className="fa-solid fa-circle-info text-blue-500 text-sm"></i>
+                                <span className="text-xs text-slate-500">Klik &quot;Simpan Sementara&quot; pada setiap butir, lalu klik tombol ini untuk menyimpan permanen ke server.</span>
                               </div>
-                              <button
-                                onClick={() => saveInstrumentToServer(inst.key)}
-                                disabled={savingInstrument === inst.key}
-                                className="px-6 py-3 bg-[#4B5320] hover:bg-[#3d441a] text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg flex items-center gap-2"
-                              >
-                                {savingInstrument === inst.key ? (
-                                  <>
-                                    <i className="fa-solid fa-circle-notch animate-spin"></i> MENYIMPAN...
-                                  </>
-                                ) : (
-                                  <>
-                                    <i className="fa-solid fa-cloud-arrow-up"></i> SIMPAN PERUBAHAN KE SERVER
-                                  </>
-                                )}
+                              <button onClick={() => saveInstrumentToServer(inst.key)} disabled={savingInstrument === inst.key}
+                                className="h-8 px-3 bg-[#1e3a5f] hover:bg-[#16304f] disabled:opacity-50 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors shrink-0">
+                                {savingInstrument === inst.key
+                                  ? <><i className="fa-solid fa-circle-notch animate-spin text-xs"></i> Menyimpan…</>
+                                  : <><i className="fa-solid fa-cloud-arrow-up text-xs"></i> Simpan ke Server</>
+                                }
                               </button>
                             </div>
-
-                            <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
+                            <div className="space-y-3 max-h-[500px] overflow-y-auto pr-1 custom-scrollbar">
                               {qs.map((q: any, i: number) => {
                                 const isEditing = editingInstrument === inst.key && editingQuestionIndex === i;
                                 return (
-                                  <div key={i} className="p-6 bg-slate-50 rounded-[24px] border border-slate-200 shadow-sm space-y-4">
-                                    <div className="flex justify-between items-start gap-4">
-                                      <div className="flex gap-4 items-center">
-                                        <span className={`w-8 h-8 flex-shrink-0 ${inst.bg} ${inst.color} rounded-xl flex items-center justify-center text-xs font-black shadow-sm`}>
-                                          {i+1}
-                                        </span>
-                                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">
-                                          Butir Soal {i+1}
-                                        </span>
+                                  <div key={i} className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-3">
+                                    <div className="flex justify-between items-start gap-3">
+                                      <div className="flex gap-2 items-center">
+                                        <span className={`w-7 h-7 shrink-0 ${inst.accentBg} ${inst.accentText} rounded-lg flex items-center justify-center text-[10px] font-bold`}>{i+1}</span>
+                                        <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Butir Soal {i+1}</span>
                                       </div>
                                       {!isEditing && (
-                                        <button
-                                          onClick={() => {
-                                            setEditingInstrument(inst.key);
-                                            setEditingQuestionIndex(i);
-                                            setEditQuestionText(getStem(q));
-                                            setEditOptions(q.options ? JSON.parse(JSON.stringify(q.options)) : []);
-                                          }}
-                                          className="px-4 py-1.5 bg-blue-50 border border-blue-200 text-blue-600 rounded-lg text-[9px] font-black uppercase tracking-wider hover:bg-blue-100 transition-all flex items-center gap-1.5"
-                                        >
-                                          <i className="fa-solid fa-pen-to-square"></i> Edit
+                                        <button onClick={() => {
+                                          setEditingInstrument(inst.key);
+                                          setEditingQuestionIndex(i);
+                                          setEditQuestionText(getStem(q));
+                                          setEditOptions(q.options ? JSON.parse(JSON.stringify(q.options)) : []);
+                                        }} className="h-7 px-2.5 bg-white border border-slate-200 text-slate-600 rounded-lg text-[10px] font-semibold hover:bg-slate-50 transition-colors flex items-center gap-1">
+                                          <i className="fa-solid fa-pen-to-square text-xs"></i> Edit
                                         </button>
                                       )}
                                     </div>
-
                                     {isEditing ? (
-                                      <div className="space-y-4 animate-in fade-in duration-200">
-                                        <div className="space-y-1">
-                                          <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Pertanyaan (Stem)</label>
-                                          <textarea
-                                            value={editQuestionText}
-                                            onChange={(e) => setEditQuestionText(e.target.value)}
-                                            rows={3}
-                                            className="w-full bg-white border border-slate-200 rounded-xl p-4 text-xs font-bold text-slate-800 focus:border-blue-500 outline-none transition-all"
-                                          />
+                                      <div className="space-y-3 animate-in fade-in duration-200">
+                                        <div>
+                                          <label className="text-[9px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">Pertanyaan (Stem)</label>
+                                          <textarea value={editQuestionText} onChange={(e) => setEditQuestionText(e.target.value)} rows={3}
+                                            className="w-full bg-white border border-slate-200 rounded-lg p-3 text-xs font-medium text-slate-800 focus:border-blue-500 outline-none transition-colors" />
                                         </div>
-
                                         {editOptions.length > 0 && (
-                                          <div className="space-y-3">
-                                            <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Pilihan Jawaban & Skor</label>
-                                            <div className="space-y-2">
+                                          <div>
+                                            <label className="text-[9px] font-semibold text-slate-400 uppercase tracking-wider block mb-1.5">Pilihan Jawaban & Skor</label>
+                                            <div className="space-y-1.5">
                                               {editOptions.map((opt: any, optIdx: number) => (
                                                 <div key={optIdx} className="flex gap-2 items-center">
-                                                  <span className="text-[10px] font-black text-slate-400 w-6 text-center">{String.fromCharCode(65 + optIdx)}</span>
-                                                  <input
-                                                    type="text"
-                                                    value={opt.text}
-                                                    onChange={(e) => {
-                                                      const updated = [...editOptions];
-                                                      updated[optIdx].text = e.target.value;
-                                                      setEditOptions(updated);
-                                                    }}
-                                                    className="flex-1 bg-white border border-slate-200 rounded-xl px-4 py-2 text-xs font-bold text-slate-800 focus:border-blue-500 outline-none"
-                                                  />
-                                                  <div className="flex items-center gap-1.5 bg-slate-100 px-3 py-2 rounded-xl border border-slate-200">
-                                                    <span className="text-[8px] font-black text-slate-400 uppercase">Skor</span>
-                                                    <input
-                                                      type="number"
-                                                      min="1"
-                                                      max="5"
-                                                      value={opt.score}
-                                                      onChange={(e) => {
-                                                        const updated = [...editOptions];
-                                                        updated[optIdx].score = parseInt(e.target.value) || 1;
-                                                        setEditOptions(updated);
-                                                      }}
-                                                      className="w-8 bg-transparent text-center text-xs font-black text-slate-850 outline-none"
-                                                    />
+                                                  <span className="text-[10px] font-bold text-slate-400 w-5 text-center">{String.fromCharCode(65 + optIdx)}</span>
+                                                  <input type="text" value={opt.text}
+                                                    onChange={(e) => { const u = [...editOptions]; u[optIdx].text = e.target.value; setEditOptions(u); }}
+                                                    className="flex-1 bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-medium text-slate-800 focus:border-blue-500 outline-none" />
+                                                  <div className="flex items-center gap-1 bg-slate-100 px-2 py-1.5 rounded-lg border border-slate-200">
+                                                    <span className="text-[9px] font-semibold text-slate-400">Skor</span>
+                                                    <input type="number" min="1" max="5" value={opt.score}
+                                                      onChange={(e) => { const u = [...editOptions]; u[optIdx].score = parseInt(e.target.value) || 1; setEditOptions(u); }}
+                                                      className="w-7 bg-transparent text-center text-xs font-bold text-slate-800 outline-none" />
                                                   </div>
                                                 </div>
                                               ))}
                                             </div>
                                           </div>
                                         )}
-
-                                        <div className="flex justify-end gap-2 pt-2">
-                                          <button
-                                            onClick={() => {
-                                              setEditingInstrument(null);
-                                              setEditingQuestionIndex(null);
-                                            }}
-                                            className="px-4 py-2 bg-slate-200 hover:bg-slate-350 text-slate-650 rounded-xl text-[9px] font-black uppercase tracking-widest"
-                                          >
-                                            Batal
-                                          </button>
-                                          <button
-                                            onClick={() => {
-                                              const updatedQs = [...(instrumentQuestions[inst.key as keyof typeof instrumentQuestions] || [])];
-                                              setStem(updatedQs[i], editQuestionText);
-                                              if (updatedQs[i].options) {
-                                                updatedQs[i].options = editOptions;
-                                              }
-                                              setInstrumentQuestions(prev => ({
-                                                ...prev,
-                                                [inst.key]: updatedQs
-                                              }));
-                                              setEditingInstrument(null);
-                                              setEditingQuestionIndex(null);
-                                            }}
-                                            className="px-4 py-2 bg-blue-600 hover:bg-blue-750 text-white rounded-xl text-[9px] font-black uppercase tracking-widest shadow-md"
-                                          >
-                                            Simpan Sementara
-                                          </button>
+                                        <div className="flex justify-end gap-2 pt-1">
+                                          <button onClick={() => { setEditingInstrument(null); setEditingQuestionIndex(null); }}
+                                            className="h-7 px-3 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg text-[10px] font-semibold transition-colors">Batal</button>
+                                          <button onClick={() => {
+                                            const updatedQs = [...(instrumentQuestions[inst.key as keyof typeof instrumentQuestions] || [])];
+                                            setStem(updatedQs[i], editQuestionText);
+                                            if (updatedQs[i].options) updatedQs[i].options = editOptions;
+                                            setInstrumentQuestions(prev => ({ ...prev, [inst.key]: updatedQs }));
+                                            setEditingInstrument(null);
+                                            setEditingQuestionIndex(null);
+                                          }} className="h-7 px-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-[10px] font-semibold transition-colors">Simpan Sementara</button>
                                         </div>
                                       </div>
                                     ) : (
-                                      <div className="space-y-3">
-                                        <p className="text-xs font-bold text-slate-750 leading-relaxed pl-1">{getStem(q)}</p>
+                                      <div className="space-y-2">
+                                        <p className="text-xs font-medium text-slate-700 leading-relaxed">{getStem(q)}</p>
                                         {q.options && (
-                                          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 pl-1">
+                                          <div className="grid grid-cols-1 md:grid-cols-2 gap-1.5">
                                             {q.options.map((opt: any, optIdx: number) => (
-                                              <div key={optIdx} className="bg-white border border-slate-100 p-3 rounded-xl flex items-center justify-between shadow-xs">
-                                                <span className="text-[10px] text-slate-600 font-medium leading-relaxed">
-                                                  <strong className="text-slate-400 mr-2">{String.fromCharCode(65 + optIdx)}.</strong> {opt.text}
+                                              <div key={optIdx} className="bg-white border border-slate-100 px-3 py-2 rounded-lg flex items-center justify-between">
+                                                <span className="text-[10px] text-slate-600 leading-relaxed">
+                                                  <strong className="text-slate-400 mr-1">{String.fromCharCode(65 + optIdx)}.</strong>{opt.text}
                                                 </span>
-                                                <span className="bg-slate-50 border border-slate-200 text-slate-400 text-[8px] font-black px-2 py-0.5 rounded-md uppercase">Skor {opt.score}</span>
+                                                <span className="bg-slate-100 border border-slate-200 text-slate-400 text-[8px] font-bold px-1.5 py-0.5 rounded uppercase shrink-0 ml-2">S{opt.score}</span>
                                               </div>
                                             ))}
                                           </div>
@@ -1370,92 +1446,71 @@ export default function AdminDashboard() {
             </div>
           )}
 
-          {/* System Settings Tab */}
+          {/* ═══════════════════════════════════════════════════
+              TAB: SYSTEM SETTINGS
+          ═══════════════════════════════════════════════════ */}
           {currentTab === 'settings' && (
-            <div className="space-y-8 animate-in fade-in slide-in-from-bottom-5 duration-700">
+            <div className="space-y-5 animate-in fade-in slide-in-from-bottom-3 duration-300">
               <div>
-                <h3 className="text-2xl font-black text-slate-900 tracking-tight">System Settings</h3>
-                <p className="text-slate-500 text-sm font-medium mt-1">Konfigurasi sistem dan informasi platform HDAP.</p>
+                <h3 className="text-base font-bold text-slate-900">System Settings</h3>
+                <p className="text-xs text-slate-500 mt-0.5">Konfigurasi sistem dan informasi platform HDAP.</p>
               </div>
 
-              {/* System Info Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {[
-                  { label: 'Next.js Version', value: '15.x', icon: 'fa-code', color: 'text-slate-600', bg: 'bg-slate-50' },
-                  { label: 'Total Participants', value: users.length, icon: 'fa-users', color: 'text-blue-600', bg: 'bg-blue-50' },
-                  { label: 'Total Assessments', value: assessments.length, icon: 'fa-file-signature', color: 'text-purple-600', bg: 'bg-purple-50' },
-                ].map((card, i) => (
-                  <div key={i} className="bg-white p-8 rounded-[32px] border border-slate-200 shadow-sm">
-                    <div className={`w-12 h-12 ${card.bg} ${card.color} rounded-2xl flex items-center justify-center text-xl mb-4`}>
-                      <i className={`fa-solid ${card.icon}`}></i>
-                    </div>
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{card.label}</p>
-                    <p className="text-3xl font-black text-slate-900 mt-2">{card.value}</p>
-                  </div>
-                ))}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <MetricCard label="Next.js Version" value="15.x" icon="fa-code" accent="bg-slate-50 text-slate-600" />
+                <MetricCard label="Total Participants" value={users.length} icon="fa-users" accent="bg-blue-50 text-blue-600" />
+                <MetricCard label="Total Assessments" value={assessments.length} icon="fa-file-signature" accent="bg-purple-50 text-purple-600" />
               </div>
 
               {/* Settings Form */}
-              <div className="bg-white rounded-[40px] border border-slate-200 shadow-sm p-10">
-                <div className="flex items-center gap-3 mb-8">
-                  <i className="fa-solid fa-sliders text-blue-600 text-lg"></i>
-                  <h4 className="text-sm font-black text-slate-900 uppercase tracking-widest">Konfigurasi Platform</h4>
-                </div>
-                <div className="space-y-6">
-                  {Object.keys(sysSettings).length === 0 ? (
-                    <div className="py-12 text-center">
-                      <i className="fa-solid fa-circle-notch animate-spin text-slate-300 text-3xl mb-4"></i>
-                      <p className="text-slate-400 font-bold uppercase text-[10px] tracking-widest">Memuat konfigurasi...</p>
-                    </div>
-                  ) : (
-                    Object.entries(sysSettings).map(([key, value]: [string, any]) => (
-                      <div key={key} className="flex items-center justify-between p-6 bg-slate-50 rounded-2xl border border-slate-100">
-                        <div>
-                          <p className="text-xs font-black text-slate-700 uppercase tracking-widest">{key.replace(/_/g, ' ')}</p>
-                        </div>
-                        <input
-                          type="text"
-                          defaultValue={String(value)}
+              <div className="bg-white border border-slate-200 rounded-xl p-6">
+                <SectionHeader icon="fa-sliders" title="Konfigurasi Platform" />
+                {Object.keys(sysSettings).length === 0 ? (
+                  <div className="py-10 text-center">
+                    <i className="fa-solid fa-circle-notch animate-spin text-slate-300 text-2xl mb-3"></i>
+                    <p className="text-xs text-slate-400">Memuat konfigurasi…</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {Object.entries(sysSettings).map(([key, value]: [string, any]) => (
+                      <div key={key} className="flex items-center justify-between p-4 bg-slate-50 border border-slate-100 rounded-xl">
+                        <p className="text-xs font-semibold text-slate-700">{key.replace(/_/g, ' ')}</p>
+                        <input type="text" defaultValue={String(value)}
                           onChange={(e) => setSysSettings((prev: any) => ({ ...prev, [key]: e.target.value }))}
-                          className="px-4 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:border-blue-500 w-64"
+                          className="h-8 px-3 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-700 focus:outline-none focus:border-blue-500 w-64 transition-colors"
                         />
                       </div>
-                    ))
-                  )}
-                </div>
+                    ))}
+                  </div>
+                )}
                 {Object.keys(sysSettings).length > 0 && (
-                  <div className="mt-8 flex items-center gap-4">
-                    <button
-                      onClick={async () => {
-                        await fetch('/api/settings', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(sysSettings) });
-                        setSettingsSaved(true);
-                        setTimeout(() => setSettingsSaved(false), 3000);
-                      }}
-                      className="px-8 py-4 bg-blue-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-xl shadow-blue-600/20">
-                      <i className="fa-solid fa-floppy-disk mr-2"></i>Simpan Pengaturan
+                  <div className="mt-4 flex items-center gap-3">
+                    <button onClick={async () => {
+                      await fetch('/api/settings', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(sysSettings) });
+                      setSettingsSaved(true);
+                      setTimeout(() => setSettingsSaved(false), 3000);
+                    }} className="h-9 px-4 bg-[#1e3a5f] hover:bg-[#16304f] text-white rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5">
+                      <i className="fa-solid fa-floppy-disk text-xs"></i> Simpan Pengaturan
                     </button>
-                    {settingsSaved && <span className="text-emerald-500 text-[11px] font-black uppercase"><i className="fa-solid fa-check mr-1"></i>Tersimpan!</span>}
+                    {settingsSaved && <span className="text-emerald-600 text-xs font-semibold flex items-center gap-1"><i className="fa-solid fa-check"></i> Tersimpan!</span>}
                   </div>
                 )}
               </div>
 
               {/* API Status */}
-              <div className="bg-white rounded-[40px] border border-slate-200 shadow-sm p-10">
-                <div className="flex items-center gap-3 mb-8">
-                  <i className="fa-solid fa-plug text-emerald-500 text-lg"></i>
-                  <h4 className="text-sm font-black text-slate-900 uppercase tracking-widest">Status Koneksi API</h4>
-                </div>
-                <div className="space-y-4">
+              <div className="bg-white border border-slate-200 rounded-xl p-6">
+                <SectionHeader icon="fa-plug" title="Status Koneksi API" />
+                <div className="space-y-2">
                   {[
-                    { name: 'PostgreSQL Database', status: users.length >= 0 ? 'Connected' : 'Error', ok: true },
+                    { name: 'PostgreSQL Database', status: 'Connected', ok: true },
                     { name: 'Gemini AI (2.5 Flash)', status: 'Active', ok: true },
                     { name: 'Next.js App Server', status: 'Online', ok: true },
                     { name: 'Nginx Reverse Proxy', status: 'Online', ok: true },
                   ].map((svc, i) => (
-                    <div key={i} className="flex items-center justify-between p-5 bg-slate-50 rounded-2xl border border-slate-100">
-                      <span className="text-xs font-bold text-slate-700">{svc.name}</span>
-                      <span className={`flex items-center gap-2 text-[10px] font-black uppercase ${svc.ok ? 'text-emerald-500' : 'text-rose-500'}`}>
-                        <span className={`w-2 h-2 rounded-full ${svc.ok ? 'bg-emerald-500 animate-pulse' : 'bg-rose-500'}`}></span>
+                    <div key={i} className="flex items-center justify-between p-3.5 bg-slate-50 border border-slate-100 rounded-xl">
+                      <span className="text-xs font-medium text-slate-700">{svc.name}</span>
+                      <span className={`flex items-center gap-1.5 text-xs font-semibold ${svc.ok ? 'text-emerald-600' : 'text-rose-600'}`}>
+                        <span className={`w-1.5 h-1.5 rounded-full ${svc.ok ? 'bg-emerald-500 animate-pulse' : 'bg-rose-500'}`}></span>
                         {svc.status}
                       </span>
                     </div>
@@ -1465,152 +1520,98 @@ export default function AdminDashboard() {
             </div>
           )}
 
-          {/* MFRM Tab Content */}
+          {/* ═══════════════════════════════════════════════════
+              ENGINE TABS — SHARED DATA SOURCE BANNER
+          ═══════════════════════════════════════════════════ */}
+          {['efa', 'cfa', 'rasch', 'sem', 'mfrm'].includes(currentTab) && <DataSourceBanner />}
+
+          {/* ═══════════════════════════════════════════════════
+              TAB: MFRM
+          ═══════════════════════════════════════════════════ */}
           {currentTab === 'mfrm' && (
-            <div className="space-y-10 animate-in fade-in slide-in-from-bottom-5 duration-700">
-              {/* Hero Banner */}
-              <div className="relative overflow-hidden bg-gradient-to-br from-purple-600 via-violet-600 to-fuchsia-700 rounded-[40px] p-12 text-white shadow-2xl shadow-purple-500/25">
-                <div className="absolute -top-24 -right-24 w-80 h-80 bg-white/10 rounded-full blur-3xl"></div>
-                <div className="absolute -bottom-16 -left-16 w-56 h-56 bg-purple-400/20 rounded-full blur-2xl"></div>
-                <div className="relative z-10 flex justify-between items-center">
-                  <div>
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
-                        <i className="fa-solid fa-cubes text-white text-lg"></i>
-                      </div>
-                      <span className="text-[10px] font-black uppercase tracking-[0.25em] text-purple-200">Multi-Facet Calibration</span>
-                    </div>
-                    <h3 className="text-4xl font-black tracking-tighter text-white">Many-Facet Rasch Model (MFRM)</h3>
-                    <p className="text-purple-100 text-sm font-medium mt-2 max-w-lg">Calibrate Item Difficulty, Person Ability, and Facet Severities (Rater, Gender, Campus, Special Needs) simultaneously.</p>
+            <div className="space-y-5 animate-in fade-in slide-in-from-bottom-3 duration-300">
+              <div className="bg-white border border-slate-200 rounded-xl p-5 flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center">
+                    <i className="fa-solid fa-cubes text-lg"></i>
                   </div>
-                  <div className="flex items-center gap-4 bg-white/10 backdrop-blur-md p-3 rounded-2xl border border-white/20">
-                    <select 
-                      value={analysisMethod.mfrm || 'Python'} 
-                      onChange={(e) => setAnalysisMethod(prev => ({ ...prev, mfrm: e.target.value as 'R' | 'Python' }))}
-                      className="bg-transparent text-white font-bold text-xs outline-none border-none cursor-pointer pr-4">
-                      <option value="Python" className="text-slate-800">Python Engine</option>
-                      <option value="R" className="text-slate-800">R (TAM)</option>
-                    </select>
-                    <button 
-                      onClick={() => runPsychometricAnalysis('mfrm')}
-                      disabled={analysisLoading.mfrm}
-                      className="px-6 py-3 bg-white text-purple-600 font-black rounded-xl text-[10px] uppercase tracking-widest hover:bg-slate-100 transition-all flex items-center gap-2 disabled:opacity-50">
-                      {analysisLoading.mfrm ? <i className="fa-solid fa-spinner animate-spin"></i> : <i className="fa-solid fa-bolt"></i>}
-                      {analysisLoading.mfrm ? 'Running...' : 'Run MFRM'}
-                    </button>
-                    {analysisResults.mfrm && (
-                      <div className="flex items-center gap-2">
-                        <a 
-                          href={`/api/admin/analysis/download?type=mfrm&method=${analysisMethod.mfrm || 'python'}`}
-                          className="px-4 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-xl text-[10px] uppercase tracking-widest transition-all flex items-center gap-1.5"
-                          title="Download ZIP berisi JSON, Gambar, dan Laporan Teks">
-                          <i className="fa-solid fa-file-zipper"></i>
-                          Download ZIP
-                        </a>
-                        <a 
-                          href={`/api/admin/analysis/download?type=mfrm&method=${analysisMethod.mfrm || 'python'}&format=text`}
-                          className="px-4 py-3 bg-purple-955 hover:bg-slate-900 text-white font-black rounded-xl text-[10px] uppercase tracking-widest transition-all flex items-center gap-1.5"
-                          title="Download Laporan Format R / SPSS (Teks)">
-                          <i className="fa-solid fa-file-lines"></i>
-                          Laporan R/SPSS
-                        </a>
-                        <a 
-                          href={`/api/admin/analysis/download?type=mfrm&method=${analysisMethod.mfrm || 'python'}&format=json`}
-                          className="px-4 py-3 bg-slate-600 hover:bg-slate-700 text-white font-black rounded-xl text-[10px] uppercase tracking-widest transition-all flex items-center gap-1.5"
-                          title="Download File Output JSON">
-                          <i className="fa-solid fa-file-code"></i>
-                          JSON
-                        </a>
-                        {analysisPlots.mfrm && (
-                          <a 
-                            href={analysisPlots.mfrm}
-                            download={`MFRM_Joint_WrightMap.png`}
-                            className="px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-xl text-[10px] uppercase tracking-widest transition-all flex items-center gap-1.5"
-                            title="Download Gambar Wright Map Multi-Facet">
-                            <i className="fa-solid fa-file-image"></i>
-                            Wright Map
-                          </a>
-                        )}
-                      </div>
-                    )}
+                  <div>
+                    <h2 className="text-base font-bold text-slate-900">Many-Facet Rasch Model (MFRM)</h2>
+                    <p className="text-xs text-slate-500 mt-0.5">Calibrate Item Difficulty, Person Ability, and Facet Severities simultaneously</p>
                   </div>
                 </div>
               </div>
 
+              <AnalysisToolbar
+                type="mfrm" label="MFRM"
+                methodValue={analysisMethod.mfrm}
+                methodOptions={[{ value: 'Python', label: 'Python Engine' }, { value: 'R', label: 'R (TAM)' }]}
+                onMethodChange={(v) => setAnalysisMethod(prev => ({ ...prev, mfrm: v as 'R' | 'Python' }))}
+                onRun={() => runPsychometricAnalysis('mfrm')}
+                loading={analysisLoading.mfrm}
+                results={analysisResults.mfrm}
+                plots={analysisPlots.mfrm}
+                analysisMethod={analysisMethod.mfrm}
+              />
+
               {analysisResults.mfrm ? (
-                <div className="space-y-10">
-                  {/* Sub-Tab Navigation */}
-                  <div className="flex border-b border-slate-200 gap-8">
-                    {[
+                <div className="space-y-5">
+                  <SubTabs
+                    tabs={[
                       { id: 'parameters', label: 'Item Calibration & Reliability', icon: 'fa-table-list' },
                       { id: 'raters', label: 'Raters & Facet Calibration', icon: 'fa-users-gear' },
                       { id: 'plots', label: 'Multi-Facet Wright Map', icon: 'fa-chart-line' }
-                    ].map(sub => (
-                      <button key={sub.id} onClick={() => setMfrmSubTab(sub.id as any)}
-                        className={`pb-4 px-2 text-xs font-black uppercase tracking-wider transition-all border-b-2 flex items-center gap-2 ${
-                          mfrmSubTab === sub.id 
-                            ? 'border-purple-600 text-purple-600' 
-                            : 'border-transparent text-slate-400 hover:text-slate-600'
-                        }`}>
-                        <i className={`fa-solid ${sub.icon}`}></i> {sub.label}
-                      </button>
-                    ))}
-                  </div>
+                    ]}
+                    active={mfrmSubTab}
+                    onChange={(id) => setMfrmSubTab(id as any)}
+                  />
 
                   {mfrmSubTab === 'parameters' && (
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-in fade-in duration-300">
-                      {/* Reliability Summary */}
-                      <div className="lg:col-span-1 space-y-6">
-                        <div className="bg-white p-8 rounded-[40px] border border-slate-200 shadow-sm">
-                          <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest mb-6">MFRM Reliability Indices</h4>
-                          <div className="space-y-4">
-                            {[
-                              { label: 'Person Separation', value: analysisResults.mfrm.reliability?.person?.separation || 2.22, rel: analysisResults.mfrm.reliability?.person?.reliability || 0.83, color: 'text-blue-600 bg-blue-50' },
-                              { label: 'Item Separation', value: analysisResults.mfrm.reliability?.item?.separation || 4.15, rel: analysisResults.mfrm.reliability?.item?.reliability || 0.94, color: 'text-purple-600 bg-purple-50' },
-                              { label: 'Rater Separation', value: analysisResults.mfrm.reliability?.rater?.separation || 3.08, rel: analysisResults.mfrm.reliability?.rater?.reliability || 0.90, color: 'text-amber-600 bg-amber-50' }
-                            ].map((row, i) => (
-                              <div key={i} className="p-4 bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-between">
-                                <div>
-                                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">{row.label}</p>
-                                  <p className="text-lg font-black text-slate-800 mt-1">Sep: {row.value}</p>
-                                </div>
-                                <div className="text-right">
-                                  <p className="text-[9px] font-black text-slate-400 uppercase">Reliability</p>
-                                  <p className="text-sm font-extrabold text-emerald-600 mt-1">r = {row.rel}</p>
-                                </div>
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 animate-in fade-in duration-200">
+                      <div className="lg:col-span-1 bg-white border border-slate-200 rounded-xl p-5">
+                        <h4 className="text-xs font-semibold text-slate-700 mb-4">MFRM Reliability Indices</h4>
+                        <div className="space-y-3">
+                          {[
+                            { label: 'Person Separation', value: analysisResults.mfrm.reliability?.person?.separation || 2.22, rel: analysisResults.mfrm.reliability?.person?.reliability || 0.83, color: 'text-blue-600' },
+                            { label: 'Item Separation', value: analysisResults.mfrm.reliability?.item?.separation || 4.15, rel: analysisResults.mfrm.reliability?.item?.reliability || 0.94, color: 'text-purple-600' },
+                            { label: 'Rater Separation', value: analysisResults.mfrm.reliability?.rater?.separation || 3.08, rel: analysisResults.mfrm.reliability?.rater?.reliability || 0.90, color: 'text-amber-600' }
+                          ].map((row, i) => (
+                            <div key={i} className="p-3.5 bg-slate-50 border border-slate-100 rounded-xl flex items-center justify-between">
+                              <div>
+                                <p className="text-[10px] font-semibold text-slate-400 uppercase">{row.label}</p>
+                                <p className={`text-base font-bold ${row.color} mt-0.5`}>Sep: {row.value}</p>
                               </div>
-                            ))}
-                          </div>
+                              <div className="text-right">
+                                <p className="text-[9px] font-semibold text-slate-400 uppercase">Reliability</p>
+                                <p className="text-sm font-bold text-emerald-600 mt-0.5">r = {row.rel}</p>
+                              </div>
+                            </div>
+                          ))}
                         </div>
                       </div>
-
-                      {/* Items Calibration Table */}
-                      <div className="lg:col-span-2 bg-white rounded-[40px] border border-slate-200 shadow-sm overflow-hidden">
-                        <div className="p-8 border-b border-slate-100">
-                          <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest">Item Difficulty Calibration</h4>
+                      <div className="lg:col-span-2 bg-white border border-slate-200 rounded-xl overflow-hidden">
+                        <div className="px-5 py-4 border-b border-slate-100">
+                          <h4 className="text-xs font-semibold text-slate-700">Item Difficulty Calibration</h4>
                         </div>
-                        <div className="overflow-auto max-h-[400px] custom-scrollbar">
+                        <div className="overflow-auto max-h-[380px] custom-scrollbar">
                           <table className="w-full text-left">
-                            <thead className="bg-slate-50 text-[9px] font-black text-slate-400 uppercase border-b border-slate-100 sticky top-0">
+                            <thead className="bg-slate-50 text-[10px] font-semibold text-slate-400 uppercase border-b border-slate-100 sticky top-0">
                               <tr>
-                                <th className="px-6 py-4">Item ID</th>
-                                <th className="px-6 py-4">Difficulty (Logit)</th>
-                                <th className="px-6 py-4">Std. Error</th>
-                                <th className="px-6 py-4">Infit MnSq</th>
-                                <th className="px-6 py-4">Outfit MnSq</th>
-                                <th className="px-6 py-4">Status</th>
+                                {['Item ID', 'Difficulty (Logit)', 'Std. Error', 'Infit MnSq', 'Outfit MnSq', 'Status'].map(h => (
+                                  <th key={h} className="px-4 py-3">{h}</th>
+                                ))}
                               </tr>
                             </thead>
-                            <tbody className="divide-y divide-slate-100 text-xs font-bold text-slate-600">
+                            <tbody className="divide-y divide-slate-50 text-xs text-slate-600">
                               {analysisResults.mfrm.items?.map((it: any, idx: number) => (
                                 <tr key={idx} className="hover:bg-slate-50/50">
-                                  <td className="px-6 py-4 font-black text-slate-900">{it.item}</td>
-                                  <td className="px-6 py-4 text-purple-600">{it.difficulty}</td>
-                                  <td className="px-6 py-4 text-slate-400">{it.se || 0.14}</td>
-                                  <td className="px-6 py-4">{it.infit || 1.0}</td>
-                                  <td className="px-6 py-4">{it.outfit || 1.0}</td>
-                                  <td className="px-6 py-4">
-                                    <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase ${it.status === 'FIT' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}>
+                                  <td className="px-4 py-3 font-bold text-slate-800">{it.item}</td>
+                                  <td className="px-4 py-3 text-purple-600 font-mono">{it.difficulty}</td>
+                                  <td className="px-4 py-3 text-slate-400 font-mono">{it.se || 0.14}</td>
+                                  <td className="px-4 py-3 font-mono">{it.infit || 1.0}</td>
+                                  <td className="px-4 py-3 font-mono">{it.outfit || 1.0}</td>
+                                  <td className="px-4 py-3">
+                                    <span className={`px-2 py-0.5 rounded text-[10px] font-semibold ${it.status === 'FIT' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-rose-50 text-rose-700 border border-rose-200'}`}>
                                       {it.status || 'FIT'}
                                     </span>
                                   </td>
@@ -1624,279 +1625,166 @@ export default function AdminDashboard() {
                   )}
 
                   {mfrmSubTab === 'raters' && (
-                    <div className="space-y-8 animate-in fade-in duration-300">
-                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        {/* Raters Table */}
-                        <div className="bg-white rounded-[40px] border border-slate-200 shadow-sm overflow-hidden p-8">
-                          <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest mb-6">Rater Severity Calibrations</h4>
-                          <table className="w-full text-left">
-                            <thead className="bg-slate-50 text-[9px] font-black text-slate-400 uppercase border-b border-slate-100">
-                              <tr>
-                                <th className="px-6 py-4">Rater ID</th>
-                                <th className="px-6 py-4">Severity (Logit)</th>
-                                <th className="px-6 py-4">Std. Error</th>
-                                <th className="px-6 py-4">Infit</th>
-                                <th className="px-6 py-4">Outfit</th>
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 animate-in fade-in duration-200">
+                      <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+                        <div className="px-5 py-4 border-b border-slate-100"><h4 className="text-xs font-semibold text-slate-700">Rater Severity Calibrations</h4></div>
+                        <table className="w-full text-left">
+                          <thead className="bg-slate-50 text-[10px] font-semibold text-slate-400 uppercase border-b border-slate-100">
+                            <tr>{['Rater ID', 'Severity (Logit)', 'Std. Error', 'Infit', 'Outfit'].map(h => <th key={h} className="px-4 py-3">{h}</th>)}</tr>
+                          </thead>
+                          <tbody className="divide-y divide-slate-50 text-xs text-slate-600">
+                            {analysisResults.mfrm.raters?.map((r: any, idx: number) => (
+                              <tr key={idx}>
+                                <td className="px-4 py-3 font-bold text-slate-800">{r.rater}</td>
+                                <td className="px-4 py-3 text-amber-600 font-mono">{r.severity}</td>
+                                <td className="px-4 py-3 text-slate-400 font-mono">{r.se}</td>
+                                <td className="px-4 py-3 font-mono">{r.infit}</td>
+                                <td className="px-4 py-3 font-mono">{r.outfit}</td>
                               </tr>
-                            </thead>
-                            <tbody className="divide-y divide-slate-100 text-xs font-bold text-slate-600">
-                              {analysisResults.mfrm.raters?.map((r: any, idx: number) => (
-                                <tr key={idx}>
-                                  <td className="px-6 py-4 font-black text-slate-900">{r.rater}</td>
-                                  <td className="px-6 py-4 text-amber-600">{r.severity}</td>
-                                  <td className="px-6 py-4 text-slate-400">{r.se}</td>
-                                  <td className="px-6 py-4">{r.infit}</td>
-                                  <td className="px-6 py-4">{r.outfit}</td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        </div>
-
-                        {/* Other Demographics Facets */}
-                        <div className="bg-white rounded-[40px] border border-slate-200 shadow-sm p-8">
-                          <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest mb-6">Demographics & Context Facets Calibrations</h4>
-                          <div className="space-y-6 overflow-y-auto max-h-[350px] pr-2 custom-scrollbar">
-                            {/* Campus Facet */}
-                            <div>
-                              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Campus Facet (Kampus Asal)</p>
-                              <div className="space-y-2">
-                                {analysisResults.mfrm.campuses?.map((c: any, idx: number) => (
-                                  <div key={idx} className="flex justify-between items-center bg-slate-50 border border-slate-100 px-4 py-3 rounded-xl text-xs font-bold">
-                                    <span className="text-slate-800">{c.category}</span>
-                                    <span className="text-rose-600">Measure: {c.measure} logit</span>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                      <div className="bg-white border border-slate-200 rounded-xl p-5">
+                        <h4 className="text-xs font-semibold text-slate-700 mb-4">Demographics & Context Facets</h4>
+                        <div className="space-y-4 overflow-y-auto max-h-[320px] custom-scrollbar">
+                          {[
+                            { label: 'Campus Facet (Kampus Asal)', data: analysisResults.mfrm.campuses, color: 'text-rose-600' },
+                            { label: 'Gender Facet', data: analysisResults.mfrm.gender, color: 'text-emerald-600' },
+                            { label: 'Special Needs Facet', data: analysisResults.mfrm.special_needs, color: 'text-blue-600' },
+                          ].map(facet => (
+                            <div key={facet.label}>
+                              <p className="text-[9px] font-semibold text-slate-400 uppercase tracking-wider mb-2">{facet.label}</p>
+                              <div className="space-y-1.5">
+                                {facet.data?.map((c: any, idx: number) => (
+                                  <div key={idx} className="flex justify-between items-center bg-slate-50 border border-slate-100 px-3 py-2 rounded-lg text-xs font-medium">
+                                    <span className="text-slate-700">{c.category}</span>
+                                    <span className={`font-bold font-mono ${facet.color}`}>Measure: {c.measure} logit</span>
                                   </div>
                                 ))}
                               </div>
                             </div>
-
-                            {/* Gender Facet */}
-                            <div>
-                              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Gender Facet</p>
-                              <div className="space-y-2">
-                                {analysisResults.mfrm.gender?.map((g: any, idx: number) => (
-                                  <div key={idx} className="flex justify-between items-center bg-slate-50 border border-slate-100 px-4 py-3 rounded-xl text-xs font-bold">
-                                    <span className="text-slate-800">{g.category}</span>
-                                    <span className="text-emerald-600">Measure: {g.measure} logit</span>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-
-                            {/* Special Needs Facet */}
-                            <div>
-                              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Special Needs Facet (Berkebutuhan Khusus)</p>
-                              <div className="space-y-2">
-                                {analysisResults.mfrm.special_needs?.map((s: any, idx: number) => (
-                                  <div key={idx} className="flex justify-between items-center bg-slate-50 border border-slate-100 px-4 py-3 rounded-xl text-xs font-bold">
-                                    <span className="text-slate-800">{s.category}</span>
-                                    <span className="text-blue-600">Measure: {s.measure} logit</span>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          </div>
+                          ))}
                         </div>
                       </div>
                     </div>
                   )}
 
                   {mfrmSubTab === 'plots' && (
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 animate-in fade-in duration-300">
-                      {/* Joint Wright Map Plot */}
-                      <div className="lg:col-span-8 bg-white p-8 rounded-[40px] border border-slate-200 shadow-sm flex flex-col justify-between">
-                        <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest mb-6">MFRM Joint Wright Map Plot</h4>
-                        <div className="flex-1 flex items-center justify-center">
-                          {!imageError.mfrm && analysisPlots.mfrm ? (
-                            <img 
-                              src={analysisPlots.mfrm} 
-                              alt="MFRM Joint Wright Map" 
-                              onError={() => setImageError(prev => ({ ...prev, mfrm: true }))}
-                              className="w-full max-h-[500px] object-contain rounded-2xl border border-slate-100 shadow-md"
-                            />
-                          ) : (
-                            <div className="h-64 flex flex-col items-center justify-center text-center p-6 bg-slate-50 rounded-[32px] border border-dashed border-slate-200">
-                              <i className="fa-solid fa-chart-line text-slate-300 text-4xl mb-4"></i>
-                              <p className="text-slate-400 font-bold uppercase text-[10px] tracking-widest">Wright Map tidak dapat ditampilkan secara visual</p>
-                            </div>
-                          )}
-                        </div>
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 animate-in fade-in duration-200">
+                      <div className="lg:col-span-8 bg-white border border-slate-200 rounded-xl p-5">
+                        <h4 className="text-xs font-semibold text-slate-700 mb-4">MFRM Joint Wright Map Plot</h4>
+                        {!imageError.mfrm && analysisPlots.mfrm ? (
+                          <img src={analysisPlots.mfrm} alt="MFRM Joint Wright Map"
+                            onError={() => setImageError(prev => ({ ...prev, mfrm: true }))}
+                            className="w-full max-h-[480px] object-contain rounded-xl border border-slate-100" />
+                        ) : (
+                          <EmptyState icon="fa-chart-line" message="Wright Map tidak dapat ditampilkan secara visual" sub="Run MFRM analysis to generate the plot." />
+                        )}
                       </div>
-
-                      {/* Facet Contrast Plot */}
-                      <div className="lg:col-span-4 bg-white p-8 rounded-[40px] border border-slate-200 shadow-sm flex flex-col justify-between">
-                        <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest mb-6">Facet Contrast (Severity vs Lenience)</h4>
-                        <div className="flex-1 flex items-center justify-center">
-                          {!imageError2.mfrm && analysisPlots2.mfrm ? (
-                            <img 
-                              src={analysisPlots2.mfrm} 
-                              alt="MFRM Facet Contrast" 
-                              onError={() => setImageError2(prev => ({ ...prev, mfrm: true }))}
-                              className="w-full max-h-[400px] object-contain rounded-2xl border border-slate-100 shadow-md"
-                            />
-                          ) : (
-                            <div className="h-64 flex flex-col items-center justify-center text-center p-6 bg-slate-50 rounded-[32px] border border-dashed border-slate-200">
-                              <i className="fa-solid fa-chart-bar text-slate-300 text-4xl mb-4"></i>
-                              <p className="text-slate-400 font-bold uppercase text-[10px] tracking-widest">Contrast Plot tidak dapat ditampilkan</p>
-                            </div>
-                          )}
-                        </div>
+                      <div className="lg:col-span-4 bg-white border border-slate-200 rounded-xl p-5">
+                        <h4 className="text-xs font-semibold text-slate-700 mb-4">Facet Contrast (Severity vs Lenience)</h4>
+                        {!imageError2.mfrm && analysisPlots2.mfrm ? (
+                          <img src={analysisPlots2.mfrm} alt="MFRM Facet Contrast"
+                            onError={() => setImageError2(prev => ({ ...prev, mfrm: true }))}
+                            className="w-full max-h-[380px] object-contain rounded-xl border border-slate-100" />
+                        ) : (
+                          <EmptyState icon="fa-chart-bar" message="Contrast Plot tidak tersedia" sub="Run MFRM analysis first." />
+                        )}
                       </div>
                     </div>
                   )}
                 </div>
               ) : (
-                <div className="bg-white rounded-[40px] border border-slate-200 shadow-sm p-20 text-center">
-                  <div className="w-20 h-20 bg-purple-50 rounded-3xl flex items-center justify-center mx-auto text-purple-600 text-3xl mb-6 shadow-sm">
-                    <i className="fa-solid fa-cubes animate-pulse"></i>
-                  </div>
-                  <h4 className="text-base font-black text-slate-900 uppercase tracking-widest">Many-Facet Rasch Model</h4>
-                  <p className="text-slate-500 text-sm font-medium mt-2 max-w-md mx-auto">Sistem belum menemukan data analisis Many-Facet Rasch. Silakan pilih Engine R atau Python lalu klik tombol **Run MFRM** untuk memproses.</p>
-                </div>
+                <EmptyState icon="fa-cubes" message="Many-Facet Rasch Model belum dijalankan." sub='Pilih Engine R atau Python lalu klik tombol "Run MFRM" di atas.' />
               )}
             </div>
           )}
 
-          {/* EFA Analysis Tab Content */}
+          {/* ═══════════════════════════════════════════════════
+              TAB: EFA
+          ═══════════════════════════════════════════════════ */}
           {currentTab === 'efa' && (
-            <div className="space-y-10 animate-in fade-in slide-in-from-bottom-5 duration-700">
-              {/* Hero Banner */}
-              <div className="relative overflow-hidden bg-gradient-to-br from-indigo-600 via-blue-600 to-cyan-700 rounded-[40px] p-12 text-white shadow-2xl shadow-indigo-500/25">
-                <div className="absolute -top-24 -right-24 w-80 h-80 bg-white/10 rounded-full blur-3xl"></div>
-                <div className="absolute -bottom-16 -left-16 w-56 h-56 bg-blue-400/20 rounded-full blur-2xl"></div>
-                <div className="relative z-10 flex justify-between items-center">
-                  <div>
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
-                        <i className="fa-solid fa-chart-pie text-white text-lg"></i>
-                      </div>
-                      <span className="text-[10px] font-black uppercase tracking-[0.25em] text-blue-200">Factor Dimensionality</span>
-                    </div>
-                    <h3 className="text-4xl font-black tracking-tighter text-white">Exploratory Factor Analysis (EFA)</h3>
-                    <p className="text-blue-100 text-sm font-medium mt-2 max-w-lg">Identify underlying factor structures of the MADEL5C items using R / Python.</p>
-                  </div>
-                  <div className="flex items-center gap-4 bg-white/10 backdrop-blur-md p-3 rounded-2xl border border-white/20">
-                    <select 
-                      value={analysisMethod.efa} 
-                      onChange={(e) => setAnalysisMethod(prev => ({ ...prev, efa: e.target.value as 'R' | 'Python' }))}
-                      className="bg-transparent text-white font-bold text-xs outline-none border-none cursor-pointer pr-4">
-                      <option value="Python" className="text-slate-800">Python Engine</option>
-                      <option value="R" className="text-slate-800">R (factanal)</option>
-                    </select>
-                    <button 
-                      onClick={() => runPsychometricAnalysis('efa')}
-                      disabled={analysisLoading.efa}
-                      className="px-6 py-3 bg-white text-blue-600 font-black rounded-xl text-[10px] uppercase tracking-widest hover:bg-slate-100 transition-all flex items-center gap-2 disabled:opacity-50">
-                      {analysisLoading.efa ? <i className="fa-solid fa-spinner animate-spin"></i> : <i className="fa-solid fa-bolt"></i>}
-                      {analysisLoading.efa ? 'Running...' : 'Run EFA'}
-                    </button>
-                    {analysisResults.efa && (
-                      <div className="flex items-center gap-2">
-                        <a 
-                          href={`/api/admin/analysis/download?type=efa&method=${analysisMethod.efa}`}
-                          className="px-4 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-xl text-[10px] uppercase tracking-widest transition-all flex items-center gap-1.5"
-                          title="Download ZIP berisi JSON, Gambar, dan Laporan Teks">
-                          <i className="fa-solid fa-file-zipper"></i>
-                          Download ZIP
-                        </a>
-                        <a 
-                          href={`/api/admin/analysis/download?type=efa&method=${analysisMethod.efa}&format=text`}
-                          className="px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white font-black rounded-xl text-[10px] uppercase tracking-widest transition-all flex items-center gap-1.5"
-                          title="Download Laporan Format R / SPSS (Teks)">
-                          <i className="fa-solid fa-file-lines"></i>
-                          Laporan R/SPSS
-                        </a>
-                        <a 
-                          href={`/api/admin/analysis/download?type=efa&method=${analysisMethod.efa}&format=json`}
-                          className="px-4 py-3 bg-slate-600 hover:bg-slate-700 text-white font-black rounded-xl text-[10px] uppercase tracking-widest transition-all flex items-center gap-1.5"
-                          title="Download File Output JSON">
-                          <i className="fa-solid fa-file-code"></i>
-                          JSON
-                        </a>
-                        {analysisPlots.efa && (
-                          <a 
-                            href={analysisPlots.efa}
-                            download={`EFA_${analysisMethod.efa}_ScreePlot.png`}
-                            className="px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-xl text-[10px] uppercase tracking-widest transition-all flex items-center gap-1.5"
-                            title="Download Gambar Scree Plot">
-                            <i className="fa-solid fa-file-image"></i>
-                            Plot
-                          </a>
-                        )}
-                      </div>
-                    )}
-                  </div>
+            <div className="space-y-5 animate-in fade-in slide-in-from-bottom-3 duration-300">
+              <div className="bg-white border border-slate-200 rounded-xl p-5 flex items-center gap-3">
+                <div className="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center">
+                  <i className="fa-solid fa-chart-pie text-lg"></i>
+                </div>
+                <div>
+                  <h2 className="text-base font-bold text-slate-900">Exploratory Factor Analysis (EFA)</h2>
+                  <p className="text-xs text-slate-500 mt-0.5">Identify underlying factor structures of the MADEL5C items using R / Python</p>
                 </div>
               </div>
 
+              <AnalysisToolbar
+                type="efa" label="EFA"
+                methodValue={analysisMethod.efa}
+                methodOptions={[{ value: 'Python', label: 'Python Engine' }, { value: 'R', label: 'R (factanal)' }]}
+                onMethodChange={(v) => setAnalysisMethod(prev => ({ ...prev, efa: v as 'R' | 'Python' }))}
+                onRun={() => runPsychometricAnalysis('efa')}
+                loading={analysisLoading.efa}
+                results={analysisResults.efa}
+                plots={analysisPlots.efa}
+                analysisMethod={analysisMethod.efa}
+              />
+
               {analysisResults.efa ? (
-                <div className="space-y-10">
-                  {/* Sub-Tab Navigation */}
-                  <div className="flex border-b border-slate-200 gap-8">
-                    {[
+                <div className="space-y-5">
+                  <SubTabs
+                    tabs={[
                       { id: 'parameters', label: 'Loadings & Component Matrix', icon: 'fa-table-list' },
                       { id: 'plots', label: 'Scree Plot & Eigenvalues', icon: 'fa-chart-line' }
-                    ].map(sub => (
-                      <button key={sub.id} onClick={() => setEfaSubTab(sub.id as any)}
-                        className={`pb-4 px-2 text-xs font-black uppercase tracking-wider transition-all border-b-2 flex items-center gap-2 ${
-                          efaSubTab === sub.id 
-                            ? 'border-indigo-600 text-indigo-600' 
-                            : 'border-transparent text-slate-400 hover:text-slate-600'
-                        }`}>
-                        <i className={`fa-solid ${sub.icon}`}></i>
-                        {sub.label}
-                      </button>
-                    ))}
-                  </div>
+                    ]}
+                    active={efaSubTab}
+                    onChange={(id) => setEfaSubTab(id as any)}
+                  />
 
                   {efaSubTab === 'parameters' && (
-                    <div className="space-y-10 animate-in fade-in duration-300">
-                      {/* Summary Cards */}
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div className="bg-white p-8 rounded-[32px] border border-slate-200 shadow-sm">
-                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Kaiser-Meyer-Olkin (KMO)</p>
+                    <div className="space-y-5 animate-in fade-in duration-200">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="bg-white border border-slate-200 rounded-xl p-5">
+                          <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mb-1">Kaiser-Meyer-Olkin (KMO)</p>
                           <div className="flex items-baseline gap-2">
-                            <span className="text-4xl font-black text-slate-900">{analysisResults.efa.kmo}</span>
-                            <span className="text-[10px] font-bold text-emerald-500 uppercase">Excellent</span>
+                            <span className="text-2xl font-bold text-slate-900">{analysisResults.efa.kmo}</span>
+                            <span className="text-xs font-semibold text-emerald-600">Excellent</span>
                           </div>
                         </div>
-                        <div className="bg-white p-8 rounded-[32px] border border-slate-200 shadow-sm">
-                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Bartlett Sphericity (p)</p>
-                          <span className="text-4xl font-black text-slate-900">&lt; {analysisResults.efa.bartlett}</span>
+                        <div className="bg-white border border-slate-200 rounded-xl p-5">
+                          <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mb-1">Bartlett Sphericity (p)</p>
+                          <span className="text-2xl font-bold text-slate-900">&lt; {analysisResults.efa.bartlett}</span>
                         </div>
-                        <div className="bg-white p-8 rounded-[32px] border border-slate-200 shadow-sm">
-                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Extracted Factors</p>
-                          <span className="text-4xl font-black text-blue-600">5 Factors</span>
+                        <div className="bg-white border border-slate-200 rounded-xl p-5">
+                          <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mb-1">Extracted Factors</p>
+                          <span className="text-2xl font-bold text-blue-600">5 Factors</span>
                         </div>
                       </div>
 
-                      {/* Loadings Table */}
-                      <div className="bg-white rounded-[40px] border border-slate-200 shadow-sm overflow-hidden">
-                        <div className="p-8 border-b border-slate-100 flex justify-between items-center">
-                          <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest">Rotated Component Matrix</h4>
+                      <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+                        <div className="px-5 py-4 border-b border-slate-100">
+                          <h4 className="text-xs font-semibold text-slate-700">Rotated Component Matrix</h4>
                         </div>
-                        <div className="overflow-auto max-h-[500px] custom-scrollbar">
+                        <div className="overflow-auto max-h-[460px] custom-scrollbar">
                           <table className="w-full text-left">
-                            <thead className="bg-slate-50 text-[9px] font-black text-slate-400 uppercase border-b border-slate-100 sticky top-0">
+                            <thead className="bg-slate-50 text-[10px] font-semibold text-slate-400 uppercase border-b border-slate-100 sticky top-0">
                               <tr>
-                                <th className="px-6 py-4">Item ID</th>
-                                <th className="px-6 py-4">Dimension</th>
+                                <th className="px-4 py-3">Item ID</th>
+                                <th className="px-4 py-3">Dimension</th>
                                 {Object.keys(analysisResults.efa.loadings[0]?.loadings || {}).map(f => (
-                                  <th key={f} className="px-6 py-4">{f}</th>
+                                  <th key={f} className="px-4 py-3">{f}</th>
                                 ))}
                               </tr>
                             </thead>
-                            <tbody className="divide-y divide-slate-100 text-xs font-bold text-slate-600">
+                            <tbody className="divide-y divide-slate-50 text-xs text-slate-600">
                               {analysisResults.efa.loadings.map((load: any, idx: number) => {
                                 const factorKeys = Object.keys(load.loadings || {});
                                 return (
-                                  <tr key={idx} className="hover:bg-slate-50/50">
-                                    <td className="px-6 py-4 font-black text-slate-900">{load.item}</td>
-                                    <td className="px-6 py-4 uppercase text-[10px] text-slate-400">{load.dimension}</td>
+                                  <tr key={idx} className="hover:bg-slate-50/50 even:bg-slate-50/30">
+                                    <td className="px-4 py-3 font-bold text-slate-800">{load.item}</td>
+                                    <td className="px-4 py-3 text-[10px] text-slate-400 uppercase font-semibold">{load.dimension}</td>
                                     {factorKeys.map(f => {
                                       const isPrimary = load.dimension === f || (f.toLowerCase().includes(load.dimension.toLowerCase().substring(0,4)));
                                       return (
-                                        <td key={f} className={`px-6 py-4 ${isPrimary ? 'text-emerald-600 font-extrabold' : 'text-slate-400 font-medium'}`}>
+                                        <td key={f} className={`px-4 py-3 font-mono ${isPrimary ? 'text-emerald-700 font-bold' : 'text-slate-400'}`}>
                                           {(load.loadings[f] !== undefined ? load.loadings[f] : 0.05).toFixed(3)}
                                         </td>
                                       );
@@ -1912,107 +1800,65 @@ export default function AdminDashboard() {
                   )}
 
                   {efaSubTab === 'plots' && (
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 animate-in fade-in duration-300">
-                      {/* Scree Plot */}
-                      <div className="lg:col-span-8 bg-white p-8 rounded-[40px] border border-slate-200 shadow-sm flex flex-col justify-between">
-                        <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest mb-6">Scree Factor Plot</h4>
-                        <div className="flex-1 flex items-center justify-center">
-                          {!imageError.efa && analysisPlots.efa ? (
-                            <img 
-                              src={analysisPlots.efa} 
-                              alt="Scree Plot" 
-                              onError={() => setImageError(prev => ({ ...prev, efa: true }))}
-                              className="w-full h-auto object-contain rounded-2xl border border-slate-100" 
-                            />
-                          ) : (
-                            <svg className="w-full h-[300px] bg-slate-50 border border-slate-200 rounded-[32px] p-4" viewBox="0 0 150 90">
-                              {/* Grid Lines */}
-                              <line x1="25" y1="10" x2="140" y2="10" stroke="#e2e8f0" strokeWidth="0.5" />
-                              <line x1="25" y1="21.6" x2="140" y2="21.6" stroke="#e2e8f0" strokeWidth="0.5" />
-                              <line x1="25" y1="33.3" x2="140" y2="33.3" stroke="#e2e8f0" strokeWidth="0.5" />
-                              <line x1="25" y1="45" x2="140" y2="45" stroke="#e2e8f0" strokeWidth="0.5" />
-                              <line x1="25" y1="56.6" x2="140" y2="56.6" stroke="#e2e8f0" strokeWidth="0.5" />
-                              <line x1="25" y1="68.3" x2="140" y2="68.3" stroke="#cbd5e1" strokeWidth="0.8" />
-                              <line x1="25" y1="80" x2="140" y2="80" stroke="#cbd5e1" strokeWidth="1" />
-
-                              {/* Kaiser Criterion (Eigenvalue = 1.0) */}
-                              <line x1="25" y1="68.3" x2="140" y2="68.3" stroke="#ef4444" strokeDasharray="3,3" strokeWidth="1" />
-                              <text x="141" y="69.3" fontSize="2.5" fill="#ef4444" fontWeight="bold">y = 1.0 (Kaiser)</text>
-
-                              {/* Axes */}
-                              <line x1="25" y1="10" x2="25" y2="80" stroke="#cbd5e1" strokeWidth="1" />
-                              
-                              {/* Y axis labels */}
-                              <text x="20" y="81" fontSize="3" fill="#64748b" textAnchor="end">0.0</text>
-                              <text x="20" y="69.3" fontSize="3" fill="#64748b" textAnchor="end">1.0</text>
-                              <text x="20" y="57.6" fontSize="3" fill="#64748b" textAnchor="end">2.0</text>
-                              <text x="20" y="46" fontSize="3" fill="#64748b" textAnchor="end">3.0</text>
-                              <text x="20" y="34.3" fontSize="3" fill="#64748b" textAnchor="end">4.0</text>
-                              <text x="20" y="22.6" fontSize="3" fill="#64748b" textAnchor="end">5.0</text>
-                              <text x="20" y="11" fontSize="3" fill="#64748b" textAnchor="end">6.0</text>
-
-                              <text x="8" y="45" fontSize="3" fill="#475569" fontWeight="bold" transform="rotate(-90 8 45)" textAnchor="middle">Eigenvalue</text>
-
-                              {/* X axis labels */}
-                              <text x="25" y="86" fontSize="3" fill="#64748b" textAnchor="middle">F1</text>
-                              <text x="40.7" y="86" fontSize="3" fill="#64748b" textAnchor="middle">F2</text>
-                              <text x="56.4" y="86" fontSize="3" fill="#64748b" textAnchor="middle">F3</text>
-                              <text x="72.1" y="86" fontSize="3" fill="#64748b" textAnchor="middle">F4</text>
-                              <text x="87.8" y="86" fontSize="3" fill="#64748b" textAnchor="middle">F5</text>
-                              <text x="103.5" y="86" fontSize="3" fill="#64748b" textAnchor="middle">F6</text>
-                              <text x="119.2" y="86" fontSize="3" fill="#64748b" textAnchor="middle">F7</text>
-                              <text x="135" y="86" fontSize="3" fill="#64748b" textAnchor="middle">F8</text>
-
-                              <text x="82.5" y="89.5" fontSize="3" fill="#475569" fontWeight="bold" textAnchor="middle">Component Number</text>
-
-                              {/* Scree Path */}
-                              <path d="M 25,16.7 L 40.7,43.6 L 56.4,54.9 L 72.1,58.5 L 87.8,64.3 L 103.5,68.9 L 119.2,70.4 L 135,71.7" fill="none" stroke="#3b82f6" strokeWidth="1.5" />
-                              
-                              {/* Points with Value Labels */}
-                              <circle cx="25" cy="16.7" r="2" fill="#1e3a8a" stroke="#ffffff" strokeWidth="0.5" />
-                              <text x="25" y="12.7" fontSize="2.5" fill="#1e3a8a" fontWeight="bold" textAnchor="middle">5.42</text>
-
-                              <circle cx="40.7" cy="43.6" r="2" fill="#1e3a8a" stroke="#ffffff" strokeWidth="0.5" />
-                              <text x="40.7" y="39.6" fontSize="2.5" fill="#1e3a8a" fontWeight="bold" textAnchor="middle">3.12</text>
-
-                              <circle cx="56.4" cy="54.9" r="2" fill="#1e3a8a" stroke="#ffffff" strokeWidth="0.5" />
-                              <text x="56.4" y="50.9" fontSize="2.5" fill="#1e3a8a" fontWeight="bold" textAnchor="middle">2.15</text>
-
-                              <circle cx="72.1" cy="58.5" r="2" fill="#1e3a8a" stroke="#ffffff" strokeWidth="0.5" />
-                              <text x="72.1" y="54.5" fontSize="2.5" fill="#1e3a8a" fontWeight="bold" textAnchor="middle">1.84</text>
-
-                              <circle cx="87.8" cy="64.3" r="2" fill="#1e3a8a" stroke="#ffffff" strokeWidth="0.5" />
-                              <text x="87.8" y="60.3" fontSize="2.5" fill="#1e3a8a" fontWeight="bold" textAnchor="middle">1.34</text>
-
-                              <circle cx="103.5" cy="68.9" r="2" fill="#64748b" stroke="#ffffff" strokeWidth="0.5" />
-                              <text x="103.5" y="65.9" fontSize="2.2" fill="#64748b" textAnchor="middle">0.95</text>
-
-                              <circle cx="119.2" cy="70.4" r="2" fill="#64748b" stroke="#ffffff" strokeWidth="0.5" />
-                              <text x="119.2" y="67.4" fontSize="2.2" fill="#64748b" textAnchor="middle">0.82</text>
-
-                              <circle cx="135" cy="71.7" r="2" fill="#64748b" stroke="#ffffff" strokeWidth="0.5" />
-                              <text x="135" y="68.7" fontSize="2.2" fill="#64748b" textAnchor="middle">0.71</text>
-                            </svg>
-                          )}
-                        </div>
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 animate-in fade-in duration-200">
+                      <div className="lg:col-span-8 bg-white border border-slate-200 rounded-xl p-5">
+                        <h4 className="text-xs font-semibold text-slate-700 mb-4">Scree Factor Plot</h4>
+                        {!imageError.efa && analysisPlots.efa ? (
+                          <img src={analysisPlots.efa} alt="Scree Plot"
+                            onError={() => setImageError(prev => ({ ...prev, efa: true }))}
+                            className="w-full h-auto object-contain rounded-xl border border-slate-100" />
+                        ) : (
+                          <svg className="w-full h-[300px] bg-slate-50 border border-slate-100 rounded-xl p-4" viewBox="0 0 150 90">
+                            <line x1="25" y1="10" x2="140" y2="10" stroke="#e2e8f0" strokeWidth="0.5" />
+                            <line x1="25" y1="21.6" x2="140" y2="21.6" stroke="#e2e8f0" strokeWidth="0.5" />
+                            <line x1="25" y1="33.3" x2="140" y2="33.3" stroke="#e2e8f0" strokeWidth="0.5" />
+                            <line x1="25" y1="45" x2="140" y2="45" stroke="#e2e8f0" strokeWidth="0.5" />
+                            <line x1="25" y1="56.6" x2="140" y2="56.6" stroke="#e2e8f0" strokeWidth="0.5" />
+                            <line x1="25" y1="68.3" x2="140" y2="68.3" stroke="#e2e8f0" strokeWidth="0.8" />
+                            <line x1="25" y1="80" x2="140" y2="80" stroke="#cbd5e1" strokeWidth="1" />
+                            <line x1="25" y1="68.3" x2="140" y2="68.3" stroke="#ef4444" strokeDasharray="3,3" strokeWidth="1" />
+                            <text x="141" y="69.3" fontSize="2.5" fill="#ef4444" fontWeight="bold">y = 1.0 (Kaiser)</text>
+                            <line x1="25" y1="10" x2="25" y2="80" stroke="#cbd5e1" strokeWidth="1" />
+                            <text x="20" y="81" fontSize="3" fill="#64748b" textAnchor="end">0.0</text>
+                            <text x="20" y="69.3" fontSize="3" fill="#64748b" textAnchor="end">1.0</text>
+                            <text x="20" y="57.6" fontSize="3" fill="#64748b" textAnchor="end">2.0</text>
+                            <text x="20" y="46" fontSize="3" fill="#64748b" textAnchor="end">3.0</text>
+                            <text x="20" y="34.3" fontSize="3" fill="#64748b" textAnchor="end">4.0</text>
+                            <text x="20" y="22.6" fontSize="3" fill="#64748b" textAnchor="end">5.0</text>
+                            <text x="20" y="11" fontSize="3" fill="#64748b" textAnchor="end">6.0</text>
+                            <text x="8" y="45" fontSize="3" fill="#475569" fontWeight="bold" transform="rotate(-90 8 45)" textAnchor="middle">Eigenvalue</text>
+                            {['F1','F2','F3','F4','F5','F6','F7','F8'].map((f, i) => (
+                              <text key={f} x={25 + i * 15.7} y="86" fontSize="3" fill="#64748b" textAnchor="middle">{f}</text>
+                            ))}
+                            <text x="82.5" y="89.5" fontSize="3" fill="#475569" fontWeight="bold" textAnchor="middle">Component Number</text>
+                            <path d="M 25,16.7 L 40.7,43.6 L 56.4,54.9 L 72.1,58.5 L 87.8,64.3 L 103.5,68.9 L 119.2,70.4 L 135,71.7" fill="none" stroke="#1e3a5f" strokeWidth="1.5" />
+                            {[{x:25,y:16.7,v:'5.42'},{x:40.7,y:43.6,v:'3.12'},{x:56.4,y:54.9,v:'2.15'},{x:72.1,y:58.5,v:'1.84'},{x:87.8,y:64.3,v:'1.34'}].map((pt,i) => (
+                              <g key={i}>
+                                <circle cx={pt.x} cy={pt.y} r="2" fill="#1e3a5f" stroke="#ffffff" strokeWidth="0.5" />
+                                <text x={pt.x} y={pt.y - 3} fontSize="2.5" fill="#1e3a5f" fontWeight="bold" textAnchor="middle">{pt.v}</text>
+                              </g>
+                            ))}
+                            {[{x:103.5,y:68.9,v:'0.95'},{x:119.2,y:70.4,v:'0.82'},{x:135,y:71.7,v:'0.71'}].map((pt,i) => (
+                              <g key={i}>
+                                <circle cx={pt.x} cy={pt.y} r="2" fill="#94a3b8" stroke="#ffffff" strokeWidth="0.5" />
+                                <text x={pt.x} y={pt.y - 3} fontSize="2.2" fill="#94a3b8" textAnchor="middle">{pt.v}</text>
+                              </g>
+                            ))}
+                          </svg>
+                        )}
                       </div>
-
-                      {/* Eigenvalues Table */}
-                      <div className="lg:col-span-4 bg-white p-8 rounded-[40px] border border-slate-200 shadow-sm flex flex-col">
-                        <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest mb-6">Eigenvalue Summary</h4>
-                        <div className="overflow-auto max-h-[300px] custom-scrollbar flex-1">
+                      <div className="lg:col-span-4 bg-white border border-slate-200 rounded-xl overflow-hidden">
+                        <div className="px-4 py-3 border-b border-slate-100"><h4 className="text-xs font-semibold text-slate-700">Eigenvalue Summary</h4></div>
+                        <div className="overflow-auto max-h-[280px] custom-scrollbar">
                           <table className="w-full text-left">
-                            <thead className="bg-slate-50 text-[9px] font-black text-slate-400 uppercase border-b border-slate-100">
-                              <tr>
-                                <th className="px-4 py-3">Factor</th>
-                                <th className="px-4 py-3">Eigenvalue</th>
-                              </tr>
+                            <thead className="bg-slate-50 text-[10px] font-semibold text-slate-400 uppercase border-b border-slate-100">
+                              <tr><th className="px-4 py-3">Factor</th><th className="px-4 py-3">Eigenvalue</th></tr>
                             </thead>
-                            <tbody className="divide-y divide-slate-100 text-xs font-bold text-slate-600">
+                            <tbody className="divide-y divide-slate-50 text-xs text-slate-600">
                               {analysisResults.efa.eigenvalues.map((ev: number, idx: number) => (
-                                <tr key={idx} className="hover:bg-slate-50/50">
-                                  <td className="px-4 py-3 text-slate-900">Factor {idx+1}</td>
-                                  <td className="px-4 py-3 text-indigo-600">{ev}</td>
+                                <tr key={idx} className="hover:bg-slate-50/50 even:bg-slate-50/30">
+                                  <td className="px-4 py-2.5 text-slate-800 font-medium">Factor {idx+1}</td>
+                                  <td className={`px-4 py-2.5 font-mono font-bold ${ev >= 1 ? 'text-indigo-600' : 'text-slate-400'}`}>{ev}</td>
                                 </tr>
                               ))}
                             </tbody>
@@ -2023,140 +1869,78 @@ export default function AdminDashboard() {
                   )}
                 </div>
               ) : (
-                <div className="py-20 text-center bg-white border border-dashed border-slate-200 rounded-[40px] flex flex-col items-center gap-4">
-                  <i className="fa-solid fa-calculator text-4xl text-slate-300"></i>
-                  <div>
-                    <p className="text-sm font-bold text-slate-500">Analisis Faktor Eksploratori (EFA) belum dijalankan.</p>
-                    <p className="text-[10px] text-slate-400 mt-1 uppercase tracking-widest">Silakan klik tombol "Run EFA" di atas untuk memproses data instrumen.</p>
-                  </div>
-                </div>
+                <EmptyState icon="fa-calculator" message="Analisis EFA belum dijalankan." sub='Klik tombol "Run EFA" di atas untuk memproses data instrumen.' />
               )}
             </div>
           )}
 
-          {/* CFA Analysis Tab Content */}
+          {/* ═══════════════════════════════════════════════════
+              TAB: CFA
+          ═══════════════════════════════════════════════════ */}
           {currentTab === 'cfa' && (
-            <div className="space-y-10 animate-in fade-in slide-in-from-bottom-5 duration-700">
-              {/* Hero Banner */}
-              <div className="relative overflow-hidden bg-gradient-to-br from-cyan-600 via-teal-600 to-emerald-700 rounded-[40px] p-12 text-white shadow-2xl shadow-cyan-500/25">
-                <div className="absolute -top-24 -right-24 w-80 h-80 bg-white/10 rounded-full blur-3xl"></div>
-                <div className="absolute -bottom-16 -left-16 w-56 h-56 bg-teal-400/20 rounded-full blur-2xl"></div>
-                <div className="relative z-10 flex justify-between items-center">
-                  <div>
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
-                        <i className="fa-solid fa-diagram-project text-white text-lg"></i>
-                      </div>
-                      <span className="text-[10px] font-black uppercase tracking-[0.25em] text-cyan-200">Structural Validation</span>
-                    </div>
-                    <h3 className="text-4xl font-black tracking-tighter text-white">Confirmatory Factor Analysis (CFA)</h3>
-                    <p className="text-cyan-100 text-sm font-medium mt-2 max-w-lg">Confirm structural dimension of the 5C model in the MADEL5C instrument.</p>
-                  </div>
-                  <div className="flex items-center gap-4 bg-white/10 backdrop-blur-md p-3 rounded-2xl border border-white/20">
-                    <select 
-                      value={analysisMethod.cfa} 
-                      onChange={(e) => setAnalysisMethod(prev => ({ ...prev, cfa: e.target.value as 'R' | 'Python' }))}
-                      className="bg-transparent text-white font-bold text-xs outline-none border-none cursor-pointer pr-4">
-                      <option value="Python" className="text-slate-800">Python (semopy)</option>
-                      <option value="R" className="text-slate-800">R (lavaan)</option>
-                    </select>
-                    <button 
-                      onClick={() => runPsychometricAnalysis('cfa')}
-                      disabled={analysisLoading.cfa}
-                      className="px-6 py-3 bg-white text-cyan-600 font-black rounded-xl text-[10px] uppercase tracking-widest hover:bg-slate-100 transition-all flex items-center gap-2 disabled:opacity-50">
-                      {analysisLoading.cfa ? <i className="fa-solid fa-spinner animate-spin"></i> : <i className="fa-solid fa-bolt"></i>}
-                      {analysisLoading.cfa ? 'Running...' : 'Run CFA'}
-                    </button>
-                    {analysisResults.cfa && (
-                      <div className="flex items-center gap-2">
-                        <a 
-                          href={`/api/admin/analysis/download?type=cfa&method=${analysisMethod.cfa}`}
-                          className="px-4 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-xl text-[10px] uppercase tracking-widest transition-all flex items-center gap-1.5"
-                          title="Download ZIP berisi JSON, Gambar, dan Laporan Teks">
-                          <i className="fa-solid fa-file-zipper"></i>
-                          Download ZIP
-                        </a>
-                        <a 
-                          href={`/api/admin/analysis/download?type=cfa&method=${analysisMethod.cfa}&format=text`}
-                          className="px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white font-black rounded-xl text-[10px] uppercase tracking-widest transition-all flex items-center gap-1.5"
-                          title="Download Laporan Format R / SPSS (Teks)">
-                          <i className="fa-solid fa-file-lines"></i>
-                          Laporan R/SPSS
-                        </a>
-                        <a 
-                          href={`/api/admin/analysis/download?type=cfa&method=${analysisMethod.cfa}&format=json`}
-                          className="px-4 py-3 bg-slate-600 hover:bg-slate-700 text-white font-black rounded-xl text-[10px] uppercase tracking-widest transition-all flex items-center gap-1.5"
-                          title="Download File Output JSON">
-                          <i className="fa-solid fa-file-code"></i>
-                          JSON
-                        </a>
-                        {analysisPlots.cfa && (
-                          <a 
-                            href={analysisPlots.cfa}
-                            download={`CFA_${analysisMethod.cfa}_Plot.png`}
-                            className="px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-xl text-[10px] uppercase tracking-widest transition-all flex items-center gap-1.5"
-                            title="Download Gambar Diagram CFA">
-                            <i className="fa-solid fa-file-image"></i>
-                            Plot
-                          </a>
-                        )}
-                      </div>
-                    )}
-                  </div>
+            <div className="space-y-5 animate-in fade-in slide-in-from-bottom-3 duration-300">
+              <div className="bg-white border border-slate-200 rounded-xl p-5 flex items-center gap-3">
+                <div className="w-10 h-10 bg-teal-50 text-teal-600 rounded-xl flex items-center justify-center">
+                  <i className="fa-solid fa-diagram-project text-lg"></i>
+                </div>
+                <div>
+                  <h2 className="text-base font-bold text-slate-900">Confirmatory Factor Analysis (CFA)</h2>
+                  <p className="text-xs text-slate-500 mt-0.5">Confirm the structural dimension of the 5C model in the MADEL5C instrument</p>
                 </div>
               </div>
 
+              <AnalysisToolbar
+                type="cfa" label="CFA"
+                methodValue={analysisMethod.cfa}
+                methodOptions={[{ value: 'Python', label: 'Python (semopy)' }, { value: 'R', label: 'R (lavaan)' }]}
+                onMethodChange={(v) => setAnalysisMethod(prev => ({ ...prev, cfa: v as 'R' | 'Python' }))}
+                onRun={() => runPsychometricAnalysis('cfa')}
+                loading={analysisLoading.cfa}
+                results={analysisResults.cfa}
+                plots={analysisPlots.cfa}
+                analysisMethod={analysisMethod.cfa}
+              />
+
               {analysisResults.cfa ? (
-                <div className="space-y-10">
-                  {/* Sub-Tab Navigation */}
-                  <div className="flex border-b border-slate-200 gap-8">
-                    {[
+                <div className="space-y-5">
+                  <SubTabs
+                    tabs={[
                       { id: 'parameters', label: 'Fit Indices & Factor Loadings', icon: 'fa-table-list' },
                       { id: 'plots', label: 'CFA Path Diagram', icon: 'fa-diagram-project' }
-                    ].map(sub => (
-                      <button key={sub.id} onClick={() => setCfaSubTab(sub.id as any)}
-                        className={`pb-4 px-2 text-xs font-black uppercase tracking-wider transition-all border-b-2 flex items-center gap-2 ${
-                          cfaSubTab === sub.id 
-                            ? 'border-cyan-600 text-cyan-600' 
-                            : 'border-transparent text-slate-400 hover:text-slate-600'
-                        }`}>
-                        <i className={`fa-solid ${sub.icon}`}></i>
-                        {sub.label}
-                      </button>
-                    ))}
-                  </div>
+                    ]}
+                    active={cfaSubTab}
+                    onChange={(id) => setCfaSubTab(id as any)}
+                  />
 
                   {cfaSubTab === 'parameters' && (
-                    <div className="space-y-10 animate-in fade-in duration-300">
-                      {/* Summary Cards */}
-                      <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
+                    <div className="space-y-5 animate-in fade-in duration-200">
+                      <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
                         {[
-                          { l: "CFI", v: analysisResults.cfa.fit_indices.cfi, c: "text-emerald-500", status: "Good" },
-                          { l: "TLI", v: analysisResults.cfa.fit_indices.tli, c: "text-emerald-500", status: "Good" },
-                          { l: "RMSEA", v: analysisResults.cfa.fit_indices.rmsea, c: "text-emerald-500", status: "Good" },
-                          { l: "SRMR", v: analysisResults.cfa.fit_indices.srmr, c: "text-emerald-500", status: "Good" },
-                          { l: "Chi-Square/df", v: (analysisResults.cfa.fit_indices.chi_square / analysisResults.cfa.fit_indices.df).toFixed(2), c: "text-cyan-500", status: "Good" }
+                          { l: "CFI", v: analysisResults.cfa.fit_indices.cfi },
+                          { l: "TLI", v: analysisResults.cfa.fit_indices.tli },
+                          { l: "RMSEA", v: analysisResults.cfa.fit_indices.rmsea },
+                          { l: "SRMR", v: analysisResults.cfa.fit_indices.srmr },
+                          { l: "χ²/df", v: (analysisResults.cfa.fit_indices.chi_square / analysisResults.cfa.fit_indices.df).toFixed(2) }
                         ].map(card => (
-                          <div key={card.l} className="bg-white p-6 rounded-[24px] border border-slate-200 shadow-sm text-center">
-                            <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">{card.l}</p>
-                            <p className={`text-2xl font-black ${card.c}`}>{card.v}</p>
-                            <span className="text-[8px] font-black uppercase text-emerald-500 bg-emerald-50 px-2 py-0.5 rounded-full mt-2 inline-block">{card.status}</span>
+                          <div key={card.l} className="bg-white border border-slate-200 rounded-xl p-4 text-center">
+                            <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mb-1">{card.l}</p>
+                            <p className="text-xl font-bold text-emerald-600">{card.v}</p>
+                            <span className="text-[9px] font-semibold text-emerald-600 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded mt-1.5 inline-block">Good</span>
                           </div>
                         ))}
                       </div>
 
-                      {/* Loadings */}
-                      <div className="bg-white p-8 rounded-[40px] border border-slate-200 shadow-sm">
-                        <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest mb-6">Factor Loadings (CFA)</h4>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      <div className="bg-white border border-slate-200 rounded-xl p-5">
+                        <h4 className="text-xs font-semibold text-slate-700 mb-4">Factor Loadings (CFA)</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                           {analysisResults.cfa.loadings.map((load: any, idx: number) => (
-                            <div key={idx} className="p-5 bg-slate-50 border border-slate-100 rounded-2xl">
-                              <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3 border-b border-slate-200/60 pb-2">{load.dimension}</p>
-                              <div className="space-y-2">
+                            <div key={idx} className="bg-slate-50 border border-slate-100 rounded-xl p-4">
+                              <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-2.5 border-b border-slate-200 pb-2">{load.dimension}</p>
+                              <div className="space-y-1.5">
                                 {load.items.map((it: any, iidx: number) => (
-                                  <div key={iidx} className="flex justify-between items-center text-xs font-bold">
-                                    <span className="text-slate-900">{it.id}</span>
-                                    <span className="text-emerald-600">{it.load}</span>
+                                  <div key={iidx} className="flex justify-between items-center text-xs">
+                                    <span className="font-medium text-slate-700">{it.id}</span>
+                                    <span className="font-bold text-emerald-700 font-mono">{it.load}</span>
                                   </div>
                                 ))}
                               </div>
@@ -2168,300 +1952,149 @@ export default function AdminDashboard() {
                   )}
 
                   {cfaSubTab === 'plots' && (
-                    <div className="bg-white p-8 rounded-[40px] border border-slate-200 shadow-sm flex flex-col justify-between animate-in fade-in duration-300">
-                      <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest mb-6">CFA Model Fit Path Diagram</h4>
-                      <div className="flex items-center justify-center">
-                        {!imageError.cfa && analysisPlots.cfa ? (
-                          <img 
-                            src={analysisPlots.cfa} 
-                            alt="CFA Path Diagram" 
-                            onError={() => setImageError(prev => ({ ...prev, cfa: true }))}
-                            className="w-full max-w-4xl h-auto object-contain rounded-2xl border border-slate-100 shadow-md" 
-                          />
-                        ) : (
-                          <svg className="w-full max-w-3xl h-[400px] bg-slate-50 border border-slate-200 rounded-[32px] p-4" viewBox="0 0 160 100">
-                            <defs>
-                              <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse">
-                                <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#64748b" />
-                              </marker>
-                              <marker id="covarrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="3" markerHeight="3" orient="auto-start-reverse">
-                                <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#94a3b8" />
-                              </marker>
-                            </defs>
-
-                            {/* Covariance/Correlation Paths (Double headed curved arrows) */}
-                            <path d="M 25,22 A 18,18 0 0,0 25,50" fill="none" stroke="#94a3b8" strokeWidth="0.8" markerStart="url(#covarrow)" markerEnd="url(#covarrow)" />
-                            <text x="12" y="38" fontSize="2.5" fill="#64748b" fontWeight="bold">0.58</text>
-
-                            <path d="M 25,50 A 18,18 0 0,0 25,78" fill="none" stroke="#94a3b8" strokeWidth="0.8" markerStart="url(#covarrow)" markerEnd="url(#covarrow)" />
-                            <text x="12" y="66" fontSize="2.5" fill="#64748b" fontWeight="bold">0.62</text>
-
-                            <path d="M 23,22 A 32,32 0 0,0 23,78" fill="none" stroke="#94a3b8" strokeWidth="0.8" markerStart="url(#covarrow)" markerEnd="url(#covarrow)" />
-                            <text x="4" y="52" fontSize="2.5" fill="#64748b" fontWeight="bold">0.45</text>
-
-                            {/* Latent Variables (Ellipses) */}
-                            <ellipse cx="45" cy="22" rx="12" ry="7" fill="#eff6ff" stroke="#3b82f6" strokeWidth="1.2" />
-                            <text x="45" y="21" fontSize="3" fill="#1e3a8a" fontWeight="bold" textAnchor="middle">INFO</text>
-                            <text x="45" y="24.5" fontSize="1.8" fill="#1d4ed8" textAnchor="middle">R²=0.88</text>
-
-                            <ellipse cx="45" cy="50" rx="12" ry="7" fill="#eff6ff" stroke="#3b82f6" strokeWidth="1.2" />
-                            <text x="45" y="49" fontSize="3" fill="#1e3a8a" fontWeight="bold" textAnchor="middle">COLLAB</text>
-                            <text x="45" y="52.5" fontSize="1.8" fill="#1d4ed8" textAnchor="middle">R²=0.84</text>
-
-                            <ellipse cx="45" cy="78" rx="12" ry="7" fill="#eff6ff" stroke="#3b82f6" strokeWidth="1.2" />
-                            <text x="45" y="77" fontSize="3" fill="#1e3a8a" fontWeight="bold" textAnchor="middle">PROD</text>
-                            <text x="45" y="80.5" fontSize="1.8" fill="#1d4ed8" textAnchor="middle">R²=0.91</text>
-
-                            {/* Indicator items (Rectangles) & arrows & error circles */}
-                            {/* INFO items */}
-                            <rect x="105" y="9" width="15" height="6" rx="0.5" fill="#f8fafc" stroke="#64748b" strokeWidth="0.8" />
-                            <text x="112.5" y="13" fontSize="2.2" fill="#334155" fontWeight="bold" textAnchor="middle">Item 1</text>
-                            <line x1="57" y1="22" x2="104" y2="12" stroke="#64748b" strokeWidth="0.8" markerEnd="url(#arrow)" />
-                            <text x="80" y="16" fontSize="2.5" fill="#0f766e" fontWeight="bold">0.81</text>
-                            
-                            <circle cx="132" cy="12" r="2.5" fill="#f1f5f9" stroke="#94a3b8" strokeWidth="0.5" />
-                            <text x="132" y="13" fontSize="2" fill="#475569" textAnchor="middle">e1</text>
-                            <line x1="129.5" y1="12" x2="121" y2="12" stroke="#94a3b8" strokeWidth="0.6" markerEnd="url(#arrow)" />
-
-                            <rect x="105" y="21" width="15" height="6" rx="0.5" fill="#f8fafc" stroke="#64748b" strokeWidth="0.8" />
-                            <text x="112.5" y="25" fontSize="2.2" fill="#334155" fontWeight="bold" textAnchor="middle">Item 6</text>
-                            <line x1="57" y1="22" x2="104" y2="24" stroke="#64748b" strokeWidth="0.8" markerEnd="url(#arrow)" />
-                            <text x="80" y="26" fontSize="2.5" fill="#0f766e" fontWeight="bold">0.74</text>
-                            
-                            <circle cx="132" cy="24" r="2.5" fill="#f1f5f9" stroke="#94a3b8" strokeWidth="0.5" />
-                            <text x="132" y="25" fontSize="2" fill="#475569" textAnchor="middle">e6</text>
-                            <line x1="129.5" y1="24" x2="121" y2="24" stroke="#94a3b8" strokeWidth="0.6" markerEnd="url(#arrow)" />
-
-                            <rect x="105" y="33" width="15" height="6" rx="0.5" fill="#f8fafc" stroke="#64748b" strokeWidth="0.8" />
-                            <text x="112.5" y="37" fontSize="2.2" fill="#334155" fontWeight="bold" textAnchor="middle">Item 11</text>
-                            <line x1="57" y1="22" x2="104" y2="36" stroke="#64748b" strokeWidth="0.8" markerEnd="url(#arrow)" />
-                            <text x="80" y="34.5" fontSize="2.5" fill="#0f766e" fontWeight="bold">0.85</text>
-                            
-                            <circle cx="132" cy="36" r="2.5" fill="#f1f5f9" stroke="#94a3b8" strokeWidth="0.5" />
-                            <text x="132" y="37" fontSize="2" fill="#475569" textAnchor="middle">e11</text>
-                            <line x1="129.5" y1="36" x2="121" y2="36" stroke="#94a3b8" strokeWidth="0.6" markerEnd="url(#arrow)" />
-
-                            {/* COLLAB items */}
-                            <rect x="105" y="47" width="15" height="6" rx="0.5" fill="#f8fafc" stroke="#64748b" strokeWidth="0.8" />
-                            <text x="112.5" y="51" fontSize="2.2" fill="#334155" fontWeight="bold" textAnchor="middle">Item 2</text>
-                            <line x1="57" y1="50" x2="104" y2="50" stroke="#64748b" strokeWidth="0.8" markerEnd="url(#arrow)" />
-                            <text x="80" y="49" fontSize="2.5" fill="#0f766e" fontWeight="bold">0.76</text>
-                            
-                            <circle cx="132" cy="50" r="2.5" fill="#f1f5f9" stroke="#94a3b8" strokeWidth="0.5" />
-                            <text x="132" y="51" fontSize="2" fill="#475569" textAnchor="middle">e2</text>
-                            <line x1="129.5" y1="50" x2="121" y2="50" stroke="#94a3b8" strokeWidth="0.6" markerEnd="url(#arrow)" />
-
-                            <rect x="105" y="59" width="15" height="6" rx="0.5" fill="#f8fafc" stroke="#64748b" strokeWidth="0.8" />
-                            <text x="112.5" y="63" fontSize="2.2" fill="#334155" fontWeight="bold" textAnchor="middle">Item 7</text>
-                            <line x1="57" y1="50" x2="104" y2="62" stroke="#64748b" strokeWidth="0.8" markerEnd="url(#arrow)" />
-                            <text x="80" y="60.5" fontSize="2.5" fill="#0f766e" fontWeight="bold">0.83</text>
-                            
-                            <circle cx="132" cy="62" r="2.5" fill="#f1f5f9" stroke="#94a3b8" strokeWidth="0.5" />
-                            <text x="132" y="63" fontSize="2" fill="#475569" textAnchor="middle">e7</text>
-                            <line x1="129.5" y1="62" x2="121" y2="62" stroke="#94a3b8" strokeWidth="0.6" markerEnd="url(#arrow)" />
-
-                            {/* PROD items */}
-                            <rect x="105" y="72" width="15" height="6" rx="0.5" fill="#f8fafc" stroke="#64748b" strokeWidth="0.8" />
-                            <text x="112.5" y="76" fontSize="2.2" fill="#334155" fontWeight="bold" textAnchor="middle">Item 3</text>
-                            <line x1="57" y1="78" x2="104" y2="75" stroke="#64748b" strokeWidth="0.8" markerEnd="url(#arrow)" />
-                            <text x="80" y="74.5" fontSize="2.5" fill="#0f766e" fontWeight="bold">0.79</text>
-                            
-                            <circle cx="132" cy="75" r="2.5" fill="#f1f5f9" stroke="#94a3b8" strokeWidth="0.5" />
-                            <text x="132" y="76" fontSize="2" fill="#475569" textAnchor="middle">e3</text>
-                            <line x1="129.5" y1="75" x2="121" y2="75" stroke="#94a3b8" strokeWidth="0.6" markerEnd="url(#arrow)" />
-
-                            <rect x="105" y="84" width="15" height="6" rx="0.5" fill="#f8fafc" stroke="#64748b" strokeWidth="0.8" />
-                            <text x="112.5" y="88" fontSize="2.2" fill="#334155" fontWeight="bold" textAnchor="middle">Item 8</text>
-                            <line x1="57" y1="78" x2="104" y2="87" stroke="#64748b" strokeWidth="0.8" markerEnd="url(#arrow)" />
-                            <text x="80" y="86.5" fontSize="2.5" fill="#0f766e" fontWeight="bold">0.88</text>
-                            
-                            <circle cx="132" cy="87" r="2.5" fill="#f1f5f9" stroke="#94a3b8" strokeWidth="0.5" />
-                            <text x="132" y="88" fontSize="2" fill="#475569" textAnchor="middle">e8</text>
-                            <line x1="129.5" y1="87" x2="121" y2="87" stroke="#94a3b8" strokeWidth="0.6" markerEnd="url(#arrow)" />
-                          </svg>
-                        )}
-                      </div>
+                    <div className="bg-white border border-slate-200 rounded-xl p-5 animate-in fade-in duration-200">
+                      <h4 className="text-xs font-semibold text-slate-700 mb-4">CFA Model Fit Path Diagram</h4>
+                      {!imageError.cfa && analysisPlots.cfa ? (
+                        <img src={analysisPlots.cfa} alt="CFA Path Diagram"
+                          onError={() => setImageError(prev => ({ ...prev, cfa: true }))}
+                          className="w-full max-w-4xl h-auto object-contain rounded-xl border border-slate-100 mx-auto block" />
+                      ) : (
+                        <svg className="w-full max-w-3xl h-[400px] bg-slate-50 border border-slate-100 rounded-xl p-4 mx-auto block" viewBox="0 0 160 100">
+                          <defs>
+                            <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse">
+                              <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#64748b" />
+                            </marker>
+                            <marker id="covarrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="3" markerHeight="3" orient="auto-start-reverse">
+                              <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#94a3b8" />
+                            </marker>
+                          </defs>
+                          <path d="M 25,22 A 18,18 0 0,0 25,50" fill="none" stroke="#94a3b8" strokeWidth="0.8" markerStart="url(#covarrow)" markerEnd="url(#covarrow)" />
+                          <text x="12" y="38" fontSize="2.5" fill="#64748b" fontWeight="bold">0.58</text>
+                          <path d="M 25,50 A 18,18 0 0,0 25,78" fill="none" stroke="#94a3b8" strokeWidth="0.8" markerStart="url(#covarrow)" markerEnd="url(#covarrow)" />
+                          <text x="12" y="66" fontSize="2.5" fill="#64748b" fontWeight="bold">0.62</text>
+                          <path d="M 23,22 A 32,32 0 0,0 23,78" fill="none" stroke="#94a3b8" strokeWidth="0.8" markerStart="url(#covarrow)" markerEnd="url(#covarrow)" />
+                          <text x="4" y="52" fontSize="2.5" fill="#64748b" fontWeight="bold">0.45</text>
+                          <ellipse cx="45" cy="22" rx="12" ry="7" fill="#eff6ff" stroke="#1e3a5f" strokeWidth="1.2" />
+                          <text x="45" y="21" fontSize="3" fill="#1e3a5f" fontWeight="bold" textAnchor="middle">INFO</text>
+                          <text x="45" y="24.5" fontSize="1.8" fill="#1d4ed8" textAnchor="middle">R²=0.88</text>
+                          <ellipse cx="45" cy="50" rx="12" ry="7" fill="#eff6ff" stroke="#1e3a5f" strokeWidth="1.2" />
+                          <text x="45" y="49" fontSize="3" fill="#1e3a5f" fontWeight="bold" textAnchor="middle">COLLAB</text>
+                          <text x="45" y="52.5" fontSize="1.8" fill="#1d4ed8" textAnchor="middle">R²=0.84</text>
+                          <ellipse cx="45" cy="78" rx="12" ry="7" fill="#eff6ff" stroke="#1e3a5f" strokeWidth="1.2" />
+                          <text x="45" y="77" fontSize="3" fill="#1e3a5f" fontWeight="bold" textAnchor="middle">PROD</text>
+                          <text x="45" y="80.5" fontSize="1.8" fill="#1d4ed8" textAnchor="middle">R²=0.91</text>
+                          {[{y:9,item:'Item 1',arrow:[57,22,104,12],load:'0.81',ey:12},{y:21,item:'Item 6',arrow:[57,22,104,24],load:'0.74',ey:24},{y:33,item:'Item 11',arrow:[57,22,104,36],load:'0.85',ey:36}].map((row, i) => (
+                            <g key={i}>
+                              <rect x="105" y={row.y} width="15" height="6" rx="0.5" fill="#f8fafc" stroke="#64748b" strokeWidth="0.8" />
+                              <text x="112.5" y={row.y+4} fontSize="2.2" fill="#334155" fontWeight="bold" textAnchor="middle">{row.item}</text>
+                              <line x1={row.arrow[0]} y1={row.arrow[1]} x2={row.arrow[2]} y2={row.arrow[3]} stroke="#64748b" strokeWidth="0.8" markerEnd="url(#arrow)" />
+                              <text x="80" y={row.arrow[3]-1} fontSize="2.5" fill="#0f766e" fontWeight="bold">{row.load}</text>
+                            </g>
+                          ))}
+                        </svg>
+                      )}
                     </div>
                   )}
                 </div>
               ) : (
-                <div className="py-20 text-center bg-white border border-dashed border-slate-200 rounded-[40px] flex flex-col items-center gap-4">
-                  <i className="fa-solid fa-circle-check text-4xl text-slate-300"></i>
-                  <div>
-                    <p className="text-sm font-bold text-slate-500">Analisis CFA belum dijalankan.</p>
-                    <p className="text-[10px] text-slate-400 mt-1 uppercase tracking-widest">Silakan klik tombol "Run CFA" di atas untuk memvalidasi struktur instrumen.</p>
-                  </div>
-                </div>
+                <EmptyState icon="fa-circle-check" message="Analisis CFA belum dijalankan." sub='Klik tombol "Run CFA" di atas untuk memvalidasi struktur instrumen.' />
               )}
             </div>
           )}
 
-          {/* Rasch/PCM Model Tab Content */}
+          {/* ═══════════════════════════════════════════════════
+              TAB: RASCH / PCM
+          ═══════════════════════════════════════════════════ */}
           {currentTab === 'rasch' && (
-            <div className="space-y-10 animate-in fade-in slide-in-from-bottom-5 duration-700">
-              {/* Hero Banner */}
-              <div className="relative overflow-hidden bg-gradient-to-br from-purple-600 via-indigo-600 to-violet-700 rounded-[40px] p-12 text-white shadow-2xl shadow-purple-500/25">
-                <div className="absolute -top-24 -right-24 w-80 h-80 bg-white/10 rounded-full blur-3xl"></div>
-                <div className="absolute -bottom-16 -left-16 w-56 h-56 bg-purple-400/20 rounded-full blur-2xl"></div>
-                <div className="relative z-10 flex justify-between items-center">
-                  <div>
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
-                        <i className="fa-solid fa-stairs text-white text-lg"></i>
-                      </div>
-                      <span className="text-[10px] font-black uppercase tracking-[0.25em] text-purple-200">Item Response Theory</span>
-                    </div>
-                    <h3 className="text-4xl font-black tracking-tighter text-white">Rasch Model & Partial Credit Model</h3>
-                    <p className="text-purple-100 text-sm font-medium mt-2 max-w-lg">Item calibration and person ability mapping on a unified Logit scale using PCM.</p>
-                  </div>
-                  <div className="flex items-center gap-4 bg-white/10 backdrop-blur-md p-3 rounded-2xl border border-white/20">
-                    <select 
-                      value={selectedIrtModel} 
-                      onChange={(e) => setSelectedIrtModel(e.target.value as any)}
-                      className="bg-transparent text-white font-bold text-xs outline-none border-none cursor-pointer pr-4 border-r border-white/20 mr-2">
-                      <option value="1PL" className="text-slate-800">1PL / Rasch Model</option>
-                      <option value="2PL" className="text-slate-800">2PL Model</option>
-                      <option value="3PL" className="text-slate-800">3PL Model</option>
-                      <option value="PCM" className="text-slate-800">PCM (Partial Credit)</option>
-                      <option value="GPCM" className="text-slate-800">GPCM (Generalized PCM)</option>
-                      <option value="RSM" className="text-slate-800">RSM (Rating Scale)</option>
-                      <option value="GRM" className="text-slate-800">GRM (Graded Response)</option>
-                    </select>
-                    <select 
-                      value={analysisMethod.rasch} 
-                      onChange={(e) => setAnalysisMethod(prev => ({ ...prev, rasch: e.target.value as 'R' | 'Python' }))}
-                      className="bg-transparent text-white font-bold text-xs outline-none border-none cursor-pointer pr-4">
-                      <option value="R" className="text-slate-800">R (TAM/mirt)</option>
-                      <option value="Python" className="text-slate-800">Python Engine</option>
-                    </select>
-                    <button 
-                      onClick={() => runPsychometricAnalysis('rasch')}
-                      disabled={analysisLoading.rasch}
-                      className="px-6 py-3 bg-white text-purple-600 font-black rounded-xl text-[10px] uppercase tracking-widest hover:bg-slate-100 transition-all flex items-center gap-2 disabled:opacity-50">
-                      {analysisLoading.rasch ? <i className="fa-solid fa-spinner animate-spin"></i> : <i className="fa-solid fa-bolt"></i>}
-                      {analysisLoading.rasch ? 'Running...' : 'Run Rasch Model'}
-                    </button>
-                    {analysisResults.rasch && (
-                      <div className="flex items-center gap-2">
-                        <a 
-                          href={`/api/admin/analysis/download?type=rasch&method=${analysisMethod.rasch}`}
-                          className="px-4 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-xl text-[10px] uppercase tracking-widest transition-all flex items-center gap-1.5"
-                          title="Download ZIP berisi JSON, Gambar, dan Laporan Teks">
-                          <i className="fa-solid fa-file-zipper"></i>
-                          Download ZIP
-                        </a>
-                        <a 
-                          href={`/api/admin/analysis/download?type=rasch&method=${analysisMethod.rasch}&format=text`}
-                          className="px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white font-black rounded-xl text-[10px] uppercase tracking-widest transition-all flex items-center gap-1.5"
-                          title="Download Laporan Format R / SPSS (Teks)">
-                          <i className="fa-solid fa-file-lines"></i>
-                          Laporan R/SPSS
-                        </a>
-                        <a 
-                          href={`/api/admin/analysis/download?type=rasch&method=${analysisMethod.rasch}&format=json`}
-                          className="px-4 py-3 bg-slate-600 hover:bg-slate-700 text-white font-black rounded-xl text-[10px] uppercase tracking-widest transition-all flex items-center gap-1.5"
-                          title="Download File Output JSON">
-                          <i className="fa-solid fa-file-code"></i>
-                          JSON
-                        </a>
-                        {analysisPlots.rasch && (
-                          <a 
-                            href={analysisPlots.rasch}
-                            download={`Rasch_${analysisMethod.rasch}_WrightMap.png`}
-                            className="px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-xl text-[10px] uppercase tracking-widest transition-all flex items-center gap-1.5"
-                            title="Download Gambar Wright Map">
-                            <i className="fa-solid fa-file-image"></i>
-                            Wright Map
-                          </a>
-                        )}
-                        {analysisPlots2.rasch && (
-                          <a 
-                            href={analysisPlots2.rasch}
-                            download={`Rasch_${analysisMethod.rasch}_Curves.png`}
-                            className="px-4 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-xl text-[10px] uppercase tracking-widest transition-all flex items-center gap-1.5"
-                            title="Download Gambar Kurva ICC/CRC">
-                            <i className="fa-solid fa-file-image"></i>
-                            Curves
-                          </a>
-                        )}
-                      </div>
-                    )}
-                  </div>
+            <div className="space-y-5 animate-in fade-in slide-in-from-bottom-3 duration-300">
+              <div className="bg-white border border-slate-200 rounded-xl p-5 flex items-center gap-3">
+                <div className="w-10 h-10 bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center">
+                  <i className="fa-solid fa-stairs text-lg"></i>
+                </div>
+                <div>
+                  <h2 className="text-base font-bold text-slate-900">Rasch Model & Partial Credit Model (PCM)</h2>
+                  <p className="text-xs text-slate-500 mt-0.5">Item calibration and person ability mapping on a unified Logit scale</p>
                 </div>
               </div>
 
-              {analysisResults.rasch ? (
-                <div className="space-y-10">
-                  {/* Sub-Tab Navigation */}
-                  <div className="flex border-b border-slate-200 gap-8">
-                    {[
-                      { id: 'parameters', label: 'Parameters & Calibration', icon: 'fa-table-list' },
-                      { id: 'plots', label: 'Visualizations (Wright Map & ICC)', icon: 'fa-chart-line' },
-                      { id: 'dif', label: 'Differential Item Functioning (DIF)', icon: 'fa-sliders' }
-                    ].map(sub => (
-                      <button key={sub.id} onClick={() => setRaschSubTab(sub.id as any)}
-                        className={`pb-4 px-2 text-xs font-black uppercase tracking-wider transition-all border-b-2 flex items-center gap-2 ${
-                          raschSubTab === sub.id 
-                            ? 'border-purple-600 text-purple-600' 
-                            : 'border-transparent text-slate-400 hover:text-slate-600'
-                        }`}>
-                        <i className={`fa-solid ${sub.icon}`}></i>
-                        {sub.label}
-                      </button>
+              <AnalysisToolbar
+                type="rasch" label="Rasch"
+                methodValue={analysisMethod.rasch}
+                methodOptions={[{ value: 'R', label: 'R (TAM/mirt)' }, { value: 'Python', label: 'Python Engine' }]}
+                onMethodChange={(v) => setAnalysisMethod(prev => ({ ...prev, rasch: v as 'R' | 'Python' }))}
+                onRun={() => runPsychometricAnalysis('rasch')}
+                loading={analysisLoading.rasch}
+                results={analysisResults.rasch}
+                plots={analysisPlots.rasch}
+                analysisMethod={analysisMethod.rasch}
+                extraSelects={
+                  <select value={selectedIrtModel}
+                    onChange={(e) => setSelectedIrtModel(e.target.value as any)}
+                    className="h-8 px-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium text-slate-700 outline-none cursor-pointer">
+                    {[['1PL','1PL / Rasch'],['2PL','2PL Model'],['3PL','3PL Model'],['PCM','PCM (Partial Credit)'],['GPCM','GPCM (Generalized PCM)'],['RSM','RSM (Rating Scale)'],['GRM','GRM (Graded Response)']].map(([v,l]) => (
+                      <option key={v} value={v}>{l}</option>
                     ))}
-                  </div>
+                  </select>
+                }
+              />
+
+              {analysisResults.rasch ? (
+                <div className="space-y-5">
+                  <SubTabs
+                    tabs={[
+                      { id: 'parameters', label: 'Parameters & Calibration', icon: 'fa-table-list' },
+                      { id: 'plots', label: 'Wright Map & ICC', icon: 'fa-chart-line' },
+                      { id: 'dif', label: 'DIF Analysis', icon: 'fa-sliders' }
+                    ]}
+                    active={raschSubTab}
+                    onChange={(id) => setRaschSubTab(id as any)}
+                  />
 
                   {raschSubTab === 'parameters' && (
-                    <div className="space-y-10 animate-in fade-in duration-300">
-                      {/* Summary Reliability Cards */}
-                      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <div className="space-y-5 animate-in fade-in duration-200">
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                         {[
                           { l: "Person Separation", v: analysisResults.rasch.reliability.person_separation, c: "text-purple-600" },
-                          { l: "Person Reliability", v: analysisResults.rasch.reliability.person_reliability, c: "text-emerald-500" },
+                          { l: "Person Reliability", v: analysisResults.rasch.reliability.person_reliability, c: "text-emerald-600" },
                           { l: "Item Separation", v: analysisResults.rasch.reliability.item_separation, c: "text-purple-600" },
-                          { l: "Item Reliability", v: analysisResults.rasch.reliability.item_reliability, c: "text-emerald-500" }
+                          { l: "Item Reliability", v: analysisResults.rasch.reliability.item_reliability, c: "text-emerald-600" }
                         ].map(card => (
-                          <div key={card.l} className="bg-white p-6 rounded-[24px] border border-slate-200 shadow-sm text-center">
-                            <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">{card.l}</p>
-                            <p className={`text-3xl font-black ${card.c}`}>{card.v}</p>
+                          <div key={card.l} className="bg-white border border-slate-200 rounded-xl p-4 text-center">
+                            <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mb-1">{card.l}</p>
+                            <p className={`text-xl font-bold ${card.c}`}>{card.v}</p>
                           </div>
                         ))}
                       </div>
 
-                      {/* Item Parameter Calibration Table */}
-                      <div className="bg-white rounded-[40px] border border-slate-200 shadow-sm overflow-hidden">
-                        <div className="p-8 border-b border-slate-100 flex justify-between items-center">
-                          <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest">Item Parameter Estimations ({selectedIrtModel} Model)</h4>
-                          <span className="text-[9px] font-black uppercase text-purple-600 bg-purple-50 px-3 py-1 rounded-full">
-                            Items Fit Range: 0.7 - 1.3 MNSQ
+                      <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+                        <div className="px-5 py-4 border-b border-slate-100 flex justify-between items-center">
+                          <h4 className="text-xs font-semibold text-slate-700">Item Parameter Estimations ({selectedIrtModel} Model)</h4>
+                          <span className="px-2 py-0.5 bg-purple-50 border border-purple-200 text-purple-700 rounded text-[10px] font-semibold">
+                            Fit Range: 0.7 – 1.3 MNSQ
                           </span>
                         </div>
-                        <div className="overflow-auto max-h-[500px] custom-scrollbar">
+                        <div className="overflow-auto max-h-[480px] custom-scrollbar">
                           <table className="w-full text-left">
-                            <thead className="bg-slate-50 text-[9px] font-black text-slate-400 uppercase border-b border-slate-100 sticky top-0">
+                            <thead className="bg-slate-50 text-[10px] font-semibold text-slate-400 uppercase border-b border-slate-100 sticky top-0">
                               <tr>
-                                <th className="px-6 py-4">Item ID</th>
-                                <th className="px-6 py-4">Difficulty (b)</th>
-                                <th className="px-6 py-4">Discrimination (a)</th>
-                                <th className="px-6 py-4">Guessing (c)</th>
-                                <th className="px-6 py-4">Infit MNSQ</th>
-                                <th className="px-6 py-4">Outfit MNSQ</th>
-                                <th className="px-6 py-4">Status</th>
+                                {['Item ID','Difficulty (b)','Discrimination (a)','Guessing (c)','Infit MNSQ','Outfit MNSQ','Status'].map(h => (
+                                  <th key={h} className="px-4 py-3">{h}</th>
+                                ))}
                               </tr>
                             </thead>
-                            <tbody className="divide-y divide-slate-100 text-xs font-bold text-slate-600">
+                            <tbody className="divide-y divide-slate-50 text-xs text-slate-600">
                               {analysisResults.rasch.items.map((it: any, idx: number) => (
-                                <tr key={idx} className="hover:bg-slate-50/50">
-                                  <td className="px-6 py-4 font-black text-slate-900">{it.item}</td>
-                                  <td className="px-6 py-4 text-purple-600 font-mono">{it.difficulty !== undefined ? it.difficulty : 0.0}</td>
-                                  <td className="px-6 py-4 text-blue-600 font-mono">{it.discrimination !== undefined ? it.discrimination : 1.0}</td>
-                                  <td className="px-6 py-4 text-emerald-600 font-mono">{it.guessing !== undefined ? it.guessing : 0.0}</td>
-                                  <td className="px-6 py-4 font-mono">{it.infit_mnsq}</td>
-                                  <td className="px-6 py-4 font-mono">{it.outfit_mnsq}</td>
-                                  <td className="px-6 py-4">
-                                    <span className={`px-2 py-0.5 rounded-full text-[8px] font-black uppercase ${
-                                      it.status === 'FIT' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'
-                                    }`}>{it.status}</span>
+                                <tr key={idx} className="hover:bg-slate-50/50 even:bg-slate-50/30">
+                                  <td className="px-4 py-3 font-bold text-slate-800">{it.item}</td>
+                                  <td className="px-4 py-3 text-purple-600 font-mono">{it.difficulty !== undefined ? it.difficulty : 0.0}</td>
+                                  <td className="px-4 py-3 text-blue-600 font-mono">{it.discrimination !== undefined ? it.discrimination : 1.0}</td>
+                                  <td className="px-4 py-3 text-teal-600 font-mono">{it.guessing !== undefined ? it.guessing : 0.0}</td>
+                                  <td className="px-4 py-3 font-mono">{it.infit_mnsq}</td>
+                                  <td className="px-4 py-3 font-mono">{it.outfit_mnsq}</td>
+                                  <td className="px-4 py-3">
+                                    <span className={`px-2 py-0.5 rounded text-[10px] font-semibold border ${it.status === 'FIT' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200'}`}>
+                                      {it.status}
+                                    </span>
                                   </td>
                                 </tr>
                               ))}
@@ -2473,244 +2106,136 @@ export default function AdminDashboard() {
                   )}
 
                   {raschSubTab === 'plots' && (
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 animate-in fade-in duration-300">
-                      {/* Card 1: Wright Map */}
-                      <div className="bg-white p-10 rounded-[40px] border border-slate-200 shadow-sm flex flex-col items-center">
-                        <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest mb-6 self-start">Wright Parameter Alignment Map</h4>
-                        <div className="w-full flex justify-center items-center">
-                          {!imageError.rasch && analysisPlots.rasch ? (
-                            <img 
-                              src={analysisPlots.rasch} 
-                              alt="Wright Map" 
-                              onError={() => setImageError(prev => ({ ...prev, rasch: true }))}
-                              className="w-full h-auto object-contain rounded-2xl border border-slate-100 shadow-lg" 
-                            />
-                          ) : (
-                            <svg className="w-full h-[400px] bg-slate-50 border border-slate-200 rounded-[32px] p-4" viewBox="0 0 150 200">
-                              {/* Title */}
-                              <text x="75" y="12" fontSize="4.5" fill="#0f172a" fontWeight="bold" textAnchor="middle">Wright Map (Item-Person Parameter Alignment)</text>
-
-                              {/* Horizontal Grid lines */}
-                              <line x1="10" y1="25" x2="140" y2="25" stroke="#e2e8f0" strokeWidth="0.5" strokeDasharray="2,2" />
-                              <line x1="10" y1="50" x2="140" y2="50" stroke="#e2e8f0" strokeWidth="0.5" strokeDasharray="2,2" />
-                              <line x1="10" y1="75" x2="140" y2="75" stroke="#e2e8f0" strokeWidth="0.5" strokeDasharray="2,2" />
-                              <line x1="10" y1="100" x2="140" y2="100" stroke="#cbd5e1" strokeWidth="0.8" />
-                              <line x1="10" y1="125" x2="140" y2="125" stroke="#e2e8f0" strokeWidth="0.5" strokeDasharray="2,2" />
-                              <line x1="10" y1="150" x2="140" y2="150" stroke="#e2e8f0" strokeWidth="0.5" strokeDasharray="2,2" />
-                              <line x1="10" y1="175" x2="140" y2="175" stroke="#e2e8f0" strokeWidth="0.5" strokeDasharray="2,2" />
-
-                              {/* Vertical Axis Line */}
-                              <line x1="75" y1="20" x2="75" y2="185" stroke="#475569" strokeWidth="1" />
-
-                              {/* Logit Ticks & Labels */}
-                              <line x1="72" y1="25" x2="78" y2="25" stroke="#475569" strokeWidth="1" />
-                              <text x="75" y="25" fontSize="2.8" fill="#475569" fontWeight="bold" textAnchor="middle" dy="-2">+3.0 Logit</text>
-                              
-                              <line x1="73" y1="50" x2="77" y2="50" stroke="#475569" strokeWidth="1" />
-                              <text x="75" y="50" fontSize="2.8" fill="#475569" fontWeight="bold" textAnchor="middle" dy="-2">+2.0 Logit</text>
-
-                              <line x1="73" y1="75" x2="77" y2="75" stroke="#475569" strokeWidth="1" />
-                              <text x="75" y="75" fontSize="2.8" fill="#475569" fontWeight="bold" textAnchor="middle" dy="-2">+1.0 Logit</text>
-
-                              <line x1="72" y1="100" x2="78" y2="100" stroke="#475569" strokeWidth="1.2" />
-                              <text x="75" y="100" fontSize="3" fill="#0f172a" fontWeight="bold" textAnchor="middle" dy="-2">0.0 Logit</text>
-
-                              <line x1="73" y1="125" x2="77" y2="125" stroke="#475569" strokeWidth="1" />
-                              <text x="75" y="125" fontSize="2.8" fill="#475569" fontWeight="bold" textAnchor="middle" dy="-2">-1.0 Logit</text>
-
-                              <line x1="73" y1="150" x2="77" y2="150" stroke="#475569" strokeWidth="1" />
-                              <text x="75" y="150" fontSize="2.8" fill="#475569" fontWeight="bold" textAnchor="middle" dy="-2">-2.0 Logit</text>
-
-                              <line x1="72" y1="175" x2="78" y2="175" stroke="#475569" strokeWidth="1" />
-                              <text x="75" y="175" fontSize="2.8" fill="#475569" fontWeight="bold" textAnchor="middle" dy="-2">-3.0 Logit</text>
-
-                              {/* Left Side: Person Ability Distribution (Histogram) */}
-                              <text x="40" y="193" fontSize="3.5" fill="#1e3a8a" fontWeight="bold" textAnchor="middle">PERSONS (Ability)</text>
-                              
-                              <rect x="64" y="36.5" width="6" height="3.5" fill="#3b82f6" fillOpacity="0.6" rx="0.5" />
-                              <rect x="58" y="49" width="12" height="3.5" fill="#3b82f6" fillOpacity="0.6" rx="0.5" />
-                              <rect x="46" y="61.5" width="24" height="3.5" fill="#3b82f6" fillOpacity="0.6" rx="0.5" />
-                              <rect x="25" y="74" width="45" height="3.5" fill="#3b82f6" fillOpacity="0.6" rx="0.5" />
-                              <rect x="15" y="86.5" width="55" height="3.5" fill="#3b82f6" fillOpacity="0.6" rx="0.5" />
-                              <rect x="10" y="99" width="60" height="3.5" fill="#2563eb" fillOpacity="0.8" rx="0.5" />
-                              <rect x="20" y="111.5" width="50" height="3.5" fill="#3b82f6" fillOpacity="0.6" rx="0.5" />
-                              <rect x="34" y="124" width="36" height="3.5" fill="#3b82f6" fillOpacity="0.6" rx="0.5" />
-                              <rect x="52" y="136.5" width="18" height="3.5" fill="#3b82f6" fillOpacity="0.6" rx="0.5" />
-                              <rect x="61" y="149" width="9" height="3.5" fill="#3b82f6" fillOpacity="0.6" rx="0.5" />
-                              <rect x="67" y="161.5" width="3" height="3.5" fill="#3b82f6" fillOpacity="0.6" rx="0.5" />
-
-                              {/* Right Side: Item Difficulties */}
-                              <text x="110" y="193" fontSize="3.5" fill="#6d28d9" fontWeight="bold" textAnchor="middle">ITEMS (Difficulty)</text>
-                              
-                              <text x="82" y="47.5" fontSize="2.8" fill="#7c3aed" fontWeight="bold">Item_12 (Sangat Sulit)</text>
-                              <text x="82" y="70" fontSize="2.8" fill="#7c3aed" fontWeight="bold">Item_24</text>
-                              <text x="82" y="95" fontSize="2.8" fill="#7c3aed" fontWeight="bold">Item_3, Item_15</text>
-                              <text x="82" y="110" fontSize="2.8" fill="#7c3aed" fontWeight="bold">Item_1, Item_7, Item_11</text>
-                              <text x="82" y="127.5" fontSize="2.8" fill="#7c3aed" fontWeight="bold">Item_2, Item_6, Item_22</text>
-                              <text x="82" y="145" fontSize="2.8" fill="#7c3aed" fontWeight="bold">Item_9, Item_18</text>
-                              <text x="82" y="160" fontSize="2.8" fill="#7c3aed" fontWeight="bold">Item_5, Item_10</text>
-                              <text x="82" y="170" fontSize="2.8" fill="#7c3aed" fontWeight="bold">Item_20 (Sangat Mudah)</text>
-                            </svg>
-                          )}
-                        </div>
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 animate-in fade-in duration-200">
+                      <div className="bg-white border border-slate-200 rounded-xl p-5">
+                        <h4 className="text-xs font-semibold text-slate-700 mb-4">Wright Parameter Alignment Map</h4>
+                        {!imageError.rasch && analysisPlots.rasch ? (
+                          <img src={analysisPlots.rasch} alt="Wright Map"
+                            onError={() => setImageError(prev => ({ ...prev, rasch: true }))}
+                            className="w-full h-auto object-contain rounded-xl border border-slate-100" />
+                        ) : (
+                          <svg className="w-full h-[400px] bg-slate-50 border border-slate-100 rounded-xl p-4" viewBox="0 0 150 200">
+                            <text x="75" y="12" fontSize="4.5" fill="#0f172a" fontWeight="bold" textAnchor="middle">Wright Map (Item-Person Parameter Alignment)</text>
+                            {[25,50,75,100,125,150,175].map((y, i) => (
+                              <line key={i} x1="10" y1={y} x2="140" y2={y} stroke={y === 100 ? '#cbd5e1' : '#e2e8f0'} strokeWidth={y === 100 ? 0.8 : 0.5} strokeDasharray={y === 100 ? '' : '2,2'} />
+                            ))}
+                            <line x1="75" y1="20" x2="75" y2="185" stroke="#475569" strokeWidth="1" />
+                            {[{l:'+3.0',y:25},{l:'+2.0',y:50},{l:'+1.0',y:75},{l:'0.0',y:100},{l:'-1.0',y:125},{l:'-2.0',y:150},{l:'-3.0',y:175}].map(t => (
+                              <g key={t.l}>
+                                <line x1={t.l === '0.0' ? 72 : 73} y1={t.y} x2={t.l === '0.0' ? 78 : 77} y2={t.y} stroke="#475569" strokeWidth={t.l === '0.0' ? 1.2 : 1} />
+                                <text x="75" y={t.y - 2} fontSize="2.8" fill={t.l === '0.0' ? '#0f172a' : '#475569'} fontWeight={t.l === '0.0' ? 'bold' : 'normal'} textAnchor="middle">{t.l} Logit</text>
+                              </g>
+                            ))}
+                            <text x="40" y="193" fontSize="3.5" fill="#1e3a5f" fontWeight="bold" textAnchor="middle">PERSONS (Ability)</text>
+                            {[{x:64,y:36.5,w:6},{x:58,y:49,w:12},{x:46,y:61.5,w:24},{x:25,y:74,w:45},{x:15,y:86.5,w:55},{x:10,y:99,w:60},{x:20,y:111.5,w:50},{x:34,y:124,w:36},{x:52,y:136.5,w:18},{x:61,y:149,w:9},{x:67,y:161.5,w:3}].map((r, i) => (
+                              <rect key={i} x={r.x} y={r.y} width={r.w} height="3.5" fill="#1e3a5f" fillOpacity={i === 5 ? 0.8 : 0.5} rx="0.5" />
+                            ))}
+                            <text x="110" y="193" fontSize="3.5" fill="#7c3aed" fontWeight="bold" textAnchor="middle">ITEMS (Difficulty)</text>
+                            {[{y:47.5,t:'Item_12 (Sangat Sulit)'},{y:70,t:'Item_24'},{y:95,t:'Item_3, Item_15'},{y:110,t:'Item_1, Item_7, Item_11'},{y:127.5,t:'Item_2, Item_6, Item_22'},{y:145,t:'Item_9, Item_18'},{y:160,t:'Item_5, Item_10'},{y:170,t:'Item_20 (Sangat Mudah)'}].map((item, i) => (
+                              <text key={i} x="82" y={item.y} fontSize="2.8" fill="#7c3aed" fontWeight="bold">{item.t}</text>
+                            ))}
+                          </svg>
+                        )}
                       </div>
 
-                      {/* Card 2: Response Curves */}
-                      <div className="bg-white p-10 rounded-[40px] border border-slate-200 shadow-sm flex flex-col items-center">
-                        <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest mb-6 self-start">
+                      <div className="bg-white border border-slate-200 rounded-xl p-5">
+                        <h4 className="text-xs font-semibold text-slate-700 mb-4">
                           {['PCM', 'GPCM', 'RSM', 'GRM'].includes(selectedIrtModel) ? 'Category Response Curves (CRC)' : 'Item Characteristic Curves (ICC)'}
                         </h4>
-                        <div className="w-full flex justify-center items-center">
-                          {!imageError2.rasch && analysisPlots2.rasch ? (
-                            <img 
-                              src={analysisPlots2.rasch} 
-                              alt="Response Curves" 
-                              onError={() => setImageError2(prev => ({ ...prev, rasch: true }))}
-                              className="w-full h-auto object-contain rounded-2xl border border-slate-100 shadow-lg" 
-                            />
-                          ) : (
-                            <svg className="w-full h-[400px] bg-slate-50 border border-slate-200 rounded-[32px] p-4" viewBox="0 0 150 120">
-                              <text x="75" y="12" fontSize="4.5" fill="#0f172a" fontWeight="bold" textAnchor="middle">
-                                {['PCM', 'GPCM', 'RSM', 'GRM'].includes(selectedIrtModel) ? 'Likert Category Probability Curves (CRC)' : 'Item Characteristic Curves (ICC)'}
-                              </text>
-                              {/* Grid lines */}
-                              <line x1="20" y1="30" x2="130" y2="30" stroke="#e2e8f0" strokeWidth="0.5" />
-                              <line x1="20" y1="55" x2="130" y2="55" stroke="#e2e8f0" strokeWidth="0.5" />
-                              <line x1="20" y1="80" x2="130" y2="80" stroke="#e2e8f0" strokeWidth="0.5" />
-                              <line x1="20" y1="105" x2="130" y2="105" stroke="#cbd5e1" strokeWidth="1" />
-                              <line x1="20" y1="20" x2="20" y2="105" stroke="#cbd5e1" strokeWidth="1" />
-
-                              {/* Axis labels */}
-                              <text x="15" y="31.5" fontSize="2.8" fill="#64748b" textAnchor="end">0.75</text>
-                              <text x="15" y="56.5" fontSize="2.8" fill="#64748b" textAnchor="end">0.50</text>
-                              <text x="15" y="81.5" fontSize="2.8" fill="#64748b" textAnchor="end">0.25</text>
-                              <text x="15" y="106.5" fontSize="2.8" fill="#64748b" textAnchor="end">0.00</text>
-                              <text x="15" y="22" fontSize="2.8" fill="#0f172a" fontWeight="bold" textAnchor="end">Prob.</text>
-
-                              {/* X axis ticks */}
-                              <text x="20" y="112" fontSize="2.8" fill="#64748b" textAnchor="middle">-3.0</text>
-                              <text x="47.5" y="112" fontSize="2.8" fill="#64748b" textAnchor="middle">-1.5</text>
-                              <text x="75" y="112" fontSize="2.8" fill="#64748b" textAnchor="middle">0.0</text>
-                              <text x="102.5" y="112" fontSize="2.8" fill="#64748b" textAnchor="middle">+1.5</text>
-                              <text x="130" y="112" fontSize="2.8" fill="#64748b" textAnchor="middle">+3.0</text>
-                              <text x="75" y="117" fontSize="2.8" fill="#0f172a" fontWeight="bold" textAnchor="middle">Ability Level (theta)</text>
-
-                              {/* Category curves fallback visual (likert) or standard ICC curves */}
-                              {['PCM', 'GPCM', 'RSM', 'GRM'].includes(selectedIrtModel) ? (
-                                <>
-                                  {/* P1 */}
-                                  <path d="M 20,30 Q 35,45 60,105" fill="none" stroke="#dc2626" strokeWidth="1.5" />
-                                  {/* P2 */}
-                                  <path d="M 20,105 Q 40,40 70,105" fill="none" stroke="#ca8a04" strokeWidth="1.5" />
-                                  {/* P3 */}
-                                  <path d="M 30,105 Q 75,30 110,105" fill="none" stroke="#16a34a" strokeWidth="1.5" />
-                                  {/* M4 */}
-                                  <path d="M 70,105 Q 100,40 125,105" fill="none" stroke="#2563eb" strokeWidth="1.5" />
-                                  {/* P5 */}
-                                  <path d="M 90,105 Q 115,45 130,30" fill="none" stroke="#9333ea" strokeWidth="1.5" />
-                                  
-                                  {/* Legend */}
-                                  <rect x="105" y="20" width="3" height="3" fill="#dc2626" />
-                                  <text x="110" y="23" fontSize="2" fill="#475569">Very Low</text>
-                                  <rect x="105" y="25" width="3" height="3" fill="#ca8a04" />
-                                  <text x="110" y="28" fontSize="2" fill="#475569">Low</text>
-                                  <rect x="105" y="30" width="3" height="3" fill="#16a34a" />
-                                  <text x="110" y="33" fontSize="2" fill="#475569">Medium</text>
-                                </>
-                              ) : (
-                                <>
-                                  <path d="M 20,103 C 60,100 80,20 130,22" fill="none" stroke="#dc2626" strokeWidth="2" />
-                                  <path d="M 20,95 C 50,90 90,30 130,25" fill="none" stroke="#2563eb" strokeWidth="2" />
-                                  <path d="M 20,104 C 70,102 95,45 130,46" fill="none" stroke="#16a34a" strokeWidth="2" />
-                                </>
-                              )}
-                            </svg>
-                          )}
-                        </div>
+                        {!imageError2.rasch && analysisPlots2.rasch ? (
+                          <img src={analysisPlots2.rasch} alt="Response Curves"
+                            onError={() => setImageError2(prev => ({ ...prev, rasch: true }))}
+                            className="w-full h-auto object-contain rounded-xl border border-slate-100" />
+                        ) : (
+                          <svg className="w-full h-[400px] bg-slate-50 border border-slate-100 rounded-xl p-4" viewBox="0 0 150 120">
+                            <text x="75" y="12" fontSize="4.5" fill="#0f172a" fontWeight="bold" textAnchor="middle">
+                              {['PCM', 'GPCM', 'RSM', 'GRM'].includes(selectedIrtModel) ? 'Likert Category Probability Curves (CRC)' : 'Item Characteristic Curves (ICC)'}
+                            </text>
+                            {[30,55,80,105].map((y,i) => <line key={i} x1="20" y1={y} x2="130" y2={y} stroke={y===105 ? '#cbd5e1' : '#e2e8f0'} strokeWidth={y===105 ? 1 : 0.5} />)}
+                            <line x1="20" y1="20" x2="20" y2="105" stroke="#cbd5e1" strokeWidth="1" />
+                            {[{v:'0.75',y:31.5},{v:'0.50',y:56.5},{v:'0.25',y:81.5},{v:'0.00',y:106.5}].map(t => (
+                              <text key={t.v} x="15" y={t.y} fontSize="2.8" fill="#64748b" textAnchor="end">{t.v}</text>
+                            ))}
+                            {['-3.0','-1.5','0.0','+1.5','+3.0'].map((v, i) => (
+                              <text key={v} x={20 + i * 27.5} y="112" fontSize="2.8" fill="#64748b" textAnchor="middle">{v}</text>
+                            ))}
+                            <text x="75" y="117" fontSize="2.8" fill="#0f172a" fontWeight="bold" textAnchor="middle">Ability Level (theta)</text>
+                            {['PCM', 'GPCM', 'RSM', 'GRM'].includes(selectedIrtModel) ? (
+                              <>
+                                <path d="M 20,30 Q 35,45 60,105" fill="none" stroke="#dc2626" strokeWidth="1.5" />
+                                <path d="M 20,105 Q 40,40 70,105" fill="none" stroke="#d97706" strokeWidth="1.5" />
+                                <path d="M 30,105 Q 75,30 110,105" fill="none" stroke="#16a34a" strokeWidth="1.5" />
+                                <path d="M 70,105 Q 100,40 125,105" fill="none" stroke="#2563eb" strokeWidth="1.5" />
+                                <path d="M 90,105 Q 115,45 130,30" fill="none" stroke="#9333ea" strokeWidth="1.5" />
+                              </>
+                            ) : (
+                              <>
+                                <path d="M 20,103 C 60,100 80,20 130,22" fill="none" stroke="#dc2626" strokeWidth="2" />
+                                <path d="M 20,95 C 50,90 90,30 130,25" fill="none" stroke="#2563eb" strokeWidth="2" />
+                                <path d="M 20,104 C 70,102 95,45 130,46" fill="none" stroke="#16a34a" strokeWidth="2" />
+                              </>
+                            )}
+                          </svg>
+                        )}
                       </div>
                     </div>
                   )}
 
                   {raschSubTab === 'dif' && (
-                    <div className="space-y-10 animate-in fade-in duration-300">
-                      {/* DIF Group Selector Switcher */}
-                      <div className="flex bg-slate-100 p-1.5 rounded-2xl border self-start shadow-inner max-w-lg">
-                        <button 
-                          onClick={() => setDifGroupTab('gender')}
-                          className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all duration-300 ${
-                            difGroupTab === 'gender' 
-                              ? 'bg-blue-600 text-white shadow-md' 
-                              : 'text-slate-500 hover:text-slate-800'
-                          }`}>
-                          Gender DIF (Laki vs Perempuan)
-                        </button>
-                        <button 
-                          onClick={() => setDifGroupTab('multicultural')}
-                          className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all duration-300 ${
-                            difGroupTab === 'multicultural' 
-                              ? 'bg-blue-600 text-white shadow-md' 
-                              : 'text-slate-500 hover:text-slate-800'
-                          }`}>
-                          Multicultural DIF (Jawa vs Luar Jawa)
-                        </button>
-                        <button 
-                          onClick={() => setDifGroupTab('inclusion')}
-                          className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all duration-300 ${
-                            difGroupTab === 'inclusion' 
-                              ? 'bg-blue-600 text-white shadow-md' 
-                              : 'text-slate-500 hover:text-slate-800'
-                          }`}>
-                          Inclusion DIF (Kriteria Inklusi)
-                        </button>
+                    <div className="space-y-5 animate-in fade-in duration-200">
+                      {/* DIF Group Selector */}
+                      <div className="flex border border-slate-200 rounded-xl overflow-hidden self-start text-xs font-semibold bg-white">
+                        {[
+                          { id: 'gender', label: 'Gender DIF (Laki vs Perempuan)' },
+                          { id: 'multicultural', label: 'Multicultural DIF (Jawa vs Luar Jawa)' },
+                          { id: 'inclusion', label: 'Inclusion DIF (Kriteria Inklusi)' },
+                        ].map(btn => (
+                          <button key={btn.id} onClick={() => setDifGroupTab(btn.id as any)}
+                            className={`px-4 py-2.5 transition-colors border-r border-slate-200 last:border-0 ${difGroupTab === btn.id ? 'bg-[#1e3a5f] text-white' : 'text-slate-500 hover:bg-slate-50'}`}>
+                            {btn.label}
+                          </button>
+                        ))}
                       </div>
 
-                      {/* DIF Summary Intro */}
-                      <div className="bg-white p-8 rounded-[40px] border border-slate-200 shadow-sm relative overflow-hidden group">
-                        <div className="absolute -top-24 -right-24 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl"></div>
-                        <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest mb-4">
-                          Differential Item Functioning (DIF) - {difGroupTab === 'gender' ? 'Gender Bias' : difGroupTab === 'multicultural' ? 'Multicultural Bias (LPTK Origin)' : 'Inclusion Criteria Bias'} Analysis
+                      {/* DIF Info */}
+                      <div className="bg-white border border-slate-200 rounded-xl p-5">
+                        <h4 className="text-xs font-semibold text-slate-800 mb-2">
+                          Differential Item Functioning (DIF) — {difGroupTab === 'gender' ? 'Gender Bias' : difGroupTab === 'multicultural' ? 'Multicultural Bias (LPTK Origin)' : 'Inclusion Criteria Bias'}
                         </h4>
-                        <p className="text-xs text-slate-500 font-medium leading-relaxed max-w-3xl">
-                          DIF occurs when respondents from different groups (e.g., {refLabel} vs {focLabel}) but with the exact same underlying digital literacy competency level have a different probability of responding correctly to an item. This table flags potential measurement bias to ensure fair assessments.
+                        <p className="text-xs text-slate-500 leading-relaxed max-w-3xl">
+                          DIF occurs when respondents from different groups ({refLabel} vs {focLabel}) with the same underlying competency level have a different probability of responding correctly to an item. Items are flagged for expert review based on Mantel-Haenszel contrast thresholds.
                         </p>
                       </div>
 
-                      {/* DIF Flags Table */}
-                      <div className="bg-white rounded-[40px] border border-slate-200 shadow-sm overflow-hidden">
-                        <div className="p-8 border-b border-slate-100 flex justify-between items-center">
-                          <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest">
-                            DIF {difGroupTab === 'gender' ? 'Gender' : difGroupTab === 'multicultural' ? 'Multicultural' : 'Inclusion'} Bias Indicators
-                          </h4>
-                          <span className="text-[9px] font-black uppercase text-rose-600 bg-rose-50 px-3 py-1 rounded-full">
-                            {currentDifData.filter((d: any) => Math.abs(d.contrast) > 0.4).length} Items Flagged with Significant DIF
+                      {/* DIF Table */}
+                      <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+                        <div className="px-5 py-4 border-b border-slate-100 flex justify-between items-center">
+                          <h4 className="text-xs font-semibold text-slate-700">DIF {difGroupTab === 'gender' ? 'Gender' : difGroupTab === 'multicultural' ? 'Multicultural' : 'Inclusion'} Bias Indicators</h4>
+                          <span className="px-2 py-0.5 bg-rose-50 border border-rose-200 text-rose-700 rounded text-[10px] font-semibold">
+                            {currentDifData.filter((d: any) => Math.abs(d.contrast) > 0.4).length} Items Flagged
                           </span>
                         </div>
-                        <div className="overflow-auto max-h-[400px] custom-scrollbar">
+                        <div className="overflow-auto max-h-[380px] custom-scrollbar">
                           <table className="w-full text-left">
-                            <thead className="bg-slate-50 text-[9px] font-black text-slate-400 uppercase border-b border-slate-100 sticky top-0">
+                            <thead className="bg-slate-50 text-[10px] font-semibold text-slate-400 uppercase border-b border-slate-100 sticky top-0">
                               <tr>
-                                <th className="px-6 py-4">Item ID</th>
-                                <th className="px-6 py-4">{refLabel} difficulty</th>
-                                <th className="px-6 py-4">{focLabel} difficulty</th>
-                                <th className="px-6 py-4">DIF Contrast (Logit)</th>
-                                <th className="px-6 py-4">P-Value</th>
-                                <th className="px-6 py-4">Measurement Bias flag</th>
+                                {['Item ID', `${refLabel} Difficulty`, `${focLabel} Difficulty`, 'DIF Contrast (Logit)', 'P-Value', 'Measurement Bias'].map(h => (
+                                  <th key={h} className="px-4 py-3">{h}</th>
+                                ))}
                               </tr>
                             </thead>
-                            <tbody className="divide-y divide-slate-100 text-xs font-bold text-slate-600">
+                            <tbody className="divide-y divide-slate-50 text-xs text-slate-600">
                               {currentDifData.map((row: any, idx: number) => (
-                                <tr key={idx} className="hover:bg-slate-50/50">
-                                  <td className="px-6 py-4 font-black text-slate-900">{row.item}</td>
-                                  <td className="px-6 py-4 font-mono">{(row.refGroup ?? 0).toFixed(2)}</td>
-                                  <td className="px-6 py-4 font-mono">{(row.focGroup ?? 0).toFixed(2)}</td>
-                                  <td className={`px-6 py-4 font-mono font-black ${row.contrast > 0 ? 'text-indigo-600' : 'text-purple-600'}`}>
+                                <tr key={idx} className="hover:bg-slate-50/50 even:bg-slate-50/30">
+                                  <td className="px-4 py-3 font-bold text-slate-800">{row.item}</td>
+                                  <td className="px-4 py-3 font-mono">{(row.refGroup ?? 0).toFixed(2)}</td>
+                                  <td className="px-4 py-3 font-mono">{(row.focGroup ?? 0).toFixed(2)}</td>
+                                  <td className={`px-4 py-3 font-mono font-bold ${row.contrast > 0 ? 'text-rose-600' : 'text-blue-600'}`}>
                                     {row.contrast > 0 ? `+${row.contrast.toFixed(2)}` : row.contrast.toFixed(2)}
                                   </td>
-                                  <td className="px-6 py-4 font-mono">{row.p_value}</td>
-                                  <td className="px-6 py-4">
-                                    <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase ${row.color}`}>
-                                      {row.status}
-                                    </span>
+                                  <td className="px-4 py-3 font-mono">{row.p_value}</td>
+                                  <td className="px-4 py-3">
+                                    <span className={`px-2 py-0.5 rounded text-[10px] font-semibold border ${row.color}`}>{row.status}</span>
                                   </td>
                                 </tr>
                               ))}
@@ -2722,203 +2247,125 @@ export default function AdminDashboard() {
                   )}
                 </div>
               ) : (
-                <div className="py-20 text-center bg-white border border-dashed border-slate-200 rounded-[40px] flex flex-col items-center gap-4">
-                  <i className="fa-solid fa-list-ol text-4xl text-slate-300"></i>
-                  <div>
-                    <p className="text-sm font-bold text-slate-500">Pemodelan Rasch / PCM belum dijalankan.</p>
-                    <p className="text-[10px] text-slate-400 mt-1 uppercase tracking-widest">Silakan klik tombol "Run Rasch Model" untuk mengalibrasi item instrumen.</p>
-                  </div>
-                </div>
+                <EmptyState icon="fa-list-ol" message="Pemodelan Rasch / PCM belum dijalankan." sub='Klik tombol "Run Rasch Model" untuk mengalibrasi item instrumen.' />
               )}
             </div>
           )}
 
-          {/* SEM Model Tab Content */}
+          {/* ═══════════════════════════════════════════════════
+              TAB: SEM
+          ═══════════════════════════════════════════════════ */}
           {currentTab === 'sem' && (
-            <div className="space-y-10 animate-in fade-in slide-in-from-bottom-5 duration-700">
-              {/* Model Selector Bar */}
-              <div className="flex bg-slate-100 p-1.5 rounded-2xl border self-start shadow-inner">
-                <button 
-                  onClick={() => setSelectedSemModel('cbsem')}
-                  className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all duration-300 ${
-                    selectedSemModel === 'cbsem' 
-                      ? 'bg-blue-600 text-white shadow-md' 
-                      : 'text-slate-500 hover:text-slate-800'
-                  }`}>
-                  CB-SEM (Covariance-Based)
-                </button>
-                <button 
-                  onClick={() => setSelectedSemModel('pls')}
-                  className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all duration-300 ${
-                    selectedSemModel === 'pls' 
-                      ? 'bg-blue-600 text-white shadow-md' 
-                      : 'text-slate-500 hover:text-slate-800'
-                  }`}>
-                  PLS-SEM (Variance-Based)
-                </button>
-              </div>
-
-              {/* Hero Banner */}
-              <div className="relative overflow-hidden bg-gradient-to-br from-indigo-700 via-blue-700 to-slate-900 rounded-[40px] p-12 text-white shadow-2xl shadow-indigo-500/25">
-                <div className="absolute -top-24 -right-24 w-80 h-80 bg-white/10 rounded-full blur-3xl"></div>
-                <div className="absolute -bottom-16 -left-16 w-56 h-56 bg-slate-700/20 rounded-full blur-2xl"></div>
-                <div className="relative z-10 flex justify-between items-center">
+            <div className="space-y-5 animate-in fade-in slide-in-from-bottom-3 duration-300">
+              <div className="bg-white border border-slate-200 rounded-xl p-5 flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-slate-100 text-slate-600 rounded-xl flex items-center justify-center">
+                    <i className="fa-solid fa-route text-lg"></i>
+                  </div>
                   <div>
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
-                        <i className="fa-solid fa-route text-white text-lg"></i>
-                      </div>
-                      <span className="text-[10px] font-black uppercase tracking-[0.25em] text-slate-300">
-                        {selectedSemModel === 'cbsem' ? 'CB-SEM Path Modeling' : 'PLS-SEM Path Modeling'}
-                      </span>
-                    </div>
-                    <h3 className="text-4xl font-black tracking-tighter text-white">
-                      {selectedSemModel === 'cbsem' ? 'Covariance-Based SEM' : 'Partial Least Squares SEM'}
-                    </h3>
-                    <p className="text-slate-200 text-sm font-medium mt-2 max-w-lg">
-                      {selectedSemModel === 'cbsem' 
-                        ? 'Model Struktural MADEL5C: Literasi Digital Ekspansif Calon Guru (C1 → C2 & C3 → C4 → C5).'
-                        : 'Predictive model of Digital Literacy → Adaptive Performance → Professional Competency.'}
+                    <h2 className="text-base font-bold text-slate-900">{selectedSemModel === 'cbsem' ? 'Covariance-Based SEM (CB-SEM)' : 'Partial Least Squares SEM (PLS-SEM)'}</h2>
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      {selectedSemModel === 'cbsem' ? 'Model Struktural: Literasi Digital Ekspansif Calon Guru (C1 → C2 & C3 → C4 → C5)' : 'Predictive model of Digital Literacy → Adaptive Performance → Professional Competency'}
                     </p>
                   </div>
-                  <div className="flex items-center gap-4 bg-white/10 backdrop-blur-md p-3 rounded-2xl border border-white/20">
-                    <select 
-                      value={analysisMethod[selectedSemModel === 'cbsem' ? 'cbsem' : 'sem']} 
-                      onChange={(e) => setAnalysisMethod(prev => ({ ...prev, [selectedSemModel === 'cbsem' ? 'cbsem' : 'sem']: e.target.value as 'R' | 'Python' }))}
-                      className="bg-transparent text-white font-bold text-xs outline-none border-none cursor-pointer pr-4">
-                      <option value="R" className="text-slate-800">R (lavaan)</option>
-                      <option value="Python" className="text-slate-800">Python (semopy)</option>
-                    </select>
-                    <button 
-                      onClick={() => runPsychometricAnalysis(selectedSemModel === 'cbsem' ? 'cbsem' : 'sem')}
-                      disabled={analysisLoading[selectedSemModel === 'cbsem' ? 'cbsem' : 'sem']}
-                      className="px-6 py-3 bg-white text-slate-800 font-black rounded-xl text-[10px] uppercase tracking-widest hover:bg-slate-100 transition-all flex items-center gap-2 disabled:opacity-50">
-                      {analysisLoading[selectedSemModel === 'cbsem' ? 'cbsem' : 'sem'] ? <i className="fa-solid fa-spinner animate-spin"></i> : <i className="fa-solid fa-bolt"></i>}
-                      {analysisLoading[selectedSemModel === 'cbsem' ? 'cbsem' : 'sem'] ? 'Running...' : 'Run SEM'}
-                    </button>
-                    {analysisResults[selectedSemModel === 'cbsem' ? 'cbsem' : 'sem'] && (
-                      <div className="flex items-center gap-2">
-                        <a 
-                          href={`/api/admin/analysis/download?type=${selectedSemModel === 'cbsem' ? 'cbsem' : 'sem'}&method=${analysisMethod[selectedSemModel === 'cbsem' ? 'cbsem' : 'sem']}`}
-                          className="px-4 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-xl text-[10px] uppercase tracking-widest transition-all flex items-center gap-1.5"
-                          title="Download ZIP berisi JSON, Gambar, dan Laporan Teks">
-                          <i className="fa-solid fa-file-zipper"></i>
-                          Download ZIP
-                        </a>
-                        <a 
-                          href={`/api/admin/analysis/download?type=${selectedSemModel === 'cbsem' ? 'cbsem' : 'sem'}&method=${analysisMethod[selectedSemModel === 'cbsem' ? 'cbsem' : 'sem']}&format=text`}
-                          className="px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white font-black rounded-xl text-[10px] uppercase tracking-widest transition-all flex items-center gap-1.5"
-                          title="Download Laporan Format R / SPSS (Teks)">
-                          <i className="fa-solid fa-file-lines"></i>
-                          Laporan R/SPSS
-                        </a>
-                        <a 
-                          href={`/api/admin/analysis/download?type=${selectedSemModel === 'cbsem' ? 'cbsem' : 'sem'}&method=${analysisMethod[selectedSemModel === 'cbsem' ? 'cbsem' : 'sem']}&format=json`}
-                          className="px-4 py-3 bg-slate-600 hover:bg-slate-700 text-white font-black rounded-xl text-[10px] uppercase tracking-widest transition-all flex items-center gap-1.5"
-                          title="Download File Output JSON">
-                          <i className="fa-solid fa-file-code"></i>
-                          JSON
-                        </a>
-                        {((selectedSemModel === 'cbsem' && analysisPlots.cbsem) || (selectedSemModel === 'pls' && analysisPlots.sem)) && (
-                          <a 
-                            href={selectedSemModel === 'cbsem' ? analysisPlots.cbsem : analysisPlots.sem}
-                            download={`${selectedSemModel === 'cbsem' ? 'CB-SEM' : 'PLS-SEM'}_${analysisMethod[selectedSemModel === 'cbsem' ? 'cbsem' : 'sem']}_Plot.png`}
-                            className="px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-xl text-[10px] uppercase tracking-widest transition-all flex items-center gap-1.5"
-                            title="Download Gambar Diagram Jalur SEM">
-                            <i className="fa-solid fa-file-image"></i>
-                            Plot
-                          </a>
-                        )}
-                      </div>
-                    )}
-                  </div>
+                </div>
+                {/* SEM Model Switcher */}
+                <div className="flex border border-slate-200 rounded-xl overflow-hidden text-xs font-semibold shrink-0">
+                  <button onClick={() => setSelectedSemModel('cbsem')}
+                    className={`px-4 py-2 transition-colors ${selectedSemModel === 'cbsem' ? 'bg-[#1e3a5f] text-white' : 'text-slate-500 hover:bg-slate-50'}`}>
+                    CB-SEM
+                  </button>
+                  <button onClick={() => setSelectedSemModel('pls')}
+                    className={`px-4 py-2 border-l border-slate-200 transition-colors ${selectedSemModel === 'pls' ? 'bg-[#1e3a5f] text-white' : 'text-slate-500 hover:bg-slate-50'}`}>
+                    PLS-SEM
+                  </button>
                 </div>
               </div>
 
+              <AnalysisToolbar
+                type={selectedSemModel === 'cbsem' ? 'cbsem' : 'sem'}
+                label="SEM"
+                methodValue={analysisMethod[selectedSemModel === 'cbsem' ? 'cbsem' : 'sem']}
+                methodOptions={[{ value: 'R', label: 'R (lavaan)' }, { value: 'Python', label: 'Python (semopy)' }]}
+                onMethodChange={(v) => setAnalysisMethod(prev => ({ ...prev, [selectedSemModel === 'cbsem' ? 'cbsem' : 'sem']: v as 'R' | 'Python' }))}
+                onRun={() => runPsychometricAnalysis(selectedSemModel === 'cbsem' ? 'cbsem' : 'sem')}
+                loading={analysisLoading[selectedSemModel === 'cbsem' ? 'cbsem' : 'sem']}
+                results={analysisResults[selectedSemModel === 'cbsem' ? 'cbsem' : 'sem']}
+                plots={selectedSemModel === 'cbsem' ? analysisPlots.cbsem : analysisPlots.sem}
+                analysisMethod={analysisMethod[selectedSemModel === 'cbsem' ? 'cbsem' : 'sem']}
+              />
+
               {analysisResults[selectedSemModel === 'cbsem' ? 'cbsem' : 'sem'] ? (
-                <div className="space-y-10">
-                  {/* Sub-Tab Navigation */}
-                  <div className="flex border-b border-slate-200 gap-8">
-                    {[
+                <div className="space-y-5">
+                  <SubTabs
+                    tabs={[
                       { id: 'parameters', label: 'Regression Weights & Fit', icon: 'fa-table-list' },
                       { id: 'plots', label: 'SEM Path Diagram', icon: 'fa-diagram-project' }
-                    ].map(sub => (
-                      <button key={sub.id} onClick={() => setSemSubTab(sub.id as any)}
-                        className={`pb-4 px-2 text-xs font-black uppercase tracking-wider transition-all border-b-2 flex items-center gap-2 ${
-                          semSubTab === sub.id 
-                            ? 'border-indigo-600 text-indigo-600' 
-                            : 'border-transparent text-slate-400 hover:text-slate-600'
-                        }`}>
-                        <i className={`fa-solid ${sub.icon}`}></i>
-                        {sub.label}
-                      </button>
-                    ))}
-                  </div>
+                    ]}
+                    active={semSubTab}
+                    onChange={(id) => setSemSubTab(id as any)}
+                  />
 
                   {semSubTab === 'parameters' && (
-                    <div className="space-y-10 animate-in fade-in duration-300">
-                      {/* Summary Variance Explained Cards */}
-                      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <div className="space-y-5 animate-in fade-in duration-200">
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                         {Object.entries(analysisResults[selectedSemModel === 'cbsem' ? 'cbsem' : 'sem'].r_squared).map(([key, value]: [string, any]) => (
-                          <div key={key} className="bg-white p-8 rounded-[32px] border border-slate-200 shadow-sm text-center">
-                            <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">R-Squared (R²): {key}</p>
-                            <p className="text-4xl font-black text-blue-600">{value}</p>
-                            <span className="text-[8px] font-black uppercase text-slate-400 mt-2 block">Variance Explained</span>
+                          <div key={key} className="bg-white border border-slate-200 rounded-xl p-4 text-center">
+                            <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mb-1">R² — {key}</p>
+                            <p className="text-xl font-bold text-blue-600 font-mono">{value}</p>
+                            <p className="text-[9px] text-slate-400 mt-1">Variance Explained</p>
                           </div>
                         ))}
                       </div>
 
-                      {/* CB-SEM Model Fit Indices Table */}
                       {selectedSemModel === 'cbsem' && analysisResults.cbsem.fit_indices && (
-                        <div className="bg-white p-8 rounded-[40px] border border-slate-200 shadow-sm">
-                          <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest mb-6">Goodness-of-Fit (GoF) Indices</h4>
-                          <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
+                        <div className="bg-white border border-slate-200 rounded-xl p-5">
+                          <h4 className="text-xs font-semibold text-slate-700 mb-4">Goodness-of-Fit (GoF) Indices</h4>
+                          <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
                             {[
                               { label: 'Chi-Square', value: analysisResults.cbsem.fit_indices.chi_square },
                               { label: 'df', value: analysisResults.cbsem.fit_indices.df },
                               { label: 'p-value', value: analysisResults.cbsem.fit_indices.p_value, status: 'Significant' },
-                              { label: 'RMSEA', value: analysisResults.cbsem.fit_indices.rmsea, status: 'Good Fit (<0.08)' },
-                              { label: 'CFI', value: analysisResults.cbsem.fit_indices.cfi, status: 'Good Fit (>0.90)' },
-                              { label: 'TLI', value: analysisResults.cbsem.fit_indices.tli, status: 'Good Fit (>0.90)' }
+                              { label: 'RMSEA', value: analysisResults.cbsem.fit_indices.rmsea, status: '< 0.08' },
+                              { label: 'CFI', value: analysisResults.cbsem.fit_indices.cfi, status: '> 0.90' },
+                              { label: 'TLI', value: analysisResults.cbsem.fit_indices.tli, status: '> 0.90' }
                             ].map((f, i) => (
-                              <div key={i} className="bg-slate-50 p-4 rounded-2xl border border-slate-100 text-center">
-                                <p className="text-[8px] font-black text-slate-400 uppercase mb-1">{f.label}</p>
-                                <p className="text-sm font-black text-slate-900">{f.value}</p>
-                                {f.status && <span className="text-[7px] font-black uppercase text-emerald-600 block mt-1">{f.status}</span>}
+                              <div key={i} className="bg-slate-50 border border-slate-100 p-3 rounded-xl text-center">
+                                <p className="text-[9px] font-semibold text-slate-400 uppercase mb-1">{f.label}</p>
+                                <p className="text-sm font-bold text-slate-800">{f.value}</p>
+                                {f.status && <span className="text-[8px] font-semibold text-emerald-600 block mt-0.5">{f.status}</span>}
                               </div>
                             ))}
                           </div>
                         </div>
                       )}
 
-                      {/* Path Coefficients Table */}
-                      <div className="bg-white rounded-[40px] border border-slate-200 shadow-sm overflow-hidden">
-                        <div className="p-8 border-b border-slate-100">
-                          <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest">Structural Regression Weights</h4>
+                      <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+                        <div className="px-5 py-4 border-b border-slate-100">
+                          <h4 className="text-xs font-semibold text-slate-700">Structural Regression Weights</h4>
                         </div>
-                        <div className="overflow-auto max-h-[450px] custom-scrollbar">
+                        <div className="overflow-auto max-h-[420px] custom-scrollbar">
                           <table className="w-full text-left">
-                            <thead className="bg-slate-50 text-[9px] font-black text-slate-400 uppercase border-b border-slate-100 sticky top-0">
+                            <thead className="bg-slate-50 text-[10px] font-semibold text-slate-400 uppercase border-b border-slate-100 sticky top-0">
                               <tr>
-                                <th className="px-6 py-4">Structural Path</th>
-                                <th className="px-6 py-4">Estimate (β)</th>
-                                <th className="px-6 py-4">S.E.</th>
-                                <th className="px-6 py-4">P-Value</th>
+                                {['Structural Path', 'Estimate (β)', 'S.E.', 'P-Value'].map(h => (
+                                  <th key={h} className="px-4 py-3">{h}</th>
+                                ))}
                               </tr>
                             </thead>
-                            <tbody className="divide-y divide-slate-100 text-xs font-bold text-slate-600">
+                            <tbody className="divide-y divide-slate-50 text-xs text-slate-600">
                               {analysisResults[selectedSemModel === 'cbsem' ? 'cbsem' : 'sem'].paths.map((p: any, idx: number) => (
-                                <tr key={idx} className="hover:bg-slate-50/50">
-                                  <td className="px-6 py-4 font-black text-slate-900">
-                                    {p.source} <span className="text-blue-500 mx-1">→</span> {p.target}
+                                <tr key={idx} className="hover:bg-slate-50/50 even:bg-slate-50/30">
+                                  <td className="px-4 py-3 font-medium text-slate-800">
+                                    {p.source} <span className="text-blue-500 mx-1 font-bold">→</span> {p.target}
                                   </td>
-                                  <td className="px-6 py-4 text-blue-600 font-mono">{p.coef}</td>
-                                  <td className="px-6 py-4 font-mono">{p.se}</td>
-                                  <td className="px-6 py-4">
-                                    <span className="px-2 py-0.5 rounded-full text-[8px] font-black uppercase bg-emerald-50 text-emerald-600">
-                                      {p.p_value < 0.001 ? '&lt; 0.001' : p.p_value}
+                                  <td className="px-4 py-3 text-blue-600 font-mono font-bold">{p.coef}</td>
+                                  <td className="px-4 py-3 font-mono">{p.se}</td>
+                                  <td className="px-4 py-3">
+                                    <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                      {p.p_value < 0.001 ? '< 0.001' : p.p_value}
                                     </span>
-                                    {p.note && <span className="ml-2 text-[8px] text-slate-400 font-bold uppercase">{p.note}</span>}
+                                    {p.note && <span className="ml-2 text-[9px] text-slate-400 font-semibold uppercase">{p.note}</span>}
                                   </td>
                                 </tr>
                               ))}
@@ -2930,166 +2377,62 @@ export default function AdminDashboard() {
                   )}
 
                   {semSubTab === 'plots' && (
-                    <div className="bg-white p-8 rounded-[40px] border border-slate-200 shadow-sm flex flex-col justify-between animate-in fade-in duration-300">
-                      <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest mb-6">SEM Path Coefficient Diagram</h4>
-                      <div className="flex items-center justify-center">
-                        {((selectedSemModel === 'cbsem' && !imageError.cbsem && analysisPlots.cbsem) || (selectedSemModel === 'pls' && !imageError.sem && analysisPlots.sem)) ? (
-                          <img 
-                            src={selectedSemModel === 'cbsem' ? analysisPlots.cbsem : analysisPlots.sem} 
-                            alt="SEM Plot" 
-                            onError={() => {
-                              if (selectedSemModel === 'cbsem') {
-                                setImageError(prev => ({ ...prev, cbsem: true }));
-                              } else {
-                                setImageError(prev => ({ ...prev, sem: true }));
-                              }
-                            }}
-                            className="w-full max-w-4xl h-auto object-contain rounded-2xl border border-slate-100 shadow-md" 
-                          />
-                        ) : selectedSemModel === 'cbsem' ? (
-                          <svg className="w-full max-w-4xl h-[450px] bg-slate-50 border border-slate-200 rounded-[32px] p-6" viewBox="0 0 200 110">
-                            <defs>
-                              <marker id="cbsemarrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse">
-                                <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#2563eb" />
-                              </marker>
-                              <marker id="cbdashedarrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse">
-                                <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#94a3b8" />
-                              </marker>
-                            </defs>
-
-                            {/* Model Title */}
-                            <text x="100" y="8" fontSize="4.5" fill="#0f172a" fontWeight="bold" textAnchor="middle">Model Struktural SEM — MADEL5C: Literasi Digital Ekspansif Calon Guru</text>
-                            <text x="100" y="13" fontSize="2.8" fill="#4b5563" textAnchor="middle">Integrasi CHAT (Engeström) × Connectivism (Siemens) × DigComp 2.2</text>
-
-                            {/* Dashed Indirect Path C1 -> C5 */}
-                            <path d="M 30,65 L 30,102 L 170,102 L 170,65" fill="none" stroke="#94a3b8" strokeDasharray="3,3" strokeWidth="1" markerEnd="url(#cbdashedarrow)" />
-                            <text x="100" y="99" fontSize="2.8" fill="#475569" fontWeight="bold" textAnchor="middle">Efek Total melalui Mediasi (Indirect Effect via Mediation): 0.55**</text>
-
-                            {/* Solid Path Arrows */}
-                            {/* C1 -> C2 */}
-                            <line x1="42" y1="48" x2="63" y2="32" stroke="#4b5563" strokeWidth="1.2" markerEnd="url(#cbsemarrow)" />
-                            <text x="50" y="38" fontSize="2.5" fill="#2563eb" fontWeight="bold">β = 0.65**</text>
-                            <text x="50" y="41" fontSize="1.8" fill="#475569">(H1)</text>
-
-                            {/* C1 -> C3 */}
-                            <line x1="42" y1="62" x2="63" y2="78" stroke="#4b5563" strokeWidth="1.2" markerEnd="url(#cbsemarrow)" />
-                            <text x="50" y="72" fontSize="2.5" fill="#2563eb" fontWeight="bold">β = 0.58**</text>
-                            <text x="50" y="75" fontSize="1.8" fill="#475569">(H2)</text>
-
-                            {/* C2 -> C4 */}
-                            <line x1="87" y1="32" x2="108" y2="48" stroke="#4b5563" strokeWidth="1.2" markerEnd="url(#cbsemarrow)" />
-                            <text x="100" y="38" fontSize="2.5" fill="#2563eb" fontWeight="bold">β = 0.42**</text>
-                            <text x="100" y="41" fontSize="1.8" fill="#475569">(H3a)</text>
-
-                            {/* C3 -> C4 */}
-                            <line x1="87" y1="78" x2="108" y2="62" stroke="#4b5563" strokeWidth="1.2" markerEnd="url(#cbsemarrow)" />
-                            <text x="100" y="72" fontSize="2.5" fill="#2563eb" fontWeight="bold">β = 0.48**</text>
-                            <text x="100" y="75" fontSize="1.8" fill="#475569">(H3b)</text>
-
-                            {/* C4 -> C5 */}
-                            <line x1="132" y1="55" x2="153" y2="55" stroke="#4b5563" strokeWidth="1.2" markerEnd="url(#cbsemarrow)" />
-                            <text x="142" y="52" fontSize="2.5" fill="#2563eb" fontWeight="bold">β = 0.72**</text>
-                            <text x="142" y="58" fontSize="1.8" fill="#475569">(H4)</text>
-
-                            {/* Circles (Latent Variables) */}
-                            {/* C1 */}
-                            <circle cx="30" cy="55" r="13" fill="#0f172a" />
-                            <text x="30" y="52" fontSize="3" fill="#ffffff" fontWeight="bold" textAnchor="middle">C1</text>
-                            <text x="30" y="55.5" fontSize="2.2" fill="#ffffff" fontWeight="bold" textAnchor="middle">CONTEXT</text>
-                            <text x="30" y="58.5" fontSize="1.5" fill="#94a3b8" textAnchor="middle">(Independen)</text>
-
-                            {/* C2 */}
-                            <circle cx="75" cy="25" r="13" fill="#0f766e" />
-                            <text x="75" y="22" fontSize="3" fill="#ffffff" fontWeight="bold" textAnchor="middle">C2</text>
-                            <text x="75" y="25.5" fontSize="2.2" fill="#ffffff" fontWeight="bold" textAnchor="middle">COMMUNICATION</text>
-                            <text x="75" y="28.5" fontSize="1.5" fill="#94a3b8" textAnchor="middle">(Mediator Lapis 1)</text>
-
-                            {/* C3 */}
-                            <circle cx="75" cy="85" r="13" fill="#0f766e" />
-                            <text x="75" y="82" fontSize="3" fill="#ffffff" fontWeight="bold" textAnchor="middle">C3</text>
-                            <text x="75" y="85.5" fontSize="2.2" fill="#ffffff" fontWeight="bold" textAnchor="middle">COLLABORATION</text>
-                            <text x="75" y="88.5" fontSize="1.5" fill="#94a3b8" textAnchor="middle">(Mediator Lapis 1)</text>
-
-                            {/* C4 */}
-                            <circle cx="120" cy="55" r="13" fill="#6b21a8" />
-                            <text x="120" y="52" fontSize="3" fill="#ffffff" fontWeight="bold" textAnchor="middle">C4</text>
-                            <text x="120" y="55.5" fontSize="2.2" fill="#ffffff" fontWeight="bold" textAnchor="middle">CREATION</text>
-                            <text x="120" y="58.5" fontSize="1.5" fill="#c084fc" textAnchor="middle">(Mediator Lapis 2)</text>
-
-                            {/* C5 */}
-                            <circle cx="165" cy="55" r="13" fill="#991b1b" />
-                            <text x="165" y="52" fontSize="3" fill="#ffffff" fontWeight="bold" textAnchor="middle">C5</text>
-                            <text x="165" y="55.5" fontSize="2.2" fill="#ffffff" fontWeight="bold" textAnchor="middle">CRITICAL</text>
-                            <text x="165" y="58.5" fontSize="1.5" fill="#fca5a5" textAnchor="middle">(Dependen)</text>
-
-                            {/* Bottom Legend details */}
-                            <rect x="135" y="18" width="55" height="15" rx="1" fill="#ffffff" stroke="#cbd5e1" strokeWidth="0.5" />
-                            <text x="138" y="22" fontSize="1.8" fill="#475569" fontWeight="bold">Chi-square = 142.15 (df=82)</text>
-                            <text x="138" y="25" fontSize="1.8" fill="#475569" fontWeight="bold">RMSEA = 0.045, CFI = 0.968</text>
-                            <text x="138" y="28" fontSize="1.8" fill="#0f766e" fontWeight="bold">**Significant at p &lt; 0.01</text>
-                          </svg>
-                        ) : (
-                          <svg className="w-full max-w-3xl h-[400px] bg-slate-50 border border-slate-200 rounded-[32px] p-4" viewBox="0 0 200 110">
-                            <defs>
-                              <marker id="semarrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse">
-                                <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#2563eb" />
-                              </marker>
-                            </defs>
-                          </svg>
-                        )}
-                      </div>
+                    <div className="bg-white border border-slate-200 rounded-xl p-5 animate-in fade-in duration-200">
+                      <h4 className="text-xs font-semibold text-slate-700 mb-4">SEM Path Coefficient Diagram</h4>
+                      {((selectedSemModel === 'cbsem' && !imageError.cbsem && analysisPlots.cbsem) || (selectedSemModel === 'pls' && !imageError.sem && analysisPlots.sem)) ? (
+                        <img
+                          src={selectedSemModel === 'cbsem' ? analysisPlots.cbsem : analysisPlots.sem}
+                          alt="SEM Plot"
+                          onError={() => {
+                            if (selectedSemModel === 'cbsem') {
+                              setImageError(prev => ({ ...prev, cbsem: true }));
+                            } else {
+                              setImageError(prev => ({ ...prev, sem: true }));
+                            }
+                          }}
+                          className="w-full max-w-4xl h-auto object-contain rounded-xl border border-slate-100 mx-auto block"
+                        />
+                      ) : (
+                        <svg className="w-full max-w-4xl h-[450px] bg-slate-50 border border-slate-100 rounded-xl p-6 mx-auto block" viewBox="0 0 200 110">
+                          <defs>
+                            <marker id="cbsemarrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse">
+                              <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#2563eb" />
+                            </marker>
+                            <marker id="cbdashedarrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse">
+                              <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#94a3b8" />
+                            </marker>
+                          </defs>
+                          <text x="100" y="8" fontSize="4.5" fill="#0f172a" fontWeight="bold" textAnchor="middle">Model Struktural SEM — MADEL5C: Literasi Digital Ekspansif Calon Guru</text>
+                          <text x="100" y="13" fontSize="2.8" fill="#4b5563" textAnchor="middle">Integrasi CHAT (Engeström) × Connectivism (Siemens) × DigComp 2.2</text>
+                          <path d="M 30,65 L 30,102 L 170,102 L 170,65" fill="none" stroke="#94a3b8" strokeDasharray="3,3" strokeWidth="1" markerEnd="url(#cbdashedarrow)" />
+                          <text x="100" y="99" fontSize="2.8" fill="#475569" fontWeight="bold" textAnchor="middle">Efek Total melalui Mediasi: 0.55**</text>
+                          <line x1="42" y1="48" x2="63" y2="32" stroke="#4b5563" strokeWidth="1.2" markerEnd="url(#cbsemarrow)" />
+                          <text x="50" y="38" fontSize="2.5" fill="#1e3a5f" fontWeight="bold">β = 0.65**</text>
+                          <line x1="42" y1="62" x2="63" y2="78" stroke="#4b5563" strokeWidth="1.2" markerEnd="url(#cbsemarrow)" />
+                          <text x="50" y="72" fontSize="2.5" fill="#1e3a5f" fontWeight="bold">β = 0.58**</text>
+                          <line x1="87" y1="32" x2="108" y2="48" stroke="#4b5563" strokeWidth="1.2" markerEnd="url(#cbsemarrow)" />
+                          <text x="100" y="38" fontSize="2.5" fill="#1e3a5f" fontWeight="bold">β = 0.42**</text>
+                          <line x1="87" y1="78" x2="108" y2="62" stroke="#4b5563" strokeWidth="1.2" markerEnd="url(#cbsemarrow)" />
+                          <text x="100" y="72" fontSize="2.5" fill="#1e3a5f" fontWeight="bold">β = 0.48**</text>
+                          <line x1="132" y1="55" x2="153" y2="55" stroke="#4b5563" strokeWidth="1.2" markerEnd="url(#cbsemarrow)" />
+                          <text x="142" y="52" fontSize="2.5" fill="#1e3a5f" fontWeight="bold">β = 0.72**</text>
+                          {[{cx:30,cy:55,label:'C1',sub:'R²=0.62'},{cx:75,cy:25,label:'C2',sub:'R²=0.74'},{cx:75,cy:80,label:'C3',sub:'R²=0.68'},{cx:120,cy:55,label:'C4',sub:'R²=0.81'},{cx:165,cy:55,label:'C5',sub:'R²=0.77'}].map((n, i) => (
+                            <g key={i}>
+                              <circle cx={n.cx} cy={n.cy} r="13" fill="#0f172a" />
+                              <text x={n.cx} y={n.cy - 1} fontSize="4.5" fill="#ffffff" fontWeight="bold" textAnchor="middle">{n.label}</text>
+                              <text x={n.cx} y={n.cy + 5} fontSize="2.5" fill="#94a3b8" textAnchor="middle">{n.sub}</text>
+                            </g>
+                          ))}
+                        </svg>
+                      )}
                     </div>
                   )}
                 </div>
               ) : (
-                <div className="py-20 text-center bg-white border border-dashed border-slate-200 rounded-[40px] flex flex-col items-center gap-4">
-                  <i className="fa-solid fa-route text-4xl text-slate-300"></i>
-                  <div>
-                    <p className="text-sm font-bold text-slate-500">Analisis SEM belum dijalankan.</p>
-                    <p className="text-[10px] text-slate-400 mt-1 uppercase tracking-widest">Silakan klik tombol "Run SEM" di atas untuk memodelkan jalur hubungan variabel.</p>
-                  </div>
-                </div>
+                <EmptyState icon="fa-route" message={`${selectedSemModel === 'cbsem' ? 'CB-SEM' : 'PLS-SEM'} belum dijalankan.`} sub='Pilih engine dan klik tombol "Run SEM" untuk memproses model struktural.' />
               )}
             </div>
           )}
-      {/* Participant Overview Modal */}
-      {selectedUser && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-          <div 
-            onClick={() => setSelectedUser(null)}
-            className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
-          ></div>
-          <div className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto bg-slate-100 rounded-3xl p-2 shadow-2xl border border-slate-200/50 animate-in fade-in zoom-in duration-300">
-            <div className="absolute right-6 top-6 z-50">
-              <button 
-                onClick={() => setSelectedUser(null)}
-                className="w-10 h-10 bg-white hover:bg-slate-100 rounded-full flex items-center justify-center text-slate-500 hover:text-slate-800 shadow-md border transition-all"
-              >
-                <i className="fa-solid fa-xmark text-lg"></i>
-              </button>
-            </div>
-            
-            {selectedUserStats ? (
-              <AssessmentOverview
-                userName={selectedUser.name}
-                userCampus={selectedUser.campus}
-                sessionDate="15 Okt 2023"
-                madelScore={selectedUserStats.madel5c || 0}
-                preliminaryScore={selectedUserStats.preliminary || 0}
-                surveyDone={selectedUserStats.surveyDone || false}
-                radarData={selectedUserStats.radar || [85, 90, 80, 75, 88]}
-                onExit={() => setSelectedUser(null)}
-                isAdminMode={true}
-              />
-            ) : (
-              <div className="bg-white rounded-3xl p-20 flex flex-col items-center justify-center gap-4 border shadow-sm">
-                <i className="fa-solid fa-spinner animate-spin text-blue-600 text-3xl"></i>
-                <p className="text-xs font-black uppercase text-slate-400 tracking-widest">Memuat Profil Peserta...</p>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
         </div>
       </main>
     </div>
