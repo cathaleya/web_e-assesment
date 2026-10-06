@@ -141,48 +141,60 @@ export default function Home() {
 
         {/* ─── ICON-ICON PSIKOMETRI, METODOLOGI MADEL & GENERATIVE AI (GEMINI & CLAUDE CODE) 3D MELAYANG TANPA BOX ─── */}
         
-        {/* Left Top 1: Claude Code AI */}
-        <div className="hidden xl:flex absolute top-24 left-8 z-10 flex-col items-center group float-anim-delay">
-          <i className="fa-solid fa-microchip text-indigo-600 text-6xl md:text-7xl icon-timbul-3d"></i>
-          <span className="mt-2 text-[8px] font-black text-indigo-900 bg-indigo-100/90 px-2.5 py-0.5 rounded-full border border-indigo-300 shadow-sm uppercase tracking-wider">
+        {/* Left Top 1: Claude AI (Authentic Orange Terracotta Logo) */}
+        <div className="hidden xl:flex absolute top-20 left-8 z-10 flex-col items-center group float-anim-delay">
+          <div className="w-13 h-13 md:w-15 md:h-15 rounded-2xl bg-gradient-to-br from-orange-500 via-amber-600 to-rose-600 text-white flex items-center justify-center shadow-2xl border-2 border-white icon-timbul-3d">
+            <i className="fa-solid fa-asterisk text-2xl text-amber-100"></i>
+          </div>
+          <span className="mt-2 text-[8px] font-black text-orange-900 bg-orange-100/90 px-2.5 py-0.5 rounded-full border border-orange-300 shadow-sm uppercase tracking-wider">
             Claude Code AI
           </span>
         </div>
 
-        {/* Left Top 2: Mapping / Analysis */}
-        <div className="hidden xl:flex absolute top-[210px] left-10 z-10 flex-col items-center group float-anim">
+        {/* Left Top 2: Uji SME (Subject Matter Expert) */}
+        <div className="hidden xl:flex absolute top-[180px] left-6 z-10 flex-col items-center group float-anim">
+          <i className="fa-solid fa-user-tie text-amber-600 text-5xl md:text-6xl icon-timbul-3d"></i>
+          <span className="mt-2 text-[8px] font-black text-amber-900 bg-amber-100/90 px-2 py-0.5 rounded-full border border-amber-300 shadow-sm uppercase tracking-wider">
+            Uji Pakar (SME)
+          </span>
+        </div>
+
+        {/* Left Mid 1: Mapping / Analysis */}
+        <div className="hidden xl:flex absolute top-[330px] left-10 z-10 flex-col items-center group float-anim-reverse">
           <i className="fa-solid fa-map-location-dot text-blue-600 text-5xl md:text-6xl icon-timbul-3d"></i>
           <span className="mt-2 text-[8px] font-black text-blue-900 bg-blue-100/90 px-2 py-0.5 rounded-full border border-blue-300 shadow-sm uppercase tracking-wider">
             Mapping / Analysis
           </span>
         </div>
 
-        {/* Left Mid: Analisis EFA (Exploratory Factor Analysis) */}
-        <div className="hidden xl:flex absolute top-[380px] left-8 z-10 flex-col items-center group float-anim-reverse">
+        {/* Left Mid 2: Model IRT 2PL */}
+        <div className="hidden xl:flex absolute top-[480px] left-6 z-10 flex-col items-center group float-anim">
+          <i className="fa-solid fa-wave-square text-emerald-600 text-5xl md:text-6xl icon-timbul-3d"></i>
+          <span className="mt-2 text-[8px] font-black text-emerald-900 bg-emerald-100/90 px-2 py-0.5 rounded-full border border-emerald-300 shadow-sm uppercase tracking-wider">
+            Model IRT 2PL
+          </span>
+        </div>
+
+        {/* Left Bottom: Analisis EFA (Exploratory Factor Analysis) */}
+        <div className="hidden xl:flex absolute bottom-12 left-10 z-10 flex-col items-center group float-anim-delay">
           <i className="fa-solid fa-network-wired text-purple-600 text-5xl md:text-6xl icon-timbul-3d"></i>
           <span className="mt-2 text-[8px] font-black text-purple-900 bg-purple-100/90 px-2 py-0.5 rounded-full border border-purple-300 shadow-sm uppercase tracking-wider">
             Analisis EFA
           </span>
         </div>
 
-        {/* Left Bottom: Analisis Rasch & Uji-t */}
-        <div className="hidden xl:flex absolute bottom-16 left-12 z-10 flex-col items-center group float-anim">
-          <i className="fa-solid fa-square-root-variable text-emerald-600 text-6xl icon-timbul-3d"></i>
-          <span className="mt-2 text-[8px] font-black text-emerald-900 bg-emerald-100/90 px-2.5 py-0.5 rounded-full border border-emerald-300 shadow-sm uppercase tracking-wider">
-            Uji-t & Stat Rasch
-          </span>
-        </div>
-
-        {/* Right Top 1: Google Gemini AI */}
-        <div className="hidden lg:flex absolute top-24 right-8 z-10 flex-col items-center group float-anim">
-          <i className="fa-solid fa-wand-magic-sparkles text-amber-500 text-6xl md:text-7xl icon-timbul-3d"></i>
-          <span className="mt-2 text-[8px] font-black text-amber-900 bg-amber-100/90 px-2.5 py-0.5 rounded-full border border-amber-300 shadow-sm uppercase tracking-wider">
+        {/* Right Top 1: Google Gemini AI (Authentic G-Sparkle Logo) */}
+        <div className="hidden lg:flex absolute top-20 right-8 z-10 flex-col items-center group float-anim">
+          <div className="w-13 h-13 md:w-15 md:h-15 rounded-2xl bg-gradient-to-tr from-blue-600 via-purple-600 to-amber-500 text-white flex items-center justify-center font-black shadow-2xl border-2 border-white icon-timbul-3d">
+            <span className="font-black text-xl tracking-tighter text-white font-sans drop-shadow-md">G<span className="text-amber-300 text-xs font-bold">✦</span></span>
+          </div>
+          <span className="mt-2 text-[8px] font-black text-purple-900 bg-purple-100/90 px-2.5 py-0.5 rounded-full border border-purple-300 shadow-sm uppercase tracking-wider">
             Google Gemini AI
           </span>
         </div>
 
         {/* Right Top 2: R-Studio Psychometric Engine (Ciri Khas Huruf 'R') */}
-        <div className="hidden xl:flex absolute top-[210px] right-12 z-10 flex-col items-center group float-anim-reverse">
+        <div className="hidden xl:flex absolute top-[180px] right-10 z-10 flex-col items-center group float-anim-reverse">
           <div className="w-13 h-13 md:w-15 md:h-15 rounded-2xl bg-gradient-to-br from-blue-600 via-indigo-700 to-blue-900 text-white flex items-center justify-center shadow-2xl border-2 border-white icon-timbul-3d">
             <i className="fa-brands fa-r-project text-3xl text-sky-200"></i>
           </div>
@@ -191,8 +203,16 @@ export default function Home() {
           </span>
         </div>
 
-        {/* Right Mid: McDonald's Omega (ω) Reliability */}
-        <div className="hidden lg:flex absolute top-[380px] right-8 z-10 flex-col items-center group float-anim-delay">
+        {/* Right Mid 1: Model IRT 3PL */}
+        <div className="hidden lg:flex absolute top-[330px] right-8 z-10 flex-col items-center group float-anim-delay">
+          <i className="fa-solid fa-arrow-trend-up text-rose-600 text-5xl md:text-6xl icon-timbul-3d"></i>
+          <span className="mt-2 text-[8px] font-black text-rose-900 bg-rose-100/90 px-2 py-0.5 rounded-full border border-rose-300 shadow-sm uppercase tracking-wider">
+            Model IRT 3PL
+          </span>
+        </div>
+
+        {/* Right Mid 2: McDonald's Omega (ω) Reliability */}
+        <div className="hidden lg:flex absolute top-[480px] right-10 z-10 flex-col items-center group float-anim">
           <div className="w-13 h-13 md:w-15 md:h-15 rounded-2xl bg-gradient-to-br from-purple-600 to-indigo-800 text-white flex items-center justify-center shadow-2xl border-2 border-white icon-timbul-3d">
             <span className="font-serif font-black text-2xl italic text-purple-200">ω</span>
           </div>
@@ -201,11 +221,13 @@ export default function Home() {
           </span>
         </div>
 
-        {/* Right Bottom: DIF Bias Analysis */}
-        <div className="hidden lg:flex absolute bottom-16 right-12 z-10 flex-col items-center group float-anim-reverse">
-          <i className="fa-solid fa-scale-balanced text-teal-600 text-6xl icon-timbul-3d"></i>
+        {/* Right Bottom: Wright Map Person-Item Diagram */}
+        <div className="hidden lg:flex absolute bottom-12 right-8 z-10 flex-col items-center group float-anim-reverse">
+          <div className="w-13 h-13 md:w-15 md:h-15 rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-700 text-white flex items-center justify-center shadow-2xl border-2 border-white icon-timbul-3d">
+            <i className="fa-solid fa-ruler-combined text-2xl text-teal-100"></i>
+          </div>
           <span className="mt-2 text-[8px] font-black text-teal-900 bg-teal-100/90 px-2.5 py-0.5 rounded-full border border-teal-300 shadow-sm uppercase tracking-wider">
-            DIF Bias Analysis
+            Wright Map Rasch
           </span>
         </div>
 
@@ -366,50 +388,88 @@ export default function Home() {
           </svg>
         </div>
 
-        {/* ─── FLOATING 3D EMBOSSED PSYCHOMETRIC, METODOLOGI & GENERATIVE AI ICONS ON LEFT & RIGHT MARGINS (HALAMAN 2) ─── */}
+        {/* ─── FLOATING 3D EMBOSSED PSYCHOMETRIC, DIMENSI MADEL 5C & GENERATIVE AI ICONS ON LEFT & RIGHT MARGINS (HALAMAN 2) ─── */}
         
-        {/* Left Top: Architecting / Design */}
-        <div className="hidden xl:flex absolute top-24 left-8 z-10 flex-col items-center group float-anim">
-          <i className="fa-solid fa-compass-drafting text-amber-600 text-5xl md:text-6xl icon-timbul-3d"></i>
+        {/* Left Top 1: Google Gemini AI (Authentic G-Sparkle Logo) */}
+        <div className="hidden xl:flex absolute top-16 left-8 z-10 flex-col items-center group float-anim">
+          <div className="w-13 h-13 md:w-15 md:h-15 rounded-2xl bg-gradient-to-tr from-blue-600 via-purple-600 to-amber-500 text-white flex items-center justify-center font-black shadow-2xl border-2 border-white icon-timbul-3d">
+            <span className="font-black text-xl tracking-tighter text-white font-sans drop-shadow-md">G<span className="text-amber-300 text-xs font-bold">✦</span></span>
+          </div>
+          <span className="mt-2 text-[8px] font-black text-purple-900 bg-purple-100/90 px-2.5 py-0.5 rounded-full border border-purple-300 shadow-sm uppercase tracking-wider">
+            Google Gemini AI
+          </span>
+        </div>
+
+        {/* Left Top 2: C1 - Contextual Understanding */}
+        <div className="hidden xl:flex absolute top-[150px] left-6 z-10 flex-col items-center group float-anim-delay">
+          <i className="fa-solid fa-brain text-amber-600 text-5xl md:text-6xl icon-timbul-3d"></i>
           <span className="mt-2 text-[8px] font-black text-amber-900 bg-amber-100/90 px-2 py-0.5 rounded-full border border-amber-300 shadow-sm uppercase tracking-wider">
-            Architecting / Design
+            C1: Contextual Understanding
           </span>
         </div>
 
-        {/* Left Mid: Structural Equation Modeling (SEM) */}
-        <div className="hidden xl:flex absolute top-[280px] left-10 z-10 flex-col items-center group float-anim-delay">
-          <i className="fa-solid fa-diagram-successor text-indigo-600 text-5xl md:text-6xl icon-timbul-3d"></i>
-          <span className="mt-2 text-[8px] font-black text-indigo-900 bg-indigo-100/90 px-2 py-0.5 rounded-full border border-indigo-300 shadow-sm uppercase tracking-wider">
-            Model SEM
-          </span>
-        </div>
-
-        {/* Left Bottom: IRT 3PL Model */}
-        <div className="hidden xl:flex absolute bottom-20 left-8 z-10 flex-col items-center group float-anim-reverse">
-          <i className="fa-solid fa-chart-area text-blue-600 text-5xl md:text-6xl icon-timbul-3d"></i>
+        {/* Left Mid 1: C2 - Communication */}
+        <div className="hidden xl:flex absolute top-[290px] left-10 z-10 flex-col items-center group float-anim">
+          <i className="fa-solid fa-comments text-blue-600 text-5xl md:text-6xl icon-timbul-3d"></i>
           <span className="mt-2 text-[8px] font-black text-blue-900 bg-blue-100/90 px-2 py-0.5 rounded-full border border-blue-300 shadow-sm uppercase tracking-wider">
-            IRT 3PL Model
+            C2: Communication
           </span>
         </div>
 
-        {/* Right Top: Enacting / Media & Platform */}
-        <div className="hidden xl:flex absolute top-24 right-8 z-10 flex-col items-center group float-anim-reverse">
-          <i className="fa-solid fa-display text-emerald-600 text-5xl md:text-6xl icon-timbul-3d"></i>
+        {/* Left Mid 2: Structural Equation Modeling (SEM Diagram Logo) */}
+        <div className="hidden xl:flex absolute top-[430px] left-6 z-10 flex-col items-center group float-anim-reverse">
+          <div className="w-13 h-13 md:w-15 md:h-15 rounded-2xl bg-gradient-to-br from-indigo-600 to-purple-800 text-white flex items-center justify-center shadow-2xl border-2 border-white icon-timbul-3d">
+            <i className="fa-solid fa-diagram-successor text-2xl text-indigo-100"></i>
+          </div>
+          <span className="mt-2 text-[8px] font-black text-indigo-900 bg-indigo-100/90 px-2 py-0.5 rounded-full border border-indigo-300 shadow-sm uppercase tracking-wider">
+            Diagram SEM
+          </span>
+        </div>
+
+        {/* Left Bottom: C3 - Collaboration */}
+        <div className="hidden xl:flex absolute bottom-10 left-8 z-10 flex-col items-center group float-anim">
+          <i className="fa-solid fa-people-group text-emerald-600 text-5xl md:text-6xl icon-timbul-3d"></i>
           <span className="mt-2 text-[8px] font-black text-emerald-900 bg-emerald-100/90 px-2 py-0.5 rounded-full border border-emerald-300 shadow-sm uppercase tracking-wider">
-            Enacting / Media
+            C3: Collaboration
           </span>
         </div>
 
-        {/* Right Mid: Legitimizing / Evaluation */}
-        <div className="hidden xl:flex absolute top-[280px] right-10 z-10 flex-col items-center group float-anim">
-          <i className="fa-solid fa-award text-rose-600 text-5xl md:text-6xl icon-timbul-3d"></i>
+        {/* Right Top 1: Claude AI (Authentic Orange Logo) */}
+        <div className="hidden xl:flex absolute top-16 right-8 z-10 flex-col items-center group float-anim-reverse">
+          <div className="w-13 h-13 md:w-15 md:h-15 rounded-2xl bg-gradient-to-br from-orange-500 via-amber-600 to-rose-600 text-white flex items-center justify-center shadow-2xl border-2 border-white icon-timbul-3d">
+            <i className="fa-solid fa-asterisk text-2xl text-amber-100"></i>
+          </div>
+          <span className="mt-2 text-[8px] font-black text-orange-900 bg-orange-100/90 px-2.5 py-0.5 rounded-full border border-orange-300 shadow-sm uppercase tracking-wider">
+            Claude Code AI
+          </span>
+        </div>
+
+        {/* Right Top 2: C4 - Content Creation */}
+        <div className="hidden xl:flex absolute top-[150px] right-6 z-10 flex-col items-center group float-anim">
+          <i className="fa-solid fa-layer-group text-rose-600 text-5xl md:text-6xl icon-timbul-3d"></i>
           <span className="mt-2 text-[8px] font-black text-rose-900 bg-rose-100/90 px-2 py-0.5 rounded-full border border-rose-300 shadow-sm uppercase tracking-wider">
+            C4: Content Creation
+          </span>
+        </div>
+
+        {/* Right Mid 1: C5 - Critical Problem Solving */}
+        <div className="hidden xl:flex absolute top-[290px] right-10 z-10 flex-col items-center group float-anim-delay">
+          <i className="fa-solid fa-puzzle-piece text-purple-600 text-5xl md:text-6xl icon-timbul-3d"></i>
+          <span className="mt-2 text-[8px] font-black text-purple-900 bg-purple-100/90 px-2 py-0.5 rounded-full border border-purple-300 shadow-sm uppercase tracking-wider">
+            C5: Critical Problem Solving
+          </span>
+        </div>
+
+        {/* Right Mid 2: Legitimizing / Evaluation */}
+        <div className="hidden xl:flex absolute top-[430px] right-6 z-10 flex-col items-center group float-anim-reverse">
+          <i className="fa-solid fa-award text-amber-600 text-5xl md:text-6xl icon-timbul-3d"></i>
+          <span className="mt-2 text-[8px] font-black text-amber-900 bg-amber-100/90 px-2 py-0.5 rounded-full border border-amber-300 shadow-sm uppercase tracking-wider">
             Legitimizing / Eval
           </span>
         </div>
 
         {/* Right Bottom: Rasch Winsteps Engine */}
-        <div className="hidden xl:flex absolute bottom-20 right-8 z-10 flex-col items-center group float-anim-delay">
+        <div className="hidden xl:flex absolute bottom-10 right-8 z-10 flex-col items-center group float-anim">
           <i className="fa-solid fa-sliders text-teal-600 text-5xl md:text-6xl icon-timbul-3d"></i>
           <span className="mt-2 text-[8px] font-black text-teal-900 bg-teal-100/90 px-2 py-0.5 rounded-full border border-teal-300 shadow-sm uppercase tracking-wider">
             Rasch Winsteps
@@ -574,8 +634,18 @@ export default function Home() {
 
         {/* ─── STANDALONE 3D EMBOSSED FLOATING ICONS FILLING LEFT & RIGHT MARGINS (HALAMAN 3) ─── */}
         
-        {/* Left Top: Developing / Content Development */}
-        <div className="hidden xl:flex absolute top-24 left-8 z-10 flex-col items-center group float-anim">
+        {/* Left Top 1: Google Gemini AI (Authentic G-Sparkle Logo) */}
+        <div className="hidden xl:flex absolute top-20 left-8 z-10 flex-col items-center group float-anim">
+          <div className="w-13 h-13 md:w-15 md:h-15 rounded-2xl bg-gradient-to-tr from-blue-600 via-purple-600 to-amber-500 text-white flex items-center justify-center font-black shadow-2xl border-2 border-white icon-timbul-3d">
+            <span className="font-black text-xl tracking-tighter text-white font-sans drop-shadow-md">G<span className="text-amber-300 text-xs font-bold">✦</span></span>
+          </div>
+          <span className="mt-2 text-[8px] font-black text-purple-900 bg-purple-100/90 px-2.5 py-0.5 rounded-full border border-purple-300 shadow-sm uppercase tracking-wider">
+            Google Gemini AI
+          </span>
+        </div>
+
+        {/* Left Top 2: Developing / Content Development */}
+        <div className="hidden xl:flex absolute top-[180px] left-6 z-10 flex-col items-center group float-anim-delay">
           <i className="fa-solid fa-laptop-code text-teal-600 text-5xl md:text-6xl icon-timbul-3d"></i>
           <span className="mt-2 text-[8px] font-black text-teal-900 bg-teal-100/90 px-2 py-0.5 rounded-full border border-teal-300 shadow-sm uppercase tracking-wider">
             Developing / Content
@@ -583,7 +653,7 @@ export default function Home() {
         </div>
 
         {/* Left Mid: Think-Aloud Protocol */}
-        <div className="hidden xl:flex absolute top-[280px] left-10 z-10 flex-col items-center group float-anim-delay">
+        <div className="hidden xl:flex absolute top-[340px] left-10 z-10 flex-col items-center group float-anim">
           <i className="fa-solid fa-comments text-amber-600 text-5xl md:text-6xl icon-timbul-3d"></i>
           <span className="mt-2 text-[8px] font-black text-amber-900 bg-amber-100/90 px-2 py-0.5 rounded-full border border-amber-300 shadow-sm uppercase tracking-wider">
             Think-Aloud Protocol
@@ -591,23 +661,25 @@ export default function Home() {
         </div>
 
         {/* Left Bottom: Item Bias DIF */}
-        <div className="hidden xl:flex absolute bottom-20 left-8 z-10 flex-col items-center group float-anim-reverse">
+        <div className="hidden xl:flex absolute bottom-12 left-8 z-10 flex-col items-center group float-anim-reverse">
           <i className="fa-solid fa-scale-balanced text-blue-600 text-5xl md:text-6xl icon-timbul-3d"></i>
           <span className="mt-2 text-[8px] font-black text-blue-900 bg-blue-100/90 px-2 py-0.5 rounded-full border border-blue-300 shadow-sm uppercase tracking-wider">
             DIF Bias Analysis
           </span>
         </div>
 
-        {/* Right Top: Claude Code AI */}
-        <div className="hidden xl:flex absolute top-24 right-8 z-10 flex-col items-center group float-anim-reverse">
-          <i className="fa-solid fa-microchip text-indigo-600 text-5xl md:text-6xl icon-timbul-3d"></i>
-          <span className="mt-2 text-[8px] font-black text-indigo-900 bg-indigo-100/90 px-2 py-0.5 rounded-full border border-indigo-300 shadow-sm uppercase tracking-wider">
+        {/* Right Top 1: Claude AI (Authentic Orange Logo) */}
+        <div className="hidden xl:flex absolute top-20 right-8 z-10 flex-col items-center group float-anim-reverse">
+          <div className="w-13 h-13 md:w-15 md:h-15 rounded-2xl bg-gradient-to-br from-orange-500 via-amber-600 to-rose-600 text-white flex items-center justify-center shadow-2xl border-2 border-white icon-timbul-3d">
+            <i className="fa-solid fa-asterisk text-2xl text-amber-100"></i>
+          </div>
+          <span className="mt-2 text-[8px] font-black text-orange-900 bg-orange-100/90 px-2.5 py-0.5 rounded-full border border-orange-300 shadow-sm uppercase tracking-wider">
             Claude Code AI
           </span>
         </div>
 
-        {/* Right Mid: R-Studio Psychometric Engine (Ciri Khas Huruf 'R') */}
-        <div className="hidden xl:flex absolute top-[280px] right-10 z-10 flex-col items-center group float-anim-delay">
+        {/* Right Top 2: R-Studio Psychometric Engine (Ciri Khas Huruf 'R') */}
+        <div className="hidden xl:flex absolute top-[180px] right-6 z-10 flex-col items-center group float-anim-delay">
           <div className="w-13 h-13 md:w-15 md:h-15 rounded-2xl bg-gradient-to-br from-blue-600 via-indigo-700 to-blue-900 text-white flex items-center justify-center shadow-2xl border-2 border-white icon-timbul-3d">
             <i className="fa-brands fa-r-project text-3xl text-sky-200"></i>
           </div>
@@ -616,11 +688,21 @@ export default function Home() {
           </span>
         </div>
 
-        {/* Right Bottom: Wright Map Rasch */}
-        <div className="hidden xl:flex absolute bottom-20 right-8 z-10 flex-col items-center group float-anim">
-          <i className="fa-solid fa-ruler-vertical text-emerald-600 text-5xl md:text-6xl icon-timbul-3d"></i>
-          <span className="mt-2 text-[8px] font-black text-emerald-900 bg-emerald-100/90 px-2 py-0.5 rounded-full border border-emerald-300 shadow-sm uppercase tracking-wider">
+        {/* Right Mid: Wright Map Rasch */}
+        <div className="hidden xl:flex absolute top-[340px] right-10 z-10 flex-col items-center group float-anim">
+          <div className="w-13 h-13 md:w-15 md:h-15 rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-700 text-white flex items-center justify-center shadow-2xl border-2 border-white icon-timbul-3d">
+            <i className="fa-solid fa-ruler-combined text-2xl text-teal-100"></i>
+          </div>
+          <span className="mt-2 text-[8px] font-black text-teal-900 bg-teal-100/90 px-2 py-0.5 rounded-full border border-teal-300 shadow-sm uppercase tracking-wider">
             Wright Map Rasch
+          </span>
+        </div>
+
+        {/* Right Bottom: Model IRT 3PL */}
+        <div className="hidden xl:flex absolute bottom-12 right-8 z-10 flex-col items-center group float-anim-delay">
+          <i className="fa-solid fa-arrow-trend-up text-rose-600 text-5xl md:text-6xl icon-timbul-3d"></i>
+          <span className="mt-2 text-[8px] font-black text-rose-900 bg-rose-100/90 px-2 py-0.5 rounded-full border border-rose-300 shadow-sm uppercase tracking-wider">
+            Model IRT 3PL
           </span>
         </div>
 
@@ -694,32 +776,52 @@ export default function Home() {
 
         {/* ─── STANDALONE 3D EMBOSSED FLOATING ICONS FILLING LEFT & RIGHT MARGINS (HALAMAN 4) ─── */}
         
-        {/* Left Top: Aiken's V Validity */}
-        <div className="hidden xl:flex absolute top-24 left-8 z-10 flex-col items-center group float-anim-reverse">
+        {/* Left Top 1: Aiken's V Validity */}
+        <div className="hidden xl:flex absolute top-20 left-8 z-10 flex-col items-center group float-anim-reverse">
           <i className="fa-solid fa-stamp text-rose-600 text-5xl md:text-6xl icon-timbul-3d"></i>
           <span className="mt-2 text-[8px] font-black text-rose-900 bg-rose-100/90 px-2 py-0.5 rounded-full border border-rose-300 shadow-sm uppercase tracking-wider">
             Validitas Aiken's V
           </span>
         </div>
 
-        {/* Left Mid: Teori Tes Klasik (CTT) */}
-        <div className="hidden xl:flex absolute top-[280px] left-10 z-10 flex-col items-center group float-anim">
+        {/* Left Top 2: Teori Tes Klasik (CTT) */}
+        <div className="hidden xl:flex absolute top-[180px] left-6 z-10 flex-col items-center group float-anim">
           <i className="fa-solid fa-calculator text-amber-600 text-5xl md:text-6xl icon-timbul-3d"></i>
           <span className="mt-2 text-[8px] font-black text-amber-900 bg-amber-100/90 px-2 py-0.5 rounded-full border border-amber-300 shadow-sm uppercase tracking-wider">
             Teori Tes Klasik (CTT)
           </span>
         </div>
 
-        {/* Left Bottom: Google Gemini AI */}
-        <div className="hidden xl:flex absolute bottom-20 left-8 z-10 flex-col items-center group float-anim-delay">
-          <i className="fa-solid fa-wand-magic-sparkles text-amber-500 text-5xl md:text-6xl icon-timbul-3d"></i>
-          <span className="mt-2 text-[8px] font-black text-amber-900 bg-amber-100/90 px-2 py-0.5 rounded-full border border-amber-300 shadow-sm uppercase tracking-wider">
+        {/* Left Mid: Google Gemini AI (Authentic G-Sparkle Logo) */}
+        <div className="hidden xl:flex absolute top-[340px] left-10 z-10 flex-col items-center group float-anim-delay">
+          <div className="w-13 h-13 md:w-15 md:h-15 rounded-2xl bg-gradient-to-tr from-blue-600 via-purple-600 to-amber-500 text-white flex items-center justify-center font-black shadow-2xl border-2 border-white icon-timbul-3d">
+            <span className="font-black text-xl tracking-tighter text-white font-sans drop-shadow-md">G<span className="text-amber-300 text-xs font-bold">✦</span></span>
+          </div>
+          <span className="mt-2 text-[8px] font-black text-purple-900 bg-purple-100/90 px-2.5 py-0.5 rounded-full border border-purple-300 shadow-sm uppercase tracking-wider">
             Google Gemini AI
           </span>
         </div>
 
-        {/* Right Top: Analisis CFA (Confirmatory Factor Analysis) */}
-        <div className="hidden xl:flex absolute top-24 right-8 z-10 flex-col items-center group float-anim">
+        {/* Left Bottom: Uji-t & Stat Rasch */}
+        <div className="hidden xl:flex absolute bottom-12 left-8 z-10 flex-col items-center group float-anim">
+          <i className="fa-solid fa-square-root-variable text-emerald-600 text-5xl md:text-6xl icon-timbul-3d"></i>
+          <span className="mt-2 text-[8px] font-black text-emerald-900 bg-emerald-100/90 px-2 py-0.5 rounded-full border border-emerald-300 shadow-sm uppercase tracking-wider">
+            Uji-t & Stat Rasch
+          </span>
+        </div>
+
+        {/* Right Top 1: Claude AI (Authentic Orange Logo) */}
+        <div className="hidden xl:flex absolute top-20 right-8 z-10 flex-col items-center group float-anim">
+          <div className="w-13 h-13 md:w-15 md:h-15 rounded-2xl bg-gradient-to-br from-orange-500 via-amber-600 to-rose-600 text-white flex items-center justify-center shadow-2xl border-2 border-white icon-timbul-3d">
+            <i className="fa-solid fa-asterisk text-2xl text-amber-100"></i>
+          </div>
+          <span className="mt-2 text-[8px] font-black text-orange-900 bg-orange-100/90 px-2.5 py-0.5 rounded-full border border-orange-300 shadow-sm uppercase tracking-wider">
+            Claude Code AI
+          </span>
+        </div>
+
+        {/* Right Top 2: Analisis CFA (Confirmatory Factor Analysis) */}
+        <div className="hidden xl:flex absolute top-[180px] right-6 z-10 flex-col items-center group float-anim-reverse">
           <i className="fa-solid fa-diagram-project text-blue-600 text-5xl md:text-6xl icon-timbul-3d"></i>
           <span className="mt-2 text-[8px] font-black text-blue-900 bg-blue-100/90 px-2 py-0.5 rounded-full border border-blue-300 shadow-sm uppercase tracking-wider">
             Analisis CFA
@@ -727,7 +829,7 @@ export default function Home() {
         </div>
 
         {/* Right Mid: Reliabilitas Alpha & Omega */}
-        <div className="hidden xl:flex absolute top-[280px] right-10 z-10 flex-col items-center group float-anim-reverse">
+        <div className="hidden xl:flex absolute top-[340px] right-10 z-10 flex-col items-center group float-anim-delay">
           <i className="fa-solid fa-chart-line text-teal-600 text-5xl md:text-6xl icon-timbul-3d"></i>
           <span className="mt-2 text-[8px] font-black text-teal-900 bg-teal-100/90 px-2 py-0.5 rounded-full border border-teal-300 shadow-sm uppercase tracking-wider">
             Reliabilitas Alpha
@@ -735,7 +837,7 @@ export default function Home() {
         </div>
 
         {/* Right Bottom: R-Studio Psychometric Engine (Ciri Khas Huruf 'R') */}
-        <div className="hidden xl:flex absolute bottom-20 right-8 z-10 flex-col items-center group float-anim-delay">
+        <div className="hidden xl:flex absolute bottom-12 right-8 z-10 flex-col items-center group float-anim">
           <div className="w-13 h-13 md:w-15 md:h-15 rounded-2xl bg-gradient-to-br from-blue-600 via-indigo-700 to-blue-900 text-white flex items-center justify-center shadow-2xl border-2 border-white icon-timbul-3d">
             <i className="fa-brands fa-r-project text-3xl text-sky-200"></i>
           </div>
