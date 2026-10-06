@@ -139,53 +139,73 @@ export default function Home() {
           </svg>
         </div>
 
-        {/* ─── ICON-ICON PSIKOMETRI & GENERATIVE AI (GEMINI & CLAUDE CODE) 3D MELAYANG TANPA BOX ─── */}
+        {/* ─── ICON-ICON PSIKOMETRI, METODOLOGI MADEL & GENERATIVE AI (GEMINI & CLAUDE CODE) 3D MELAYANG TANPA BOX ─── */}
         
-        {/* Standalone 3D Icon 1: Google Gemini AI (Top Right) */}
-        <div className="hidden lg:flex absolute top-28 right-16 z-10 flex-col items-center group float-anim">
-          <i className="fa-solid fa-wand-magic-sparkles text-amber-500 text-6xl md:text-7xl icon-timbul-3d"></i>
-          <span className="mt-2 text-[9px] font-black text-amber-800 bg-amber-100/90 px-2.5 py-0.5 rounded-full border border-amber-300 shadow-sm uppercase tracking-wider">
-            Google Gemini AI
-          </span>
-        </div>
-
-        {/* Standalone 3D Icon 2: Claude Code Generative AI (Top Left) */}
-        <div className="hidden xl:flex absolute top-32 left-12 z-10 flex-col items-center group float-anim-delay">
+        {/* Left Top 1: Claude Code AI */}
+        <div className="hidden xl:flex absolute top-24 left-8 z-10 flex-col items-center group float-anim-delay">
           <i className="fa-solid fa-microchip text-indigo-600 text-6xl md:text-7xl icon-timbul-3d"></i>
-          <span className="mt-2 text-[9px] font-black text-indigo-800 bg-indigo-100/90 px-2.5 py-0.5 rounded-full border border-indigo-300 shadow-sm uppercase tracking-wider">
+          <span className="mt-2 text-[8px] font-black text-indigo-900 bg-indigo-100/90 px-2.5 py-0.5 rounded-full border border-indigo-300 shadow-sm uppercase tracking-wider">
             Claude Code AI
           </span>
         </div>
 
-        {/* Standalone 3D Icon 3: DIF (Differential Item Functioning) (Middle Right) */}
-        <div className="hidden lg:flex absolute top-64 right-36 z-10 flex-col items-center group float-anim-delay">
-          <i className="fa-solid fa-scale-balanced text-blue-600 text-6xl md:text-7xl icon-timbul-3d"></i>
-          <span className="mt-2 text-[9px] font-black text-blue-800 bg-blue-100/90 px-2.5 py-0.5 rounded-full border border-blue-300 shadow-sm uppercase tracking-wider">
-            DIF Bias Analysis
+        {/* Left Top 2: Mapping / Analysis */}
+        <div className="hidden xl:flex absolute top-[210px] left-10 z-10 flex-col items-center group float-anim">
+          <i className="fa-solid fa-map-location-dot text-blue-600 text-5xl md:text-6xl icon-timbul-3d"></i>
+          <span className="mt-2 text-[8px] font-black text-blue-900 bg-blue-100/90 px-2 py-0.5 rounded-full border border-blue-300 shadow-sm uppercase tracking-wider">
+            Mapping / Analysis
           </span>
         </div>
 
-        {/* Standalone 3D Icon 4: Wright Map Rasch (Bottom Right) */}
-        <div className="hidden lg:flex absolute bottom-20 right-20 z-10 flex-col items-center group float-anim-reverse">
-          <i className="fa-solid fa-ruler-vertical text-emerald-600 text-6xl md:text-7xl icon-timbul-3d"></i>
-          <span className="mt-2 text-[9px] font-black text-emerald-800 bg-emerald-100/90 px-2.5 py-0.5 rounded-full border border-emerald-300 shadow-sm uppercase tracking-wider">
-            Wright Map Rasch
+        {/* Left Mid: Analisis EFA (Exploratory Factor Analysis) */}
+        <div className="hidden xl:flex absolute top-[380px] left-8 z-10 flex-col items-center group float-anim-reverse">
+          <i className="fa-solid fa-network-wired text-purple-600 text-5xl md:text-6xl icon-timbul-3d"></i>
+          <span className="mt-2 text-[8px] font-black text-purple-900 bg-purple-100/90 px-2 py-0.5 rounded-full border border-purple-300 shadow-sm uppercase tracking-wider">
+            Analisis EFA
           </span>
         </div>
 
-        {/* Standalone 3D Icon 5: CTT Classic Test Theory (Bottom Left / Mid) */}
-        <div className="hidden xl:flex absolute bottom-24 left-16 z-10 flex-col items-center group float-anim">
-          <i className="fa-solid fa-calculator text-orange-600 text-6xl md:text-7xl icon-timbul-3d"></i>
-          <span className="mt-2 text-[9px] font-black text-orange-800 bg-orange-100/90 px-2.5 py-0.5 rounded-full border border-orange-300 shadow-sm uppercase tracking-wider">
-            Teori Tes Klasik (CTT)
+        {/* Left Bottom: Analisis Rasch & Uji-t */}
+        <div className="hidden xl:flex absolute bottom-16 left-12 z-10 flex-col items-center group float-anim">
+          <i className="fa-solid fa-square-root-variable text-emerald-600 text-6xl icon-timbul-3d"></i>
+          <span className="mt-2 text-[8px] font-black text-emerald-900 bg-emerald-100/90 px-2.5 py-0.5 rounded-full border border-emerald-300 shadow-sm uppercase tracking-wider">
+            Uji-t & Stat Rasch
           </span>
         </div>
 
-        {/* Standalone 3D Icon 6: R-Studio Psychometric Engine (Top Center / Mid) */}
-        <div className="hidden lg:flex absolute top-28 right-[460px] z-10 flex-col items-center group float-anim-reverse">
-          <i className="fa-solid fa-code text-purple-600 text-5xl md:text-6xl icon-timbul-3d"></i>
-          <span className="mt-2 text-[8px] font-black text-purple-800 bg-purple-100/90 px-2 py-0.5 rounded-full border border-purple-300 shadow-sm uppercase tracking-wider">
+        {/* Right Top 1: Google Gemini AI */}
+        <div className="hidden lg:flex absolute top-24 right-8 z-10 flex-col items-center group float-anim">
+          <i className="fa-solid fa-wand-magic-sparkles text-amber-500 text-6xl md:text-7xl icon-timbul-3d"></i>
+          <span className="mt-2 text-[8px] font-black text-amber-900 bg-amber-100/90 px-2.5 py-0.5 rounded-full border border-amber-300 shadow-sm uppercase tracking-wider">
+            Google Gemini AI
+          </span>
+        </div>
+
+        {/* Right Top 2: R-Studio Psychometric Engine (Ciri Khas Huruf 'R') */}
+        <div className="hidden xl:flex absolute top-[210px] right-12 z-10 flex-col items-center group float-anim-reverse">
+          <div className="w-13 h-13 md:w-15 md:h-15 rounded-2xl bg-gradient-to-br from-blue-600 via-indigo-700 to-blue-900 text-white flex items-center justify-center shadow-2xl border-2 border-white icon-timbul-3d">
+            <i className="fa-brands fa-r-project text-3xl text-sky-200"></i>
+          </div>
+          <span className="mt-2 text-[8px] font-black text-blue-900 bg-blue-100/90 px-2 py-0.5 rounded-full border border-blue-300 shadow-sm uppercase tracking-wider">
             R-Studio Engine
+          </span>
+        </div>
+
+        {/* Right Mid: McDonald's Omega (ω) Reliability */}
+        <div className="hidden lg:flex absolute top-[380px] right-8 z-10 flex-col items-center group float-anim-delay">
+          <div className="w-13 h-13 md:w-15 md:h-15 rounded-2xl bg-gradient-to-br from-purple-600 to-indigo-800 text-white flex items-center justify-center shadow-2xl border-2 border-white icon-timbul-3d">
+            <span className="font-serif font-black text-2xl italic text-purple-200">ω</span>
+          </div>
+          <span className="mt-2 text-[8px] font-black text-purple-900 bg-purple-100/90 px-2 py-0.5 rounded-full border border-purple-300 shadow-sm uppercase tracking-wider">
+            McDonald Omega (ω)
+          </span>
+        </div>
+
+        {/* Right Bottom: DIF Bias Analysis */}
+        <div className="hidden lg:flex absolute bottom-16 right-12 z-10 flex-col items-center group float-anim-reverse">
+          <i className="fa-solid fa-scale-balanced text-teal-600 text-6xl icon-timbul-3d"></i>
+          <span className="mt-2 text-[8px] font-black text-teal-900 bg-teal-100/90 px-2.5 py-0.5 rounded-full border border-teal-300 shadow-sm uppercase tracking-wider">
+            DIF Bias Analysis
           </span>
         </div>
 
@@ -195,7 +215,7 @@ export default function Home() {
           
           <div className="max-w-2xl">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-100 border border-amber-300 text-amber-900 text-[10px] md:text-xs font-black uppercase tracking-widest shadow-md mb-4">
-              <i className="fa-solid fa-atom text-blue-700 animate-spin-slow"></i> HYBRID-DIAGNOSTIC ASSESSMENT PLATFORM (HDAP)
+              <i className="fa-solid fa-square-poll-vertical text-blue-700 animate-bounce"></i> HYBRID-DIAGNOSTIC ASSESSMENT PLATFORM (HDAP)
             </div>
 
             <h1 className="text-3xl md:text-5xl lg:text-[60px] xl:text-[70px] font-black italic text-slate-900 uppercase tracking-tighter leading-[1.1] drop-shadow-sm break-words">
@@ -327,23 +347,73 @@ export default function Home() {
 
 
       {/* ════════════════════════════════════════
-          HALAMAN 2: DIAGRAM KETERHUBUNGAN ION FRAMEWORK MADEL (ANIMASI MOLEKULER BERGERAK - THEME CREAM)
+          HALAMAN 2: DIAGRAM KETERHUBUNGAN INTEGRASI FRAMEWORK MADEL (THEME CREAM)
       ════════════════════════════════════════ */}
       <section id="framework" className="relative py-28 px-4 md:px-12 bg-gradient-to-b from-[#F7F3EA] via-[#EFE9DC] to-[#F7F3EA] text-slate-900 overflow-hidden border-y-4 border-amber-200">
         
-        {/* ION MOLECULAR BOND VECTOR BACKGROUND WITH MOVING FLOW */}
+        {/* NETWORK CONNECTION VECTOR BACKGROUND WITH MOVING FLOW */}
         <div className="absolute inset-0 z-0 opacity-25 pointer-events-none">
           <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
             <defs>
-              <linearGradient id="ionGradientFlowCream" x1="0%" y1="0%" x2="100%" y2="100%">
+              <linearGradient id="networkGradientFlowCream" x1="0%" y1="0%" x2="100%" y2="100%">
                 <stop offset="0%" stopColor="#1e40af" stopOpacity="0.9" />
                 <stop offset="50%" stopColor="#047857" stopOpacity="0.9" />
                 <stop offset="100%" stopColor="#b45309" stopOpacity="0.9" />
               </linearGradient>
             </defs>
-            <circle cx="50%" cy="50%" r="280" fill="none" stroke="url(#ionGradientFlowCream)" strokeWidth="2" strokeDasharray="10 10" className="ion-bond-animated" />
-            <circle cx="50%" cy="50%" r="420" fill="none" stroke="url(#ionGradientFlowCream)" strokeWidth="1.5" strokeDasharray="6 6" className="ion-bond-animated" />
+            <circle cx="50%" cy="50%" r="280" fill="none" stroke="url(#networkGradientFlowCream)" strokeWidth="2" strokeDasharray="10 10" className="network-bond-animated" />
+            <circle cx="50%" cy="50%" r="420" fill="none" stroke="url(#networkGradientFlowCream)" strokeWidth="1.5" strokeDasharray="6 6" className="network-bond-animated" />
           </svg>
+        </div>
+
+        {/* ─── FLOATING 3D EMBOSSED PSYCHOMETRIC, METODOLOGI & GENERATIVE AI ICONS ON LEFT & RIGHT MARGINS (HALAMAN 2) ─── */}
+        
+        {/* Left Top: Architecting / Design */}
+        <div className="hidden xl:flex absolute top-24 left-8 z-10 flex-col items-center group float-anim">
+          <i className="fa-solid fa-compass-drafting text-amber-600 text-5xl md:text-6xl icon-timbul-3d"></i>
+          <span className="mt-2 text-[8px] font-black text-amber-900 bg-amber-100/90 px-2 py-0.5 rounded-full border border-amber-300 shadow-sm uppercase tracking-wider">
+            Architecting / Design
+          </span>
+        </div>
+
+        {/* Left Mid: Structural Equation Modeling (SEM) */}
+        <div className="hidden xl:flex absolute top-[280px] left-10 z-10 flex-col items-center group float-anim-delay">
+          <i className="fa-solid fa-diagram-successor text-indigo-600 text-5xl md:text-6xl icon-timbul-3d"></i>
+          <span className="mt-2 text-[8px] font-black text-indigo-900 bg-indigo-100/90 px-2 py-0.5 rounded-full border border-indigo-300 shadow-sm uppercase tracking-wider">
+            Model SEM
+          </span>
+        </div>
+
+        {/* Left Bottom: IRT 3PL Model */}
+        <div className="hidden xl:flex absolute bottom-20 left-8 z-10 flex-col items-center group float-anim-reverse">
+          <i className="fa-solid fa-chart-area text-blue-600 text-5xl md:text-6xl icon-timbul-3d"></i>
+          <span className="mt-2 text-[8px] font-black text-blue-900 bg-blue-100/90 px-2 py-0.5 rounded-full border border-blue-300 shadow-sm uppercase tracking-wider">
+            IRT 3PL Model
+          </span>
+        </div>
+
+        {/* Right Top: Enacting / Media & Platform */}
+        <div className="hidden xl:flex absolute top-24 right-8 z-10 flex-col items-center group float-anim-reverse">
+          <i className="fa-solid fa-display text-emerald-600 text-5xl md:text-6xl icon-timbul-3d"></i>
+          <span className="mt-2 text-[8px] font-black text-emerald-900 bg-emerald-100/90 px-2 py-0.5 rounded-full border border-emerald-300 shadow-sm uppercase tracking-wider">
+            Enacting / Media
+          </span>
+        </div>
+
+        {/* Right Mid: Legitimizing / Evaluation */}
+        <div className="hidden xl:flex absolute top-[280px] right-10 z-10 flex-col items-center group float-anim">
+          <i className="fa-solid fa-award text-rose-600 text-5xl md:text-6xl icon-timbul-3d"></i>
+          <span className="mt-2 text-[8px] font-black text-rose-900 bg-rose-100/90 px-2 py-0.5 rounded-full border border-rose-300 shadow-sm uppercase tracking-wider">
+            Legitimizing / Eval
+          </span>
+        </div>
+
+        {/* Right Bottom: Rasch Winsteps Engine */}
+        <div className="hidden xl:flex absolute bottom-20 right-8 z-10 flex-col items-center group float-anim-delay">
+          <i className="fa-solid fa-sliders text-teal-600 text-5xl md:text-6xl icon-timbul-3d"></i>
+          <span className="mt-2 text-[8px] font-black text-teal-900 bg-teal-100/90 px-2 py-0.5 rounded-full border border-teal-300 shadow-sm uppercase tracking-wider">
+            Rasch Winsteps
+          </span>
         </div>
 
         <div className="max-w-7xl mx-auto w-full relative z-10">
@@ -352,28 +422,28 @@ export default function Home() {
               <i className="fa-solid fa-diagram-project text-blue-700 animate-spin-slow"></i> INTEGRATED FRAMEWORK NETWORK
             </span>
             <h2 className="text-3xl md:text-5xl lg:text-6xl font-black italic text-slate-900 uppercase tracking-tight leading-tight drop-shadow-sm">
-              KETERHUBUNGAN FRAMEWORK <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-600 via-emerald-600 to-blue-700">MADEL</span>
+              PLATFORM <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-600 via-emerald-600 to-blue-700">MADEL</span>
             </h2>
             <div className="w-24 h-1.5 bg-gradient-to-r from-amber-500 via-emerald-500 to-blue-500 mx-auto rounded-full shadow-lg"></div>
             <p className="text-slate-700 font-bold max-w-3xl mx-auto text-xs md:text-sm leading-relaxed">
-              Jaringan integrasi interaktif antara <strong className="text-slate-900">CORE FRAMEWORK MADEL</strong> dan 5 Sub-Model Spesifik dalam sistem evaluasi kompetensi.
+              Jaringan integrasi interaktif antara <strong className="text-slate-900">CORE PLATFORM MADEL</strong> dan 5 Sub-Model Spesifik dalam sistem evaluasi kompetensi.
             </p>
           </div>
 
           {/* ─── DIAGRAM NETWORK TIMBUL 3D WITH ANIMATED CONNECTION LINES ─── */}
           <div className="relative my-8 py-12 flex flex-col items-center justify-center">
             
-            {/* SVG CONNECTION BONDS CONNECTING CORE NUCLEUS TO SATELLITES */}
+            {/* SVG CONNECTION LINES CONNECTING CORE MODEL TO SATELLITES */}
             <div className="absolute inset-0 z-0 hidden md:block pointer-events-none">
               <svg className="w-full h-full" viewBox="0 0 1000 500">
-                {/* Bonds from Center (500, 250) to 5 Satellite Nodes */}
-                <line x1="500" y1="250" x2="150" y2="380" stroke="#059669" strokeWidth="4" className="ion-bond-animated" />
-                <line x1="500" y1="250" x2="320" y2="380" stroke="#2563eb" strokeWidth="4" className="ion-bond-animated" />
-                <line x1="500" y1="250" x2="500" y2="380" stroke="#d97706" strokeWidth="4" className="ion-bond-animated" />
-                <line x1="500" y1="250" x2="680" y2="380" stroke="#7c3aed" strokeWidth="4" className="ion-bond-animated" />
-                <line x1="500" y1="250" x2="850" y2="380" stroke="#e11d48" strokeWidth="4" className="ion-bond-animated" />
+                {/* Lines from Center (500, 250) to 5 Satellite Nodes */}
+                <line x1="500" y1="250" x2="150" y2="380" stroke="#059669" strokeWidth="4" className="network-bond-animated" />
+                <line x1="500" y1="250" x2="320" y2="380" stroke="#2563eb" strokeWidth="4" className="network-bond-animated" />
+                <line x1="500" y1="250" x2="500" y2="380" stroke="#d97706" strokeWidth="4" className="network-bond-animated" />
+                <line x1="500" y1="250" x2="680" y2="380" stroke="#7c3aed" strokeWidth="4" className="network-bond-animated" />
+                <line x1="500" y1="250" x2="850" y2="380" stroke="#e11d48" strokeWidth="4" className="network-bond-animated" />
 
-                {/* Animated Connection Nodes on Bonds */}
+                {/* Animated Connection Nodes on Lines */}
                 <circle cx="325" cy="315" r="7" fill="#059669" className="animate-ping" />
                 <circle cx="410" cy="315" r="7" fill="#2563eb" className="animate-ping" />
                 <circle cx="500" cy="315" r="7" fill="#d97706" className="animate-ping" />
@@ -384,9 +454,9 @@ export default function Home() {
 
             {/* CORE HUB (PUSAT FRAMEWORK MADEL) */}
             <div className="relative z-20 mb-12">
-              <div className="w-56 h-56 md:w-64 md:h-64 rounded-full bg-gradient-to-br from-amber-400 via-yellow-500 to-amber-600 p-2 shadow-[0_0_80px_rgba(245,158,11,0.4)] border-4 border-white flex flex-col items-center justify-center text-center z-20 hover:scale-105 transition-all duration-300 relative ion-pulse-glow">
+              <div className="w-56 h-56 md:w-64 md:h-64 rounded-full bg-gradient-to-br from-amber-400 via-yellow-500 to-amber-600 p-2 shadow-[0_0_80px_rgba(245,158,11,0.4)] border-4 border-white flex flex-col items-center justify-center text-center z-20 hover:scale-105 transition-all duration-300 relative network-pulse-glow">
                 
-                {/* Rotating Outer Orbital Ring */}
+                {/* Rotating Outer Ring */}
                 <div className="absolute -inset-4 rounded-full stroke-amber-500 border-2 border-dashed border-amber-500/60 animate-spin-slow pointer-events-none"></div>
 
                 <div className="w-14 h-14 rounded-full bg-slate-900 text-amber-300 flex items-center justify-center text-3xl mb-2 shadow-xl border-2 border-amber-300">
@@ -396,7 +466,7 @@ export default function Home() {
                   MODEL INDUK UTAMA
                 </span>
                 <h3 className="text-xl md:text-2xl font-black text-slate-950 uppercase tracking-tight italic drop-shadow-sm leading-tight">
-                  FRAMEWORK MADEL
+                  PLATFORM MADEL
                 </h3>
                 <p className="text-[9px] font-black text-slate-900 mt-1 max-w-[170px] leading-tight">
                   Model Asesmen Digital Evaluasi Literasi
@@ -404,18 +474,18 @@ export default function Home() {
               </div>
             </div>
 
-            {/* 5 SATELLITE CIRCULAR SPHERES (SUB-MODEL PRODI BULAT) */}
+            {/* 5 SATELLITE CIRCULAR SPHERES (SUB-MODEL PRODI BULAT WITH DUAL-TONE CONTRAST CREAM & WHITE) */}
             <div className="grid grid-cols-2 md:grid-cols-5 gap-6 md:gap-8 w-full max-w-6xl z-10">
               {subModels.map((m, idx) => (
                 <div 
                   key={m.id}
                   onClick={() => router.push("/login")}
-                  className="card-timbul w-44 h-44 md:w-52 md:h-52 mx-auto rounded-full bg-white text-slate-900 border-4 border-slate-200 flex flex-col items-center justify-center text-center p-4 shadow-2xl hover:scale-105 hover:translate-y-[-6px] transition-all duration-300 group cursor-pointer relative overflow-hidden"
+                  className="card-timbul w-44 h-44 md:w-52 md:h-52 mx-auto rounded-full bg-gradient-to-br from-white via-[#FFFDF9] to-[#FAF5EF] text-slate-900 border-4 border-amber-300/90 flex flex-col items-center justify-center text-center p-4 shadow-[0_16px_36px_rgba(0,0,0,0.12)] hover:scale-105 hover:translate-y-[-6px] transition-all duration-300 group cursor-pointer relative overflow-hidden ring-4 ring-white"
                 >
-                  <div className={`w-13 h-13 md:w-16 md:h-16 rounded-full bg-gradient-to-br ${m.color} text-white flex items-center justify-center text-2xl shadow-xl border-2 border-white mb-2 ring-4 ring-slate-100/60 group-hover:scale-110 transition-transform shrink-0`}>
+                  <div className={`w-13 h-13 md:w-16 md:h-16 rounded-full bg-gradient-to-br ${m.color} text-white flex items-center justify-center text-2xl shadow-xl border-2 border-white mb-2 ring-4 ring-amber-200/80 group-hover:scale-110 transition-transform shrink-0`}>
                     <i className={`fa-solid ${m.icon}`}></i>
                   </div>
-                  <span className={`px-2 py-0.5 rounded-full text-[8px] font-black uppercase mb-1 border ${m.accent}`}>
+                  <span className={`px-2.5 py-0.5 rounded-full text-[8px] font-black uppercase mb-1 border ${m.accent}`}>
                     Sub-Model #{idx + 1}
                   </span>
                   <h4 className="text-sm md:text-base font-black text-slate-900 uppercase tracking-tight italic leading-none">
@@ -432,12 +502,12 @@ export default function Home() {
 
           </div>
 
-          {/* RINCIAN DESKRIPSI 5 SUB-MODEL (KARTU TIMBUL 3D) */}
+          {/* RINCIAN DESKRIPSI 5 SUB-MODEL (KARTU TIMBUL 3D DUAL-TONE CREAM & WHITE) */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 mt-16">
             {subModels.map((m, idx) => (
               <div 
                 key={m.id} 
-                className="card-timbul p-6 rounded-[32px] bg-white text-slate-900 border-2 border-slate-200 flex flex-col justify-between hover:translate-y-[-4px] transition-all duration-300"
+                className="card-timbul p-6 rounded-[32px] bg-gradient-to-br from-white via-[#FFFDF9] to-[#FAF5EF] text-slate-900 border-2 border-amber-200/90 border-t-4 border-t-amber-500 flex flex-col justify-between shadow-xl hover:translate-y-[-4px] transition-all duration-300"
               >
                 <div>
                   <div className="flex justify-between items-center mb-4">
@@ -481,12 +551,81 @@ export default function Home() {
 
 
       {/* ════════════════════════════════════════
-          HALAMAN 3 — VIDEO TUTORIAL TIMBUL (WITH FLOATING PSYCHOMETRIC BADGES)
+          HALAMAN 3 — VIDEO TUTORIAL TIMBUL (WITH FLOATING PSYCHOMETRIC & GENERATIVE AI ICONS FILLING LEFT & RIGHT SPACE)
       ════════════════════════════════════════ */}
       <section id="about" className="relative min-h-screen py-28 px-4 md:px-14 lg:px-20 overflow-hidden bg-[#FAF5EF] border-b-4 border-amber-200">
         
-        {/* Floating Psychometric Badge 1 for Halaman 3 (Top Right) */}
-        <div className="hidden lg:flex absolute top-32 right-12 z-10 psychometric-card-3d-cream p-3.5 rounded-3xl float-anim items-center gap-3.5 max-w-xs !border-b-indigo-600">
+        {/* BACKGROUND MOTIF BATIK PAPUA (UKIRAN ASMAT & SPIRAL PAPUA) TANPA FILTER */}
+        <div className="absolute inset-0 z-0 opacity-[0.16] pointer-events-none overflow-hidden">
+          <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+            <defs>
+              <pattern id="batikPapuaPatternH3" width="140" height="140" patternUnits="userSpaceOnUse">
+                <path d="M 70,0 L 140,70 L 70,140 L 0,70 Z" fill="none" stroke="#b45309" strokeWidth="1.8" />
+                <path d="M 70,18 L 122,70 L 70,122 L 18,70 Z" fill="none" stroke="#1e40af" strokeWidth="1.2" strokeDasharray="4 4" />
+                <path d="M 70,40 Q 98,70 70,100 Q 42,70 70,40" fill="none" stroke="#047857" strokeWidth="1.8" />
+                <circle cx="70" cy="70" r="10" fill="none" stroke="#b45309" strokeWidth="1.8" />
+                <path d="M 0,0 Q 35,35 70,0 Q 105,35 140,0" fill="none" stroke="#b45309" strokeWidth="1.5" />
+                <path d="M 0,140 Q 35,105 70,140 Q 105,105 140,140" fill="none" stroke="#b45309" strokeWidth="1.5" />
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#batikPapuaPatternH3)" />
+          </svg>
+        </div>
+
+        {/* ─── STANDALONE 3D EMBOSSED FLOATING ICONS FILLING LEFT & RIGHT MARGINS (HALAMAN 3) ─── */}
+        
+        {/* Left Top: Developing / Content Development */}
+        <div className="hidden xl:flex absolute top-24 left-8 z-10 flex-col items-center group float-anim">
+          <i className="fa-solid fa-laptop-code text-teal-600 text-5xl md:text-6xl icon-timbul-3d"></i>
+          <span className="mt-2 text-[8px] font-black text-teal-900 bg-teal-100/90 px-2 py-0.5 rounded-full border border-teal-300 shadow-sm uppercase tracking-wider">
+            Developing / Content
+          </span>
+        </div>
+
+        {/* Left Mid: Think-Aloud Protocol */}
+        <div className="hidden xl:flex absolute top-[280px] left-10 z-10 flex-col items-center group float-anim-delay">
+          <i className="fa-solid fa-comments text-amber-600 text-5xl md:text-6xl icon-timbul-3d"></i>
+          <span className="mt-2 text-[8px] font-black text-amber-900 bg-amber-100/90 px-2 py-0.5 rounded-full border border-amber-300 shadow-sm uppercase tracking-wider">
+            Think-Aloud Protocol
+          </span>
+        </div>
+
+        {/* Left Bottom: Item Bias DIF */}
+        <div className="hidden xl:flex absolute bottom-20 left-8 z-10 flex-col items-center group float-anim-reverse">
+          <i className="fa-solid fa-scale-balanced text-blue-600 text-5xl md:text-6xl icon-timbul-3d"></i>
+          <span className="mt-2 text-[8px] font-black text-blue-900 bg-blue-100/90 px-2 py-0.5 rounded-full border border-blue-300 shadow-sm uppercase tracking-wider">
+            DIF Bias Analysis
+          </span>
+        </div>
+
+        {/* Right Top: Claude Code AI */}
+        <div className="hidden xl:flex absolute top-24 right-8 z-10 flex-col items-center group float-anim-reverse">
+          <i className="fa-solid fa-microchip text-indigo-600 text-5xl md:text-6xl icon-timbul-3d"></i>
+          <span className="mt-2 text-[8px] font-black text-indigo-900 bg-indigo-100/90 px-2 py-0.5 rounded-full border border-indigo-300 shadow-sm uppercase tracking-wider">
+            Claude Code AI
+          </span>
+        </div>
+
+        {/* Right Mid: R-Studio Psychometric Engine (Ciri Khas Huruf 'R') */}
+        <div className="hidden xl:flex absolute top-[280px] right-10 z-10 flex-col items-center group float-anim-delay">
+          <div className="w-13 h-13 md:w-15 md:h-15 rounded-2xl bg-gradient-to-br from-blue-600 via-indigo-700 to-blue-900 text-white flex items-center justify-center shadow-2xl border-2 border-white icon-timbul-3d">
+            <i className="fa-brands fa-r-project text-3xl text-sky-200"></i>
+          </div>
+          <span className="mt-2 text-[8px] font-black text-blue-900 bg-blue-100/90 px-2 py-0.5 rounded-full border border-blue-300 shadow-sm uppercase tracking-wider">
+            R-Studio Engine
+          </span>
+        </div>
+
+        {/* Right Bottom: Wright Map Rasch */}
+        <div className="hidden xl:flex absolute bottom-20 right-8 z-10 flex-col items-center group float-anim">
+          <i className="fa-solid fa-ruler-vertical text-emerald-600 text-5xl md:text-6xl icon-timbul-3d"></i>
+          <span className="mt-2 text-[8px] font-black text-emerald-900 bg-emerald-100/90 px-2 py-0.5 rounded-full border border-emerald-300 shadow-sm uppercase tracking-wider">
+            Wright Map Rasch
+          </span>
+        </div>
+
+        {/* Floating Psychometric Badge 1 for Halaman 3 (Top Right Inner) */}
+        <div className="hidden lg:flex absolute top-64 right-16 z-10 psychometric-card-3d-cream p-3.5 rounded-3xl float-anim items-center gap-3.5 max-w-xs !border-b-indigo-600">
           <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-indigo-600 to-blue-700 text-white flex items-center justify-center text-lg font-black shadow-lg border-b-2 border-indigo-950 shrink-0">
             <i className="fa-solid fa-wave-square"></i>
           </div>
@@ -497,8 +636,8 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Floating Psychometric Badge 2 for Halaman 3 (Bottom Left) */}
-        <div className="hidden lg:flex absolute bottom-24 left-12 z-10 psychometric-card-3d-cream p-3.5 rounded-3xl float-anim-delay items-center gap-3.5 max-w-xs !border-b-emerald-600">
+        {/* Floating Psychometric Badge 2 for Halaman 3 (Bottom Left Inner) */}
+        <div className="hidden lg:flex absolute bottom-44 left-16 z-10 psychometric-card-3d-cream p-3.5 rounded-3xl float-anim-delay items-center gap-3.5 max-w-xs !border-b-emerald-600">
           <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-emerald-600 to-teal-700 text-white flex items-center justify-center text-lg font-black shadow-lg border-b-2 border-teal-950 shrink-0">
             <i className="fa-solid fa-users-gear"></i>
           </div>
@@ -532,12 +671,81 @@ export default function Home() {
 
 
       {/* ════════════════════════════════════════
-          HALAMAN 4 — FLIPBOOK MANUAL TIMBUL (WITH FLOATING PSYCHOMETRIC BADGES)
+          HALAMAN 4 — FLIPBOOK MANUAL TIMBUL (WITH FLOATING PSYCHOMETRIC & GENERATIVE AI ICONS FILLING LEFT & RIGHT SPACE)
       ════════════════════════════════════════ */}
       <section id="manual" className="relative min-h-screen py-28 px-4 md:px-14 lg:px-20 overflow-hidden bg-[#F5EFE6]">
         
-        {/* Floating Psychometric Badge 1 for Halaman 4 (Top Left) */}
-        <div className="hidden lg:flex absolute top-32 left-12 z-10 psychometric-card-3d-cream p-3.5 rounded-3xl float-anim-reverse items-center gap-3.5 max-w-xs !border-b-amber-600">
+        {/* BACKGROUND MOTIF BATIK PAPUA (UKIRAN ASMAT & SPIRAL PAPUA) TANPA FILTER */}
+        <div className="absolute inset-0 z-0 opacity-[0.16] pointer-events-none overflow-hidden">
+          <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+            <defs>
+              <pattern id="batikPapuaPatternH4" width="140" height="140" patternUnits="userSpaceOnUse">
+                <path d="M 70,0 L 140,70 L 70,140 L 0,70 Z" fill="none" stroke="#b45309" strokeWidth="1.8" />
+                <path d="M 70,18 L 122,70 L 70,122 L 18,70 Z" fill="none" stroke="#1e40af" strokeWidth="1.2" strokeDasharray="4 4" />
+                <path d="M 70,40 Q 98,70 70,100 Q 42,70 70,40" fill="none" stroke="#047857" strokeWidth="1.8" />
+                <circle cx="70" cy="70" r="10" fill="none" stroke="#b45309" strokeWidth="1.8" />
+                <path d="M 0,0 Q 35,35 70,0 Q 105,35 140,0" fill="none" stroke="#b45309" strokeWidth="1.5" />
+                <path d="M 0,140 Q 35,105 70,140 Q 105,105 140,140" fill="none" stroke="#b45309" strokeWidth="1.5" />
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#batikPapuaPatternH4)" />
+          </svg>
+        </div>
+
+        {/* ─── STANDALONE 3D EMBOSSED FLOATING ICONS FILLING LEFT & RIGHT MARGINS (HALAMAN 4) ─── */}
+        
+        {/* Left Top: Aiken's V Validity */}
+        <div className="hidden xl:flex absolute top-24 left-8 z-10 flex-col items-center group float-anim-reverse">
+          <i className="fa-solid fa-stamp text-rose-600 text-5xl md:text-6xl icon-timbul-3d"></i>
+          <span className="mt-2 text-[8px] font-black text-rose-900 bg-rose-100/90 px-2 py-0.5 rounded-full border border-rose-300 shadow-sm uppercase tracking-wider">
+            Validitas Aiken's V
+          </span>
+        </div>
+
+        {/* Left Mid: Teori Tes Klasik (CTT) */}
+        <div className="hidden xl:flex absolute top-[280px] left-10 z-10 flex-col items-center group float-anim">
+          <i className="fa-solid fa-calculator text-amber-600 text-5xl md:text-6xl icon-timbul-3d"></i>
+          <span className="mt-2 text-[8px] font-black text-amber-900 bg-amber-100/90 px-2 py-0.5 rounded-full border border-amber-300 shadow-sm uppercase tracking-wider">
+            Teori Tes Klasik (CTT)
+          </span>
+        </div>
+
+        {/* Left Bottom: Google Gemini AI */}
+        <div className="hidden xl:flex absolute bottom-20 left-8 z-10 flex-col items-center group float-anim-delay">
+          <i className="fa-solid fa-wand-magic-sparkles text-amber-500 text-5xl md:text-6xl icon-timbul-3d"></i>
+          <span className="mt-2 text-[8px] font-black text-amber-900 bg-amber-100/90 px-2 py-0.5 rounded-full border border-amber-300 shadow-sm uppercase tracking-wider">
+            Google Gemini AI
+          </span>
+        </div>
+
+        {/* Right Top: Analisis CFA (Confirmatory Factor Analysis) */}
+        <div className="hidden xl:flex absolute top-24 right-8 z-10 flex-col items-center group float-anim">
+          <i className="fa-solid fa-diagram-project text-blue-600 text-5xl md:text-6xl icon-timbul-3d"></i>
+          <span className="mt-2 text-[8px] font-black text-blue-900 bg-blue-100/90 px-2 py-0.5 rounded-full border border-blue-300 shadow-sm uppercase tracking-wider">
+            Analisis CFA
+          </span>
+        </div>
+
+        {/* Right Mid: Reliabilitas Alpha & Omega */}
+        <div className="hidden xl:flex absolute top-[280px] right-10 z-10 flex-col items-center group float-anim-reverse">
+          <i className="fa-solid fa-chart-line text-teal-600 text-5xl md:text-6xl icon-timbul-3d"></i>
+          <span className="mt-2 text-[8px] font-black text-teal-900 bg-teal-100/90 px-2 py-0.5 rounded-full border border-teal-300 shadow-sm uppercase tracking-wider">
+            Reliabilitas Alpha
+          </span>
+        </div>
+
+        {/* Right Bottom: R-Studio Psychometric Engine (Ciri Khas Huruf 'R') */}
+        <div className="hidden xl:flex absolute bottom-20 right-8 z-10 flex-col items-center group float-anim-delay">
+          <div className="w-13 h-13 md:w-15 md:h-15 rounded-2xl bg-gradient-to-br from-blue-600 via-indigo-700 to-blue-900 text-white flex items-center justify-center shadow-2xl border-2 border-white icon-timbul-3d">
+            <i className="fa-brands fa-r-project text-3xl text-sky-200"></i>
+          </div>
+          <span className="mt-2 text-[8px] font-black text-blue-900 bg-blue-100/90 px-2 py-0.5 rounded-full border border-blue-300 shadow-sm uppercase tracking-wider">
+            R-Studio Engine
+          </span>
+        </div>
+
+        {/* Floating Psychometric Badge 1 for Halaman 4 (Top Left Inner) */}
+        <div className="hidden lg:flex absolute top-64 left-16 z-10 psychometric-card-3d-cream p-3.5 rounded-3xl float-anim-reverse items-center gap-3.5 max-w-xs !border-b-amber-600">
           <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 text-white flex items-center justify-center text-lg font-black shadow-lg border-b-2 border-orange-950 shrink-0">
             <i className="fa-solid fa-clipboard-check"></i>
           </div>
@@ -548,8 +756,8 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Floating Psychometric Badge 2 for Halaman 4 (Bottom Right) */}
-        <div className="hidden lg:flex absolute bottom-24 right-12 z-10 psychometric-card-3d-cream p-3.5 rounded-3xl float-anim items-center gap-3.5 max-w-xs !border-b-rose-600">
+        {/* Floating Psychometric Badge 2 for Halaman 4 (Bottom Right Inner) */}
+        <div className="hidden lg:flex absolute bottom-44 right-16 z-10 psychometric-card-3d-cream p-3.5 rounded-3xl float-anim items-center gap-3.5 max-w-xs !border-b-rose-600">
           <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-rose-500 to-pink-600 text-white flex items-center justify-center text-lg font-black shadow-lg border-b-2 border-pink-950 shrink-0">
             <i className="fa-solid fa-stamp"></i>
           </div>

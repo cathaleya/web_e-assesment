@@ -158,7 +158,7 @@ body {
   }
 }
 
-.ion-bond-animated {
+.ion-bond-animated, .network-bond-animated {
   stroke-dasharray: 8, 8;
   animation: ionDashFlow 2s linear infinite;
 }
@@ -177,7 +177,7 @@ body {
   50% { opacity: 0.9; transform: scale(1.08); }
 }
 
-.ion-pulse-glow {
+.ion-pulse-glow, .network-pulse-glow {
   animation: pulseGlow 3s ease-in-out infinite;
 }
 
