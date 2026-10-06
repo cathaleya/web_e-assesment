@@ -120,14 +120,16 @@ export default function DashboardPage() {
            </div>
         </header>
 
-        <div className="p-4 space-y-4 max-w-4xl">
-          {/* AI DIAGNOSTIC WELCOME CARD */}
-          <div className="bg-white rounded-2xl p-5 shadow-lg border-l-8 border-blue-600">
-             <div className="flex items-center gap-3 mb-2">
-                <div className="w-6 h-6 bg-blue-600 rounded-lg flex items-center justify-center text-white text-[10px]"><i className="fa-solid fa-robot"></i></div>
-                <p className="text-[8px] font-black text-blue-600 uppercase tracking-widest">AI Diagnostik</p>
+        <div className="p-4 md:p-6 space-y-4 md:space-y-6 max-w-4xl mx-auto">
+          {/* AI DIAGNOSTIC WELCOME CARD TIMBUL */}
+          <div className="card-timbul p-5 md:p-6 rounded-[24px] md:rounded-[28px] border-l-8 border-l-blue-600 bg-gradient-to-r from-blue-50/90 via-white to-slate-50/80">
+             <div className="flex items-center gap-3 mb-2.5">
+                <div className="w-7 h-7 bg-blue-600 rounded-xl flex items-center justify-center text-white text-[11px] shadow-md">
+                  <i className="fa-solid fa-robot"></i>
+                </div>
+                <p className="text-[9px] font-black text-blue-700 uppercase tracking-widest">AI Diagnostik Realtime</p>
              </div>
-             <h3 className="text-sm font-bold text-slate-900 leading-tight italic">
+             <h3 className="text-xs md:text-sm font-bold text-slate-900 leading-relaxed italic">
                 &quot;{aiMessage}&quot;
              </h3>
           </div>
@@ -147,44 +149,65 @@ export default function DashboardPage() {
             />
           ) : (
             <>
-              {/* PROGRESS CARDS */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="bg-white p-5 rounded-2xl border-2 border-slate-200 shadow-md flex flex-col justify-between">
+              {/* PROGRESS CARDS TIMBUL (SOFT CONTRAST) */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
+                {/* TAHAP 1: MADEL5C */}
+                <div className="card-timbul p-5 md:p-6 rounded-[24px] md:rounded-[28px] bg-gradient-to-br from-emerald-50/90 via-white to-teal-50/60 flex flex-col justify-between border border-emerald-200">
                    <div>
-                      <div className="flex justify-between items-start mb-2">
-                         <p className="text-[8px] font-black text-blue-600 uppercase tracking-widest">Tahap 1</p>
-                         {isMadelDone && <i className="fa-solid fa-circle-check text-emerald-500"></i>}
+                      <div className="flex justify-between items-center mb-3">
+                         <span className="px-2.5 py-1 bg-emerald-100 text-emerald-800 rounded-lg text-[9px] font-black uppercase tracking-widest shadow-sm">
+                           Tahap 1
+                         </span>
+                         {isMadelDone && (
+                           <span className="flex items-center gap-1 text-xs font-black text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">
+                             <i className="fa-solid fa-circle-check text-emerald-600"></i> Selesai
+                           </span>
+                         )}
                       </div>
-                      <h4 className="text-[10px] font-black text-slate-900 uppercase leading-none">MADEL5C (SJT)</h4>
-                      {isMadelDone && <p className="mt-2 text-xl font-black text-blue-600">Skor: {stats?.madel5c}</p>}
+                      <h4 className="text-xs md:text-sm font-black text-slate-900 uppercase tracking-tight">MADEL5C (SJT 30 Butir)</h4>
+                      <p className="text-[10px] font-semibold text-slate-600 mt-1">Asesmen Literasi Digital 5 Dimensi</p>
+                      {isMadelDone && <p className="mt-3 text-2xl font-black text-emerald-700 tracking-tight">Skor: {stats?.madel5c}</p>}
                    </div>
                    {isMadelDone ? (
-                     <button onClick={() => setShowReflection('madel')} className="mt-4 py-2.5 bg-slate-100 text-slate-600 rounded-lg text-[8px] font-black uppercase tracking-widest">Lihat Refleksi</button>
+                     <button onClick={() => setShowReflection('madel')} className="mt-5 py-3 bg-emerald-100 hover:bg-emerald-200 text-emerald-900 rounded-xl text-[9px] font-black uppercase tracking-widest shadow-sm transition-all border border-emerald-300">
+                       Lihat Refleksi
+                     </button>
                    ) : (
-                     <button onClick={() => router.push("/assessment/madel5c")} className="mt-4 py-2.5 bg-[#4B5320] text-white rounded-lg text-[8px] font-black uppercase shadow-lg tracking-widest hover:bg-[#3B4119] transition-all">Mulai Asesmen</button>
+                     <button onClick={() => router.push("/assessment/madel5c")} className="mt-5 py-3.5 bg-gradient-to-r from-emerald-700 to-[#4B5320] hover:from-emerald-800 hover:to-[#3B4119] text-white rounded-xl text-[9px] font-black uppercase tracking-widest shadow-lg border-b-4 border-emerald-950 transition-all active:scale-95">
+                       Mulai Asesmen <i className="fa-solid fa-arrow-right ml-1"></i>
+                     </button>
                    )}
                 </div>
 
-                <div className={`bg-white p-5 rounded-2xl border-2 shadow-md flex flex-col justify-between transition-all ${!isMadelDone ? 'opacity-50 grayscale border-slate-200' : 'border-amber-200'}`}>
+                {/* TAHAP 2: SURVEY KEPUASAN */}
+                <div className={`card-timbul p-5 md:p-6 rounded-[24px] md:rounded-[28px] bg-gradient-to-br from-amber-50/90 via-white to-orange-50/60 flex flex-col justify-between transition-all border ${!isMadelDone ? 'opacity-60 border-slate-200' : 'border-amber-200'}`}>
                    <div>
-                      <div className="flex justify-between items-start mb-2">
-                         <p className="text-[8px] font-black text-amber-600 uppercase tracking-widest">Tahap 2</p>
-                         {isSurveyDone && <i className="fa-solid fa-circle-check text-emerald-500"></i>}
+                      <div className="flex justify-between items-center mb-3">
+                         <span className="px-2.5 py-1 bg-amber-100 text-amber-800 rounded-lg text-[9px] font-black uppercase tracking-widest shadow-sm">
+                           Tahap 2
+                         </span>
+                         {isSurveyDone && (
+                           <span className="flex items-center gap-1 text-xs font-black text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">
+                             <i className="fa-solid fa-circle-check text-emerald-600"></i> Selesai
+                           </span>
+                         )}
                       </div>
-                      <h4 className="text-[10px] font-black text-slate-900 uppercase leading-none">Survey Kepuasan Sistem</h4>
+                      <h4 className="text-xs md:text-sm font-black text-slate-900 uppercase tracking-tight">Survey Kepuasan Sistem (SUS)</h4>
+                      <p className="text-[10px] font-semibold text-slate-600 mt-1">Evaluasi Pengalaman Pengguna (10 Butir)</p>
                    </div>
                    <button disabled={!isMadelDone} onClick={() => router.push("/survey")}
-                      className={`mt-4 py-2.5 rounded-lg text-[8px] font-black uppercase transition-all ${!isMadelDone ? "bg-slate-100 text-slate-400" : isSurveyDone ? "bg-emerald-50 text-emerald-600" : "bg-amber-500 text-white shadow-lg hover:bg-amber-600"}`}>
-                      {isSurveyDone ? "Selesai" : "Isi Survey"}
+                      className={`mt-5 py-3.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${!isMadelDone ? "bg-slate-200 text-slate-400 border border-slate-300 cursor-not-allowed" : isSurveyDone ? "bg-emerald-100 text-emerald-800 border border-emerald-300" : "bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white shadow-lg border-b-4 border-amber-800 active:scale-95"}`}>
+                      {isSurveyDone ? "Survey Terisi" : "Isi Survey Kepuasan"}
                    </button>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                 {/* RADAR CHART */}
-                 <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-lg flex flex-col items-center">
-                    <p className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-4">Profil Kompetensi Digital</p>
-                    <div className="w-full max-w-[200px]">
+              {/* RADAR & STATUS AKHIR CARDS TIMBUL */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-5">
+                 {/* RADAR CHART CARD TIMBUL */}
+                 <div className="card-timbul p-5 md:p-6 rounded-[24px] md:rounded-[28px] bg-white flex flex-col items-center border border-slate-200">
+                    <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-3">Profil Kompetensi Digital 5 Dimensi</p>
+                    <div className="w-full max-w-[210px]">
                       <Radar data={{
                         labels: ['C1', 'C2', 'C3', 'C4', 'C5'],
                         datasets: [{
@@ -202,11 +225,14 @@ export default function DashboardPage() {
                     </div>
                  </div>
 
-                 <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-lg flex flex-col justify-center">
-                    <h3 className="text-[10px] font-black text-slate-900 uppercase tracking-widest mb-4">Status Akhir:</h3>
-                    <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200">
-                       <p className="text-[11px] font-bold text-slate-600 leading-relaxed italic">
-                         Silakan selesaikan seluruh tahapan instrumen untuk mendapatkan profil kompetensi digital Anda secara utuh.
+                 {/* STATUS AKHIR CARD TIMBUL */}
+                 <div className="card-timbul p-5 md:p-6 rounded-[24px] md:rounded-[28px] bg-gradient-to-br from-indigo-50/80 via-white to-slate-50 flex flex-col justify-center border border-indigo-100">
+                    <h3 className="text-[10px] font-black text-slate-900 uppercase tracking-widest mb-3 flex items-center gap-2">
+                      <i className="fa-solid fa-flag-checkered text-indigo-600"></i> Status Kelengkapan Riset:
+                    </h3>
+                    <div className="p-4 scenario-timbul rounded-2xl">
+                       <p className="text-[11px] font-bold text-emerald-950 leading-relaxed italic">
+                         &quot;Silakan selesaikan seluruh 30 butir instrumen MADEL5C dan 10 butir survey kepuasan untuk mengunduh laporan kompetensi digital utuh Anda.&quot;
                        </p>
                     </div>
                  </div>

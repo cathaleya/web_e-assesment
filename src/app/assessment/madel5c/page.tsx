@@ -23,6 +23,7 @@ export default function Madel5cAssessment() {
   const [currentStep, setCurrentStep] = useState(0);
   const [answers, setAnswers] = useState<Record<number, number>>({});
   const [loading, setLoading] = useState(true);
+  const [consentAgreed, setConsentAgreed] = useState(false);
   const [showConsent, setShowConsent] = useState(true);
   const [showInstructions, setShowInstructions] = useState(true);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -190,19 +191,31 @@ export default function Madel5cAssessment() {
                   </p>
                 </div>
 
-                <div className="p-4 scenario-timbul rounded-2xl flex items-start gap-3">
-                  <div className="w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs shrink-0 mt-0.5 shadow-sm">
+                <div 
+                  onClick={() => setConsentAgreed(!consentAgreed)}
+                  className={`p-4 rounded-2xl flex items-start gap-3 cursor-pointer transition-all border ${
+                    consentAgreed ? "bg-emerald-100/90 border-emerald-300 shadow-md" : "bg-emerald-50/80 border-emerald-200 hover:bg-emerald-100/50"
+                  }`}
+                >
+                  <div className={`w-6 h-6 rounded-lg flex items-center justify-center text-xs shrink-0 mt-0.5 transition-all border-2 ${
+                    consentAgreed ? "bg-emerald-600 border-emerald-700 text-white shadow-sm" : "bg-white border-emerald-400 text-transparent"
+                  }`}>
                     <i className="fa-solid fa-check"></i>
                   </div>
-                  <p className="text-[11px] font-black text-emerald-950 leading-snug">
-                    Dengan mengeklik tombol di bawah ini, Anda menyatakan telah membaca, memahami, dan menyetujui secara sukarela untuk menjadi responden dalam pengisian instrumen ini.
+                  <p className="text-[11px] font-black text-emerald-950 leading-snug select-none">
+                    Dengan mengeklik kotak centang di samping ini, Anda menyatakan telah membaca, memahami, dan menyetujui secara sukarela untuk menjadi responden dalam pengisian instrumen ini.
                   </p>
                 </div>
               </div>
 
               <button 
+                disabled={!consentAgreed}
                 onClick={() => setShowConsent(false)} 
-                className="w-full py-4 md:py-5 bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-black rounded-2xl text-[11px] uppercase tracking-widest shadow-xl border-b-4 border-emerald-900 active:scale-95 transition-all"
+                className={`w-full py-4 md:py-5 font-black rounded-2xl text-[11px] uppercase tracking-widest shadow-xl border-b-4 transition-all ${
+                  consentAgreed 
+                    ? "bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white border-emerald-900 active:scale-95 cursor-pointer"
+                    : "bg-slate-300 text-slate-500 border-slate-400 cursor-not-allowed opacity-60"
+                }`}
               >
                 SAYA SETUJU & LANJUT KE PANDUAN <i className="fa-solid fa-arrow-right ml-2"></i>
               </button>
