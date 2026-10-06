@@ -114,72 +114,79 @@ export default function Home() {
       {/* ════════════════════════════════════════
           HALAMAN 1 — HERO TIMBUL (BACKGROUND WARM CREAM WITH FLOATING PSYCHOMETRICS)
       ════════════════════════════════════════ */}
-      <section className="relative min-h-screen flex items-center pt-28 pb-16 bg-gradient-to-br from-[#FAF5EF] via-[#F3EFE6] to-[#E5DEC9] overflow-hidden border-b-4 border-amber-200">
+      {/* ════════════════════════════════════════
+          HALAMAN 1 — HERO TIMBUL (BACKGROUND MOTIF BATIK PAPUA TANPA FILTER + LARGE 3D EMBOSSED ICONS)
+      ════════════════════════════════════════ */}
+      <section className="relative min-h-screen flex items-center pt-28 pb-16 bg-[#FAF5EF] overflow-hidden border-b-4 border-amber-200">
         
-        {/* BACKGROUND DIAGRAM PSIKOMETRI & GRID RADIUS */}
-        <div className="absolute inset-0 z-0 opacity-20 pointer-events-none">
-          <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+        {/* BACKGROUND MOTIF BATIK PAPUA (UKIRAN ASMAT & SPIRAL PAPUA) TANPA FILTER */}
+        <div className="absolute inset-0 z-0 opacity-[0.16] pointer-events-none overflow-hidden">
+          <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
             <defs>
-              <linearGradient id="psychGradCream" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#1e40af" stopOpacity="0.8" />
-                <stop offset="50%" stopColor="#047857" stopOpacity="0.8" />
-                <stop offset="100%" stopColor="#b45309" stopOpacity="0.8" />
-              </linearGradient>
+              <pattern id="batikPapuaPatternHero" width="140" height="140" patternUnits="userSpaceOnUse">
+                {/* Traditional Papuan Carving Diamond */}
+                <path d="M 70,0 L 140,70 L 70,140 L 0,70 Z" fill="none" stroke="#b45309" strokeWidth="1.8" />
+                <path d="M 70,18 L 122,70 L 70,122 L 18,70 Z" fill="none" stroke="#1e40af" strokeWidth="1.2" strokeDasharray="4 4" />
+                {/* Asmat Tribal Spiral Motif */}
+                <path d="M 70,40 Q 98,70 70,100 Q 42,70 70,40" fill="none" stroke="#047857" strokeWidth="1.8" />
+                <circle cx="70" cy="70" r="10" fill="none" stroke="#b45309" strokeWidth="1.8" />
+                {/* Papuan Carving Wave Lines */}
+                <path d="M 0,0 Q 35,35 70,0 Q 105,35 140,0" fill="none" stroke="#b45309" strokeWidth="1.5" />
+                <path d="M 0,140 Q 35,105 70,140 Q 105,105 140,140" fill="none" stroke="#b45309" strokeWidth="1.5" />
+              </pattern>
             </defs>
-            <path d="M 0 500 Q 300 500 500 200 T 1000 500 T 1600 500" fill="none" stroke="url(#psychGradCream)" strokeWidth="3" strokeDasharray="8 8" />
-            <path d="M 0 450 Q 400 450 650 150 T 1300 450 T 1800 450" fill="none" stroke="url(#psychGradCream)" strokeWidth="2" strokeDasharray="4 4" />
-            <line x1="50%" y1="0" x2="50%" y2="100%" stroke="rgba(15,23,42,0.08)" strokeWidth="1" strokeDasharray="4 4" />
-            <line x1="0" y1="50%" x2="100%" y2="50%" stroke="rgba(15,23,42,0.08)" strokeWidth="1" strokeDasharray="4 4" />
+            <rect width="100%" height="100%" fill="url(#batikPapuaPatternHero)" />
           </svg>
         </div>
 
-        {/* ─── KARTU/BADGE ANALISIS DATA 3D MELAYANG (DIF, WRIGHT MAP, CTT, R-STUDIO) ─── */}
+        {/* ─── ICON-ICON PSIKOMETRI & GENERATIVE AI (GEMINI & CLAUDE CODE) 3D MELAYANG TANPA BOX ─── */}
         
-        {/* Floating Symbol 1: DIF (Differential Item Functioning) (Top Right) */}
-        <div className="hidden lg:flex absolute top-28 right-12 z-10 psychometric-card-3d-cream p-3.5 rounded-3xl float-anim items-center gap-3.5 max-w-xs !border-b-blue-600">
-          <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white flex items-center justify-center text-lg font-black shadow-lg border-b-2 border-indigo-950 shrink-0">
-            <i className="fa-solid fa-scale-balanced"></i>
-          </div>
-          <div>
-            <span className="text-[9px] font-black text-blue-700 uppercase tracking-widest block">ANALISIS BIAS BUTIR</span>
-            <span className="text-xs font-black text-slate-900 uppercase tracking-tight block">DIF (Differential Item Functioning)</span>
-            <span className="text-[9px] text-slate-600 font-bold block mt-0.5">Mantel-Haenszel · No Gender/Region Bias</span>
-          </div>
+        {/* Standalone 3D Icon 1: Google Gemini AI (Top Right) */}
+        <div className="hidden lg:flex absolute top-28 right-16 z-10 flex-col items-center group float-anim">
+          <i className="fa-solid fa-wand-magic-sparkles text-amber-500 text-6xl md:text-7xl icon-timbul-3d"></i>
+          <span className="mt-2 text-[9px] font-black text-amber-800 bg-amber-100/90 px-2.5 py-0.5 rounded-full border border-amber-300 shadow-sm uppercase tracking-wider">
+            Google Gemini AI
+          </span>
         </div>
 
-        {/* Floating Symbol 2: Wright Map (Middle Right) */}
-        <div className="hidden lg:flex absolute top-64 right-28 z-10 psychometric-card-3d-cream p-3.5 rounded-3xl float-anim-delay items-center gap-3.5 max-w-xs !border-b-emerald-600">
-          <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-emerald-600 to-teal-700 text-white flex items-center justify-center text-lg font-black shadow-lg border-b-2 border-teal-950 shrink-0">
-            <i className="fa-solid fa-ruler-vertical"></i>
-          </div>
-          <div>
-            <span className="text-[9px] font-black text-emerald-700 uppercase tracking-widest block">MODEL RASCH & MFRM</span>
-            <span className="text-xs font-black text-slate-900 uppercase tracking-tight block">Wright Map Distribution</span>
-            <span className="text-[9px] text-slate-600 font-bold block mt-0.5">Person Ability vs Item Difficulty</span>
-          </div>
+        {/* Standalone 3D Icon 2: Claude Code Generative AI (Top Left) */}
+        <div className="hidden xl:flex absolute top-32 left-12 z-10 flex-col items-center group float-anim-delay">
+          <i className="fa-solid fa-microchip text-indigo-600 text-6xl md:text-7xl icon-timbul-3d"></i>
+          <span className="mt-2 text-[9px] font-black text-indigo-800 bg-indigo-100/90 px-2.5 py-0.5 rounded-full border border-indigo-300 shadow-sm uppercase tracking-wider">
+            Claude Code AI
+          </span>
         </div>
 
-        {/* Floating Symbol 3: CTT (Classic Test Theory) (Bottom Right) */}
-        <div className="hidden lg:flex absolute bottom-20 right-16 z-10 psychometric-card-3d-cream p-3.5 rounded-3xl float-anim-reverse items-center gap-3.5 max-w-xs !border-b-amber-600">
-          <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 text-white flex items-center justify-center text-lg font-black shadow-lg border-b-2 border-orange-950 shrink-0">
-            <i className="fa-solid fa-calculator"></i>
-          </div>
-          <div>
-            <span className="text-[9px] font-black text-amber-700 uppercase tracking-widest block">TEORI TES KLASIK</span>
-            <span className="text-xs font-black text-slate-900 uppercase tracking-tight block">CTT & Discrimination (r_bis)</span>
-            <span className="text-[9px] text-slate-600 font-bold block mt-0.5">Tingkat Kesukaran (p) & Reliability</span>
-          </div>
+        {/* Standalone 3D Icon 3: DIF (Differential Item Functioning) (Middle Right) */}
+        <div className="hidden lg:flex absolute top-64 right-36 z-10 flex-col items-center group float-anim-delay">
+          <i className="fa-solid fa-scale-balanced text-blue-600 text-6xl md:text-7xl icon-timbul-3d"></i>
+          <span className="mt-2 text-[9px] font-black text-blue-800 bg-blue-100/90 px-2.5 py-0.5 rounded-full border border-blue-300 shadow-sm uppercase tracking-wider">
+            DIF Bias Analysis
+          </span>
         </div>
 
-        {/* Floating Symbol 4: R-Studio Psychometric Engine (Top Left / Mid) */}
-        <div className="hidden xl:flex absolute top-36 left-12 z-10 psychometric-card-3d-cream p-3 rounded-2xl float-anim-reverse items-center gap-3 !border-b-purple-600">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-600 to-indigo-700 text-white flex items-center justify-center text-sm font-black shadow-md border-b-2 border-indigo-950 shrink-0">
-            <i className="fa-solid fa-code"></i>
-          </div>
-          <div>
-            <span className="text-[8px] font-black text-purple-700 uppercase tracking-widest block">STATISTICAL ENGINE</span>
-            <span className="text-[11px] font-black text-slate-900 uppercase tracking-tight block">R-Studio Psych & mirt Pipeline</span>
-          </div>
+        {/* Standalone 3D Icon 4: Wright Map Rasch (Bottom Right) */}
+        <div className="hidden lg:flex absolute bottom-20 right-20 z-10 flex-col items-center group float-anim-reverse">
+          <i className="fa-solid fa-ruler-vertical text-emerald-600 text-6xl md:text-7xl icon-timbul-3d"></i>
+          <span className="mt-2 text-[9px] font-black text-emerald-800 bg-emerald-100/90 px-2.5 py-0.5 rounded-full border border-emerald-300 shadow-sm uppercase tracking-wider">
+            Wright Map Rasch
+          </span>
+        </div>
+
+        {/* Standalone 3D Icon 5: CTT Classic Test Theory (Bottom Left / Mid) */}
+        <div className="hidden xl:flex absolute bottom-24 left-16 z-10 flex-col items-center group float-anim">
+          <i className="fa-solid fa-calculator text-orange-600 text-6xl md:text-7xl icon-timbul-3d"></i>
+          <span className="mt-2 text-[9px] font-black text-orange-800 bg-orange-100/90 px-2.5 py-0.5 rounded-full border border-orange-300 shadow-sm uppercase tracking-wider">
+            Teori Tes Klasik (CTT)
+          </span>
+        </div>
+
+        {/* Standalone 3D Icon 6: R-Studio Psychometric Engine (Top Center / Mid) */}
+        <div className="hidden lg:flex absolute top-28 right-[460px] z-10 flex-col items-center group float-anim-reverse">
+          <i className="fa-solid fa-code text-purple-600 text-5xl md:text-6xl icon-timbul-3d"></i>
+          <span className="mt-2 text-[8px] font-black text-purple-800 bg-purple-100/90 px-2 py-0.5 rounded-full border border-purple-300 shadow-sm uppercase tracking-wider">
+            R-Studio Engine
+          </span>
         </div>
 
 
@@ -200,10 +207,10 @@ export default function Home() {
                 <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white flex items-center justify-center font-black text-sm shadow-md border-b-2 border-indigo-950">
                   <i className="fa-solid fa-microchip"></i>
                 </div>
-                <span className="text-[11px] font-black text-blue-800 uppercase tracking-widest">IRT & Generative AI Engine</span>
+                <span className="text-[11px] font-black text-blue-800 uppercase tracking-widest">IRT & Generative AI Engine (Gemini & Claude)</span>
               </div>
               <p className="text-xs md:text-sm text-slate-800 font-bold leading-relaxed">
-                Integrasi Analisis Item Response Theory (IRT) dengan kecerdasan Generative AI untuk memetakan profil kompetensi Literasi Digital mahasiswa calon guru secara holistik, presisi, dan objektif.
+                Integrasi Analisis Item Response Theory (IRT) dengan kecerdasan Generative AI (Google Gemini & Claude Code AI) untuk memetakan profil kompetensi Literasi Digital mahasiswa calon guru secara holistik, presisi, dan objektif.
               </p>
               <button 
                 onClick={() => router.push("/login")}
@@ -314,8 +321,8 @@ export default function Home() {
           </div>
 
         </div>
-
       </section>
+
 
 
 

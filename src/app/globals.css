@@ -200,4 +200,20 @@ body {
     0 8px 18px -4px rgba(15, 23, 42, 0.12);
 }
 
+/* 3D Standalone Embossed Large Floating Icons (No Box) */
+.icon-timbul-3d {
+  filter: drop-shadow(0 14px 20px rgba(15, 23, 42, 0.35)) drop-shadow(0 4px 6px rgba(0, 0, 0, 0.2));
+  transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.icon-timbul-3d:hover {
+  transform: translateY(-10px) scale(1.28);
+  filter: drop-shadow(0 22px 32px rgba(37, 99, 235, 0.5)) drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3));
+}
+
+/* Background Motif Batik Papua (Warm Cream Canvas) */
+.bg-batik-papua-cream {
+  background-color: #FAF5EF;
+}
+
 
