@@ -275,7 +275,11 @@ export default function LoginPage() {
                   : "bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 border-blue-950"
               }`}
             >
-              {isLoading ? "MEMPROSES DATA..." : "MASUK PORTAL <i className='fa-solid fa-arrow-right ml-1.5'></i>"}
+              {isLoading ? "MEMPROSES DATA..." : (
+                <span className="flex items-center justify-center gap-2">
+                  MASUK PORTAL <i className="fa-solid fa-arrow-right"></i>
+                </span>
+              )}
             </button>
           </form>
         </div>

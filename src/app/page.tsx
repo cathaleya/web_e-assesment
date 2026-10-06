@@ -68,11 +68,15 @@ export default function Home() {
       {/* ─── NAVBAR TIMBUL 3D ─── */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md px-4 md:px-10 py-3.5 flex items-center justify-between border-b-4 border-slate-200 shadow-2xl">
         <div className="flex items-center gap-3 md:gap-4">
-          <div className="flex items-center gap-3 border-r border-slate-200 pr-4 md:pr-6 mr-1 md:mr-2">
-            <Image src="/logo_madel5c.png" alt="MADEL-5C Logo" width={50} height={50} className="object-contain drop-shadow-md" />
+          {/* LOGO TIMBUL 3D */}
+          <div className="card-timbul p-1.5 rounded-2xl bg-white shadow-xl border-2 border-slate-200 border-b-4 border-b-slate-400 flex items-center justify-center shrink-0">
+            <Image src="/logo_madel5c.png" alt="MADEL-5C Logo" width={48} height={48} className="object-contain drop-shadow-md" />
           </div>
-          <div className="flex flex-col leading-none">
-            <span className="text-lg md:text-xl font-black tracking-tighter text-[#1E3A8A] uppercase leading-tight">MADEL-5C</span>
+          <div className="flex flex-col leading-none border-l-2 border-slate-200 pl-3">
+            {/* TULISAN MADEL TIMBUL 3D */}
+            <span className="text-xl md:text-2xl font-black tracking-tighter text-[#1E3A8A] uppercase leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.15)] italic">
+              MADEL-5C
+            </span>
             <span className="text-[8px] md:text-[9px] font-black text-[#2563EB] uppercase tracking-[0.2em]">E-ASSESSMENT PLATFORM</span>
           </div>
         </div>
@@ -149,80 +153,101 @@ export default function Home() {
 
 
       {/* ════════════════════════════════════════
-          HALAMAN BARU: FRAMEWORK MADEL & 5 SUB-MODEL (BIOLOGICAL BLOOD VASCULAR CONNECTION NETWORK)
+          HALAMAN 2: HIRARKI INTEGRASI FRAMEWORK MADEL (DIAGRAM LINGKARAN SIRKULAR TIMBUL 3D)
       ════════════════════════════════════════ */}
       <section id="framework" className="relative py-28 px-4 md:px-12 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white overflow-hidden border-y-4 border-slate-800">
         
-        {/* BACKGROUND ANIMATED BIOLOGICAL BLOOD VESSEL NETWORK SVG */}
-        <div className="absolute inset-0 z-0 opacity-30 pointer-events-none">
+        {/* RADIAL CONNECTING LINES BACKGROUND */}
+        <div className="absolute inset-0 z-0 opacity-20 pointer-events-none">
           <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
             <defs>
-              <linearGradient id="bloodFlow" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#e11d48" stopOpacity="0.8" />
-                <stop offset="50%" stopColor="#14b8a6" stopOpacity="0.8" />
-                <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.8" />
+              <linearGradient id="lineGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.8" />
+                <stop offset="50%" stopColor="#10b981" stopOpacity="0.8" />
+                <stop offset="100%" stopColor="#f59e0b" stopOpacity="0.8" />
               </linearGradient>
-              <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-                <feGaussianBlur stdDeviation="6" result="blur" />
-                <feComposite in="SourceGraphic" in2="blur" operator="over" />
-              </filter>
             </defs>
-            {/* Vascular Capillary Lines */}
-            <path d="M150 100 Q 400 300 800 200 T 1400 400" fill="none" stroke="url(#bloodFlow)" strokeWidth="3" filter="url(#glow)" strokeDasharray="8 6" className="animate-pulse" />
-            <path d="M100 600 Q 500 400 900 700 T 1500 500" fill="none" stroke="url(#bloodFlow)" strokeWidth="2.5" filter="url(#glow)" strokeDasharray="6 4" />
-            <path d="M800 50 L 800 900" fill="none" stroke="url(#bloodFlow)" strokeWidth="3" filter="url(#glow)" strokeDasharray="10 5" />
+            <circle cx="50%" cy="40%" r="220" fill="none" stroke="url(#lineGrad)" strokeWidth="2" strokeDasharray="6 6" />
+            <circle cx="50%" cy="40%" r="380" fill="none" stroke="url(#lineGrad)" strokeWidth="1.5" strokeDasharray="4 8" />
           </svg>
         </div>
 
         <div className="max-w-7xl mx-auto w-full relative z-10">
           <div className="text-center space-y-3 mb-16">
-            <span className="px-4 py-1.5 bg-rose-950/80 text-rose-300 rounded-full text-[10px] font-black uppercase tracking-[0.25em] border border-rose-800/60 shadow-lg inline-flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping"></span> BIOLOGICAL ARCHITECTURE NETWORK
+            <span className="px-4 py-1.5 bg-blue-950/80 text-blue-300 rounded-full text-[10px] font-black uppercase tracking-[0.25em] border border-blue-800/60 shadow-lg inline-flex items-center gap-2">
+              <i className="fa-solid fa-sitemap text-blue-400"></i> SYSTEM ARCHITECTURE HIERARCHY
             </span>
             <h2 className="text-3xl md:text-5xl lg:text-6xl font-black italic text-white uppercase tracking-tight leading-tight drop-shadow-lg">
-              KETERHUBUNGAN FRAMEWORK <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-400 via-emerald-400 to-cyan-400">MADEL</span>
+              HIRARKI INTEGRASI FRAMEWORK <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-emerald-400 to-cyan-400">MADEL</span>
             </h2>
-            <div className="w-24 h-1.5 bg-gradient-to-r from-rose-600 via-amber-500 to-emerald-500 mx-auto rounded-full shadow-lg"></div>
+            <div className="w-24 h-1.5 bg-gradient-to-r from-amber-500 via-emerald-500 to-blue-500 mx-auto rounded-full shadow-lg"></div>
             <p className="text-slate-300 font-bold max-w-3xl mx-auto text-xs md:text-sm leading-relaxed">
-              Jaringan pembuluh sistemik utama <strong className="text-white">MADEL (Model Asesmen Digital Evaluasi Literasi)</strong> yang mengalirkan energi & analisis psikometris ke dalam 5 Sub-Model Spesifik.
+              Struktur hirarki sirkular pengembangan <strong className="text-white">MADEL (Model Asesmen Digital Evaluasi Literasi)</strong> sebagai inti induk yang membawahi 5 Sub-Model Spesifik.
             </p>
           </div>
 
-          {/* CENTER VASCULAR HEART HUB (MODEL UTAMA MADEL) */}
-          <div className="flex justify-center mb-14">
-            <div className="card-timbul p-6 md:p-8 rounded-[36px] bg-gradient-to-br from-rose-950/90 via-slate-900 to-slate-950 border-2 border-rose-500/80 shadow-[0_0_50px_rgba(225,29,72,0.35)] text-center max-w-xl relative overflow-hidden group">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-rose-600 to-red-700 text-white flex items-center justify-center text-3xl mx-auto mb-4 shadow-xl border-b-4 border-rose-950 animate-bounce">
-                <i className="fa-solid fa-heart-pulse"></i>
+          {/* DIAGRAM LINGKARAN SIRKULAR TIMBUL 3D (CENTER NODE + 5 RADIAL NODES) */}
+          <div className="relative my-12 py-10 flex flex-col items-center justify-center">
+            
+            {/* LINGKARAN PUSAT (CENTER HUB: FRAMEWORK UTAMA MADEL) */}
+            <div className="card-timbul w-48 h-48 md:w-64 md:h-64 rounded-full bg-gradient-to-br from-amber-500 via-yellow-500 to-emerald-600 border-4 border-white shadow-[0_0_60px_rgba(245,158,11,0.4)] flex flex-col items-center justify-center text-center p-4 z-20 hover:scale-105 transition-all duration-300">
+              <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-slate-900 text-amber-400 flex items-center justify-center text-2xl md:text-3xl mb-2 shadow-xl border-2 border-amber-300">
+                <i className="fa-solid fa-diagram-project"></i>
               </div>
-              <span className="text-[9px] font-black text-rose-400 uppercase tracking-[0.3em] block mb-1">CORE ARTERIAL ENGINE</span>
-              <h3 className="text-2xl md:text-3xl font-black text-white uppercase tracking-tight italic">
-                FRAMEWORK UTAMA MADEL
+              <span className="text-[8px] md:text-[9px] font-black text-slate-900 uppercase tracking-widest block bg-white/80 px-2 py-0.5 rounded-full mb-1">
+                MODEL INDUK UTAMA
+              </span>
+              <h3 className="text-lg md:text-2xl font-black text-slate-950 uppercase tracking-tight italic drop-shadow-sm leading-tight">
+                FRAMEWORK MADEL
               </h3>
-              <p className="text-xs text-slate-300 font-semibold leading-relaxed mt-2">
-                Pusat sirkulasi konseptual & analitis yang memetakan kompetensi literasi digital secara terintegrasi melalui 5 pembuluh sub-model ekosistem riset.
+              <p className="text-[9px] md:text-[10px] font-black text-slate-900 mt-1 max-w-[150px] md:max-w-[180px] leading-tight">
+                Model Asesmen Digital Evaluasi Literasi
               </p>
             </div>
+
+            {/* 5 LINGKARAN SUB-MODEL SIRKULAR (RADIAL LAYOUT) */}
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4 md:gap-6 mt-10 md:-mt-8 w-full max-w-5xl z-10">
+              {subModels.map((m, idx) => (
+                <div 
+                  key={m.id}
+                  className="card-timbul p-4 md:p-5 rounded-[28px] bg-white text-slate-900 border-2 border-slate-200 flex flex-col items-center text-center shadow-xl hover:translate-y-[-6px] transition-all duration-300 group"
+                >
+                  <div className={`w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-gradient-to-br ${m.color} text-white flex items-center justify-center text-xl shadow-lg border-b-2 border-black/30 mb-3`}>
+                    <i className={`fa-solid ${m.icon}`}></i>
+                  </div>
+                  <span className={`px-2 py-0.5 rounded-md text-[8px] font-black uppercase mb-1.5 border ${m.accent}`}>
+                    Sub-Model #{idx + 1}
+                  </span>
+                  <h4 className="text-base md:text-lg font-black text-slate-900 uppercase tracking-tight italic">
+                    {m.code}
+                  </h4>
+                  <p className="text-[9px] font-bold text-slate-500 mt-1 leading-snug line-clamp-2">
+                    {m.name}
+                  </p>
+                </div>
+              ))}
+            </div>
+
           </div>
 
-          {/* 5 SUB-MODEL CARDS TIMBUL 3D (VASCULAR BRANCHES) */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+          {/* RINCIAN DESKRIPSI 5 SUB-MODEL (KARTU TIMBUL 3D) */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 mt-16">
             {subModels.map((m, idx) => (
               <div 
                 key={m.id} 
-                className="card-timbul p-6 rounded-[32px] bg-white text-slate-900 border-2 border-slate-200 flex flex-col justify-between hover:translate-y-[-6px] transition-all duration-300 relative group overflow-hidden"
+                className="card-timbul p-6 rounded-[32px] bg-white text-slate-900 border-2 border-slate-200 flex flex-col justify-between hover:translate-y-[-4px] transition-all duration-300"
               >
-                {/* Header Indicator */}
                 <div>
                   <div className="flex justify-between items-center mb-4">
                     <span className={`px-3 py-1 rounded-xl text-[9px] font-black uppercase tracking-wider border ${m.accent}`}>
                       Sub-Model #{idx + 1}
                     </span>
-                    <div className={`w-10 h-10 rounded-2xl bg-gradient-to-br ${m.color} text-white flex items-center justify-center text-lg shadow-md border-b-2 border-black/30`}>
+                    <div className={`w-9 h-9 rounded-xl bg-gradient-to-br ${m.color} text-white flex items-center justify-center text-sm shadow-md border-b-2 border-black/30`}>
                       <i className={`fa-solid ${m.icon}`}></i>
                     </div>
                   </div>
 
-                  <h4 className="text-xl font-black text-slate-900 uppercase tracking-tight italic mb-2">
+                  <h4 className="text-xl font-black text-slate-900 uppercase tracking-tight italic mb-1">
                     {m.code}
                   </h4>
                   <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-3">
@@ -235,7 +260,7 @@ export default function Home() {
 
                 <div className="mt-6 pt-4 border-t border-slate-100 flex justify-between items-center">
                   <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">
-                    Status: <span className="text-emerald-700 font-bold">Terhubung Organik</span>
+                    Hirarki: <span className="text-blue-600 font-bold">Terintegrasi</span>
                   </span>
                   <button 
                     onClick={() => router.push(m.id === "madel-5c" ? "/assessment/madel5c" : "/login")}
@@ -253,7 +278,7 @@ export default function Home() {
 
 
       {/* ════════════════════════════════════════
-          HALAMAN 2 — VIDEO TUTORIAL TIMBUL (TANPA FILTER)
+          HALAMAN 3 — VIDEO TUTORIAL TIMBUL (TANPA FILTER)
       ════════════════════════════════════════ */}
       <section id="about" className="relative min-h-screen py-28 px-4 md:px-14 lg:px-20 overflow-hidden bg-slate-900">
         <div className="absolute inset-0 z-0">
@@ -285,7 +310,7 @@ export default function Home() {
 
 
       {/* ════════════════════════════════════════
-          HALAMAN 3 — FLIPBOOK MANUAL TIMBUL (TANPA FILTER)
+          HALAMAN 4 — FLIPBOOK MANUAL TIMBUL (TANPA FILTER)
       ════════════════════════════════════════ */}
       <section id="manual" className="relative min-h-screen py-28 px-4 md:px-14 lg:px-20 overflow-hidden bg-slate-900">
         <div className="absolute inset-0 z-0">

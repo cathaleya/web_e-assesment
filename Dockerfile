@@ -14,10 +14,9 @@ WORKDIR /app
 
 # Copy package configurations
 COPY package*.json ./
-COPY prisma ./prisma/
 
 # Install Node dependencies
-RUN npm install
+RUN npm install --ignore-scripts
 
 # Copy the rest of application code
 COPY . .
