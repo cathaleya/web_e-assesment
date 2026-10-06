@@ -112,113 +112,291 @@ export default function Home() {
       {/* ════════════════════════════════════════
           HALAMAN 1 — HERO TIMBUL
       ════════════════════════════════════════ */}
-      <section className="relative min-h-screen flex items-center pt-28 pb-16">
-        <div className="absolute inset-0 z-0">
-          <Image
-            src="/media/bg_landing.jpg"
-            alt="Praktek Literasi Digital 1"
-            fill
-            className="object-cover opacity-90"
-            priority
-          />
-        </div>
+      {/* ════════════════════════════════════════
+          HALAMAN 1 — HERO TIMBUL (BACKGROUND PSIKOMETRI & EVALUASI 3D MELAYANG)
+      ════════════════════════════════════════ */}
+      <section className="relative min-h-screen flex items-center pt-28 pb-16 bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 overflow-hidden border-b-4 border-slate-800">
         
-        <div className="relative z-10 w-full px-4 md:px-14 lg:px-20 max-w-7xl mx-auto">
-          <p className="text-xs md:text-xl lg:text-2xl font-black italic text-amber-300 uppercase tracking-tight leading-tight mb-3 drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)] max-w-[90%]">
-            HYBRID-DIAGNOSTIC ASSESSMENT PLATFORM (HDAP)
-          </p>
-          <h1 className="text-3xl md:text-5xl lg:text-[68px] xl:text-[80px] font-black italic text-white uppercase tracking-tighter leading-[1.15] md:leading-none drop-shadow-[0_6px_16px_rgba(0,0,0,0.9)] break-words max-w-5xl">
-            E-ASSESSMENT LITERASI DIGITAL.
-          </h1>
-          
-          <div className="mt-8 md:mt-12 max-w-sm md:max-w-lg card-timbul p-6 md:p-8 rounded-[32px] md:rounded-[40px] bg-white/95 backdrop-blur-md">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center font-black text-xs shadow-md">
-                <i className="fa-solid fa-microchip"></i>
-              </div>
-              <span className="text-[10px] font-black text-blue-700 uppercase tracking-widest">IRT & Generative AI Engine</span>
-            </div>
-            <p className="text-xs md:text-sm text-slate-800 font-bold leading-relaxed">
-              Integrasi Analisis Item Response Theory (IRT) dengan kecerdasan Generative AI untuk memetakan profil kompetensi Literasi Digital mahasiswa calon guru secara holistik dan objektif.
-            </p>
-            <button 
-              onClick={() => router.push("/login")}
-              className="mt-6 w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white rounded-2xl font-black text-[11px] uppercase tracking-widest shadow-xl border-b-4 border-indigo-950 active:scale-95 transition-all"
-            >
-              MULAI SEKARANG <i className="fa-solid fa-rocket ml-2"></i>
-            </button>
+        {/* BACKGROUND DIAGRAM PSIKOMETRI & GRID RADIUS */}
+        <div className="absolute inset-0 z-0 opacity-25 pointer-events-none">
+          <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="psychGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.8" />
+                <stop offset="50%" stopColor="#10b981" stopOpacity="0.8" />
+                <stop offset="100%" stopColor="#8b5cf6" stopOpacity="0.8" />
+              </linearGradient>
+            </defs>
+            {/* Coordinate Axis Grid & Gaussian Bell Curve Overlay */}
+            <path d="M 0 500 Q 300 500 500 200 T 1000 500 T 1600 500" fill="none" stroke="url(#psychGrad)" strokeWidth="3" strokeDasharray="8 8" />
+            <path d="M 0 450 Q 400 450 650 150 T 1300 450 T 1800 450" fill="none" stroke="url(#psychGrad)" strokeWidth="2" strokeDasharray="4 4" />
+            <line x1="50%" y1="0" x2="50%" y2="100%" stroke="rgba(255,255,255,0.1)" strokeWidth="1" strokeDasharray="4 4" />
+            <line x1="0" y1="50%" x2="100%" y2="50%" stroke="rgba(255,255,255,0.1)" strokeWidth="1" strokeDasharray="4 4" />
+          </svg>
+        </div>
+
+        {/* GLOWING SPOTLIGHT ORBS */}
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-600/20 rounded-full blur-[120px] pointer-events-none"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-emerald-600/20 rounded-full blur-[120px] pointer-events-none"></div>
+
+        {/* ─── KARTU/BADGE SYMBOL PSIKOMETRI & EVALUASI 3D MELAYANG (BACKGROUND DEKORATIF) ─── */}
+        
+        {/* Floating Symbol 1: Kurva Gaussian Normal IRT (Top Right) */}
+        <div className="hidden lg:flex absolute top-32 right-12 z-10 psychometric-card-3d p-4 rounded-3xl float-anim items-center gap-4 max-w-xs">
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center text-xl font-black shadow-lg border-b-2 border-indigo-900 shrink-0">
+            <i className="fa-solid fa-chart-area"></i>
           </div>
+          <div>
+            <span className="text-[9px] font-black text-blue-400 uppercase tracking-widest block">IRT LATENT TRAIT</span>
+            <span className="text-xs font-black text-white uppercase tracking-tight block">Kurva Normal θ ~ N(0,1)</span>
+            <span className="text-[9px] text-slate-300 font-bold block mt-0.5">Item Characteristic Curve (ICC)</span>
+          </div>
+        </div>
+
+        {/* Floating Symbol 2: Fit Statistics Rasch MFRM (Middle Right) */}
+        <div className="hidden lg:flex absolute top-72 right-36 z-10 psychometric-card-3d p-4 rounded-3xl float-anim-delay items-center gap-4 max-w-xs border-b-emerald-500">
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white flex items-center justify-center text-xl font-black shadow-lg border-b-2 border-teal-900 shrink-0">
+            <i className="fa-solid fa-square-poll-vertical"></i>
+          </div>
+          <div>
+            <span className="text-[9px] font-black text-emerald-400 uppercase tracking-widest block">MODEL RASCH & MFRM</span>
+            <span className="text-xs font-black text-white uppercase tracking-tight block">Infit & Outfit MNSQ</span>
+            <span className="text-[9px] text-slate-300 font-bold block mt-0.5">Rentang Ideal: 0.5 - 1.5</span>
+          </div>
+        </div>
+
+        {/* Floating Symbol 3: Reliabilitas & Alfa Cronbach (Bottom Right) */}
+        <div className="hidden lg:flex absolute bottom-24 right-20 z-10 psychometric-card-3d p-4 rounded-3xl float-anim-reverse items-center gap-4 max-w-xs border-b-amber-500">
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 text-white flex items-center justify-center text-xl font-black shadow-lg border-b-2 border-orange-900 shrink-0">
+            <i className="fa-solid fa-certificate"></i>
+          </div>
+          <div>
+            <span className="text-[9px] font-black text-amber-400 uppercase tracking-widest block">UJI KONSISTENSI INTERNAL</span>
+            <span className="text-xs font-black text-white uppercase tracking-tight block">Cronbach α = 0.942</span>
+            <span className="text-[9px] text-slate-300 font-bold block mt-0.5">Keandalan Tinggi Terverifikasi</span>
+          </div>
+        </div>
+
+        {/* Floating Symbol 4: Likert & Evaluasi Diagnostik Matrix (Top Center Right) */}
+        <div className="hidden xl:flex absolute top-36 right-[420px] z-10 psychometric-card-3d p-3.5 rounded-2xl float-anim-reverse items-center gap-3 border-b-purple-500">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-700 text-white flex items-center justify-center text-base font-black shadow-md border-b-2 border-indigo-950 shrink-0">
+            <i className="fa-solid fa-sliders"></i>
+          </div>
+          <div>
+            <span className="text-[8px] font-black text-purple-400 uppercase tracking-widest block">DIAGNOSTIK EVALUASI</span>
+            <span className="text-[11px] font-black text-white uppercase tracking-tight block">Tingkat Kesukaran (b-value)</span>
+          </div>
+        </div>
+
+
+        {/* MAIN CONTENT CONTAINER */}
+        <div className="relative z-20 w-full px-4 md:px-14 lg:px-20 max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-12">
+          
+          <div className="max-w-2xl">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-950/80 border border-blue-600/50 text-amber-300 text-[10px] md:text-xs font-black uppercase tracking-widest shadow-xl mb-4">
+              <i className="fa-solid fa-atom text-cyan-400 animate-spin-slow"></i> HYBRID-DIAGNOSTIC ASSESSMENT PLATFORM (HDAP)
+            </div>
+
+            <h1 className="text-3xl md:text-5xl lg:text-[60px] xl:text-[72px] font-black italic text-white uppercase tracking-tighter leading-[1.1] drop-shadow-[0_6px_16px_rgba(0,0,0,0.9)] break-words">
+              E-ASSESSMENT <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-cyan-300 to-emerald-400">LITERASI DIGITAL</span>.
+            </h1>
+
+            <div className="mt-8 max-w-xl card-timbul p-6 md:p-8 rounded-[32px] bg-white/95 backdrop-blur-md shadow-2xl border-t-4 border-t-blue-400">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white flex items-center justify-center font-black text-sm shadow-md border-b-2 border-indigo-950">
+                  <i className="fa-solid fa-microchip"></i>
+                </div>
+                <span className="text-[11px] font-black text-blue-800 uppercase tracking-widest">IRT & Generative AI Engine</span>
+              </div>
+              <p className="text-xs md:text-sm text-slate-800 font-bold leading-relaxed">
+                Integrasi Analisis Item Response Theory (IRT) dengan kecerdasan Generative AI untuk memetakan profil kompetensi Literasi Digital mahasiswa calon guru secara holistik, presisi, dan objektif.
+              </p>
+              <button 
+                onClick={() => router.push("/login")}
+                className="mt-6 w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white rounded-2xl font-black text-[11px] uppercase tracking-widest shadow-xl border-b-4 border-indigo-950 active:scale-95 transition-all"
+              >
+                MULAI SEKARANG <i className="fa-solid fa-rocket ml-2"></i>
+              </button>
+            </div>
+          </div>
+
+          {/* ─── SHOWCASE PANEL DASHBOARD USER & ADMIN (RADAR CHART 5D & IRT THETA METER) ─── */}
+          <div className="w-full lg:w-[480px] shrink-0 float-anim">
+            <div className="card-timbul p-6 rounded-[36px] bg-slate-900/90 backdrop-blur-xl border-2 border-slate-700 border-b-8 border-b-slate-950 shadow-[0_25px_60px_rgba(0,0,0,0.8)] text-white relative overflow-hidden">
+              
+              {/* Header Card Panel */}
+              <div className="flex items-center justify-between pb-4 mb-4 border-b border-slate-800">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 text-white flex items-center justify-center font-black text-base shadow-lg border-b-2 border-blue-950">
+                    <i className="fa-solid fa-chart-pie"></i>
+                  </div>
+                  <div>
+                    <span className="text-[9px] font-black text-cyan-400 uppercase tracking-widest block">PANEL USER & ADMIN</span>
+                    <span className="text-sm font-black text-white uppercase tracking-tight block">Radar Chart Kompetensi 5D</span>
+                  </div>
+                </div>
+                <span className="px-2.5 py-1 bg-emerald-950 text-emerald-400 border border-emerald-700 rounded-full text-[8px] font-black uppercase">
+                  ● Realtime Diagnostic
+                </span>
+              </div>
+
+              {/* VISUAL RADAR CHART 5 DIMENSI (SVG VECTOR INTERAKTIF) */}
+              <div className="relative w-full h-56 flex items-center justify-center bg-slate-950/60 rounded-2xl p-2 border border-slate-800">
+                <svg className="w-full h-full" viewBox="0 0 200 200">
+                  {/* Grid Pentagon Radar */}
+                  <polygon points="100,20 176,75 147,165 53,165 24,75" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
+                  <polygon points="100,45 152,82 132,142 68,142 48,82" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="1" />
+                  <polygon points="100,70 128,90 118,120 82,120 72,90" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="1" />
+                  
+                  {/* Radar Axes */}
+                  <line x1="100" y1="100" x2="100" y2="20" stroke="rgba(255,255,255,0.2)" strokeWidth="1" />
+                  <line x1="100" y1="100" x2="176" y2="75" stroke="rgba(255,255,255,0.2)" strokeWidth="1" />
+                  <line x1="100" y1="100" x2="147" y2="165" stroke="rgba(255,255,255,0.2)" strokeWidth="1" />
+                  <line x1="100" y1="100" x2="53" y2="165" stroke="rgba(255,255,255,0.2)" strokeWidth="1" />
+                  <line x1="100" y1="100" x2="24" y2="75" stroke="rgba(255,255,255,0.2)" strokeWidth="1" />
+
+                  {/* Dynamic Radar Score Polygon */}
+                  <polygon 
+                    points="100,32 165,80 138,155 60,150 35,78" 
+                    fill="rgba(59, 130, 246, 0.4)" 
+                    stroke="#3b82f6" 
+                    strokeWidth="2.5" 
+                    className="drop-shadow-[0_0_12px_rgba(59,130,246,0.8)]"
+                  />
+                  {/* Radar Vertex Dots */}
+                  <circle cx="100" cy="32" r="4" fill="#60a5fa" />
+                  <circle cx="165" cy="80" r="4" fill="#34d399" />
+                  <circle cx="138" cy="155" r="4" fill="#fbbf24" />
+                  <circle cx="60" cy="150" r="4" fill="#a78bfa" />
+                  <circle cx="35" cy="78" r="4" fill="#f43f5e" />
+                </svg>
+
+                {/* Radar Axis Labels */}
+                <span className="absolute top-1 text-[8px] font-black text-blue-400 bg-slate-900 px-1.5 py-0.5 rounded border border-blue-800">MADEL-5C</span>
+                <span className="absolute top-14 right-2 text-[8px] font-black text-emerald-400 bg-slate-900 px-1.5 py-0.5 rounded border border-emerald-800">MADEL-GO</span>
+                <span className="absolute bottom-2 right-6 text-[8px] font-black text-amber-400 bg-slate-900 px-1.5 py-0.5 rounded border border-amber-800">MADEL-PAK</span>
+                <span className="absolute bottom-2 left-6 text-[8px] font-black text-purple-400 bg-slate-900 px-1.5 py-0.5 rounded border border-purple-800">MADEL-ART</span>
+                <span className="absolute top-14 left-2 text-[8px] font-black text-rose-400 bg-slate-900 px-1.5 py-0.5 rounded border border-rose-800">MADEL-V</span>
+              </div>
+
+              {/* Metrics Bar inside Panel */}
+              <div className="grid grid-cols-2 gap-3 mt-4">
+                <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 flex items-center justify-between">
+                  <div>
+                    <span className="text-[8px] font-black text-slate-400 uppercase block">SKOR THETA (IRT)</span>
+                    <span className="text-base font-black text-cyan-400 block">θ = +1.68</span>
+                  </div>
+                  <span className="text-[9px] font-black text-emerald-400 bg-emerald-950 px-2 py-0.5 rounded border border-emerald-800">HIGH</span>
+                </div>
+                <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 flex items-center justify-between">
+                  <div>
+                    <span className="text-[8px] font-black text-slate-400 uppercase block">RELIABILITAS (α)</span>
+                    <span className="text-base font-black text-amber-400 block">α = 0.94</span>
+                  </div>
+                  <span className="text-[9px] font-black text-amber-400 bg-amber-950 px-2 py-0.5 rounded border border-amber-800">VERY HIGH</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
         </div>
       </section>
 
 
+
       {/* ════════════════════════════════════════
-          HALAMAN 2: HIRARKI INTEGRASI FRAMEWORK MADEL (DIAGRAM LINGKARAN SIRKULAR TIMBUL 3D)
+          HALAMAN 2: DIAGRAM KETERHUBUNGAN ION FRAMEWORK MADEL (ANIMASI MOLEKULER BERGERAK)
       ════════════════════════════════════════ */}
       <section id="framework" className="relative py-28 px-4 md:px-12 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white overflow-hidden border-y-4 border-slate-800">
         
-        {/* RADIAL CONNECTING LINES BACKGROUND */}
-        <div className="absolute inset-0 z-0 opacity-20 pointer-events-none">
+        {/* ION MOLECULAR BOND VECTOR BACKGROUND WITH MOVING FLOW */}
+        <div className="absolute inset-0 z-0 opacity-30 pointer-events-none">
           <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
             <defs>
-              <linearGradient id="lineGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.8" />
-                <stop offset="50%" stopColor="#10b981" stopOpacity="0.8" />
-                <stop offset="100%" stopColor="#f59e0b" stopOpacity="0.8" />
+              <linearGradient id="ionGradientFlow" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.9" />
+                <stop offset="50%" stopColor="#10b981" stopOpacity="0.9" />
+                <stop offset="100%" stopColor="#f59e0b" stopOpacity="0.9" />
               </linearGradient>
             </defs>
-            <circle cx="50%" cy="40%" r="220" fill="none" stroke="url(#lineGrad)" strokeWidth="2" strokeDasharray="6 6" />
-            <circle cx="50%" cy="40%" r="380" fill="none" stroke="url(#lineGrad)" strokeWidth="1.5" strokeDasharray="4 8" />
+            <circle cx="50%" cy="50%" r="280" fill="none" stroke="url(#ionGradientFlow)" strokeWidth="2" strokeDasharray="10 10" className="ion-bond-animated" />
+            <circle cx="50%" cy="50%" r="420" fill="none" stroke="url(#ionGradientFlow)" strokeWidth="1.5" strokeDasharray="6 6" className="ion-bond-animated" />
           </svg>
         </div>
 
         <div className="max-w-7xl mx-auto w-full relative z-10">
           <div className="text-center space-y-3 mb-16">
             <span className="px-4 py-1.5 bg-blue-950/80 text-blue-300 rounded-full text-[10px] font-black uppercase tracking-[0.25em] border border-blue-800/60 shadow-lg inline-flex items-center gap-2">
-              <i className="fa-solid fa-sitemap text-blue-400"></i> SYSTEM ARCHITECTURE HIERARCHY
+              <i className="fa-solid fa-atom text-cyan-400 animate-spin-slow"></i> HETERO-IONIC FRAMEWORK NETWORK
             </span>
             <h2 className="text-3xl md:text-5xl lg:text-6xl font-black italic text-white uppercase tracking-tight leading-tight drop-shadow-lg">
-              HIRARKI INTEGRASI FRAMEWORK <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-emerald-400 to-cyan-400">MADEL</span>
+              KETERHUBUNGAN ION FRAMEWORK <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-emerald-400 to-cyan-400">MADEL</span>
             </h2>
             <div className="w-24 h-1.5 bg-gradient-to-r from-amber-500 via-emerald-500 to-blue-500 mx-auto rounded-full shadow-lg"></div>
             <p className="text-slate-300 font-bold max-w-3xl mx-auto text-xs md:text-sm leading-relaxed">
-              Struktur hirarki sirkular pengembangan <strong className="text-white">MADEL (Model Asesmen Digital Evaluasi Literasi)</strong> sebagai inti induk yang membawahi 5 Sub-Model Spesifik.
+              Jaringan ikatan ikatan molekuler interaktif antara <strong className="text-white">CORE MADEL NUCLEUS</strong> dan 5 Orbit Sub-Model Ion Spesifik dalam sistem evaluasi kompetensi.
             </p>
           </div>
 
-          {/* DIAGRAM LINGKARAN SIRKULAR TIMBUL 3D (CENTER NODE + 5 RADIAL NODES) */}
-          <div className="relative my-12 py-10 flex flex-col items-center justify-center">
+          {/* ─── DIAGRAM IONIK MOLEKULER TIMBUL 3D WITH ANIMATED BOND LINES ─── */}
+          <div className="relative my-8 py-12 flex flex-col items-center justify-center">
             
-            {/* LINGKARAN PUSAT (CENTER HUB: FRAMEWORK UTAMA MADEL) */}
-            <div className="card-timbul w-48 h-48 md:w-64 md:h-64 rounded-full bg-gradient-to-br from-amber-500 via-yellow-500 to-emerald-600 border-4 border-white shadow-[0_0_60px_rgba(245,158,11,0.4)] flex flex-col items-center justify-center text-center p-4 z-20 hover:scale-105 transition-all duration-300">
-              <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-slate-900 text-amber-400 flex items-center justify-center text-2xl md:text-3xl mb-2 shadow-xl border-2 border-amber-300">
-                <i className="fa-solid fa-diagram-project"></i>
-              </div>
-              <span className="text-[8px] md:text-[9px] font-black text-slate-900 uppercase tracking-widest block bg-white/80 px-2 py-0.5 rounded-full mb-1">
-                MODEL INDUK UTAMA
-              </span>
-              <h3 className="text-lg md:text-2xl font-black text-slate-950 uppercase tracking-tight italic drop-shadow-sm leading-tight">
-                FRAMEWORK MADEL
-              </h3>
-              <p className="text-[9px] md:text-[10px] font-black text-slate-900 mt-1 max-w-[150px] md:max-w-[180px] leading-tight">
-                Model Asesmen Digital Evaluasi Literasi
-              </p>
+            {/* SVG ATOMIC BONDS CONNECTING CORE NUCLEUS TO SATELLITES */}
+            <div className="absolute inset-0 z-0 hidden md:block pointer-events-none">
+              <svg className="w-full h-full" viewBox="0 0 1000 500">
+                {/* Bonds from Center (500, 250) to 5 Satellite Nodes */}
+                <line x1="500" y1="250" x2="150" y2="380" stroke="#10b981" strokeWidth="4" className="ion-bond-animated" />
+                <line x1="500" y1="250" x2="320" y2="380" stroke="#3b82f6" strokeWidth="4" className="ion-bond-animated" />
+                <line x1="500" y1="250" x2="500" y2="380" stroke="#f59e0b" strokeWidth="4" className="ion-bond-animated" />
+                <line x1="500" y1="250" x2="680" y2="380" stroke="#a855f7" strokeWidth="4" className="ion-bond-animated" />
+                <line x1="500" y1="250" x2="850" y2="380" stroke="#f43f5e" strokeWidth="4" className="ion-bond-animated" />
+
+                {/* Animated Electron Nodes on Bonds */}
+                <circle cx="325" cy="315" r="7" fill="#34d399" className="animate-ping" />
+                <circle cx="410" cy="315" r="7" fill="#60a5fa" className="animate-ping" />
+                <circle cx="500" cy="315" r="7" fill="#fbbf24" className="animate-ping" />
+                <circle cx="590" cy="315" r="7" fill="#c084fc" className="animate-ping" />
+                <circle cx="675" cy="315" r="7" fill="#fb7185" className="animate-ping" />
+              </svg>
             </div>
 
-            {/* 5 LINGKARAN SUB-MODEL SIRKULAR (RADIAL LAYOUT) */}
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4 md:gap-6 mt-10 md:-mt-8 w-full max-w-5xl z-10">
+            {/* CORE NUCLEUS ION SPHERE (PUSAT MOLEKUL MADEL) */}
+            <div className="relative z-20 mb-12">
+              <div className="w-56 h-56 md:w-64 md:h-64 rounded-full bg-gradient-to-br from-amber-400 via-yellow-500 to-amber-600 p-2 shadow-[0_0_80px_rgba(245,158,11,0.5)] border-4 border-white flex flex-col items-center justify-center text-center z-20 hover:scale-105 transition-all duration-300 relative ion-pulse-glow">
+                
+                {/* Rotating Outer Atomic Orbital Ring */}
+                <div className="absolute -inset-4 rounded-full stroke-amber-400 border-2 border-dashed border-amber-300/60 animate-spin-slow pointer-events-none"></div>
+
+                <div className="w-14 h-14 rounded-full bg-slate-950 text-amber-400 flex items-center justify-center text-3xl mb-2 shadow-xl border-2 border-amber-300">
+                  <i className="fa-solid fa-atom"></i>
+                </div>
+                <span className="text-[9px] font-black text-slate-950 uppercase tracking-widest block bg-white/90 px-3 py-0.5 rounded-full mb-1 border border-amber-300">
+                  INTI INDUK MOLEKUL
+                </span>
+                <h3 className="text-xl md:text-2xl font-black text-slate-950 uppercase tracking-tight italic drop-shadow-sm leading-tight">
+                  FRAMEWORK MADEL
+                </h3>
+                <p className="text-[9px] font-black text-slate-900 mt-1 max-w-[170px] leading-tight">
+                  Model Asesmen Digital Evaluasi Literasi
+                </p>
+              </div>
+            </div>
+
+            {/* 5 ION SATELLITE SPHERES (ORBIT MOLEKUL SUB-MODEL) */}
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4 md:gap-6 w-full max-w-6xl z-10">
               {subModels.map((m, idx) => (
                 <div 
                   key={m.id}
-                  className="card-timbul p-4 md:p-5 rounded-[28px] bg-white text-slate-900 border-2 border-slate-200 flex flex-col items-center text-center shadow-xl hover:translate-y-[-6px] transition-all duration-300 group"
+                  className="card-timbul p-5 rounded-[32px] bg-white text-slate-900 border-2 border-slate-200 flex flex-col items-center text-center shadow-2xl hover:translate-y-[-8px] transition-all duration-300 group relative overflow-hidden"
                 >
-                  <div className={`w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-gradient-to-br ${m.color} text-white flex items-center justify-center text-xl shadow-lg border-b-2 border-black/30 mb-3`}>
+                  <div className={`w-14 h-14 md:w-16 md:h-16 rounded-full bg-gradient-to-br ${m.color} text-white flex items-center justify-center text-2xl shadow-xl border-4 border-white mb-3 ring-4 ring-slate-100`}>
                     <i className={`fa-solid ${m.icon}`}></i>
                   </div>
-                  <span className={`px-2 py-0.5 rounded-md text-[8px] font-black uppercase mb-1.5 border ${m.accent}`}>
-                    Sub-Model #{idx + 1}
+                  <span className={`px-2.5 py-0.5 rounded-full text-[8px] font-black uppercase mb-1.5 border ${m.accent}`}>
+                    Ion Sub-Model #{idx + 1}
                   </span>
-                  <h4 className="text-base md:text-lg font-black text-slate-900 uppercase tracking-tight italic">
+                  <h4 className="text-lg font-black text-slate-900 uppercase tracking-tight italic">
                     {m.code}
                   </h4>
                   <p className="text-[9px] font-bold text-slate-500 mt-1 leading-snug line-clamp-2">
@@ -237,6 +415,7 @@ export default function Home() {
                 key={m.id} 
                 className="card-timbul p-6 rounded-[32px] bg-white text-slate-900 border-2 border-slate-200 flex flex-col justify-between hover:translate-y-[-4px] transition-all duration-300"
               >
+
                 <div>
                   <div className="flex justify-between items-center mb-4">
                     <span className={`px-3 py-1 rounded-xl text-[9px] font-black uppercase tracking-wider border ${m.accent}`}>
