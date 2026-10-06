@@ -20,11 +20,73 @@ body {
 }
 
 .glass-panel {
-  background: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.88);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.9);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 20px 40px -15px rgba(15, 23, 42, 0.12), 0 0 15px rgba(255, 255, 255, 0.5);
+}
+
+/* Card Timbul (3D Depth & Elevation) */
+.card-timbul {
+  background: #ffffff;
+  border: 1px solid rgba(203, 213, 225, 0.8);
+  border-top: 2px solid rgba(255, 255, 255, 1);
+  box-shadow: 
+    0 10px 30px -5px rgba(15, 23, 42, 0.15),
+    0 4px 12px -2px rgba(15, 23, 42, 0.08);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.card-timbul:hover {
+  box-shadow: 
+    0 16px 36px -6px rgba(15, 23, 42, 0.18),
+    0 6px 16px -3px rgba(15, 23, 42, 0.1);
+}
+
+/* Pilihan Jawaban Timbul Compact (Fit 5 Options) */
+.option-card-timbul {
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  border-bottom-width: 3.5px;
+  border-bottom-color: #94a3b8;
+  box-shadow: 0 2px 6px -1px rgba(15, 23, 42, 0.05);
+  transition: all 0.2s ease-in-out;
+}
+
+.option-card-timbul:hover {
+  transform: translateY(-2px);
+  border-color: #3b82f6;
+  border-bottom-color: #1d4ed8;
+  background-color: #f8fafc;
+  box-shadow: 0 6px 14px -3px rgba(37, 99, 235, 0.15);
+}
+
+.option-card-timbul-selected {
+  background: linear-gradient(135deg, #3b421a 0%, #4B5320 100%) !important;
+  border-color: #2f3513 !important;
+  border-bottom-width: 4px !important;
+  border-bottom-color: #1e220c !important;
+  color: #ffffff !important;
+  box-shadow: 
+    0 8px 20px -4px rgba(75, 83, 32, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25) !important;
+  transform: translateY(-1px) scale(1.005) !important;
+}
+
+/* Scenario Box Timbul (Warna Hijau Soft / Mint Pastel) */
+.scenario-timbul {
+  background: linear-gradient(145deg, #ecfdf5 0%, #d1fae5 100%);
+  border-left: 5px solid #059669;
+  border-top: 1px solid #ffffff;
+  border-right: 1px solid #a7f3d0;
+  border-bottom: 1px solid #a7f3d0;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02), 0 2px 8px rgba(5, 150, 105, 0.08);
+}
+
+/* Eye Comfort Soft Overlay (Disabled to keep original background 100%) */
+.bg-eye-comfort-overlay {
+  display: none !important;
 }
 
 .glow-text {
@@ -77,4 +139,5 @@ body {
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: rgba(148, 163, 184, 0.5);
 }
+
 

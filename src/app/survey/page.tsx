@@ -42,7 +42,7 @@ export default function SurveyPage() {
     let totalScore = 0;
     Object.entries(answers).forEach(([idx, val]) => {
       const qNum = parseInt(idx) + 1;
-      if (qNum % 2 !== 0) { totalScore += (val - 1); } 
+      if (qNum % 2 !== 0) { totalScore += (val - 1); }
       else { totalScore += (5 - val); }
     });
 
@@ -50,126 +50,130 @@ export default function SurveyPage() {
       await fetch("/api/survey", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          userId, 
-          totalScore, 
+        body: JSON.stringify({
+          userId,
+          totalScore,
           answersJson: answers,
           feedback: feedback // Mengirimkan masukan pengguna
         }),
       });
-      
+
       // KEMBALI KE DASHBOARD UNTUK MELIHAT HASIL
       router.push("/dashboard");
-    } catch (err) { 
-      console.error(err); 
+    } catch (err) {
+      console.error(err);
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="min-h-screen relative bg-slate-100"
-         style={{ 
-           backgroundImage: "url('/unj_bg_v2.png')",
-           backgroundSize: 'cover',
-           backgroundPosition: 'center',
-           backgroundAttachment: 'fixed'
-         }}>
+    <div className="min-h-screen relative overflow-x-hidden"
+      style={{
+        backgroundImage: "url('/unj_bg_v2.png')",
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed'
+      }}>
 
       <main className="relative z-10 max-w-xl mx-auto px-4 py-6">
         <AnimatePresence mode="wait">
           {showInstructions ? (
-            <motion.div 
+            <motion.div
               key="instructions"
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="bg-white p-8 rounded-[40px] shadow-3xl border border-slate-200"
+              className="card-timbul p-8 rounded-[40px]"
             >
-              <div className="flex items-center gap-3 mb-6 border-b pb-6">
-                <div className="w-12 h-12 bg-amber-500 rounded-2xl flex items-center justify-center text-white shadow-lg">
+              <div className="flex items-center gap-3 mb-6 border-b border-slate-100 pb-6">
+                <div className="w-12 h-12 bg-gradient-to-br from-amber-500 to-amber-700 rounded-2xl flex items-center justify-center text-white shadow-lg border-b-2 border-amber-900">
                   <i className="fa-solid fa-wand-magic-sparkles text-2xl"></i>
                 </div>
                 <div>
                   <h1 className="text-xl font-black text-slate-900 uppercase tracking-tighter">Evaluasi Sistem</h1>
+                  <p className="text-[10px] font-bold text-amber-600 uppercase tracking-widest">Survey System Usability Scale (SUS)</p>
                 </div>
               </div>
-              
+
               <div className="space-y-4 mb-8">
-                <div className="p-4 bg-amber-50 rounded-2xl border border-amber-100">
-                  <h3 className="text-[11px] font-black text-amber-900 uppercase mb-1 tracking-widest">INSTRUKSI:</h3>
-                  <p className="text-[10px] font-bold text-amber-800 leading-relaxed italic">
+                <div className="p-4 bg-amber-50/80 rounded-2xl border border-amber-200/80 shadow-sm">
+                  <h3 className="text-[11px] font-black text-amber-900 uppercase mb-1 tracking-widest flex items-center gap-1.5">
+                    <i className="fa-solid fa-circle-info text-amber-600"></i> INSTRUKSI:
+                  </h3>
+                  <p className="text-[11px] font-bold text-amber-800 leading-relaxed italic">
                     Berikan penilaian jujur Anda mengenai pengalaman menggunakan sistem HDAP ini. Penilaian Anda sangat berharga untuk pengembangan platform.
                   </p>
                 </div>
               </div>
 
-              <button onClick={() => setShowInstructions(false)} className="w-full py-5 bg-black text-white font-black rounded-2xl text-[11px] uppercase tracking-widest shadow-2xl active:scale-95 transition-all">SAYA SIAP & MULAI SURVEY</button>
+              <button onClick={() => setShowInstructions(false)} className="w-full py-5 bg-gradient-to-r from-slate-900 to-slate-800 hover:from-black hover:to-slate-900 text-white font-black rounded-2xl text-[11px] uppercase tracking-widest shadow-xl border-b-4 border-black active:scale-95 transition-all">SAYA SIAP & MULAI SURVEY</button>
             </motion.div>
           ) : (
             <motion.div key="survey" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
-               <div className="text-center mb-6">
-                  <h2 className="text-xl font-black text-white uppercase drop-shadow-2xl italic tracking-tighter">SURVEY KEPUASAN (SUS)</h2>
-                  <div className="w-12 h-1.5 bg-white mx-auto mt-2 rounded-full shadow-lg"></div>
-               </div>
+              <div className="text-center mb-6">
+                <h2 className="text-xl font-black text-white uppercase drop-shadow-2xl italic tracking-tighter">SURVEY KEPUASAN (SUS)</h2>
+                <div className="w-12 h-1.5 bg-amber-400 mx-auto mt-2 rounded-full shadow-lg"></div>
+              </div>
 
-               {susQuestions.map((q, i) => (
-                 <motion.div key={i} className="bg-white border-2 border-slate-200 p-5 rounded-[30px] shadow-xl">
-                   <div className="mb-4 p-4 bg-slate-50 border-l-[6px] border-slate-900 rounded-2xl">
-                     <p className="text-[13px] text-slate-900 font-bold leading-tight italic">
-                       <span className="text-slate-400 mr-1">#{i + 1}</span> {q}
-                     </p>
-                   </div>
-                   
-                   <div className="flex justify-between items-center gap-2 px-2">
-                     <span className="text-[9px] font-black text-slate-400 uppercase tracking-tighter w-12 leading-none">Sangat Setuju</span>
-                     <div className="flex justify-between gap-2 flex-1 max-w-[240px]">
-                        {[5, 4, 3, 2, 1].map((val) => (
+              {susQuestions.map((q, i) => (
+                <motion.div key={i} className="card-timbul p-6 rounded-[30px]">
+                  <div className="mb-4 p-4 scenario-timbul rounded-2xl">
+                    <p className="text-[13px] text-slate-900 font-bold leading-tight italic">
+                      <span className="text-slate-500 font-black mr-1">#{i + 1}</span> {q}
+                    </p>
+                  </div>
+
+                  <div className="flex justify-between items-center gap-2 px-1">
+                    <span className="text-[9px] font-black text-slate-500 uppercase tracking-tighter w-12 leading-tight">Sangat Setuju</span>
+                    <div className="flex justify-between gap-2 flex-1 max-w-[250px]">
+                      {[5, 4, 3, 2, 1].map((val) => {
+                        const isSelected = answers[i] === val;
+                        return (
                           <button
                             key={val}
                             onClick={() => handleAnswer(i, val)}
-                            className={`w-10 h-10 rounded-xl font-black text-xs transition-all flex items-center justify-center border-2 ${
-                              answers[i] === val 
-                                ? "bg-black border-black text-white shadow-xl scale-110" 
-                                : "bg-slate-100 border-slate-200 text-slate-400 hover:bg-slate-200"
-                            }`}
+                            className={`w-10 h-10 rounded-xl font-black text-xs transition-all flex items-center justify-center border-2 ${isSelected
+                                ? "bg-slate-900 border-slate-900 text-white shadow-xl scale-110 border-b-4 border-black"
+                                : "bg-white border-slate-200 text-slate-600 hover:bg-slate-100 hover:border-slate-300 shadow-sm"
+                              }`}
                           >
                             {val}
                           </button>
-                        ))}
-                     </div>
-                     <span className="text-[9px] font-black text-slate-400 uppercase tracking-tighter w-12 text-right leading-none">Tidak Setuju</span>
-                   </div>
-                 </motion.div>
-               ))}
-
-               {/* KOLOM FEEDBACK KHUSUS (BARU) */}
-               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
-                 className="bg-white border-2 border-blue-200 p-6 rounded-[30px] shadow-2xl mt-8"
-               >
-                 <div className="flex items-center gap-3 mb-4">
-                    <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white text-xs">
-                      <i className="fa-solid fa-comment-dots"></i>
+                        );
+                      })}
                     </div>
-                    <h3 className="text-xs font-black text-slate-900 uppercase tracking-widest">MASUKAN & SARAN (FEEDBACK)</h3>
-                 </div>
-                 <textarea
-                   className="w-full bg-blue-50/50 border-2 border-blue-100 rounded-2xl p-4 text-xs font-bold text-slate-800 focus:bg-white focus:border-blue-400 outline-none transition-all"
-                   rows={4}
-                   placeholder="Tuliskan pengalaman atau saran Anda untuk perbaikan website HDAP kedepannya..."
-                   value={feedback}
-                   onChange={(e) => setFeedback(e.target.value)}
-                 />
-                 <p className="text-[9px] font-bold text-blue-400 mt-2 italic">* Masukan Anda sangat membantu riset pengembangan platform ini.</p>
-               </motion.div>
+                    <span className="text-[9px] font-black text-slate-500 uppercase tracking-tighter w-12 text-right leading-tight">Tidak Setuju</span>
+                  </div>
+                </motion.div>
+              ))}
 
-               <button 
-                 disabled={!isComplete || isSubmitting} 
-                 onClick={submitSurvey} 
-                 className={`w-full py-5 mt-10 rounded-2xl font-black uppercase text-xs tracking-widest transition-all shadow-2xl ${
-                   isComplete && !isSubmitting ? "bg-blue-600 text-white hover:bg-blue-700 active:scale-95" : "bg-slate-300 text-slate-500 cursor-not-allowed"
-                 }`}
-               >
-                 {isSubmitting ? "MENGIRIM DATA..." : "SIMPAN & LIHAT HASIL"} 
-                 {!isSubmitting && <i className="fa-solid fa-circle-check ml-2"></i>}
-               </button>
+              {/* KOLOM FEEDBACK KHUSUS (BARU) */}
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
+                className="card-timbul p-6 rounded-[30px] mt-8 border-2 border-blue-200"
+              >
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white text-xs shadow-md">
+                    <i className="fa-solid fa-comment-dots"></i>
+                  </div>
+                  <h3 className="text-xs font-black text-slate-900 uppercase tracking-widest">MASUKAN & SARAN (FEEDBACK)</h3>
+                </div>
+                <textarea
+                  className="w-full bg-blue-50/50 border-2 border-blue-100 rounded-2xl p-4 text-xs font-bold text-slate-800 focus:bg-white focus:border-blue-400 outline-none transition-all shadow-inner"
+                  rows={4}
+                  placeholder="Tuliskan pengalaman atau saran Anda untuk perbaikan website HDAP kedepannya..."
+                  value={feedback}
+                  onChange={(e) => setFeedback(e.target.value)}
+                />
+                <p className="text-[9px] font-bold text-blue-500 mt-2 italic">* Masukan Anda sangat membantu riset pengembangan platform ini.</p>
+              </motion.div>
+
+              <button
+                disabled={!isComplete || isSubmitting}
+                onClick={submitSurvey}
+                className={`w-full py-5 mt-10 rounded-2xl font-black uppercase text-xs tracking-widest transition-all shadow-2xl ${isComplete && !isSubmitting ? "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 border-b-4 border-blue-900 text-white active:scale-95" : "bg-slate-300 text-slate-500 cursor-not-allowed border-b-4 border-slate-400"
+                  }`}
+              >
+                {isSubmitting ? "MENGIRIM DATA..." : "SIMPAN & LIHAT HASIL"}
+                {!isSubmitting && <i className="fa-solid fa-circle-check ml-2"></i>}
+              </button>
             </motion.div>
           )}
         </AnimatePresence>
