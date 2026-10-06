@@ -79,26 +79,60 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col md:flex-row overflow-hidden font-sans">
-      {/* SIDEBAR */}
-      <aside className="w-full md:w-48 bg-[#4B5320] flex flex-col text-white shadow-xl relative z-20">
-        <div className="p-4 border-b border-white/10 flex items-center gap-3">
-          <i className="fa-solid fa-graduation-cap text-lg"></i>
-          <h1 className="font-black text-xs tracking-tighter uppercase leading-none">HDAP PORTAL</h1>
+      {/* SIDEBAR TIMBUL & ENLARGED */}
+      <aside className="w-full md:w-64 bg-gradient-to-b from-[#3B4219] via-[#4B5320] to-[#2E3314] flex flex-col text-white shadow-2xl relative z-20 border-r border-[#5B6428]">
+        {/* BRAND LOGO TIMBUL */}
+        <div className="p-4 md:p-6 border-b border-white/15 flex items-center gap-3 bg-black/10">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-yellow-500 text-[#2E3314] flex items-center justify-center text-lg font-black shadow-lg border-b-2 border-amber-700 shrink-0">
+            <i className="fa-solid fa-graduation-cap"></i>
+          </div>
+          <div>
+            <h1 className="font-black text-sm md:text-base tracking-tight uppercase leading-tight text-amber-300 drop-shadow-sm">HDAP PORTAL</h1>
+            <span className="text-[9px] font-bold text-slate-200 uppercase tracking-widest block">E-Assessment System</span>
+          </div>
         </div>
 
-        <nav className="flex-1 p-2 space-y-1">
-          <button onClick={() => router.push("/dashboard")} className="w-full flex items-center gap-3 px-3 py-2 rounded-lg bg-white/10 text-[10px] font-bold text-left">
-            <i className="fa-solid fa-house w-4"></i> DASHBOARD
+        {/* NAVIGATION BUTTONS TIMBUL & ENLARGED */}
+        <nav className="flex-1 p-3 md:p-4 space-y-2.5">
+          <button 
+            onClick={() => router.push("/dashboard")} 
+            className="w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl bg-gradient-to-r from-white/25 to-white/15 text-white text-xs md:text-sm font-black text-left shadow-md border border-white/30 border-b-4 border-b-black/30 transition-all hover:translate-y-[-2px] active:translate-y-[0px]"
+          >
+            <i className="fa-solid fa-house text-amber-400 text-sm w-5 text-center"></i> 
+            <span>DASHBOARD</span>
           </button>
-          <button onClick={() => router.push("/assessment/preliminary")} className="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-white/10 text-[10px] font-medium text-left transition-all">
-            <span className="flex items-center gap-3">
-              <i className="fa-solid fa-clipboard-check w-4"></i> PDI-DL (TES AWAL)
+
+          <button 
+            onClick={() => router.push("/assessment/madel5c")} 
+            className="w-full flex items-center justify-between px-4 py-3 rounded-2xl bg-white/10 hover:bg-white/20 text-white text-xs md:text-sm font-black text-left transition-all border border-white/15 border-b-4 border-b-black/20 hover:translate-y-[-2px]"
+          >
+            <span className="flex items-center gap-3.5">
+              <i className="fa-solid fa-file-pen text-emerald-400 text-sm w-5 text-center"></i>
+              <span>MADEL-5C (SJT)</span>
             </span>
-            {isPdiDone && <i className="fa-solid fa-circle-check text-emerald-400 text-xs"></i>}
+            {isMadelDone && <i className="fa-solid fa-circle-check text-emerald-400 text-sm"></i>}
           </button>
-          <button onClick={() => { localStorage.clear(); router.push("/login"); }} className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-rose-500/20 text-rose-300 text-[10px] font-medium text-left transition-all">
-            <i className="fa-solid fa-power-off w-4"></i> KELUAR
+
+          <button 
+            onClick={() => router.push("/survey")} 
+            className="w-full flex items-center justify-between px-4 py-3 rounded-2xl bg-white/10 hover:bg-white/20 text-white text-xs md:text-sm font-black text-left transition-all border border-white/15 border-b-4 border-b-black/20 hover:translate-y-[-2px]"
+          >
+            <span className="flex items-center gap-3.5">
+              <i className="fa-solid fa-poll-h text-amber-300 text-sm w-5 text-center"></i>
+              <span>SURVEY KEPUASAN</span>
+            </span>
+            {isSurveyDone && <i className="fa-solid fa-circle-check text-emerald-400 text-sm"></i>}
           </button>
+
+          <div className="pt-4 border-t border-white/10">
+            <button 
+              onClick={() => { localStorage.clear(); router.push("/login"); }} 
+              className="w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl bg-rose-600/30 hover:bg-rose-600/50 text-rose-100 text-xs md:text-sm font-black text-left transition-all border border-rose-400/30 border-b-4 border-b-rose-950 hover:translate-y-[-2px]"
+            >
+              <i className="fa-solid fa-power-off text-rose-400 text-sm w-5 text-center"></i> 
+              <span>KELUAR</span>
+            </button>
+          </div>
         </nav>
       </aside>
 
@@ -111,12 +145,20 @@ export default function DashboardPage() {
               backgroundAttachment: 'fixed'
             }}>
         
-        <header className="sticky top-0 z-10 px-4 py-2 bg-white border-b border-slate-200 flex items-center justify-between shadow-sm">
-           <h2 className="text-[10px] font-black text-slate-800 uppercase italic">
-              User: {user.name} | {user.campus}
-           </h2>
-           <div className="px-2 py-0.5 bg-emerald-500 text-white rounded text-[7px] font-black uppercase">
-              ONLINE
+        <header className="sticky top-0 z-10 px-4 md:px-6 py-3 bg-white/95 backdrop-blur-md border-b border-slate-200 flex items-center justify-between shadow-md">
+           <div className="flex items-center gap-2.5 md:gap-3">
+              <div className="w-8 h-8 rounded-xl bg-[#4B5320] text-white flex items-center justify-center font-black text-xs shadow-sm border border-[#3B4219]">
+                {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
+              </div>
+              <div>
+                <h2 className="text-xs md:text-sm font-black text-slate-900 uppercase leading-tight">
+                  User: {user.name}
+                </h2>
+                <p className="text-[10px] font-bold text-slate-500 uppercase">{user.campus}</p>
+              </div>
+           </div>
+           <div className="px-3 py-1 bg-emerald-600 text-white rounded-full text-[9px] md:text-[10px] font-black uppercase tracking-wider shadow-sm flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-emerald-300 animate-pulse"></span> ONLINE
            </div>
         </header>
 
