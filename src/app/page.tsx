@@ -571,21 +571,21 @@ export default function Home() {
 
 
       {/* ════════════════════════════════════════
-          HALAMAN 3 — VIDEO TUTORIAL TIMBUL (WITH STAGGERED ORGANIC CONSTELLATION FLOATING ICONS)
+          HALAMAN 3 — VIDEO TUTORIAL TIMBUL (THEME SOFT SKY BLUE)
       ════════════════════════════════════════ */}
-      <section id="about" className="relative min-h-screen py-28 px-4 md:px-14 lg:px-20 overflow-hidden bg-[#FAF5EF] border-b-4 border-amber-200">
+      <section id="about" className="relative min-h-screen py-28 px-4 md:px-14 lg:px-20 overflow-hidden bg-[#F3F6FA] border-b-4 border-blue-200">
         
-        {/* BACKGROUND MOTIF BATIK PAPUA (UKIRAN ASMAT & SPIRAL PAPUA) TANPA FILTER */}
+        {/* BACKGROUND MOTIF BATIK PAPUA - HALAMAN 3 (SAPPHIRE BLUE & ROYAL INDIGO MOTIF) */}
         <div className="absolute inset-0 z-0 opacity-[0.16] pointer-events-none overflow-hidden">
           <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
             <defs>
               <pattern id="batikPapuaPatternH3" width="140" height="140" patternUnits="userSpaceOnUse">
-                <path d="M 70,0 L 140,70 L 70,140 L 0,70 Z" fill="none" stroke="#b45309" strokeWidth="1.8" />
-                <path d="M 70,18 L 122,70 L 70,122 L 18,70 Z" fill="none" stroke="#1e40af" strokeWidth="1.2" strokeDasharray="4 4" />
-                <path d="M 70,40 Q 98,70 70,100 Q 42,70 70,40" fill="none" stroke="#047857" strokeWidth="1.8" />
-                <circle cx="70" cy="70" r="10" fill="none" stroke="#b45309" strokeWidth="1.8" />
-                <path d="M 0,0 Q 35,35 70,0 Q 105,35 140,0" fill="none" stroke="#b45309" strokeWidth="1.5" />
-                <path d="M 0,140 Q 35,105 70,140 Q 105,105 140,140" fill="none" stroke="#b45309" strokeWidth="1.5" />
+                <path d="M 70,0 L 140,70 L 70,140 L 0,70 Z" fill="none" stroke="#2563eb" strokeWidth="1.8" />
+                <path d="M 70,18 L 122,70 L 70,122 L 18,70 Z" fill="none" stroke="#4f46e5" strokeWidth="1.2" strokeDasharray="4 4" />
+                <path d="M 70,40 Q 98,70 70,100 Q 42,70 70,40" fill="none" stroke="#1d4ed8" strokeWidth="1.8" />
+                <circle cx="70" cy="70" r="10" fill="none" stroke="#2563eb" strokeWidth="1.8" />
+                <path d="M 0,0 Q 35,35 70,0 Q 105,35 140,0" fill="none" stroke="#4f46e5" strokeWidth="1.5" />
+                <path d="M 0,140 Q 35,105 70,140 Q 105,105 140,140" fill="none" stroke="#2563eb" strokeWidth="1.5" />
               </pattern>
             </defs>
             <rect width="100%" height="100%" fill="url(#batikPapuaPatternH3)" />
@@ -686,24 +686,22 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-
       {/* ════════════════════════════════════════
-          HALAMAN 4 — FLIPBOOK MANUAL TIMBUL (WITH STAGGERED ORGANIC CONSTELLATION FLOATING ICONS)
+          HALAMAN 4 — FLIPBOOK MANUAL TIMBUL (THEME TERRACOTTA WARM CREAM)
       ════════════════════════════════════════ */}
-      <section id="manual" className="relative min-h-screen py-28 px-4 md:px-14 lg:px-20 overflow-hidden bg-[#F5EFE6]">
+      <section id="manual" className="relative min-h-screen py-28 px-4 md:px-14 lg:px-20 overflow-hidden bg-[#FDF6EE] border-b-4 border-amber-300">
         
-        {/* BACKGROUND MOTIF BATIK PAPUA (UKIRAN ASMAT & SPIRAL PAPUA) TANPA FILTER */}
+        {/* BACKGROUND MOTIF BATIK PAPUA - HALAMAN 4 (CRIMSON TERRACOTTA & GOLDEN OCHRE MOTIF) */}
         <div className="absolute inset-0 z-0 opacity-[0.16] pointer-events-none overflow-hidden">
           <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
             <defs>
               <pattern id="batikPapuaPatternH4" width="140" height="140" patternUnits="userSpaceOnUse">
-                <path d="M 70,0 L 140,70 L 70,140 L 0,70 Z" fill="none" stroke="#b45309" strokeWidth="1.8" />
-                <path d="M 70,18 L 122,70 L 70,122 L 18,70 Z" fill="none" stroke="#1e40af" strokeWidth="1.2" strokeDasharray="4 4" />
-                <path d="M 70,40 Q 98,70 70,100 Q 42,70 70,40" fill="none" stroke="#047857" strokeWidth="1.8" />
-                <circle cx="70" cy="70" r="10" fill="none" stroke="#b45309" strokeWidth="1.8" />
-                <path d="M 0,0 Q 35,35 70,0 Q 105,35 140,0" fill="none" stroke="#b45309" strokeWidth="1.5" />
-                <path d="M 0,140 Q 35,105 70,140 Q 105,105 140,140" fill="none" stroke="#b45309" strokeWidth="1.5" />
+                <path d="M 70,0 L 140,70 L 70,140 L 0,70 Z" fill="none" stroke="#dc2626" strokeWidth="1.8" />
+                <path d="M 70,18 L 122,70 L 70,122 L 18,70 Z" fill="none" stroke="#ea580c" strokeWidth="1.2" strokeDasharray="4 4" />
+                <path d="M 70,40 Q 98,70 70,100 Q 42,70 70,40" fill="none" stroke="#991b1b" strokeWidth="1.8" />
+                <circle cx="70" cy="70" r="10" fill="none" stroke="#dc2626" strokeWidth="1.8" />
+                <path d="M 0,0 Q 35,35 70,0 Q 105,35 140,0" fill="none" stroke="#ea580c" strokeWidth="1.5" />
+                <path d="M 0,140 Q 35,105 70,140 Q 105,105 140,140" fill="none" stroke="#dc2626" strokeWidth="1.5" />
               </pattern>
             </defs>
             <rect width="100%" height="100%" fill="url(#batikPapuaPatternH4)" />
@@ -780,146 +778,6 @@ export default function Home() {
           <span className="mt-2 text-[8px] font-black text-blue-900 bg-blue-100/90 px-2 py-0.5 rounded-full border border-blue-300 shadow-sm uppercase tracking-wider">
             R-Studio Engine
           </span>
-        </div>
-
-        <div className="max-w-7xl mx-auto w-full flex flex-col items-center gap-10 text-center relative z-10">
-          <div className="space-y-3 card-timbul p-6 md:p-8 rounded-[36px] bg-white/95 backdrop-blur-md max-w-2xl mx-auto border-2 border-slate-200">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-800 text-[9px] font-black uppercase tracking-widest shadow-sm mb-1">
-              <i className="fa-solid fa-circle-play text-blue-600"></i> MEDIA EDUKASI PLATFORM
-            </div>
-            <h2 className="text-2xl md:text-5xl font-black italic text-slate-900 uppercase tracking-tighter leading-tight drop-shadow-sm">
-              PANDUAN VISUAL PLATFORM
-            </h2>
-            <div className="w-20 h-1.5 bg-blue-600 mx-auto rounded-full shadow-sm"></div>
-            <p className="text-slate-800 font-black uppercase tracking-[0.3em] text-[10px]">Video Tutorial Lengkap HDAP</p>
-          </div>
-
-          {/* FRAME VIDEO TIMBUL 3D TERJAGA 100% */}
-          <div className="w-full max-w-5xl aspect-video bg-slate-950 rounded-3xl md:rounded-[48px] shadow-2xl overflow-hidden border-4 md:border-8 border-white relative group card-timbul">
-             <video className="w-full h-full object-contain" controls>
-               <source src="/media/video_HDAP.mp4" type="video/mp4" />
-             </video>
-          </div>
-        </div>
-      </section>
-
-
-      {/* ════════════════════════════════════════
-          HALAMAN 4 — FLIPBOOK MANUAL TIMBUL (WITH FLOATING PSYCHOMETRIC & GENERATIVE AI ICONS FILLING LEFT & RIGHT SPACE)
-      ════════════════════════════════════════ */}
-      <section id="manual" className="relative min-h-screen py-28 px-4 md:px-14 lg:px-20 overflow-hidden bg-[#F5EFE6]">
-        
-        {/* BACKGROUND MOTIF BATIK PAPUA (UKIRAN ASMAT & SPIRAL PAPUA) TANPA FILTER */}
-        <div className="absolute inset-0 z-0 opacity-[0.16] pointer-events-none overflow-hidden">
-          <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
-            <defs>
-              <pattern id="batikPapuaPatternH4" width="140" height="140" patternUnits="userSpaceOnUse">
-                <path d="M 70,0 L 140,70 L 70,140 L 0,70 Z" fill="none" stroke="#b45309" strokeWidth="1.8" />
-                <path d="M 70,18 L 122,70 L 70,122 L 18,70 Z" fill="none" stroke="#1e40af" strokeWidth="1.2" strokeDasharray="4 4" />
-                <path d="M 70,40 Q 98,70 70,100 Q 42,70 70,40" fill="none" stroke="#047857" strokeWidth="1.8" />
-                <circle cx="70" cy="70" r="10" fill="none" stroke="#b45309" strokeWidth="1.8" />
-                <path d="M 0,0 Q 35,35 70,0 Q 105,35 140,0" fill="none" stroke="#b45309" strokeWidth="1.5" />
-                <path d="M 0,140 Q 35,105 70,140 Q 105,105 140,140" fill="none" stroke="#b45309" strokeWidth="1.5" />
-              </pattern>
-            </defs>
-            <rect width="100%" height="100%" fill="url(#batikPapuaPatternH4)" />
-          </svg>
-        </div>
-
-        {/* ─── STANDALONE 3D EMBOSSED FLOATING ICONS FILLING LEFT & RIGHT MARGINS (HALAMAN 4) ─── */}
-        
-        {/* Left Top 1: Aiken's V Validity */}
-        <div className="hidden xl:flex absolute top-20 left-8 z-10 flex-col items-center group float-anim-reverse">
-          <i className="fa-solid fa-stamp text-rose-600 text-5xl md:text-6xl icon-timbul-3d"></i>
-          <span className="mt-2 text-[8px] font-black text-rose-900 bg-rose-100/90 px-2 py-0.5 rounded-full border border-rose-300 shadow-sm uppercase tracking-wider">
-            Validitas Aiken's V
-          </span>
-        </div>
-
-        {/* Left Top 2: Teori Tes Klasik (CTT) */}
-        <div className="hidden xl:flex absolute top-[180px] left-6 z-10 flex-col items-center group float-anim">
-          <i className="fa-solid fa-calculator text-amber-600 text-5xl md:text-6xl icon-timbul-3d"></i>
-          <span className="mt-2 text-[8px] font-black text-amber-900 bg-amber-100/90 px-2 py-0.5 rounded-full border border-amber-300 shadow-sm uppercase tracking-wider">
-            Teori Tes Klasik (CTT)
-          </span>
-        </div>
-
-        {/* Left Mid: Google Gemini AI (Authentic G-Sparkle Logo) */}
-        <div className="hidden xl:flex absolute top-[340px] left-10 z-10 flex-col items-center group float-anim-delay">
-          <div className="w-13 h-13 md:w-15 md:h-15 rounded-2xl bg-gradient-to-tr from-blue-600 via-purple-600 to-amber-500 text-white flex items-center justify-center font-black shadow-2xl border-2 border-white icon-timbul-3d">
-            <span className="font-black text-xl tracking-tighter text-white font-sans drop-shadow-md">G<span className="text-amber-300 text-xs font-bold">✦</span></span>
-          </div>
-          <span className="mt-2 text-[8px] font-black text-purple-900 bg-purple-100/90 px-2.5 py-0.5 rounded-full border border-purple-300 shadow-sm uppercase tracking-wider">
-            Google Gemini AI
-          </span>
-        </div>
-
-        {/* Left Bottom: Uji-t & Stat Rasch */}
-        <div className="hidden xl:flex absolute bottom-12 left-8 z-10 flex-col items-center group float-anim">
-          <i className="fa-solid fa-square-root-variable text-emerald-600 text-5xl md:text-6xl icon-timbul-3d"></i>
-          <span className="mt-2 text-[8px] font-black text-emerald-900 bg-emerald-100/90 px-2 py-0.5 rounded-full border border-emerald-300 shadow-sm uppercase tracking-wider">
-            Uji-t & Stat Rasch
-          </span>
-        </div>
-
-        {/* Right Top 1: Claude AI (Authentic Orange Logo) */}
-        <div className="hidden xl:flex absolute top-20 right-8 z-10 flex-col items-center group float-anim">
-          <div className="w-13 h-13 md:w-15 md:h-15 rounded-2xl bg-gradient-to-br from-orange-500 via-amber-600 to-rose-600 text-white flex items-center justify-center shadow-2xl border-2 border-white icon-timbul-3d">
-            <i className="fa-solid fa-asterisk text-2xl text-amber-100"></i>
-          </div>
-          <span className="mt-2 text-[8px] font-black text-orange-900 bg-orange-100/90 px-2.5 py-0.5 rounded-full border border-orange-300 shadow-sm uppercase tracking-wider">
-            Claude Code AI
-          </span>
-        </div>
-
-        {/* Right Top 2: Analisis CFA (Confirmatory Factor Analysis) */}
-        <div className="hidden xl:flex absolute top-[180px] right-6 z-10 flex-col items-center group float-anim-reverse">
-          <i className="fa-solid fa-diagram-project text-blue-600 text-5xl md:text-6xl icon-timbul-3d"></i>
-          <span className="mt-2 text-[8px] font-black text-blue-900 bg-blue-100/90 px-2 py-0.5 rounded-full border border-blue-300 shadow-sm uppercase tracking-wider">
-            Analisis CFA
-          </span>
-        </div>
-
-        {/* Right Mid: Reliabilitas Alpha & Omega */}
-        <div className="hidden xl:flex absolute top-[340px] right-10 z-10 flex-col items-center group float-anim-delay">
-          <i className="fa-solid fa-chart-line text-teal-600 text-5xl md:text-6xl icon-timbul-3d"></i>
-          <span className="mt-2 text-[8px] font-black text-teal-900 bg-teal-100/90 px-2 py-0.5 rounded-full border border-teal-300 shadow-sm uppercase tracking-wider">
-            Reliabilitas Alpha
-          </span>
-        </div>
-
-        {/* Right Bottom: R-Studio Psychometric Engine (Ciri Khas Huruf 'R') */}
-        <div className="hidden xl:flex absolute bottom-12 right-8 z-10 flex-col items-center group float-anim">
-          <div className="w-13 h-13 md:w-15 md:h-15 rounded-2xl bg-gradient-to-br from-blue-600 via-indigo-700 to-blue-900 text-white flex items-center justify-center shadow-2xl border-2 border-white icon-timbul-3d">
-            <i className="fa-brands fa-r-project text-3xl text-sky-200"></i>
-          </div>
-          <span className="mt-2 text-[8px] font-black text-blue-900 bg-blue-100/90 px-2 py-0.5 rounded-full border border-blue-300 shadow-sm uppercase tracking-wider">
-            R-Studio Engine
-          </span>
-        </div>
-
-        {/* Floating Psychometric Badge 1 for Halaman 4 (Top Left Inner) */}
-        <div className="hidden lg:flex absolute top-64 left-16 z-10 psychometric-card-3d-cream p-3.5 rounded-3xl float-anim-reverse items-center gap-3.5 max-w-xs !border-b-amber-600">
-          <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 text-white flex items-center justify-center text-lg font-black shadow-lg border-b-2 border-orange-950 shrink-0">
-            <i className="fa-solid fa-clipboard-check"></i>
-          </div>
-          <div>
-            <span className="text-[9px] font-black text-amber-700 uppercase tracking-widest block">METODOLOGI & NORMA</span>
-            <span className="text-xs font-black text-slate-900 uppercase tracking-tight block">Standardized T-Score</span>
-            <span className="text-[9px] text-slate-600 font-bold block mt-0.5">Pedoman Penilaian & Konversi Skor</span>
-          </div>
-        </div>
-
-        {/* Floating Psychometric Badge 2 for Halaman 4 (Bottom Right Inner) */}
-        <div className="hidden lg:flex absolute bottom-44 right-16 z-10 psychometric-card-3d-cream p-3.5 rounded-3xl float-anim items-center gap-3.5 max-w-xs !border-b-rose-600">
-          <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-rose-500 to-pink-600 text-white flex items-center justify-center text-lg font-black shadow-lg border-b-2 border-pink-950 shrink-0">
-            <i className="fa-solid fa-stamp"></i>
-          </div>
-          <div>
-            <span className="text-[9px] font-black text-rose-700 uppercase tracking-widest block">UJI EMPIRIS PLATFORM</span>
-            <span className="text-xs font-black text-slate-900 uppercase tracking-tight block">Validitas Isi Aiken's V</span>
-            <span className="text-[9px] text-slate-600 font-bold block mt-0.5">Kalibrasi Bank Soal & Standar Mutu</span>
-          </div>
         </div>
 
         <div className="max-w-7xl mx-auto w-full flex flex-col items-center gap-10 relative z-10">
