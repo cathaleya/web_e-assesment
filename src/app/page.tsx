@@ -98,9 +98,6 @@ export default function Home() {
           <a href="#manual" className="text-[10px] font-black text-slate-700 uppercase tracking-widest hover:text-blue-600 transition-colors">
             BUKU PANDUAN
           </a>
-          <a href="https://e-assessment.id/" target="_blank" rel="noopener noreferrer" className="text-[10px] font-black text-blue-600 uppercase tracking-widest hover:text-blue-800 transition-colors border-l border-slate-200 pl-6 ml-1">
-            PAYUNG RISET <i className="fa-solid fa-arrow-up-right-from-square ml-1 text-[8px]"></i>
-          </a>
           <button
             onClick={() => router.push("/login")}
             className="ml-2 px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl border-b-4 border-indigo-950 hover:from-blue-700 hover:to-indigo-800 active:scale-95 transition-all"
