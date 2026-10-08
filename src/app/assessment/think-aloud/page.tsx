@@ -304,12 +304,13 @@ export default function ThinkAloudProtocolPage() {
   const [userCampus, setUserCampus] = useState("LPTK Universitas");
   const [userNim, setUserNim] = useState("2026_PLP_01");
 
-  // AUDIO RECORDER STATE
+  // AUDIO RECORDER & LIVE VISUALIZER STATE
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
   const [transcriptText, setTranscriptText] = useState<string>("");
+  const [audioLevel, setAudioLevel] = useState<number>(0);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState(false);
 
@@ -318,6 +319,9 @@ export default function ThinkAloudProtocolPage() {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const recognitionRef = useRef<any>(null);
   const isRecordingRef = useRef<boolean>(false);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const analyserRef = useRef<AnalyserNode | null>(null);
+  const finalTranscriptRef = useRef<string>("");
 
   // STOP TEXT-TO-SPEECH AUDIO
   const stopSpeaking = useCallback(() => {
@@ -434,10 +438,29 @@ export default function ThinkAloudProtocolPage() {
 
   const resetRecordingState = useCallback(() => {
     isRecordingRef.current = false;
+    setAudioLevel(0);
+    finalTranscriptRef.current = "";
+
     if (timerRef.current) {
       clearInterval(timerRef.current);
       timerRef.current = null;
     }
+    if (audioContextRef.current) {
+      try { audioContextRef.current.close(); } catch(e) {}
+      audioContextRef.current = null;
+    }
+    analyserRef.current = null;
+
+    if (recognitionRef.current) {
+      try {
+        recognitionRef.current.onend = null;
+        recognitionRef.current.onerror = null;
+        recognitionRef.current.onresult = null;
+        recognitionRef.current.stop();
+      } catch (e) {}
+      recognitionRef.current = null;
+    }
+
     if (mediaRecorderRef.current) {
       try {
         if (mediaRecorderRef.current.state !== "inactive") {
@@ -448,15 +471,6 @@ export default function ThinkAloudProtocolPage() {
         }
       } catch (e) {}
       mediaRecorderRef.current = null;
-    }
-    if (recognitionRef.current) {
-      try {
-        recognitionRef.current.onend = null;
-        recognitionRef.current.onerror = null;
-        recognitionRef.current.onresult = null;
-        recognitionRef.current.abort();
-      } catch (e) {}
-      recognitionRef.current = null;
     }
 
     setAudioUrl(null);
@@ -469,42 +483,96 @@ export default function ThinkAloudProtocolPage() {
 
   const startRecording = async () => {
     resetRecordingState();
+    finalTranscriptRef.current = "";
+    setTranscriptText("");
     try {
-      // Enhanced audio constraints for better mic capture on HP and Laptop Chrome
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: {
-          echoCancellation: true,
-          noiseSuppression: true,
-          autoGainControl: true,
-        },
-      });
-      mediaRecorderRef.current = new MediaRecorder(stream);
+      // 1. Get microphone audio stream with minimal processing to avoid OS noise gate muting
+      let stream: MediaStream;
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      } catch (e) {
+        stream = await navigator.mediaDevices.getUserMedia({
+          audio: { echoCancellation: true, noiseSuppression: false, autoGainControl: true },
+        });
+      }
+
+      // 2. Set up Web Audio API Analyser for Live Mic Level Sensitivity Visualizer
+      try {
+        const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+        if (AudioCtx) {
+          const audioCtx = new AudioCtx();
+          const source = audioCtx.createMediaStreamSource(stream);
+          const analyser = audioCtx.createAnalyser();
+          analyser.fftSize = 64;
+          source.connect(analyser);
+          audioContextRef.current = audioCtx;
+          analyserRef.current = analyser;
+
+          const dataArray = new Uint8Array(analyser.frequencyBinCount);
+          const updateVolume = () => {
+            if (!isRecordingRef.current || !analyserRef.current) return;
+            analyserRef.current.getByteFrequencyData(dataArray);
+            let sum = 0;
+            for (let i = 0; i < dataArray.length; i++) {
+              sum += dataArray[i];
+            }
+            const avg = sum / dataArray.length;
+            setAudioLevel(Math.min(100, Math.round((avg / 128) * 100)));
+            requestAnimationFrame(updateVolume);
+          };
+          updateVolume();
+        }
+      } catch (e) {
+        console.warn("Audio meter init notice:", e);
+      }
+
+      // 3. MediaRecorder with cross-browser supported mimeType & continuous timeslices (250ms)
+      const options = typeof MediaRecorder !== "undefined" && MediaRecorder.isTypeSupported("audio/webm;codecs=opus")
+        ? { mimeType: "audio/webm;codecs=opus" }
+        : typeof MediaRecorder !== "undefined" && MediaRecorder.isTypeSupported("audio/webm")
+        ? { mimeType: "audio/webm" }
+        : typeof MediaRecorder !== "undefined" && MediaRecorder.isTypeSupported("audio/mp4")
+        ? { mimeType: "audio/mp4" }
+        : {};
+
+      mediaRecorderRef.current = new MediaRecorder(stream, options);
       audioChunksRef.current = [];
 
       mediaRecorderRef.current.ondataavailable = (event) => {
-        if (event.data.size > 0) {
+        if (event.data && event.data.size > 0) {
           audioChunksRef.current.push(event.data);
         }
       };
 
       mediaRecorderRef.current.onstop = () => {
-        const blob = new Blob(audioChunksRef.current, { type: "audio/webm" });
+        const mimeType = (mediaRecorderRef.current as any)?.mimeType || options.mimeType || "audio/webm";
+        const blob = new Blob(audioChunksRef.current, { type: mimeType });
         const url = URL.createObjectURL(blob);
         setAudioBlob(blob);
         setAudioUrl(url);
+
+        // SAFELY stop audio tracks AFTER recorder finishes stopping and writing file header
+        if (stream) {
+          try {
+            stream.getTracks().forEach((track) => track.stop());
+          } catch (e) {}
+        }
       };
 
-      mediaRecorderRef.current.start();
+      mediaRecorderRef.current.start(250); // Continuous audio chunk emission
       setIsRecording(true);
       isRecordingRef.current = true;
 
-      // SPEECH-TO-TEXT VERBATIM TRANSCRIPTION (LIVE & AUTO-RESTARTING WITH CHROME FIXES)
+      // 4. SPEECH-TO-TEXT VERBATIM TRANSCRIPTION WITH CUMULATIVE SPEECH PARSING
       if (typeof window !== "undefined") {
         const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
         if (SpeechRecognition) {
           try {
             if (recognitionRef.current) {
-              try { recognitionRef.current.abort(); } catch (e) {}
+              try {
+                recognitionRef.current.onend = null;
+                recognitionRef.current.stop();
+              } catch (e) {}
             }
 
             const recognition = new SpeechRecognition();
@@ -514,13 +582,24 @@ export default function ThinkAloudProtocolPage() {
             recognition.lang = "id-ID";
 
             recognition.onresult = (event: any) => {
-              let currentText = "";
-              for (let i = 0; i < event.results.length; ++i) {
-                currentText += event.results[i][0].transcript + " ";
+              let newlyFinal = "";
+              let currentInterim = "";
+
+              for (let i = event.resultIndex; i < event.results.length; ++i) {
+                if (event.results[i].isFinal) {
+                  newlyFinal += event.results[i][0].transcript.trim() + ". ";
+                } else {
+                  currentInterim += event.results[i][0].transcript;
+                }
               }
-              const cleanText = currentText.trim();
-              if (cleanText) {
-                setTranscriptText(cleanText);
+
+              if (newlyFinal) {
+                finalTranscriptRef.current += newlyFinal;
+              }
+
+              const fullText = (finalTranscriptRef.current + " " + currentInterim).trim();
+              if (fullText) {
+                setTranscriptText(fullText);
               }
             };
 
@@ -562,18 +641,32 @@ export default function ThinkAloudProtocolPage() {
 
   const stopRecording = () => {
     isRecordingRef.current = false;
-    if (mediaRecorderRef.current && isRecording) {
-      mediaRecorderRef.current.stop();
-      if (mediaRecorderRef.current.stream) {
-        mediaRecorderRef.current.stream.getTracks().forEach((track) => track.stop());
-      }
-      if (recognitionRef.current) {
-        try {
-          recognitionRef.current.stop();
-        } catch (e) {}
-      }
-      setIsRecording(false);
-      if (timerRef.current) clearInterval(timerRef.current);
+    setAudioLevel(0);
+
+    if (audioContextRef.current) {
+      try { audioContextRef.current.close(); } catch(e){}
+      audioContextRef.current = null;
+    }
+
+    if (recognitionRef.current) {
+      try {
+        recognitionRef.current.onend = null;
+        recognitionRef.current.stop();
+      } catch (e) {}
+    }
+
+    if (mediaRecorderRef.current) {
+      try {
+        if (mediaRecorderRef.current.state !== "inactive") {
+          mediaRecorderRef.current.stop();
+        }
+      } catch (e) {}
+    }
+
+    setIsRecording(false);
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
     }
   };
 
@@ -1316,11 +1409,28 @@ export default function ThinkAloudProtocolPage() {
                       )}
                     </div>
 
+                    {/* LIVE MIC SENSITIVITY LEVEL METER */}
+                    {isRecording && (
+                      <div className="w-full bg-slate-900/90 border border-slate-700/80 rounded-lg p-2 flex items-center gap-2">
+                        <i className="fa-solid fa-microphone-lines text-xs text-rose-400 animate-pulse shrink-0"></i>
+                        <span className="text-[10px] font-bold text-slate-300 shrink-0">Indikator Sinyal Suara:</span>
+                        <div className="flex-1 bg-slate-950 rounded-full h-2.5 overflow-hidden border border-slate-800">
+                          <div
+                            className={`h-full transition-all duration-75 rounded-full ${
+                              audioLevel > 50 ? "bg-rose-500" : audioLevel > 20 ? "bg-amber-400" : "bg-emerald-400"
+                            }`}
+                            style={{ width: `${Math.max(5, audioLevel)}%` }}
+                          />
+                        </div>
+                        <span className="text-[10px] font-black text-rose-300 w-8 text-right shrink-0">{audioLevel}%</span>
+                      </div>
+                    )}
+
                     {/* VERBATIM TRANSCRIPT SPEECH-TO-TEXT AREA */}
                     <div className="space-y-1">
                       <div className="flex items-center justify-between text-[10px] font-black uppercase text-slate-400">
                         <span><i className="fa-solid fa-file-signature text-rose-400 mr-1"></i> Transkrip Teks Verbatim (Otomatis):</span>
-                        {transcriptText && <span className="text-emerald-400 font-bold">✓ Terisi</span>}
+                        {transcriptText && <span className="text-emerald-400 font-bold">✓ Terisi ({transcriptText.length} karakter)</span>}
                       </div>
                       <textarea
                         rows={2}
@@ -1329,6 +1439,9 @@ export default function ThinkAloudProtocolPage() {
                         placeholder="Hasil transkrip otomatis ucapan Anda akan tampil di sini saat merekam..."
                         className="w-full p-2.5 bg-slate-900 rounded-lg border border-slate-700 text-xs text-white font-medium focus:border-rose-400 outline-none leading-relaxed"
                       />
+                      <p className="text-[10px] text-slate-400 italic">
+                        💡 Teks di atas terisi otomatis saat Anda berbicara di Chrome. Anda juga dapat menyunting atau melengkapi transkrip teks secara manual jika diperlukan.
+                      </p>
                     </div>
 
                   </div>
