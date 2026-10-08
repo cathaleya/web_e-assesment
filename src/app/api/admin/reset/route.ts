@@ -30,9 +30,21 @@ export async function POST(req: Request) {
       console.log(`Cleared ${deletedCount} files from analysis outputs directory.`);
     }
 
+    // 3. Clear audio recordings registry and files if present
+    const audioDir = path.join(process.cwd(), 'public', 'uploads', 'audio');
+    const audioRegistry = path.join(audioDir, 'recordings.json');
+    if (fs.existsSync(audioDir)) {
+      const audioFiles = fs.readdirSync(audioDir);
+      audioFiles.forEach(file => {
+        try { fs.unlinkSync(path.join(audioDir, file)); } catch (e) {}
+      });
+      fs.writeFileSync(audioRegistry, JSON.stringify([], null, 2));
+      console.log("Audio recordings registry cleared.");
+    }
+
     return NextResponse.json({ 
       success: true, 
-      message: "Database tables and analysis cache cleared successfully." 
+      message: "Database tables, audio registry, and analysis cache cleared successfully." 
     }, { status: 200 });
 
   } catch (error) {

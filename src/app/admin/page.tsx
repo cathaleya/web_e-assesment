@@ -202,6 +202,7 @@ export default function AdminDashboard() {
   
   const [questions, setQuestions] = useState<any[]>([]);
   const [assessments, setAssessments] = useState<any[]>([]);
+  const [surveys, setSurveys] = useState<any[]>([]);
   // difItems: hanya diisi dari hasil analisis Rasch, default kosong agar tidak tampil data palsu
   const [difItems, setDifItems] = useState<any[]>([]);
   const [raschData, setRaschData] = useState<{items: number[], persons: number[]}>({ 
@@ -220,7 +221,7 @@ export default function AdminDashboard() {
 
   const fetchAudioRecordings = useCallback(async () => {
     try {
-      const res = await fetch('/api/think-aloud/audio');
+      const res = await fetch('/api/think-aloud/audio?t=' + Date.now(), { cache: 'no-store' });
       if (res.ok) {
         const data = await res.json();
         if (Array.isArray(data)) {
@@ -486,13 +487,14 @@ export default function AdminDashboard() {
 
   const fetchData = useCallback(async () => {
     try {
-      const [assRes, userRes, settingsRes, qPrelRes, qSurvRes, qMadelRes] = await Promise.all([ 
+      const [assRes, userRes, settingsRes, qPrelRes, qSurvRes, qMadelRes, surveyRes] = await Promise.all([ 
         fetch('/api/assessment'), 
         fetch('/api/admin/users'),
         fetch('/api/settings'),
         fetch('/api/questions?type=preliminary'),
         fetch('/api/questions?type=survey'),
         fetch('/api/questions?type=madel5c'),
+        fetch('/api/survey'),
       ]);
       const assData = await assRes.json();
       const userData = await userRes.json();
@@ -500,9 +502,11 @@ export default function AdminDashboard() {
       const qPrel = qPrelRes.ok ? await qPrelRes.json() : [];
       const qSurv = qSurvRes.ok ? await qSurvRes.json() : [];
       const qMadel = qMadelRes.ok ? await qMadelRes.json() : [];
+      const survData = surveyRes.ok ? await surveyRes.json() : [];
 
       setAssessments(Array.isArray(assData) ? assData : []);
       setUsers(Array.isArray(userData) ? userData : []);
+      setSurveys(Array.isArray(survData) ? survData : []);
       setSysSettings(settData);
       setInstrumentQuestions({
         preliminary: Array.isArray(qPrel) ? qPrel : [],
@@ -581,6 +585,80 @@ export default function AdminDashboard() {
 
   if (!isMounted) return null;
 
+  // ── Dynamic SUS Usability Computation ───────────────────────────
+  const susStats = (() => {
+    if (!surveys || surveys.length === 0) {
+      return {
+        count: 0,
+        avgScore: 0,
+        grade: "Belum Ada Data",
+        adjective: "Belum Ada Data",
+        acceptability: "Belum Ada Data",
+        learnability: 0,
+        distribution: [0, 0, 0, 0, 0, 0],
+        positiveNetPct: 0
+      };
+    }
+
+    const scores: number[] = [];
+    const dist = [0, 0, 0, 0, 0, 0];
+    let learnabilitySum = 0;
+    let positiveCount = 0;
+
+    surveys.forEach((s: any) => {
+      let finalScore = typeof s.totalScore === 'number' ? s.totalScore : 0;
+      if (finalScore > 0 && finalScore <= 40) {
+        finalScore = finalScore * 2.5;
+      }
+      scores.push(finalScore);
+
+      if (finalScore >= 68) positiveCount++;
+
+      if (finalScore <= 50) dist[0]++;
+      else if (finalScore <= 60) dist[1]++;
+      else if (finalScore <= 70) dist[2]++;
+      else if (finalScore <= 80) dist[3]++;
+      else if (finalScore <= 90) dist[4]++;
+      else dist[5]++;
+
+      try {
+        const ans = typeof s.answersJson === 'string' ? JSON.parse(s.answersJson) : s.answersJson;
+        if (ans) {
+          const q4 = Number(ans[3] ?? ans['3'] ?? 3);
+          const q10 = Number(ans[9] ?? ans['9'] ?? 3);
+          learnabilitySum += ((5 - q4) + (5 - q10)) * 12.5;
+        }
+      } catch (e) {}
+    });
+
+    const avgScore = Number((scores.reduce((a, b) => a + b, 0) / (scores.length || 1)).toFixed(1));
+    const learnability = Number((learnabilitySum / (scores.length || 1)).toFixed(1));
+    const positiveNetPct = Math.round((positiveCount / (scores.length || 1)) * 100);
+
+    let grade = "C";
+    let adjective = "OK";
+    if (avgScore >= 80.3) { grade = "A"; adjective = "Excellent"; }
+    else if (avgScore >= 68.0) { grade = "B"; adjective = "Good"; }
+    else if (avgScore >= 51.0) { grade = "C"; adjective = "OK"; }
+    else if (avgScore >= 35.7) { grade = "D"; adjective = "Poor"; }
+    else { grade = "F"; adjective = "Awful"; }
+
+    let acceptability = "Acceptable";
+    if (avgScore < 50) acceptability = "Not Acceptable";
+    else if (avgScore < 70) acceptability = "Marginal";
+
+    return {
+      count: scores.length,
+      avgScore,
+      grade,
+      adjective,
+      acceptability,
+      learnability,
+      distribution: dist,
+      positiveNetPct
+    };
+  })();
+
   // ── Tab metadata ────────────────────────────────────────────────────────
   const tabMeta: Record<string, { label: string; icon: string; breadcrumb: string }> = {
     preliminary: { label: "Preliminary Analysis", icon: "fa-chart-simple", breadcrumb: "Main Analysis" },
@@ -640,15 +718,15 @@ export default function AdminDashboard() {
 
   // ── Metric Card ─────────────────────────────────────────────────────────
   const MetricCard = ({ label, value, sub, icon, accent }: { label: string; value: any; sub?: string; icon: string; accent: string }) => (
-    <div className="bg-white border border-slate-200 rounded-xl p-5">
+    <div className="card-timbul-admin p-5 flex flex-col justify-between relative overflow-hidden group">
       <div className="flex items-start justify-between mb-3">
-        <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm ${accent}`}>
+        <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-base font-black shadow-md border border-white/40 ${accent}`}>
           <i className={`fa-solid ${icon}`}></i>
         </div>
-        <span className="text-[10px] font-medium text-slate-400 uppercase tracking-wider">{label}</span>
+        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{label}</span>
       </div>
-      <div className="text-2xl font-bold text-slate-900 tabular-nums leading-none">{value}</div>
-      {sub && <p className="text-[11px] text-slate-400 mt-1.5 font-medium">{sub}</p>}
+      <div className="text-3xl font-black text-slate-900 tabular-nums leading-none tracking-tight">{value}</div>
+      {sub && <p className="text-[11px] font-bold text-slate-500 mt-2 flex items-center gap-1">{sub}</p>}
     </div>
   );
 
@@ -659,26 +737,60 @@ export default function AdminDashboard() {
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-        .nav-item { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 6px; font-size: 12px; font-weight: 500; transition: all 0.15s; cursor: pointer; width: 100%; text-align: left; color: #94a3b8; border-left: 2px solid transparent; }
-        .nav-item:hover { background: rgba(255,255,255,0.06); color: #e2e8f0; }
-        .nav-item.active { background: rgba(255,255,255,0.08); color: #ffffff; border-left-color: #3b82f6; font-weight: 600; }
-        .nav-item i { width: 14px; text-align: center; font-size: 13px; }
+        .card-timbul-admin {
+          background: #ffffff;
+          border: 2px solid #e2e8f0;
+          box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+          border-radius: 1.25rem;
+          transition: all 0.2s ease-in-out;
+        }
+        .card-timbul-admin:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.12), 0 10px 15px -5px rgba(0, 0, 0, 0.06);
+        }
+        .nav-item-timbul {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          padding: 9px 12px;
+          border-radius: 12px;
+          font-size: 12px;
+          font-weight: 700;
+          transition: all 0.2s ease;
+          cursor: pointer;
+          width: 100%;
+          text-align: left;
+          color: #94a3b8;
+          border: 1px solid transparent;
+        }
+        .nav-item-timbul:hover {
+          background: rgba(255,255,255,0.08);
+          color: #ffffff;
+          transform: translateY(-1px);
+        }
+        .nav-item-timbul.active {
+          background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+          color: #ffffff;
+          border: 1px solid rgba(255, 255, 255, 0.3);
+          box-shadow: 0 6px 16px -2px rgba(37, 99, 235, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+        }
+        .nav-item-timbul i { width: 16px; text-align: center; font-size: 13px; }
       `}</style>
 
       {/* ── Sidebar ── */}
-      <aside className={`${sidebarCollapsed ? 'w-16' : 'w-56'} bg-[#0f172a] flex flex-col sticky top-0 h-screen transition-all duration-200 shrink-0`}>
+      <aside className={`${sidebarCollapsed ? 'w-16' : 'w-56'} bg-gradient-to-b from-[#0f172a] via-[#090d16] to-[#020617] flex flex-col sticky top-0 h-screen transition-all duration-200 shrink-0 border-r border-white/10 shadow-2xl`}>
         {/* Logo */}
-        <div className="px-4 py-5 border-b border-white/5 flex items-center gap-3">
-          <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shrink-0">
-            <i className="fa-solid fa-microchip text-white text-sm"></i>
+        <div className="px-4 py-5 border-b border-white/10 flex items-center gap-3 bg-white/5">
+          <div className="w-9 h-9 bg-gradient-to-br from-blue-500 to-indigo-700 rounded-xl flex items-center justify-center shrink-0 shadow-lg border border-blue-400/40">
+            <i className="fa-solid fa-microchip text-white text-base"></i>
           </div>
           {!sidebarCollapsed && (
             <div className="overflow-hidden">
-              <h1 className="font-bold text-sm text-white leading-none">HDAP <span className="text-blue-400">PRO</span></h1>
-              <p className="text-[9px] text-slate-500 mt-0.5 uppercase tracking-widest">Admin Panel</p>
+              <h1 className="font-black text-sm text-white tracking-tight leading-none">HDAP <span className="text-blue-400">PRO</span></h1>
+              <p className="text-[9px] font-bold text-slate-400 mt-1 uppercase tracking-widest">Admin Panel</p>
             </div>
           )}
-          <button onClick={() => setSidebarCollapsed(c => !c)} className="ml-auto text-slate-500 hover:text-slate-300 transition-colors">
+          <button onClick={() => setSidebarCollapsed(c => !c)} className="ml-auto text-slate-400 hover:text-white transition-colors">
             <i className={`fa-solid ${sidebarCollapsed ? 'fa-chevron-right' : 'fa-chevron-left'} text-xs`}></i>
           </button>
         </div>
@@ -687,8 +799,8 @@ export default function AdminDashboard() {
         <div className="px-3 py-4 flex-1 overflow-y-auto custom-scrollbar space-y-5">
           {/* Group: Main Analysis */}
           <div>
-            {!sidebarCollapsed && <p className="text-[9px] font-semibold text-slate-600 uppercase tracking-wider mb-2 px-1">Main Analysis</p>}
-            <nav className="space-y-0.5">
+            {!sidebarCollapsed && <p className="text-[9px] font-black text-blue-400 uppercase tracking-widest mb-2 px-1">Main Analysis</p>}
+            <nav className="space-y-1">
               {[
                 { id: 'preliminary', icon: 'fa-chart-simple', label: 'Preliminary' },
                 { id: 'usability', icon: 'fa-wand-magic-sparkles', label: 'SUS Analysis' },
@@ -697,7 +809,7 @@ export default function AdminDashboard() {
               ].map(item => (
                 <button key={item.id} onClick={() => setCurrentTab(item.id)}
                   title={sidebarCollapsed ? item.label : undefined}
-                  className={`nav-item ${currentTab === item.id ? 'active' : ''}`}>
+                  className={`nav-item-timbul ${currentTab === item.id ? 'active' : ''}`}>
                   <i className={`fa-solid ${item.icon}`}></i>
                   {!sidebarCollapsed && <span>{item.label}</span>}
                 </button>
@@ -707,8 +819,8 @@ export default function AdminDashboard() {
 
           {/* Group: Psychometric Engine */}
           <div>
-            {!sidebarCollapsed && <p className="text-[9px] font-semibold text-slate-600 uppercase tracking-wider mb-2 px-1">Psychometric Engine</p>}
-            <nav className="space-y-0.5">
+            {!sidebarCollapsed && <p className="text-[9px] font-black text-purple-400 uppercase tracking-widest mb-2 px-1">Psychometric Engine</p>}
+            <nav className="space-y-1">
               {[
                 { id: 'efa', icon: 'fa-chart-pie', label: 'EFA Analysis' },
                 { id: 'cfa', icon: 'fa-diagram-project', label: 'CFA Analysis' },
@@ -718,7 +830,7 @@ export default function AdminDashboard() {
               ].map(item => (
                 <button key={item.id} onClick={() => setCurrentTab(item.id)}
                   title={sidebarCollapsed ? item.label : undefined}
-                  className={`nav-item ${currentTab === item.id ? 'active' : ''}`}>
+                  className={`nav-item-timbul ${currentTab === item.id ? 'active' : ''}`}>
                   <i className={`fa-solid ${item.icon}`}></i>
                   {!sidebarCollapsed && <span>{item.label}</span>}
                 </button>
@@ -728,8 +840,8 @@ export default function AdminDashboard() {
 
           {/* Group: Management */}
           <div>
-            {!sidebarCollapsed && <p className="text-[9px] font-semibold text-slate-600 uppercase tracking-wider mb-2 px-1">Management</p>}
-            <nav className="space-y-0.5">
+            {!sidebarCollapsed && <p className="text-[9px] font-black text-emerald-400 uppercase tracking-widest mb-2 px-1">Management</p>}
+            <nav className="space-y-1">
               {[
                 { id: 'logs', icon: 'fa-users', label: 'Participants' },
                 { id: 'instruments', icon: 'fa-file-signature', label: 'Instruments' },
@@ -737,7 +849,7 @@ export default function AdminDashboard() {
               ].map(item => (
                 <button key={item.id} onClick={() => setCurrentTab(item.id)}
                   title={sidebarCollapsed ? item.label : undefined}
-                  className={`nav-item ${currentTab === item.id ? 'active' : ''}`}>
+                  className={`nav-item-timbul ${currentTab === item.id ? 'active' : ''}`}>
                   <i className={`fa-solid ${item.icon}`}></i>
                   {!sidebarCollapsed && <span>{item.label}</span>}
                 </button>
@@ -1216,59 +1328,73 @@ export default function AdminDashboard() {
           ═══════════════════════════════════════════════════ */}
           {currentTab === 'usability' && (
             <div className="space-y-6 animate-in fade-in slide-in-from-bottom-3 duration-300">
-              <div className="bg-white border border-slate-200 rounded-xl p-5 flex items-center justify-between gap-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center">
-                    <i className="fa-solid fa-wand-magic-sparkles text-lg"></i>
+              <div className="card-timbul-admin p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-emerald-950/5 via-white to-white">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-700 text-white rounded-2xl flex items-center justify-center shadow-lg border-b-2 border-emerald-900 shrink-0">
+                    <i className="fa-solid fa-wand-magic-sparkles text-xl"></i>
                   </div>
                   <div>
-                    <h2 className="text-base font-bold text-slate-900">SUS Usability Analysis</h2>
-                    <p className="text-xs text-slate-500 mt-0.5">System Usability Scale — grade, acceptability & learnability from Phase 1</p>
+                    <h2 className="text-lg font-black text-slate-900 tracking-tight">Analisis Kepuasan Sistem (SUS Usability)</h2>
+                    <p className="text-xs font-bold text-slate-500 mt-0.5">System Usability Scale — Evaluasi tingkat kemudahan, akseptabilitas &amp; learnability platform</p>
                   </div>
                 </div>
-                <button onClick={() => downloadDataset('sus')} disabled={downloading !== null}
-                  className="h-9 px-4 bg-[#1e3a5f] hover:bg-[#16304f] disabled:opacity-50 text-white rounded-lg text-xs font-semibold flex items-center gap-2 transition-colors shrink-0">
-                  {downloading === 'sus' ? <i className="fa-solid fa-spinner animate-spin text-xs"></i> : <i className="fa-solid fa-download text-xs"></i>}
-                  {downloading === 'sus' ? 'Downloading…' : 'Download CSV'}
-                </button>
+                <div className="flex items-center gap-3 shrink-0">
+                  <button onClick={() => downloadDataset('sus')} disabled={downloading !== null}
+                    className="h-10 px-4 bg-slate-900 hover:bg-black disabled:opacity-50 text-white rounded-xl text-xs font-black uppercase tracking-wider flex items-center gap-2 shadow-lg border-b-2 border-black transition-all active:scale-95">
+                    {downloading === 'sus' ? <i className="fa-solid fa-spinner animate-spin text-xs"></i> : <i className="fa-solid fa-download text-xs"></i>}
+                    {downloading === 'sus' ? 'Downloading…' : 'Unduh Dataset CSV'}
+                  </button>
+                  <span className="px-3 py-2 bg-emerald-100/80 border border-emerald-300 text-emerald-900 rounded-xl text-xs font-black">
+                    {susStats.count} Responden Real-Time
+                  </span>
+                </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="md:col-span-2 bg-[#1e3a5f] rounded-xl p-6 text-white">
-                  <p className="text-[10px] font-medium text-white/50 uppercase tracking-wider mb-3">Average SUS Score</p>
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-5xl font-bold tabular-nums">75.5</span>
-                    <span className="text-base text-white/60">/ 100</span>
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-5">
+                <div className="md:col-span-2 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-950 rounded-2xl p-6 text-white shadow-2xl border-2 border-slate-700 relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none"></div>
+                  <p className="text-[10px] font-black text-emerald-400 uppercase tracking-widest mb-3 flex items-center gap-1.5">
+                    <i className="fa-solid fa-calculator text-xs"></i> Rata-Rata Skor SUS (Dynamic Score)
+                  </p>
+                  <div className="flex items-baseline gap-3">
+                    <span className="text-6xl font-black tabular-nums tracking-tighter drop-shadow-md">{susStats.avgScore}</span>
+                    <span className="text-lg font-bold text-slate-400">/ 100</span>
                   </div>
-                  <div className="flex gap-2 mt-4">
-                    <span className="px-2.5 py-1 bg-white/10 border border-white/20 rounded-lg text-[10px] font-semibold">Grade: B</span>
-                    <span className="px-2.5 py-1 bg-white/10 border border-white/20 rounded-lg text-[10px] font-semibold">Adjective: Good</span>
+                  <div className="flex flex-wrap gap-2.5 mt-5">
+                    <span className="px-3 py-1 bg-white/10 border border-white/20 rounded-xl text-xs font-black tracking-wide">
+                      Grade: <span className="text-amber-300 font-black">{susStats.grade}</span>
+                    </span>
+                    <span className="px-3 py-1 bg-white/10 border border-white/20 rounded-lg text-xs font-black tracking-wide">
+                      Adjective: <span className="text-emerald-300 font-black">{susStats.adjective}</span>
+                    </span>
                   </div>
                 </div>
-                <MetricCard label="Acceptability" value="Acceptable" sub="SUS ≥ 70" icon="fa-circle-check" accent="bg-emerald-50 text-emerald-600" />
-                <MetricCard label="Learnability Score" value="72.4" sub="Above average" icon="fa-graduation-cap" accent="bg-blue-50 text-blue-600" />
+                <MetricCard label="Acceptability Level" value={susStats.acceptability} sub={susStats.count > 0 ? (susStats.avgScore >= 70 ? "Status: Layak Digunakan (≥ 70)" : "Status: Evaluasi Diperlukan (< 70)") : "Belum ada survei"} icon="fa-circle-check" accent="bg-emerald-50 text-emerald-600" />
+                <MetricCard label="Learnability Score" value={susStats.learnability} sub={susStats.count > 0 ? "Skala Kemudahan Belajar (0-100)" : "Belum ada survei"} icon="fa-graduation-cap" accent="bg-blue-50 text-blue-600" />
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-                <div className="bg-white border border-slate-200 rounded-xl p-6">
-                  <SectionHeader icon="fa-chart-bar" title="Score Distribution" />
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="card-timbul-admin p-6">
+                  <SectionHeader icon="fa-chart-bar" title="Distribusi Skor SUS Responden Real-Time" />
                   <div className="h-[220px]">
                     <Bar data={{
                       labels: ['0–50', '51–60', '61–70', '71–80', '81–90', '91–100'],
-                      datasets: [{ label: 'Respondents', data: [2, 5, 12, 18, 10, 4], backgroundColor: '#1e3a5f', borderRadius: 4 }]
-                    }} options={{ plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, ticks: { font: { size: 10 } } }, y: { grid: { color: '#f1f5f9' }, ticks: { font: { size: 10 } } } } }} />
+                      datasets: [{ label: 'Responden', data: susStats.distribution, backgroundColor: '#0f172a', borderRadius: 6 }]
+                    }} options={{ plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, ticks: { font: { size: 10, weight: 'bold' } } }, y: { grid: { color: '#f1f5f9' }, ticks: { font: { size: 10, weight: 'bold' }, stepSize: 1 } } } }} />
                   </div>
                 </div>
-                <div className="bg-white border border-slate-200 rounded-xl p-6 flex flex-col items-center justify-center text-center">
-                  <div className="w-36 h-36 rounded-full border-[10px] border-slate-100 flex items-center justify-center relative">
+                <div className="card-timbul-admin p-6 flex flex-col items-center justify-center text-center">
+                  <div className="w-36 h-36 rounded-full border-[10px] border-slate-100 flex items-center justify-center relative shadow-inner">
                     <div className="absolute inset-0 rounded-full border-[10px] border-emerald-500 border-t-transparent border-r-transparent -rotate-45"></div>
                     <div>
-                      <p className="text-3xl font-bold text-slate-900">85%</p>
-                      <p className="text-[9px] font-semibold text-slate-400 uppercase tracking-wider">Positive Net</p>
+                      <p className="text-4xl font-black text-slate-900 tracking-tighter">{susStats.positiveNetPct}%</p>
+                      <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-0.5">Positive Net</p>
                     </div>
                   </div>
-                  <p className="mt-5 text-sm text-slate-600 font-medium max-w-xs leading-relaxed">
-                    Most participants found the AI-integrated platform easy to use without external support.
+                  <p className="mt-5 text-xs text-slate-600 font-bold max-w-xs leading-relaxed">
+                    {susStats.count > 0
+                      ? `${susStats.positiveNetPct}% responden memberi penilaian kepuasan positif (Skor SUS ≥ 68) terhadap platform HDAP.`
+                      : "Belum ada survei responden yang diisi di dalam database."}
                   </p>
                 </div>
               </div>
@@ -1348,17 +1474,17 @@ export default function AdminDashboard() {
           ═══════════════════════════════════════════════════ */}
           {currentTab === 'thinkaloud' && (
             <div className="space-y-6 animate-in fade-in duration-300">
-              <div className="bg-white border border-slate-200 rounded-xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-rose-50 text-rose-600 rounded-xl flex items-center justify-center border border-rose-200 shadow-sm">
-                    <i className="fa-solid fa-microphone-lines text-lg"></i>
+              <div className="card-timbul-admin p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-rose-950/5 via-white to-white">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-gradient-to-br from-rose-500 to-rose-700 text-white rounded-2xl flex items-center justify-center shadow-lg border-b-2 border-rose-900 shrink-0">
+                    <i className="fa-solid fa-microphone-lines text-xl"></i>
                   </div>
                   <div>
-                    <h2 className="text-base font-bold text-slate-900">Database Suara &amp; Transkrip Verbatim Think-Aloud</h2>
-                    <p className="text-xs text-slate-500 mt-0.5">Penyimpanan Berkas Audio, Transkrip Verbatim Otomatis, &amp; Manajemen Wawancara Kognitif</p>
+                    <h2 className="text-lg font-black text-slate-900 tracking-tight">Database Suara &amp; Transkrip Verbatim Think-Aloud</h2>
+                    <p className="text-xs font-bold text-slate-500 mt-0.5">Penyimpanan Berkas Audio Persistent, Transkrip Verbatim Otomatis, &amp; Wawancara Kognitif</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2.5">
                   <button
                     onClick={() => {
                       if (audioRecordings.length === 0) return alert("Belum ada data rekaman suara.");
@@ -1386,28 +1512,28 @@ export default function AdminDashboard() {
                       link.click();
                       document.body.removeChild(link);
                     }}
-                    className="h-9 px-3.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-sm"
+                    className="h-10 px-4 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-black uppercase tracking-wider flex items-center gap-2 shadow-lg border-b-2 border-emerald-900 transition-all active:scale-95"
                   >
-                    <i className="fa-solid fa-file-csv text-xs"></i> Unduh Dataset CSV Verbatim
+                    <i className="fa-solid fa-file-csv text-xs"></i> Unduh Dataset CSV
                   </button>
                   <button onClick={fetchAudioRecordings}
-                    className="h-9 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors border border-slate-300">
-                    <i className="fa-solid fa-rotate text-xs"></i> Refresh
+                    className="h-10 px-4 bg-slate-900 hover:bg-black text-white rounded-xl text-xs font-black uppercase tracking-wider flex items-center gap-2 shadow-lg border-b-2 border-black transition-all active:scale-95">
+                    <i className="fa-solid fa-rotate text-xs"></i> Refresh Rekaman
                   </button>
-                  <span className="px-3 py-1.5 bg-rose-50 border border-rose-200 text-rose-700 rounded-lg text-[10px] font-bold">
-                    {audioRecordings.length} Entri Suara
+                  <span className="px-3 py-2 bg-rose-100 border border-rose-300 text-rose-950 rounded-xl text-xs font-black">
+                    {audioRecordings.length} Rekaman
                   </span>
                 </div>
               </div>
 
               {/* DATA TABLE REKAMAN SUARA & VERBATIM */}
-              <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+              <div className="card-timbul-admin overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full text-left">
-                    <thead className="bg-slate-50 border-b border-slate-200">
+                    <thead className="bg-slate-900 text-white border-b-2 border-slate-950">
                       <tr>
                         {['Peserta / Responden', 'Nomor & Skenario SJT', 'Step Pertanyaan Probing', 'Opsi Terpilih', 'Teks Verbatim (Transkrip Suara)', 'Pemutar Audio', 'Aksi'].map(h => (
-                          <th key={h} className="px-4 py-3.5 text-[10px] font-bold text-slate-500 uppercase tracking-wide">{h}</th>
+                          <th key={h} className="px-4 py-4 text-[10px] font-black uppercase tracking-wider text-slate-300">{h}</th>
                         ))}
                       </tr>
                     </thead>

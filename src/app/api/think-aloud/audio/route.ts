@@ -94,10 +94,20 @@ export async function POST(req: Request) {
   }
 }
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export async function GET() {
   try {
     const recordings = getRecordings();
-    return NextResponse.json(recordings, { status: 200 });
+    return NextResponse.json(recordings, {
+      status: 200,
+      headers: {
+        "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+        "Pragma": "no-cache",
+        "Expires": "0",
+      },
+    });
   } catch (err) {
     console.error("Gagal mengambil data rekaman Think-Aloud:", err);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
