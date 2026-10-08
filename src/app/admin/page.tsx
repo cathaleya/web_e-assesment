@@ -216,6 +216,21 @@ export default function AdminDashboard() {
   const [expandedInstrument, setExpandedInstrument] = useState<string | null>(null);
   const [sysSettings, setSysSettings] = useState<any>({});
   const [settingsSaved, setSettingsSaved] = useState(false);
+  const [audioRecordings, setAudioRecordings] = useState<any[]>([]);
+
+  const fetchAudioRecordings = useCallback(async () => {
+    try {
+      const res = await fetch('/api/think-aloud/audio');
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          setAudioRecordings(data);
+        }
+      }
+    } catch (err) {
+      console.error("Gagal mengambil data rekaman Think-Aloud:", err);
+    }
+  }, []);
 
   const router = useRouter();
   const [downloading, setDownloading] = useState<string | null>(null);
@@ -498,8 +513,9 @@ export default function AdminDashboard() {
         const uniqueUsers = new Set(assData.map((a: any) => a.userId)).size;
         setStats(prev => ({ ...prev, participants: uniqueUsers || 284 }));
       }
+      fetchAudioRecordings();
     } catch (err) { console.error(err); }
-  }, []);
+  }, [fetchAudioRecordings]);
 
   useEffect(() => {
     setIsMounted(true);
@@ -677,6 +693,7 @@ export default function AdminDashboard() {
                 { id: 'preliminary', icon: 'fa-chart-simple', label: 'Preliminary' },
                 { id: 'usability', icon: 'fa-wand-magic-sparkles', label: 'SUS Analysis' },
                 { id: 'madel5c', icon: 'fa-brain', label: 'MADEL5C' },
+                { id: 'thinkaloud', icon: 'fa-microphone-lines', label: 'Database Suara' },
               ].map(item => (
                 <button key={item.id} onClick={() => setCurrentTab(item.id)}
                   title={sidebarCollapsed ? item.label : undefined}
@@ -1319,6 +1336,96 @@ export default function AdminDashboard() {
                     )}
                   </tbody>
                 </table>
+              </div>
+            </div>
+          )}
+
+          {/* ═══════════════════════════════════════════════════
+              TAB: THINK-ALOUD AUDIO DATABASE
+          ═══════════════════════════════════════════════════ */}
+          {currentTab === 'thinkaloud' && (
+            <div className="space-y-6 animate-in fade-in duration-300">
+              <div className="bg-white border border-slate-200 rounded-xl p-5 flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-rose-50 text-rose-600 rounded-xl flex items-center justify-center border border-rose-200">
+                    <i className="fa-solid fa-microphone-lines text-lg"></i>
+                  </div>
+                  <div>
+                    <h2 className="text-base font-bold text-slate-900">Think-Aloud Audio Database</h2>
+                    <p className="text-xs text-slate-500 mt-0.5">Database Penyimpanan & Pemutar Rekaman Suara Wawancara Kognitif Mahasiswa</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button onClick={fetchAudioRecordings}
+                    className="h-9 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors border border-slate-300">
+                    <i className="fa-solid fa-rotate text-xs"></i> Refresh Data
+                  </button>
+                  <span className="px-3 py-1.5 bg-rose-50 border border-rose-200 text-rose-700 rounded-lg text-[10px] font-bold">
+                    {audioRecordings.length} Rekaman Suara
+                  </span>
+                </div>
+              </div>
+
+              {/* DATA TABLE REKAMAN SUARA */}
+              <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left">
+                    <thead className="bg-slate-50 border-b border-slate-200">
+                      <tr>
+                        {['Peserta / Responden', 'Nomor & Skenario SJT', 'Opsi Terpilih', 'Durasi', 'Pemutar Audio', 'Aksi Unduh'].map(h => (
+                          <th key={h} className="px-5 py-3.5 text-[10px] font-bold text-slate-500 uppercase tracking-wide">{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {audioRecordings.length > 0 ? (
+                        audioRecordings.map((rec: any, idx: number) => (
+                          <tr key={rec.id || idx} className="hover:bg-slate-50/80 transition-colors">
+                            <td className="px-5 py-4">
+                              <p className="text-xs font-black text-slate-900">{rec.userName}</p>
+                              <p className="text-[10px] font-semibold text-slate-400">{rec.userCampus}</p>
+                              <span className="text-[9px] text-slate-400 font-mono block mt-0.5">{new Date(rec.createdAt).toLocaleString('id-ID')}</span>
+                            </td>
+                            <td className="px-5 py-4">
+                              <span className="px-2.5 py-0.5 bg-rose-100 text-rose-900 rounded-md text-[9px] font-black uppercase tracking-wider">
+                                {rec.sjtId || `SJT_${rec.itemNo}`}
+                              </span>
+                              <p className="text-xs font-bold text-slate-800 mt-1">Soal #{rec.itemNo}</p>
+                            </td>
+                            <td className="px-5 py-4 max-w-xs">
+                              <p className="text-[11px] font-bold text-slate-700 leading-snug line-clamp-2">
+                                {rec.selectedOption}
+                              </p>
+                            </td>
+                            <td className="px-5 py-4">
+                              <span className="text-xs font-mono font-bold text-slate-600">
+                                {Math.floor(rec.duration / 60)}m {rec.duration % 60}s
+                              </span>
+                            </td>
+                            <td className="px-5 py-4">
+                              <audio controls src={rec.audioUrl} className="h-8 max-w-[190px] rounded-lg shadow-sm" />
+                            </td>
+                            <td className="px-5 py-4">
+                              <a
+                                href={rec.audioUrl}
+                                download={rec.filename}
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[10px] font-black uppercase tracking-wider shadow-sm transition-all active:scale-95"
+                              >
+                                <i className="fa-solid fa-download text-xs"></i> Unduh Audio
+                              </a>
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan={6} className="px-5 py-16 text-center text-xs text-slate-400 font-bold">
+                            Belum ada rekaman suara Think-Aloud yang diunggah oleh mahasiswa.
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           )}

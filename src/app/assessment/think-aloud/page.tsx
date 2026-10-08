@@ -71,6 +71,8 @@ export default function ThinkAloudProtocolPage() {
   const [recordingTime, setRecordingTime] = useState(0);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadSuccess, setUploadSuccess] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -102,6 +104,7 @@ export default function ThinkAloudProtocolPage() {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       mediaRecorderRef.current = new MediaRecorder(stream);
       audioChunksRef.current = [];
+      setUploadSuccess(false);
 
       mediaRecorderRef.current.ondataavailable = (event) => {
         if (event.data.size > 0) {
@@ -143,6 +146,51 @@ export default function ThinkAloudProtocolPage() {
       mediaRecorderRef.current.stream.getTracks().forEach((track) => track.stop());
       setIsRecording(false);
       if (timerRef.current) clearInterval(timerRef.current);
+    }
+  };
+
+  const uploadAudioToServer = async () => {
+    if (!audioBlob) {
+      alert("Belum ada rekaman suara yang tersedia untuk diunggah.");
+      return;
+    }
+    setIsUploading(true);
+    try {
+      const userName = localStorage.getItem("userName") || "Mahasiswa Calon Guru";
+      const userCampus = localStorage.getItem("userCampus") || "LPTK Universitas";
+      const userId = localStorage.getItem("userId") || "user_anon";
+      const currentQ = questions[currentIdx];
+      const selectedOptIdx = selectedAnswers[currentIdx];
+      const selectedOptText = (selectedOptIdx !== undefined && currentQ?.options[selectedOptIdx])
+        ? `${String.fromCharCode(65 + selectedOptIdx)}. ${currentQ.options[selectedOptIdx].text}`
+        : "Belum Memilih Opsi";
+
+      const formData = new FormData();
+      formData.append("audio", audioBlob, `ThinkAloud_Soal_${currentIdx + 1}.webm`);
+      formData.append("userId", userId);
+      formData.append("userName", userName);
+      formData.append("userCampus", userCampus);
+      formData.append("itemNo", (currentIdx + 1).toString());
+      formData.append("sjtId", specialProbings[currentIdx + 1]?.sjtId || `SJT_${(currentIdx + 1).toString().padStart(2, "0")}`);
+      formData.append("selectedOption", selectedOptText);
+      formData.append("duration", recordingTime.toString());
+
+      const res = await fetch("/api/think-aloud/audio", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setUploadSuccess(true);
+        alert("✅ Berhasil! Rekaman suara Think-Aloud Anda telah tersimpan secara resmi di database Server Admin.");
+      } else {
+        alert("Gagal mengunggah rekaman ke server admin.");
+      }
+    } catch (err) {
+      console.error("Gagal mengunggah rekaman suara:", err);
+      alert("Terjadi kesalahan koneksi saat mengunggah rekaman.");
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -277,6 +325,23 @@ export default function ThinkAloudProtocolPage() {
                     title="Unduh Rekaman Suara ke Perangkat"
                   >
                     <i className="fa-solid fa-download mr-1"></i> Unduh
+                  </button>
+                  <button
+                    onClick={uploadAudioToServer}
+                    disabled={isUploading}
+                    className={`px-3 py-2 text-white text-[9px] font-black uppercase tracking-wider rounded-xl shadow-md border-b-2 transition-all active:scale-95 ${
+                      uploadSuccess
+                        ? "bg-emerald-600 border-emerald-900"
+                        : "bg-purple-600 hover:bg-purple-700 border-purple-950"
+                    }`}
+                  >
+                    {isUploading ? (
+                      <><i className="fa-solid fa-spinner animate-spin mr-1"></i> Mengirim...</>
+                    ) : uploadSuccess ? (
+                      <><i className="fa-solid fa-cloud-check mr-1"></i> Tersimpan di Admin</>
+                    ) : (
+                      <><i className="fa-solid fa-cloud-arrow-up mr-1"></i> Simpan ke Admin DB</>
+                    )}
                   </button>
                 </>
               )}
