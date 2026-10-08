@@ -678,12 +678,22 @@ function AudioProbingRecorder({
   onNext: () => void;
   nextLabel: string;
 }) {
+  const handleSendAndProceed = async () => {
+    // If there is audio recorded and not yet uploaded, trigger upload first
+    if (audioUrl && !uploadSuccess) {
+      await uploadAudioToServer();
+    }
+    onNext();
+  };
+
   return (
-    <div className="p-4 bg-gradient-to-br from-white via-slate-50 to-slate-100 rounded-2xl border-2 border-slate-300 border-b-4 border-b-slate-400 shadow-lg space-y-3">
+    <div className="p-4 md:p-5 bg-gradient-to-br from-white via-slate-50 to-slate-100 rounded-2xl border-2 border-slate-300 border-b-4 border-b-slate-400 shadow-xl space-y-4">
+      
+      {/* HEADER STATUS PEREKAM */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 pb-3">
         <div className="flex items-center gap-3">
           <div
-            className={`w-10 h-10 rounded-full flex items-center justify-center font-black text-sm transition-all border-2 ${
+            className={`w-11 h-11 rounded-2xl flex items-center justify-center font-black text-base transition-all border-2 shadow-inner ${
               isRecording
                 ? "bg-rose-600 border-rose-400 text-white animate-pulse shadow-[0_0_15px_rgba(225,29,72,0.8)]"
                 : "bg-rose-100 border-rose-300 text-rose-800"
@@ -692,103 +702,125 @@ function AudioProbingRecorder({
             <i className={`fa-solid ${isRecording ? "fa-circle-dot" : "fa-microphone"}`}></i>
           </div>
           <div>
-            <span className="text-[8px] font-black uppercase tracking-widest text-rose-800 block">
-              Perekam Suara &amp; Speech-to-Text Verbatim
+            <span className="text-[9px] font-black uppercase tracking-widest text-rose-800 block">
+              OPSI JAWABAN SUARA &amp; TRANSKRIP VERBATIM
             </span>
             <p className="text-xs font-black text-slate-900 font-mono">
               {isRecording ? (
-                <span className="text-emerald-700 flex items-center gap-1">
-                  <span className="w-2 h-2 rounded-full bg-emerald-600 animate-ping"></span>
-                  MEREKAM... {formatTime(recordingTime)}
+                <span className="text-emerald-700 flex items-center gap-1.5">
+                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-600 animate-ping"></span>
+                  MEREKAM SUARA... {formatTime(recordingTime)}
+                </span>
+              ) : uploadSuccess ? (
+                <span className="text-emerald-800 flex items-center gap-1.5">
+                  <i className="fa-solid fa-cloud-check text-emerald-600"></i> Rekaman &amp; Transkrip Terkirim ke Admin
                 </span>
               ) : audioUrl ? (
-                <span className="text-emerald-800 flex items-center gap-1">
-                  <i className="fa-solid fa-circle-check text-emerald-600"></i> Rekaman Siap Dikirim
+                <span className="text-emerald-700 flex items-center gap-1.5">
+                  <i className="fa-solid fa-circle-check text-emerald-600"></i> Rekaman Siap Dikirim ke Admin
                 </span>
               ) : (
-                "Tekan Rekam Suara saat Menyuarakan Jawaban"
+                "Silakan Rekam Suara atau Ketik Penjelasan Transkrip Anda"
               )}
             </p>
           </div>
         </div>
 
-        {/* REKAM / STOP BUTTONS */}
-        <div className="flex items-center gap-2">
+        {/* 2 OPSI SUARA UTAMA UNDER EACH QUESTION */}
+        <div className="flex flex-wrap items-center gap-2">
+          {/* OPSI 1: REKAM SUARA */}
           {!isRecording ? (
             <button
               onClick={startRecording}
-              className="px-4 py-2 bg-rose-800 hover:bg-rose-900 text-white font-black text-[10px] uppercase tracking-wider rounded-xl shadow-md border-b-3 border-rose-950 active:scale-95"
+              className="px-3.5 py-2 bg-gradient-to-r from-rose-800 to-red-900 hover:from-rose-900 hover:to-red-950 text-white font-black text-[10px] uppercase tracking-wider rounded-xl shadow-md border-b-3 border-rose-950 active:scale-95 transition-all flex items-center gap-1.5"
             >
-              <i className="fa-solid fa-microphone mr-1.5"></i> Rekam Suara
+              <i className="fa-solid fa-microphone text-xs"></i>
+              <span>1. Rekam Suara</span>
             </button>
           ) : (
             <button
               onClick={stopRecording}
-              className="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white font-black text-[10px] uppercase tracking-wider rounded-xl shadow-md border-b-3 border-slate-950 active:scale-95"
+              className="px-3.5 py-2 bg-slate-800 hover:bg-slate-900 text-white font-black text-[10px] uppercase tracking-wider rounded-xl shadow-md border-b-3 border-slate-950 active:scale-95 transition-all flex items-center gap-1.5"
             >
-              <i className="fa-solid fa-square mr-1.5"></i> Hentikan
+              <i className="fa-solid fa-square text-xs text-rose-400"></i>
+              <span>Hentikan Rekaman</span>
             </button>
           )}
-        </div>
-      </div>
 
-      {/* VERBATIM TRANSCRIPT TEXTAREA */}
-      <div className="space-y-1">
-        <label className="text-[9px] font-black text-slate-700 uppercase tracking-widest flex items-center gap-1">
-          <i className="fa-solid fa-[#4B5320] text-rose-700"></i> Teks Verbatim (Transkrip Suara Otomatis):
-        </label>
-        <textarea
-          rows={3}
-          value={transcriptText}
-          onChange={(e) => setTranscriptText(e.target.value)}
-          placeholder="Hasil transkrip verbatim otomatis dari rekaman suara Anda akan tampil di sini..."
-          className="w-full p-2.5 text-xs font-bold text-slate-900 bg-white rounded-xl border border-slate-300 focus:ring-2 focus:ring-rose-500 outline-none leading-relaxed"
-        />
-      </div>
-
-      {/* SUBMIT TO ADMIN & DOWNLOAD BUTTONS */}
-      {audioUrl && !isRecording && (
-        <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-200">
-          <div className="flex items-center gap-2">
-            <audio controls src={audioUrl} className="h-8 max-w-[170px] rounded-lg shadow-sm" />
-            <button
-              onClick={downloadAudio}
-              className="px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-800 text-[9px] font-black uppercase rounded-lg border border-slate-300 transition-all active:scale-95"
-            >
-              <i className="fa-solid fa-download mr-1"></i> Unduh
-            </button>
-          </div>
-
+          {/* OPSI 2: KIRIM SUARA KE PANEL ADMIN */}
           <button
             onClick={uploadAudioToServer}
-            disabled={isUploading}
-            className={`px-4 py-2 text-white font-black text-[10px] uppercase tracking-wider rounded-xl shadow-md border-b-3 transition-all active:scale-95 ${
+            disabled={isUploading || isRecording}
+            className={`px-3.5 py-2 font-black text-[10px] uppercase tracking-wider rounded-xl shadow-md border-b-3 transition-all active:scale-95 flex items-center gap-1.5 ${
               uploadSuccess
-                ? "bg-emerald-600 border-emerald-900"
-                : "bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 border-emerald-950"
+                ? "bg-emerald-600 text-white border-emerald-900"
+                : "bg-emerald-700 hover:bg-emerald-800 text-white border-emerald-950 disabled:opacity-40"
             }`}
           >
             {isUploading ? (
-              <><i className="fa-solid fa-spinner animate-spin mr-1"></i> Mengirim ke Admin...</>
+              <><i className="fa-solid fa-spinner animate-spin text-xs"></i> Mengirim...</>
             ) : uploadSuccess ? (
-              <><i className="fa-solid fa-cloud-check mr-1"></i> Terikirim ke Panel Admin</>
+              <><i className="fa-solid fa-cloud-check text-xs"></i> Terkirim ke Admin</>
             ) : (
-              <><i className="fa-solid fa-paper-plane mr-1.5"></i> Kirim Suara &amp; Transkrip ke Admin</>
+              <><i className="fa-solid fa-paper-plane text-xs"></i> 2. Kirim Suara ke Admin</>
             )}
+          </button>
+        </div>
+      </div>
+
+      {/* AUDIO PLAYER & DOWNLOAD BUTTON IF RECORDED */}
+      {audioUrl && !isRecording && (
+        <div className="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 flex flex-wrap items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <span className="text-[9px] font-black text-emerald-900 uppercase">Pratinjau Suara:</span>
+            <audio controls src={audioUrl} className="h-8 max-w-[200px] rounded-lg shadow-sm" />
+          </div>
+          <button
+            onClick={downloadAudio}
+            className="px-3 py-1.5 bg-white hover:bg-slate-100 text-slate-800 text-[9px] font-black uppercase rounded-lg border border-slate-300 transition-all active:scale-95 shadow-sm"
+          >
+            <i className="fa-solid fa-download mr-1 text-emerald-700"></i> Unduh File Audio
           </button>
         </div>
       )}
 
-      {/* NEXT STEP BUTTON */}
-      <div className="pt-2 flex justify-end">
+      {/* VERBATIM TRANSCRIPT TEXTAREA (AUTO SPEECH-TO-TEXT / EDITABLE) */}
+      <div className="space-y-1.5">
+        <div className="flex items-center justify-between">
+          <label className="text-[9px] font-black text-slate-700 uppercase tracking-widest flex items-center gap-1.5">
+            <i className="fa-solid fa-file-signature text-rose-700"></i> Teks Verbatim (Transkrip Suara Otomatis):
+          </label>
+          {transcriptText && (
+            <span className="text-[8px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">
+              <i className="fa-solid fa-check-double mr-1"></i> Transkrip Terisi
+            </span>
+          )}
+        </div>
+        <textarea
+          rows={3}
+          value={transcriptText}
+          onChange={(e) => setTranscriptText(e.target.value)}
+          placeholder="Hasil transkrip verbatim otomatis dari rekaman suara Anda akan tampil di sini secara real-time. Anda juga dapat menyunting atau mengetik langsung..."
+          className="w-full p-3 text-xs font-bold text-slate-900 bg-white rounded-xl border-2 border-slate-300 focus:border-rose-500 focus:ring-2 focus:ring-rose-200 outline-none leading-relaxed shadow-inner"
+        />
+      </div>
+
+      {/* TOMBOL MENGIRIM JAWABAN & LANJUT KE PERTANYAAN/BUTIR NEXT */}
+      <div className="pt-2 border-t border-slate-200 flex items-center justify-between gap-3">
+        <span className="text-[9px] font-bold text-slate-500 italic">
+          Tekan tombol di kanan untuk mengirim jawaban &amp; membuka pertanyaan berikutnya
+        </span>
+
         <button
-          onClick={onNext}
-          className="px-4 py-2.5 bg-gradient-to-r from-rose-800 to-red-900 hover:from-rose-900 hover:to-red-950 text-white font-black text-[10px] uppercase tracking-wider rounded-xl shadow-md border-b-3 border-rose-950 transition-all active:scale-95 flex items-center gap-1.5"
+          onClick={handleSendAndProceed}
+          className="px-5 py-2.5 bg-gradient-to-r from-rose-900 via-rose-800 to-red-900 hover:from-rose-950 hover:to-red-950 text-white font-black text-[11px] uppercase tracking-wider rounded-xl shadow-lg border-b-4 border-rose-950 transition-all active:scale-95 flex items-center gap-2 shrink-0"
         >
-          <span>{nextLabel}</span>
-          <i className="fa-solid fa-arrow-right"></i>
+          <i className="fa-solid fa-paper-plane text-xs"></i>
+          <span>Kirim Jawaban &amp; {nextLabel}</span>
+          <i className="fa-solid fa-chevron-right text-xs"></i>
         </button>
       </div>
+
     </div>
   );
 }
