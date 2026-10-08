@@ -29,7 +29,49 @@ export default function Madel5cAssessment() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [showStageBreak, setShowStageBreak] = useState(false);
   const [breakStage, setBreakStage] = useState(1);
+  const [isSpeaking, setIsSpeaking] = useState(false);
   const router = useRouter();
+
+  const stopSpeaking = useCallback(() => {
+    if (typeof window !== "undefined" && "speechSynthesis" in window) {
+      window.speechSynthesis.cancel();
+    }
+    setIsSpeaking(false);
+  }, []);
+
+  const speakText = (textToSpeak: string) => {
+    if (typeof window === "undefined" || !("speechSynthesis" in window)) {
+      alert("Maaf, peramban (browser) Anda belum mendukung fitur pembaca suara Text-to-Speech.");
+      return;
+    }
+
+    if (isSpeaking) {
+      stopSpeaking();
+      return;
+    }
+
+    stopSpeaking();
+
+    const cleanText = textToSpeak.replace(/<[^>]*>?/gm, "").replace(/\n/g, ". ");
+    const utterance = new SpeechSynthesisUtterance(cleanText);
+    utterance.lang = "id-ID";
+    utterance.rate = 0.95;
+    utterance.pitch = 1.0;
+
+    const voices = window.speechSynthesis.getVoices();
+    const idVoice = voices.find((v) => v.lang.includes("id") || v.lang.includes("ID"));
+    if (idVoice) utterance.voice = idVoice;
+
+    utterance.onstart = () => setIsSpeaking(true);
+    utterance.onend = () => setIsSpeaking(false);
+    utterance.onerror = () => setIsSpeaking(false);
+
+    window.speechSynthesis.speak(utterance);
+  };
+
+  useEffect(() => {
+    stopSpeaking();
+  }, [currentStep, stopSpeaking]);
 
   const consentStatements = [
     "Saya telah membaca dan memahami penjelasan penelitian di atas.",
@@ -440,8 +482,28 @@ export default function Madel5cAssessment() {
               </div>
 
               {/* 1. Kartu Pertanyaan Skenario Terpisah (Hijau Soft) */}
-              <div className="scenario-timbul p-3.5 md:p-4.5 rounded-2xl md:rounded-3xl shadow-lg border border-emerald-200">
-                <span className="text-[8px] md:text-[9px] font-black text-emerald-800 uppercase tracking-widest block mb-1">DESKRIPSI SITUASI SKENARIO:</span>
+              <div className="scenario-timbul p-3.5 md:p-4.5 rounded-2xl md:rounded-3xl shadow-lg border border-emerald-200 space-y-2">
+                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-emerald-200/60 pb-1.5">
+                  <span className="text-[8px] md:text-[9px] font-black text-emerald-800 uppercase tracking-widest block">DESKRIPSI SITUASI SKENARIO:</span>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      speakText(
+                        `Deskripsi situasi skenario. ${questions[currentStep]?.scenario}. Pilihan tindakan. ${questions[currentStep]?.options
+                          ?.map((o, idx) => `Opsi ${String.fromCharCode(65 + idx)}: ${o.text}`)
+                          .join(". ")}`
+                      )
+                    }
+                    className={`px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all active:scale-95 flex items-center gap-1 border shadow-sm ${
+                      isSpeaking
+                        ? "bg-amber-500 text-slate-950 border-amber-300 animate-pulse"
+                        : "bg-emerald-800 hover:bg-emerald-900 text-white border-emerald-700"
+                    }`}
+                  >
+                    <i className={`fa-solid ${isSpeaking ? "fa-volume-xmark" : "fa-volume-high"}`}></i>
+                    <span>{isSpeaking ? "Hentikan Suara" : "🔊 Dengarkan Suara Soal"}</span>
+                  </button>
+                </div>
                 <p className="text-[11px] md:text-[13px] text-slate-900 font-bold leading-snug md:leading-relaxed italic">&quot;{questions[currentStep]?.scenario}&quot;</p>
               </div>
 

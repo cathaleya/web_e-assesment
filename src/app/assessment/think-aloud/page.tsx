@@ -36,7 +36,7 @@ const specialProbings: Record<number, SpecialProbing> = {
   7: { sjtId: "SJT_07", no: 7, title: "Penyalahgunaan Aset Visual Milik Profesor Terkenal", question: "Menurut Anda, situasi ini lebih tentang hak cipta, etika, atau hal lain?" },
   8: { sjtId: "SJT_08", no: 8, title: "Kasus Perundungan Siber Halus di YouTube Kelas", question: "Bagian mana dari cerita yang menurut Anda menunjukkan perundungan? Apakah perundungan itu terlihat jelas?" },
   9: { sjtId: "SJT_09", no: 9, title: "Penolakan Agresif Teknologi Ujian oleh Guru Senior", question: "Apakah posisi Anda sebagai mahasiswa PLP di hadapan guru senior memengaruhi pilihan Anda?" },
-  10: { sjtId: "SJT_10", no: 10, title: "Penanganan Keluhan Dosen Mengenai Format Tugas di Email", question: "Apa yang Anda pahami tentang etika/netiket dalam surel (email) pengumpulan tugas kepada dosen?" },
+  10: { sjtId: "SJT_10", no: 10, title: "Penanganan Keluhan Dosen Mengenai Format Tugas di Email", question: "Apa yang Anda pahami tentang etika/netiket dalam surel (email) pengumpulkan tugas kepada dosen?" },
   11: { sjtId: "SJT_11", no: 11, title: "Menhubungi Guru Pamong yang Resisten via WhatsApp", question: "Apakah Anda merasakan perbedaan nada pesan antaropsi? Opsi mana yang terasa paling sopan dan efektif?" },
   12: { sjtId: "SJT_12", no: 12, title: "Menjawab Pertanyaan Sensitif Siswa di Forum Publik Daring", question: "Informasi apa dalam skenario ini yang menurut Anda sensitif? Mengapa tidak boleh ditanggapi di forum publik?" },
   13: { sjtId: "SJT_13", no: 13, title: "Menghadapi Anggota Kelompok yang Pasif (Freerider)", question: "Apakah istilah freerider dipahami? Apa yang Anda bayangkan tentang anggota kelompok pasif ini?" },
@@ -241,6 +241,10 @@ export default function ThinkAloudProtocolPage() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"guidance" | "consent" | "session">("guidance");
 
+  // TEXT-TO-SPEECH (TTS AUDIO READER FOR QUESTIONS & SCENARIOS)
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [speakingType, setSpeakingType] = useState<"scenario" | "probing" | null>(null);
+
   // INFORMED CONSENT STATE PER SESSION
   const [consentApproved, setConsentApproved] = useState<Record<number, boolean>>({});
   const [consentSignatures, setConsentSignatures] = useState<Record<number, string>>({});
@@ -264,6 +268,57 @@ export default function ThinkAloudProtocolPage() {
   const audioChunksRef = useRef<Blob[]>([]);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const recognitionRef = useRef<any>(null);
+
+  // STOP TEXT-TO-SPEECH AUDIO
+  const stopSpeaking = useCallback(() => {
+    if (typeof window !== "undefined" && "speechSynthesis" in window) {
+      window.speechSynthesis.cancel();
+    }
+    setIsSpeaking(false);
+    setSpeakingType(null);
+  }, []);
+
+  // TEXT-TO-SPEECH AUDIO READER (BAHASA INDONESIA)
+  const speakText = (textToSpeak: string, type: "scenario" | "probing") => {
+    if (typeof window === "undefined" || !("speechSynthesis" in window)) {
+      alert("Maaf, peramban (browser) Anda belum mendukung fitur pembaca suara Text-to-Speech.");
+      return;
+    }
+
+    if (isSpeaking && speakingType === type) {
+      stopSpeaking();
+      return;
+    }
+
+    stopSpeaking();
+
+    const cleanText = textToSpeak.replace(/<[^>]*>?/gm, "").replace(/\n/g, ". ");
+    const utterance = new SpeechSynthesisUtterance(cleanText);
+    utterance.lang = "id-ID";
+    utterance.rate = 0.95; // Pace membaca alami dan jelas
+    utterance.pitch = 1.0;
+
+    const voices = window.speechSynthesis.getVoices();
+    const idVoice = voices.find((v) => v.lang.includes("id") || v.lang.includes("ID"));
+    if (idVoice) utterance.voice = idVoice;
+
+    utterance.onstart = () => {
+      setIsSpeaking(true);
+      setSpeakingType(type);
+    };
+
+    utterance.onend = () => {
+      setIsSpeaking(false);
+      setSpeakingType(null);
+    };
+
+    utterance.onerror = () => {
+      setIsSpeaking(false);
+      setSpeakingType(null);
+    };
+
+    window.speechSynthesis.speak(utterance);
+  };
 
   // STEP COMPLETION HELPERS
   const markStepCompleted = (qId: number, stepNum: number) => {
@@ -307,10 +362,15 @@ export default function ThinkAloudProtocolPage() {
       setUserNim(localStorage.getItem("userNim") || "2026_PLP_01");
     }
     return () => {
+      stopSpeaking();
       if (timerRef.current) clearInterval(timerRef.current);
       if (recognitionRef.current) recognitionRef.current.stop();
     };
-  }, [fetchQuestions]);
+  }, [fetchQuestions, stopSpeaking]);
+
+  useEffect(() => {
+    stopSpeaking();
+  }, [sessionItemIdx, probingStep, activeSession, stopSpeaking]);
 
   const config = SESSION_CONFIGS[activeSession];
   const currentSessionQuestions = config.sjtIds
@@ -858,11 +918,34 @@ export default function ThinkAloudProtocolPage() {
                 </div>
               </div>
 
-              {/* SKENARIO TEXT BOX */}
-              <div className="p-3.5 md:p-4 bg-slate-950/90 rounded-xl border border-slate-800 shadow-inner space-y-2 text-xs md:text-sm leading-relaxed text-slate-200">
-                <div className="flex items-center gap-2 font-black text-amber-300 text-[11px] uppercase tracking-wider">
-                  <i className="fa-solid fa-book-open-reader"></i> Skenario Situasional:
+              {/* SKENARIO TEXT BOX WITH TEXT-TO-SPEECH (AUDIO READER) */}
+              <div className="p-3.5 md:p-4 bg-slate-950/90 rounded-xl border border-slate-800 shadow-inner space-y-2.5 text-xs md:text-sm leading-relaxed text-slate-200">
+                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800/80 pb-2">
+                  <div className="flex items-center gap-2 font-black text-amber-300 text-[11px] uppercase tracking-wider">
+                    <i className="fa-solid fa-book-open-reader"></i> Skenario Situasional:
+                  </div>
+
+                  {/* FITUR AUDIO READER / DENGARKAN SOAL (TEXT-TO-SPEECH) */}
+                  <button
+                    onClick={() =>
+                      speakText(
+                        `${currentQ.scenario}. Pilihan tindakan. ${currentQ.options
+                          .map((o, idx) => `Opsi ${String.fromCharCode(65 + idx)}: ${o.text}`)
+                          .join(". ")}`,
+                        "scenario"
+                      )
+                    }
+                    className={`px-3 py-1 rounded-lg text-[11px] font-black uppercase tracking-wider transition-all active:scale-95 flex items-center gap-1.5 border shadow-sm ${
+                      isSpeaking && speakingType === "scenario"
+                        ? "bg-amber-500 text-slate-950 border-amber-300 animate-pulse"
+                        : "bg-slate-800 hover:bg-slate-700 text-amber-300 border-slate-700"
+                    }`}
+                  >
+                    <i className={`fa-solid ${isSpeaking && speakingType === "scenario" ? "fa-volume-xmark" : "fa-volume-high"}`}></i>
+                    <span>{isSpeaking && speakingType === "scenario" ? "Hentikan Suara Skenario" : "🔊 Dengarkan Skenario & Opsi"}</span>
+                  </button>
                 </div>
+
                 <p className="whitespace-pre-line font-medium text-slate-100">{currentQ.scenario}</p>
               </div>
 
@@ -940,13 +1023,28 @@ export default function ThinkAloudProtocolPage() {
                     })}
                   </div>
 
-                  {/* PROBING QUESTION BOX BASED ON STEP */}
+                  {/* PROBING QUESTION BOX BASED ON STEP + TTS PLAYER */}
                   <div className="p-3.5 bg-slate-950/90 rounded-xl border border-slate-700 space-y-2 text-xs md:text-sm">
                     {probingStep === 1 && (
                       <div className="space-y-1.5">
-                        <div className="flex items-center justify-between text-amber-300 font-black text-xs uppercase">
+                        <div className="flex flex-wrap items-center justify-between gap-2 text-amber-300 font-black text-xs uppercase">
                           <span><i className="fa-solid fa-circle-question mr-1"></i> Pertanyaan Probing 1: Pemahaman Situasi</span>
-                          <span className="text-[10px] text-slate-400">Wajib Dijawab Suara</span>
+                          <button
+                            onClick={() =>
+                              speakText(
+                                "Pertanyaan Probing 1. Dengan kata-kata Anda sendiri, situasi ini menceritakan tentang apa, dan seberapa yakin Anda dengan pilihan jawaban Anda dari 1 sangat ragu sampai 5 sangat yakin?",
+                                "probing"
+                              )
+                            }
+                            className={`px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase transition border ${
+                              isSpeaking && speakingType === "probing"
+                                ? "bg-amber-500 text-slate-950 border-amber-300 animate-pulse"
+                                : "bg-slate-900 text-amber-300 border-slate-700 hover:bg-slate-800"
+                            }`}
+                          >
+                            <i className={`fa-solid ${isSpeaking && speakingType === "probing" ? "fa-volume-xmark" : "fa-volume-high"} mr-1`}></i>
+                            <span>{isSpeaking && speakingType === "probing" ? "Hentikan" : "🔊 Dengarkan"}</span>
+                          </button>
                         </div>
                         <p className="font-semibold text-slate-200">
                           "Dengan kata-kata Anda sendiri, situasi ini menceritakan tentang apa, dan seberapa yakin Anda dengan pilihan jawaban Anda (dari 1=Sangat Ragu sampai 5=Sangat Yakin)?"
@@ -956,9 +1054,24 @@ export default function ThinkAloudProtocolPage() {
 
                     {probingStep === 2 && (
                       <div className="space-y-1.5">
-                        <div className="flex items-center justify-between text-rose-300 font-black text-xs uppercase">
+                        <div className="flex flex-wrap items-center justify-between gap-2 text-rose-300 font-black text-xs uppercase">
                           <span><i className="fa-solid fa-circle-question mr-1"></i> Pertanyaan Probing 2: Probing Khusus Skenario</span>
-                          <span className="text-[10px] text-slate-400">Wajib Dijawab Suara</span>
+                          <button
+                            onClick={() =>
+                              speakText(
+                                `Pertanyaan Probing 2. ${currentProbing?.question || 'Mengapa Anda memilih tindakan itu daripada pilihan yang lain?'}`,
+                                "probing"
+                              )
+                            }
+                            className={`px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase transition border ${
+                              isSpeaking && speakingType === "probing"
+                                ? "bg-rose-500 text-white border-rose-300 animate-pulse"
+                                : "bg-slate-900 text-rose-300 border-slate-700 hover:bg-slate-800"
+                            }`}
+                          >
+                            <i className={`fa-solid ${isSpeaking && speakingType === "probing" ? "fa-volume-xmark" : "fa-volume-high"} mr-1`}></i>
+                            <span>{isSpeaking && speakingType === "probing" ? "Hentikan" : "🔊 Dengarkan"}</span>
+                          </button>
                         </div>
                         <p className="font-semibold text-slate-200">
                           "{currentProbing?.question || 'Mengapa Anda memilih tindakan itu daripada pilihan yang lain?'}"
@@ -968,9 +1081,24 @@ export default function ThinkAloudProtocolPage() {
 
                     {probingStep === 3 && (
                       <div className="space-y-1.5">
-                        <div className="flex items-center justify-between text-emerald-300 font-black text-xs uppercase">
+                        <div className="flex flex-wrap items-center justify-between gap-2 text-emerald-300 font-black text-xs uppercase">
                           <span><i className="fa-solid fa-circle-question mr-1"></i> Pertanyaan Probing 3: Evaluasi Opsi &amp; Realisme</span>
-                          <span className="text-[10px] text-slate-400">Wajib Dijawab Suara</span>
+                          <button
+                            onClick={() =>
+                              speakText(
+                                "Pertanyaan Probing 3. Apakah terdapat dua pilihan jawaban yang sulit dibedakan, adakah kata atau istilah yang membingungkan, dan apakah situasi ini realistis bagi mahasiswa calon guru?",
+                                "probing"
+                              )
+                            }
+                            className={`px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase transition border ${
+                              isSpeaking && speakingType === "probing"
+                                ? "bg-emerald-500 text-white border-emerald-300 animate-pulse"
+                                : "bg-slate-900 text-emerald-300 border-slate-700 hover:bg-slate-800"
+                            }`}
+                          >
+                            <i className={`fa-solid ${isSpeaking && speakingType === "probing" ? "fa-volume-xmark" : "fa-volume-high"} mr-1`}></i>
+                            <span>{isSpeaking && speakingType === "probing" ? "Hentikan" : "🔊 Dengarkan"}</span>
+                          </button>
                         </div>
                         <p className="font-semibold text-slate-200">
                           "Apakah terdapat dua pilihan jawaban yang sulit dibedakan, adakah kata/istilah yang membingungkan, dan apakah situasi ini realistis bagi mahasiswa calon guru?"
@@ -990,7 +1118,7 @@ export default function ThinkAloudProtocolPage() {
                             className="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white font-black text-xs uppercase tracking-wider rounded-xl shadow-lg border border-rose-400 transition active:scale-95 flex items-center gap-1.5"
                           >
                             <i className="fa-solid fa-microphone text-sm animate-bounce"></i>
-                            <span>1. Rekam Suara</span>
+                            <span>1. Rekam Suara Anda</span>
                           </button>
                         ) : (
                           <button
