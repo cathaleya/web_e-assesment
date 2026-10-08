@@ -636,32 +636,22 @@ export default function ThinkAloudProtocolPage() {
         backgroundAttachment: "fixed",
       }}
     >
-      {/* ORNAMEN TIMBUL MAHASISWA PAPUA KIRI (OUTSIDE MAIN CARD, NOT OVERLAPPED) */}
-      <div className="hidden xl:flex flex-col items-center justify-center fixed left-4 top-1/2 -translate-y-1/2 z-20 pointer-events-none w-52 text-center">
-        <div className="relative">
-          <img
-            src="/papua_student_male.png"
-            alt="Mahasiswa Calon Guru Papua"
-            className="w-48 h-auto object-contain drop-shadow-[0_20px_30px_rgba(0,0,0,0.25)] rounded-2xl border-2 border-amber-400/40 bg-white/60 backdrop-blur-sm p-1.5"
-          />
-          <div className="mt-2 px-3 py-1.5 bg-slate-900/95 backdrop-blur-md text-amber-300 text-[10px] font-black uppercase tracking-wider rounded-xl border border-amber-500/50 shadow-2xl">
-            🎓 Mahasiswa Calon Guru Papua
-          </div>
-        </div>
+      {/* ORNAMEN TIMBUL MAHASISWA PAPUA KIRI (UTUH, TANPA BOX, MEMPERBESAR FOTO) */}
+      <div className="hidden xl:flex flex-col items-center justify-center fixed left-0 top-1/2 -translate-y-1/2 z-20 pointer-events-none w-72 text-center">
+        <img
+          src="/papua_student_male.png"
+          alt="Mahasiswa Calon Guru Papua"
+          className="w-64 md:w-72 lg:w-80 h-auto object-contain mix-blend-multiply drop-shadow-[0_25px_35px_rgba(0,0,0,0.25)] hover:scale-105 transition-transform duration-300"
+        />
       </div>
 
-      {/* ORNAMEN TIMBUL MAHASISWA PAPUA KANAN (OUTSIDE MAIN CARD, NOT OVERLAPPED) */}
-      <div className="hidden xl:flex flex-col items-center justify-center fixed right-4 top-1/2 -translate-y-1/2 z-20 pointer-events-none w-52 text-center">
-        <div className="relative">
-          <img
-            src="/papua_student_female.png"
-            alt="Pendidik Masa Depan Papua"
-            className="w-48 h-auto object-contain drop-shadow-[0_20px_30px_rgba(0,0,0,0.25)] rounded-2xl border-2 border-rose-400/40 bg-white/60 backdrop-blur-sm p-1.5"
-          />
-          <div className="mt-2 px-3 py-1.5 bg-slate-900/95 backdrop-blur-md text-rose-300 text-[10px] font-black uppercase tracking-wider rounded-xl border border-rose-500/50 shadow-2xl">
-            👩‍🏫 Pendidik Masa Depan Papua
-          </div>
-        </div>
+      {/* ORNAMEN TIMBUL MAHASISWA PAPUA KANAN (UTUH, TANPA BOX, MEMPERBESAR FOTO) */}
+      <div className="hidden xl:flex flex-col items-center justify-center fixed right-0 top-1/2 -translate-y-1/2 z-20 pointer-events-none w-72 text-center">
+        <img
+          src="/papua_student_female.png"
+          alt="Pendidik Masa Depan Papua"
+          className="w-64 md:w-72 lg:w-80 h-auto object-contain mix-blend-multiply drop-shadow-[0_25px_35px_rgba(0,0,0,0.25)] hover:scale-105 transition-transform duration-300"
+        />
       </div>
 
       <main className="relative z-10 w-full max-w-4xl mx-auto space-y-3">
@@ -960,26 +950,26 @@ export default function ThinkAloudProtocolPage() {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-700/80 pb-3">
                 <div>
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase bg-rose-500/20 text-rose-300 border border-rose-500/40">
+                    <span className="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase bg-amber-400 text-slate-950 shadow-sm">
                       Sesi {activeSession} • Soal {sessionItemIdx + 1} dari 10
                     </span>
-                    <span className="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase bg-slate-800 text-slate-300 border border-slate-700">
+                    <span className="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase bg-slate-800 text-slate-200 border border-slate-700">
                       ID: SJT_{currentQ.id.toString().padStart(2, "0")}
                     </span>
                     {currentQ.dim && (
-                      <span className="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase bg-indigo-500/20 text-indigo-300 border border-indigo-500/40">
+                      <span className="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase bg-sky-500/30 text-sky-200 border border-sky-400/40">
                         {currentQ.dim}
                       </span>
                     )}
                   </div>
-                  <h3 className="text-sm md:text-base font-black text-white tracking-tight">
+                  <h3 className="text-base md:text-lg font-black text-amber-200 tracking-tight leading-snug">
                     {currentProbing?.title || `SJT Butir ${currentQ.id}`}
                   </h3>
                 </div>
               </div>
 
               {/* SKENARIO TEXT BOX WITH TEXT-TO-SPEECH (AUDIO READER) */}
-              <div className="p-3.5 md:p-4 bg-slate-950/90 rounded-xl border border-slate-800 shadow-inner space-y-2.5 text-xs md:text-sm leading-relaxed text-slate-200">
+              <div className="p-3.5 md:p-4 bg-slate-950/95 rounded-xl border border-slate-800 shadow-inner space-y-2.5 text-xs md:text-sm leading-relaxed text-slate-200">
                 <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800/80 pb-2">
                   <div className="flex items-center gap-2 font-black text-amber-300 text-[11px] uppercase tracking-wider">
                     <i className="fa-solid fa-book-open-reader"></i> Skenario Situasional:
@@ -1011,7 +1001,7 @@ export default function ThinkAloudProtocolPage() {
 
               {/* OPTIONS LIST (A, B, C, D, E) */}
               <div className="space-y-2">
-                <div className="text-[11px] font-black uppercase tracking-wider text-rose-300 flex items-center gap-1.5">
+                <div className="text-[11px] font-black uppercase tracking-wider text-amber-200 flex items-center gap-1.5">
                   <i className="fa-solid fa-list-check"></i> Pilihan Tindakan (Pilih Satu Pilihan Terlebih Dahulu):
                 </div>
                 <div className="grid grid-cols-1 gap-2">
@@ -1106,7 +1096,7 @@ export default function ThinkAloudProtocolPage() {
                             <span>{isSpeaking && speakingType === "probing" ? "Hentikan" : "🔊 Dengarkan"}</span>
                           </button>
                         </div>
-                        <p className="font-semibold text-slate-200">
+                        <p className="font-extrabold text-white text-sm leading-relaxed">
                           "Dengan kata-kata Anda sendiri, situasi ini menceritakan tentang apa, dan seberapa yakin Anda dengan pilihan jawaban Anda (dari 1=Sangat Ragu sampai 5=Sangat Yakin)?"
                         </p>
                       </div>
@@ -1114,8 +1104,8 @@ export default function ThinkAloudProtocolPage() {
 
                     {probingStep === 2 && (
                       <div className="space-y-1.5">
-                        <div className="flex flex-wrap items-center justify-between gap-2 text-rose-300 font-black text-xs uppercase">
-                          <span><i className="fa-solid fa-circle-question mr-1"></i> Pertanyaan Probing 2: Probing Khusus Skenario</span>
+                        <div className="flex flex-wrap items-center justify-between gap-2 text-amber-200 font-black text-xs uppercase">
+                          <span><i className="fa-solid fa-circle-question mr-1 text-amber-400"></i> Pertanyaan Probing 2: Probing Khusus Skenario</span>
                           <button
                             onClick={() =>
                               speakText(
@@ -1125,15 +1115,15 @@ export default function ThinkAloudProtocolPage() {
                             }
                             className={`px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase transition border ${
                               isSpeaking && speakingType === "probing"
-                                ? "bg-rose-500 text-white border-rose-300 animate-pulse"
-                                : "bg-slate-900 text-rose-300 border-slate-700 hover:bg-slate-800"
+                                ? "bg-amber-400 text-slate-950 border-amber-300 animate-pulse"
+                                : "bg-slate-900 text-amber-300 border-slate-700 hover:bg-slate-800"
                             }`}
                           >
                             <i className={`fa-solid ${isSpeaking && speakingType === "probing" ? "fa-volume-xmark" : "fa-volume-high"} mr-1`}></i>
                             <span>{isSpeaking && speakingType === "probing" ? "Hentikan" : "🔊 Dengarkan"}</span>
                           </button>
                         </div>
-                        <p className="font-semibold text-slate-200">
+                        <p className="font-extrabold text-amber-100 text-sm leading-relaxed">
                           "{currentProbing?.question || 'Mengapa Anda memilih tindakan itu daripada pilihan yang lain?'}"
                         </p>
                       </div>
