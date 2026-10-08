@@ -508,21 +508,21 @@ export default function ThinkAloudProtocolPage() {
                     </div>
                   </div>
 
-                  {/* PERTANYAAN 1: ALASAN PEMILIHAN OPSI */}
+                  {/* PERTANYAAN 1: MENJAWAB PEMAHAMAN SITUASI & ALASAN PEMILIHAN JAWABAN */}
                   {probingStep === 1 && (
                     <div className="space-y-3">
                       <div className="p-3 bg-rose-900 text-white rounded-xl border-2 border-rose-950 shadow-sm space-y-0.5">
                         <span className="text-[8px] font-black uppercase tracking-widest text-rose-300 block">
-                          PERTANYAAN 1: ALASAN PEMILIHAN &amp; EVALUASI OPSI
+                          PERTANYAAN 1: PEMAHAMAN SITUASI &amp; ALASAN PEMILIHAN JAWABAN
                         </span>
                         <p className="text-[11px] md:text-xs font-bold text-white italic leading-snug">
-                          &quot;Mengapa Anda memilih opsi ini ({String.fromCharCode(65 + (selectedAnswers[currentIdx] || 0))}) daripada opsi lain? Menurut Anda, opsi mana yang paling tidak tepat dan apa alasannya?&quot;
+                          &quot;Dengan kata-kata Anda sendiri, situasi ini menceritakan tentang apa? Mengapa Anda memilih opsi ({String.fromCharCode(65 + (selectedAnswers[currentIdx] || 0))}) ini sebagai tindakan terbaik Anda?&quot;
                         </p>
                       </div>
 
                       {/* INTEGRATED RECORDING & VERBATIM FOR P1 */}
                       <AudioProbingRecorder
-                        questionTitle="Pertanyaan 1: Alasan Pemilihan & Evaluasi Opsi"
+                        questionTitle="Pertanyaan 1: Pemahaman Situasi & Alasan Pemilihan Jawaban"
                         isRecording={isRecording}
                         recordingTime={recordingTime}
                         audioUrl={audioUrl}
@@ -532,7 +532,7 @@ export default function ThinkAloudProtocolPage() {
                         uploadSuccess={uploadSuccess}
                         startRecording={startRecording}
                         stopRecording={stopRecording}
-                        uploadAudioToServer={() => uploadAudioToServer("Pertanyaan 1: Alasan Pemilihan Opsi")}
+                        uploadAudioToServer={() => uploadAudioToServer("Pertanyaan 1: Pemahaman Situasi & Alasan Pemilihan Jawaban")}
                         downloadAudio={downloadAudio}
                         formatTime={formatTime}
                         onNext={() => { setProbingStep(2); resetRecordingState(); }}
@@ -541,45 +541,12 @@ export default function ThinkAloudProtocolPage() {
                     </div>
                   )}
 
-                  {/* PERTANYAAN 2: PEMAHAMAN SITUASI & BAHASA */}
+                  {/* PERTANYAAN 2: MENJAWAB PROBING KHUSUS SKENARIO */}
                   {probingStep === 2 && (
-                    <div className="space-y-3">
-                      <div className="p-3 bg-rose-900 text-white rounded-xl border-2 border-rose-950 shadow-sm space-y-0.5">
-                        <span className="text-[8px] font-black uppercase tracking-widest text-rose-300 block">
-                          PERTANYAAN 2: PEMAHAMAN SITUASI &amp; KEJELASAN BAHASA
-                        </span>
-                        <p className="text-[11px] md:text-xs font-bold text-white italic leading-snug">
-                          &quot;Dengan kata-kata Anda sendiri, situasi ini menceritakan tentang apa? Adakah kata atau istilah dalam skenario ini yang membingungkan atau terasa asing bagi Anda?&quot;
-                        </p>
-                      </div>
-
-                      {/* INTEGRATED RECORDING & VERBATIM FOR P2 */}
-                      <AudioProbingRecorder
-                        questionTitle="Pertanyaan 2: Pemahaman Situasi & Kejelasan Bahasa"
-                        isRecording={isRecording}
-                        recordingTime={recordingTime}
-                        audioUrl={audioUrl}
-                        transcriptText={transcriptText}
-                        setTranscriptText={setTranscriptText}
-                        isUploading={isUploading}
-                        uploadSuccess={uploadSuccess}
-                        startRecording={startRecording}
-                        stopRecording={stopRecording}
-                        uploadAudioToServer={() => uploadAudioToServer("Pertanyaan 2: Pemahaman Situasi & Bahasa")}
-                        downloadAudio={downloadAudio}
-                        formatTime={formatTime}
-                        onNext={() => { setProbingStep(3); resetRecordingState(); }}
-                        nextLabel="Lanjut ke Pertanyaan 3"
-                      />
-                    </div>
-                  )}
-
-                  {/* PERTANYAAN 3: PERTANYAAN KHUSUS SKENARIO & KEYAKINAN */}
-                  {probingStep === 3 && (
                     <div className="space-y-3">
                       <div className="p-3 bg-rose-900 text-white rounded-xl border-2 border-rose-950 shadow-sm space-y-1">
                         <span className="text-[8px] font-black uppercase tracking-widest text-rose-300 block">
-                          PERTANYAAN 3: PROBING KHUSUS SKENARIO #{itemNo} ({currentProbing?.title})
+                          PERTANYAAN 2: PROBING KHUSUS SKENARIO #{itemNo} ({currentProbing?.title})
                         </span>
                         <p className="text-[11px] md:text-xs font-bold text-white italic leading-snug">
                           &quot;{currentProbing?.question}&quot;
@@ -589,9 +556,9 @@ export default function ThinkAloudProtocolPage() {
                         </p>
                       </div>
 
-                      {/* INTEGRATED RECORDING & VERBATIM FOR P3 */}
+                      {/* INTEGRATED RECORDING & VERBATIM FOR P2 */}
                       <AudioProbingRecorder
-                        questionTitle={`Pertanyaan 3: Probing Khusus (${currentProbing?.title})`}
+                        questionTitle={`Pertanyaan 2: Probing Khusus (${currentProbing?.title})`}
                         isRecording={isRecording}
                         recordingTime={recordingTime}
                         audioUrl={audioUrl}
@@ -601,7 +568,40 @@ export default function ThinkAloudProtocolPage() {
                         uploadSuccess={uploadSuccess}
                         startRecording={startRecording}
                         stopRecording={stopRecording}
-                        uploadAudioToServer={() => uploadAudioToServer(`Pertanyaan 3: Probing Khusus (${currentProbing?.title})`)}
+                        uploadAudioToServer={() => uploadAudioToServer(`Pertanyaan 2: Probing Khusus (${currentProbing?.title})`)}
+                        downloadAudio={downloadAudio}
+                        formatTime={formatTime}
+                        onNext={() => { setProbingStep(3); resetRecordingState(); }}
+                        nextLabel="Lanjut ke Pertanyaan 3 (Evaluasi)"
+                      />
+                    </div>
+                  )}
+
+                  {/* PERTANYAAN 3: MENGEVALUASI OPSI LAIN & KEJELASAN BAHASA */}
+                  {probingStep === 3 && (
+                    <div className="space-y-3">
+                      <div className="p-3 bg-rose-900 text-white rounded-xl border-2 border-rose-950 shadow-sm space-y-0.5">
+                        <span className="text-[8px] font-black uppercase tracking-widest text-rose-300 block">
+                          PERTANYAAN 3: EVALUASI OPSI LAIN &amp; KEJELASAN BAHASA
+                        </span>
+                        <p className="text-[11px] md:text-xs font-bold text-white italic leading-snug">
+                          &quot;Menurut Anda, opsi mana yang paling TIDAK tepat dan apa alasannya? Adakah kata atau istilah dalam skenario ini yang membingungkan atau terasa asing bagi Anda?&quot;
+                        </p>
+                      </div>
+
+                      {/* INTEGRATED RECORDING & VERBATIM FOR P3 */}
+                      <AudioProbingRecorder
+                        questionTitle="Pertanyaan 3: Evaluasi Opsi Lain & Kejelasan Bahasa"
+                        isRecording={isRecording}
+                        recordingTime={recordingTime}
+                        audioUrl={audioUrl}
+                        transcriptText={transcriptText}
+                        setTranscriptText={setTranscriptText}
+                        isUploading={isUploading}
+                        uploadSuccess={uploadSuccess}
+                        startRecording={startRecording}
+                        stopRecording={stopRecording}
+                        uploadAudioToServer={() => uploadAudioToServer("Pertanyaan 3: Evaluasi Opsi Lain & Kejelasan Bahasa")}
                         downloadAudio={downloadAudio}
                         formatTime={formatTime}
                         onNext={() => {
