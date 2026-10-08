@@ -444,7 +444,14 @@ export default function ThinkAloudProtocolPage() {
   const startRecording = async () => {
     resetRecordingState();
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      // Enhanced audio constraints for better mic capture on HP and Laptop Chrome
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
+        },
+      });
       mediaRecorderRef.current = new MediaRecorder(stream);
       audioChunksRef.current = [];
 
@@ -465,7 +472,7 @@ export default function ThinkAloudProtocolPage() {
       setIsRecording(true);
       isRecordingRef.current = true;
 
-      // SPEECH-TO-TEXT VERBATIM TRANSCRIPTION (LIVE & AUTO-RESTARTING)
+      // SPEECH-TO-TEXT VERBATIM TRANSCRIPTION (LIVE & AUTO-RESTARTING WITH CHROME FIXES)
       if (typeof window !== "undefined") {
         const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
         if (SpeechRecognition) {
@@ -492,7 +499,10 @@ export default function ThinkAloudProtocolPage() {
             };
 
             recognition.onerror = (event: any) => {
-              console.warn("Speech recognition notice:", event.error);
+              console.warn("Chrome Speech recognition notice:", event.error);
+              if (event.error === "not-allowed" || event.error === "service-not-allowed") {
+                alert("⚠️ Mikrofon diblokir oleh peramban Chrome. Harap izinkan akses Mikrofon pada ikon gembok/pengaturan di bilah alamat browser Anda.");
+              }
             };
 
             recognition.onend = () => {
@@ -514,9 +524,13 @@ export default function ThinkAloudProtocolPage() {
       timerRef.current = setInterval(() => {
         setRecordingTime((prev) => prev + 1);
       }, 1000);
-    } catch (err) {
+    } catch (err: any) {
       console.error("Gagal mengaktifkan mikrofon:", err);
-      alert("Izin akses mikrofon diperlukan untuk merekam respons audio Think-Aloud.");
+      if (err?.name === "NotAllowedError" || err?.name === "PermissionDeniedError") {
+        alert("⚠️ Izin Akses Mikrofon Ditolak!\n\nUntuk mengatasi di Chrome (HP / Laptop):\n1. Klik ikon Gembok / Setelan Situs di sebelah kiri URL alamat web.\n2. Ubah Izin Mikrofon menjadi 'Izinkan' (Allow).\n3. Muat ulang (reload) halaman ini.");
+      } else {
+        alert("⚠️ Mikrofon tidak terdeteksi atau sedang digunakan oleh aplikasi lain. Pastikan mikrofon HP/Laptop Anda aktif.");
+      }
     }
   };
 
