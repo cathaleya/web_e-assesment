@@ -230,7 +230,7 @@ export default function Madel5cAssessment() {
                   <i className="fa-solid fa-envelope text-emerald-700 text-sm w-4"></i>
                   <div>
                     <span className="text-slate-400 font-bold uppercase text-[8px] block">Kontak Resmi Peneliti:</span>
-                    <strong className="font-black text-emerald-950">msloter28@gmail.com</strong>
+                    <strong className="font-black text-emerald-950">ruslinairianty7@gmail.com</strong>
                   </div>
                 </div>
               </div>
