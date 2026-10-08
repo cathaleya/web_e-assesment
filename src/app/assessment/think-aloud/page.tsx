@@ -65,7 +65,7 @@ export default function ThinkAloudProtocolPage() {
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, number>>({});
   const [probingStep, setProbingStep] = useState<number>(1); // 1, 2, 3
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<"session" | "guidance" | "all_items">("session");
+  const [activeTab, setActiveTab] = useState<"guidance" | "session">("guidance");
 
   // Audio & Speech-to-Text Verbatim state
   const [isRecording, setIsRecording] = useState(false);
@@ -262,7 +262,7 @@ export default function ThinkAloudProtocolPage() {
 
   return (
     <div
-      className="min-h-screen relative overflow-x-hidden flex flex-col py-4 md:py-8 px-3 md:px-6"
+      className="min-h-screen relative overflow-x-hidden flex flex-col py-2.5 md:py-4 px-2.5 md:px-5"
       style={{
         backgroundImage: "url('/unj_bg_v2.png')",
         backgroundSize: "cover",
@@ -270,95 +270,149 @@ export default function ThinkAloudProtocolPage() {
         backgroundAttachment: "fixed",
       }}
     >
-      <main className="relative z-10 w-full max-w-4xl mx-auto space-y-4 md:space-y-6">
+      <main className="relative z-10 w-full max-w-4xl mx-auto space-y-3">
         
-        {/* HEADER UTAMA TIMBUL TEBAL (ROSE & CRIMSON THEME) */}
-        <div className="card-timbul p-5 md:p-7 rounded-[28px] md:rounded-[36px] bg-gradient-to-r from-rose-950 via-rose-900 to-red-950 text-white border-2 border-rose-950 shadow-2xl">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div className="flex items-start gap-3.5">
-              <div className="w-12 h-12 md:w-14 md:h-14 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center text-white border border-white/20 shadow-inner shrink-0">
-                <i className="fa-solid fa-microphone-lines text-2xl md:text-3xl text-rose-300"></i>
-              </div>
-              <div>
-                <span className="text-[9px] font-black uppercase tracking-widest text-rose-300 block mb-0.5">
-                  WAWANCARA KOGNITIF (THINK-ALOUD)
-                </span>
-                <h1 className="text-xl md:text-2xl font-black uppercase tracking-tight text-white leading-tight">
-                  PROTOKOL SUARA MADEL-5C
-                </h1>
-                <p className="text-[10px] md:text-[11px] font-bold text-rose-100/90 mt-0.5">
-                  Alur Berurutan: Skenario → Pilih Opsi → Pertanyaan 1 → Pertanyaan 2 → Pertanyaan 3
-                </p>
-              </div>
-            </div>
+        {/* RINGKAS TOP BAR & TAB SWITCHER (DESAIN FIT ON SCREEN) */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 bg-slate-900/90 backdrop-blur-md p-2 md:p-2.5 rounded-2xl border-2 border-slate-700 shadow-xl text-white">
+          
+          {/* TAB TABS (1. PANDUAN & RUJUKAN -> 2. SESI PENGERJAAN SOAL) */}
+          <div className="flex items-center gap-1.5 flex-1">
+            <button
+              onClick={() => setActiveTab("guidance")}
+              className={`flex-1 py-2 px-3 rounded-xl text-[10px] md:text-xs font-black uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 ${
+                activeTab === "guidance"
+                  ? "bg-rose-800 text-white shadow-md border-b-3 border-rose-950 scale-[1.02]"
+                  : "bg-slate-800/80 text-slate-300 hover:bg-slate-700 hover:text-white"
+              }`}
+            >
+              <i className="fa-solid fa-book-open text-rose-300"></i>
+              <span>1. Panduan &amp; Rujukan</span>
+            </button>
 
             <button
-              onClick={() => router.push("/dashboard")}
-              className="px-4 py-2.5 bg-white/15 hover:bg-white/25 text-white rounded-xl text-[10px] font-black uppercase tracking-wider border border-white/20 transition-all active:scale-95 shrink-0 self-start md:self-center"
+              onClick={() => setActiveTab("session")}
+              className={`flex-1 py-2 px-3 rounded-xl text-[10px] md:text-xs font-black uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 ${
+                activeTab === "session"
+                  ? "bg-rose-800 text-white shadow-md border-b-3 border-rose-950 scale-[1.02]"
+                  : "bg-slate-800/80 text-slate-300 hover:bg-slate-700 hover:text-white"
+              }`}
             >
-              <i className="fa-solid fa-arrow-left mr-1.5"></i> Dashboard
+              <i className="fa-solid fa-circle-play text-rose-300"></i>
+              <span>2. Sesi Pengerjaan Soal #{itemNo}</span>
             </button>
           </div>
-        </div>
 
-        {/* TAB SWITCHER */}
-        <div className="flex flex-wrap gap-2 p-1.5 bg-slate-300/80 rounded-2xl border-2 border-slate-400/80 shadow-inner">
+          {/* DASHBOARD NAVIGATION BUTTON */}
           <button
-            onClick={() => setActiveTab("session")}
-            className={`flex-1 py-2.5 px-3 rounded-xl text-[10px] md:text-[11px] font-black uppercase tracking-wider transition-all ${
-              activeTab === "session"
-                ? "bg-rose-900 text-white shadow-md border-b-4 border-rose-950"
-                : "bg-transparent text-slate-800 hover:bg-slate-300"
-            }`}
+            onClick={() => router.push("/dashboard")}
+            className="px-3.5 py-1.5 bg-white/15 hover:bg-white/25 text-white rounded-xl text-[10px] font-black uppercase tracking-wider border border-white/20 transition-all active:scale-95 shrink-0 self-end sm:self-auto"
           >
-            <i className="fa-solid fa-play-circle mr-1.5"></i> 1. Sesi Pengerjaan Soal #{itemNo}
-          </button>
-
-          <button
-            onClick={() => setActiveTab("guidance")}
-            className={`flex-1 py-2.5 px-3 rounded-xl text-[10px] md:text-[11px] font-black uppercase tracking-wider transition-all ${
-              activeTab === "guidance"
-                ? "bg-rose-900 text-white shadow-md border-b-4 border-rose-950"
-                : "bg-transparent text-slate-800 hover:bg-slate-300"
-            }`}
-          >
-            <i className="fa-solid fa-book-open mr-1.5"></i> 2. Panduan & Rujukan
-          </button>
-
-          <button
-            onClick={() => setActiveTab("all_items")}
-            className={`flex-1 py-2.5 px-3 rounded-xl text-[10px] md:text-[11px] font-black uppercase tracking-wider transition-all ${
-              activeTab === "all_items"
-                ? "bg-rose-900 text-white shadow-md border-b-4 border-rose-950"
-                : "bg-transparent text-slate-800 hover:bg-slate-300"
-            }`}
-          >
-            <i className="fa-solid fa-grid-2 mr-1.5"></i> 3. Indeks 30 SJT
+            <i className="fa-solid fa-arrow-left mr-1"></i> Dashboard
           </button>
         </div>
 
-        {/* TAB 1: SESI PENGERJAAN & PROBING SEQUENTIAL */}
         <AnimatePresence mode="wait">
+          {/* TAB 1: PANDUAN & RUJUKAN TIMBUL (SEKARANG NOMOR 1) */}
+          {activeTab === "guidance" && (
+            <motion.div
+              key="guidance"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="space-y-3"
+            >
+              <div className="card-timbul p-4 md:p-6 rounded-[24px] bg-gradient-to-b from-white via-slate-50 to-slate-100 border-2 border-slate-300 border-b-4 border-b-slate-400 shadow-xl space-y-3">
+                <div className="flex items-center justify-between border-b border-slate-200 pb-2.5">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-xl bg-rose-100 text-rose-800 flex items-center justify-center font-black text-sm shrink-0">
+                      <i className="fa-solid fa-bullseye"></i>
+                    </div>
+                    <div>
+                      <h3 className="text-xs md:text-sm font-black text-slate-900 uppercase">1. Panduan &amp; Rujukan Protokol Think-Aloud</h3>
+                      <p className="text-[9px] md:text-[10px] font-bold text-slate-500">Rujukan Teoretis: Ericsson &amp; Simon (1993); Willis (2005)</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setActiveTab("session")}
+                    className="px-4 py-2 bg-rose-800 hover:bg-rose-900 text-white text-[10px] font-black uppercase rounded-xl shadow-md border-b-3 border-rose-950 transition-all active:scale-95 flex items-center gap-1.5"
+                  >
+                    <span>Mulai Pengerjaan Soal</span>
+                    <i className="fa-solid fa-arrow-right"></i>
+                  </button>
+                </div>
+
+                <div className="p-3 bg-rose-50/80 rounded-xl border border-rose-200 text-slate-800 space-y-1.5">
+                  <span className="text-[9px] font-black uppercase tracking-widest text-rose-900 block">
+                    Tujuan Wawancara Kognitif:
+                  </span>
+                  <p className="text-[11px] md:text-xs font-bold leading-relaxed">
+                    Protokol Think-Aloud bertujuan memperoleh bukti validitas proses respons secara langsung: yaitu menguji apakah mahasiswa calon guru memahami skenario dan opsi sebagaimana dimaksud oleh pengembang instrumen MADEL-5C, serta apakah penalaran mereka selaras dengan kunci penskoran.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5 pt-1">
+                  <div className="p-3 bg-white rounded-xl border border-slate-200 shadow-sm space-y-1">
+                    <span className="text-[9px] font-black text-rose-800 uppercase tracking-wider block">
+                      Step 1: Baca Skenario
+                    </span>
+                    <p className="text-[10px] font-semibold text-slate-600 leading-snug">
+                      Pahami dengan cermat skenario situasi nyata yang disajikan pada setiap butir SJT.
+                    </p>
+                  </div>
+
+                  <div className="p-3 bg-white rounded-xl border border-slate-200 shadow-sm space-y-1">
+                    <span className="text-[9px] font-black text-rose-800 uppercase tracking-wider block">
+                      Step 2: Pilih 1 Opsi
+                    </span>
+                    <p className="text-[10px] font-semibold text-slate-600 leading-snug">
+                      Pilih 1 tindakan terbaik yang paling menggambarkan keputusan Anda sebagai calon guru.
+                    </p>
+                  </div>
+
+                  <div className="p-3 bg-white rounded-xl border border-slate-200 shadow-sm space-y-1">
+                    <span className="text-[9px] font-black text-rose-800 uppercase tracking-wider block">
+                      Step 3: Suarakan Jawaban
+                    </span>
+                    <p className="text-[10px] font-semibold text-slate-600 leading-snug">
+                      Jawab pertanyaan probing (P1, P2, P3) secara berurutan dengan merekam suara atau menuliskan verbatim.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="pt-2 flex justify-end">
+                  <button
+                    onClick={() => setActiveTab("session")}
+                    className="px-5 py-2.5 bg-gradient-to-r from-rose-900 to-red-900 hover:from-rose-950 hover:to-red-950 text-white font-black text-[11px] uppercase tracking-wider rounded-xl shadow-lg border-b-3 border-rose-950 transition-all active:scale-95 flex items-center gap-2"
+                  >
+                    <i className="fa-solid fa-play-circle text-xs"></i>
+                    <span>Masuk ke Sesi Pengerjaan Soal (Butir #1)</span>
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+          {/* TAB 2: SESI PENGERJAAN & PROBING SEQUENTIAL (FIT ON SCREEN) */}
           {activeTab === "session" && currentQ && (
             <motion.div
               key={`session-${currentIdx}`}
-              initial={{ opacity: 0, y: 15 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
-              className="space-y-4"
+              exit={{ opacity: 0, y: -10 }}
+              className="space-y-3"
             >
-              {/* ITEM NAVIGATION SELECTOR BAR TIMBUL */}
-              <div className="card-timbul p-3.5 rounded-[22px] bg-gradient-to-r from-white via-slate-50 to-white border-2 border-slate-300 border-b-4 border-b-slate-400 flex items-center justify-between shadow-md">
+              {/* ITEM NAVIGATION SELECTOR BAR COMPACT TIMBUL */}
+              <div className="card-timbul p-2.5 md:p-3 rounded-2xl bg-gradient-to-r from-white via-slate-50 to-white border-2 border-slate-300 border-b-4 border-b-slate-400 flex items-center justify-between shadow-md">
                 <button
                   disabled={currentIdx === 0}
                   onClick={() => { setCurrentIdx(currentIdx - 1); setProbingStep(1); resetRecordingState(); }}
-                  className="px-3.5 py-1.5 bg-white hover:bg-slate-100 disabled:opacity-30 text-slate-800 rounded-xl text-[10px] font-black uppercase border-2 border-slate-300 border-b-4 border-b-slate-400 transition-all active:scale-95"
+                  className="px-3 py-1 bg-white hover:bg-slate-100 disabled:opacity-30 text-slate-800 rounded-xl text-[10px] font-black uppercase border-2 border-slate-300 border-b-3 border-b-slate-400 transition-all active:scale-95"
                 >
                   <i className="fa-solid fa-arrow-left mr-1"></i> Sebelum
                 </button>
 
                 <div className="text-center">
-                  <span className="text-[9px] font-black text-rose-800 uppercase tracking-widest block">
+                  <span className="text-[8px] md:text-[9px] font-black text-rose-800 uppercase tracking-widest block">
                     {currentProbing?.sjtId || `SJT_${itemNo.toString().padStart(2, "0")}`}
                   </span>
                   <span className="text-xs md:text-sm font-black text-slate-900 italic">
@@ -369,34 +423,34 @@ export default function ThinkAloudProtocolPage() {
                 <button
                   disabled={currentIdx === questions.length - 1}
                   onClick={() => { setCurrentIdx(currentIdx + 1); setProbingStep(1); resetRecordingState(); }}
-                  className="px-3.5 py-1.5 bg-rose-800 hover:bg-rose-900 disabled:opacity-30 text-white rounded-xl text-[10px] font-black uppercase border-2 border-rose-900 border-b-4 border-b-rose-950 transition-all active:scale-95 shadow-md"
+                  className="px-3 py-1 bg-rose-800 hover:bg-rose-900 disabled:opacity-30 text-white rounded-xl text-[10px] font-black uppercase border-2 border-rose-900 border-b-3 border-b-rose-950 transition-all active:scale-95 shadow-md"
                 >
                   Lanjut <i className="fa-solid fa-arrow-right ml-1"></i>
                 </button>
               </div>
 
-              {/* 1. SKENARIO SITUASI NYATA TIMBUL (KARTU HIJAU SOFT / MINT) */}
-              <div className="scenario-timbul p-5 md:p-6 rounded-[26px] shadow-lg border-2 border-emerald-300">
-                <div className="flex items-center justify-between mb-2">
+              {/* 1. SKENARIO SITUASI NYATA COMPACT (KARTU HIJAU MINT) */}
+              <div className="scenario-timbul p-3.5 md:p-4 rounded-2xl shadow-md border-2 border-emerald-300 bg-emerald-50/70">
+                <div className="flex items-center justify-between mb-1.5">
                   <span className="text-[9px] font-black text-emerald-800 uppercase tracking-widest flex items-center gap-1.5">
                     <i className="fa-solid fa-book-bookmark text-emerald-700"></i> STEP 1: SKENARIO SITUASI NYATA
                   </span>
-                  <span className="text-[9px] font-black text-emerald-950 bg-emerald-200/80 px-2.5 py-0.5 rounded-md border border-emerald-300">
+                  <span className="text-[9px] font-black text-emerald-950 bg-emerald-200/90 px-2 py-0.5 rounded-md border border-emerald-300">
                     {currentQ.dim || "5 Dimensi MADEL-5C"}
                   </span>
                 </div>
-                <p className="text-xs md:text-sm text-slate-900 font-bold leading-relaxed italic whitespace-pre-line">
+                <p className="text-xs md:text-xs font-bold text-slate-900 leading-snug italic whitespace-pre-line">
                   &quot;{currentQ.scenario}&quot;
                 </p>
               </div>
 
-              {/* 2. PILIHAN JAWABAN (A, B, C, D, E) TIMBUL */}
-              <div className="card-timbul p-5 md:p-6 rounded-[28px] bg-gradient-to-b from-white via-slate-50 to-slate-100 border-2 border-slate-300 border-b-4 border-b-slate-400 shadow-xl space-y-3">
-                <span className="text-[9px] font-black text-slate-700 uppercase tracking-widest block border-b border-slate-200 pb-2 flex items-center gap-1.5">
+              {/* 2. PILIHAN JAWABAN (A, B, C, D, E) COMPACT */}
+              <div className="card-timbul p-3.5 md:p-4 rounded-2xl bg-gradient-to-b from-white via-slate-50 to-slate-100 border-2 border-slate-300 border-b-3 border-b-slate-400 shadow-md space-y-2">
+                <span className="text-[9px] font-black text-slate-700 uppercase tracking-widest block border-b border-slate-200 pb-1 flex items-center gap-1.5">
                   <i className="fa-solid fa-list-check text-rose-700"></i> STEP 2: PILIH 1 TINDAKAN TERBAIK
                 </span>
 
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                   {currentQ.options.map((opt, idx) => {
                     const isSelected = selectedAnswers[currentIdx] === idx;
                     const letter = String.fromCharCode(65 + idx);
@@ -404,15 +458,15 @@ export default function ThinkAloudProtocolPage() {
                       <button
                         key={idx}
                         onClick={() => handleSelectOption(idx)}
-                        className={`w-full p-3 md:p-3.5 rounded-2xl text-left transition-all ${
+                        className={`w-full p-2.5 md:p-2.5 rounded-xl text-left transition-all ${
                           isSelected
                             ? "option-card-timbul-selected"
                             : "option-card-timbul hover:border-rose-400"
                         }`}
                       >
-                        <div className="flex items-start gap-3">
+                        <div className="flex items-start gap-2.5">
                           <span
-                            className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-black shrink-0 ${
+                            className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black shrink-0 ${
                               isSelected
                                 ? "bg-white text-[#4B5320] shadow-sm"
                                 : "bg-slate-100 text-slate-700 border border-slate-300"
@@ -420,7 +474,7 @@ export default function ThinkAloudProtocolPage() {
                           >
                             {letter}
                           </span>
-                          <span className="text-xs font-bold leading-snug pt-0.5">{opt.text}</span>
+                          <span className="text-[11px] md:text-xs font-bold leading-tight pt-0.5">{opt.text}</span>
                         </div>
                       </button>
                     );
@@ -428,13 +482,13 @@ export default function ThinkAloudProtocolPage() {
                 </div>
               </div>
 
-              {/* 3. PERTANYAAN PROBING SEQUENTIAL (PERTANYAAN 1 -> PERTANYAAN 2 -> PERTANYAAN 3) */}
+              {/* 3. PERTANYAAN PROBING SEQUENTIAL (P1 -> P2 -> P3) COMPACT */}
               {selectedOpt ? (
-                <div className="card-timbul p-5 md:p-6 rounded-[28px] bg-gradient-to-b from-white via-rose-50/40 to-slate-50 border-2 border-rose-300 border-b-4 border-b-rose-400 shadow-xl space-y-4">
+                <div className="card-timbul p-3.5 md:p-4 rounded-2xl bg-gradient-to-b from-white via-rose-50/40 to-slate-50 border-2 border-rose-300 border-b-3 border-b-rose-400 shadow-md space-y-3">
                   
                   {/* STEP INDICATOR TABS */}
-                  <div className="flex items-center justify-between border-b border-rose-200 pb-3">
-                    <span className="text-[10px] font-black text-rose-900 uppercase tracking-widest flex items-center gap-1.5">
+                  <div className="flex items-center justify-between border-b border-rose-200 pb-2">
+                    <span className="text-[9px] font-black text-rose-900 uppercase tracking-widest flex items-center gap-1.5">
                       <i className="fa-solid fa-comments text-rose-700"></i> STEP 3: PROBING KOGNITIF (PERTANYAAN {probingStep} DARI 3)
                     </span>
                     <div className="flex items-center gap-1">
@@ -442,9 +496,9 @@ export default function ThinkAloudProtocolPage() {
                         <button
                           key={stepNum}
                           onClick={() => { setProbingStep(stepNum); resetRecordingState(); }}
-                          className={`w-7 h-7 rounded-lg text-xs font-black transition-all ${
+                          className={`w-6 h-6 rounded-md text-[10px] font-black transition-all ${
                             probingStep === stepNum
-                              ? "bg-rose-900 text-white shadow-md border-b-2 border-rose-950 scale-105"
+                              ? "bg-rose-900 text-white shadow-md border-b border-rose-950 scale-105"
                               : "bg-slate-100 text-slate-600 hover:bg-rose-100"
                           }`}
                         >
@@ -456,12 +510,12 @@ export default function ThinkAloudProtocolPage() {
 
                   {/* PERTANYAAN 1: ALASAN PEMILIHAN OPSI */}
                   {probingStep === 1 && (
-                    <div className="space-y-4">
-                      <div className="p-4 bg-rose-900 text-white rounded-2xl border-2 border-rose-950 shadow-md space-y-1">
-                        <span className="text-[9px] font-black uppercase tracking-widest text-rose-300 block">
-                          PERTANYAAN 1: ALASAN PEMILIHAN & EVALUASI OPSI
+                    <div className="space-y-3">
+                      <div className="p-3 bg-rose-900 text-white rounded-xl border-2 border-rose-950 shadow-sm space-y-0.5">
+                        <span className="text-[8px] font-black uppercase tracking-widest text-rose-300 block">
+                          PERTANYAAN 1: ALASAN PEMILIHAN &amp; EVALUASI OPSI
                         </span>
-                        <p className="text-xs md:text-sm font-bold text-white italic leading-relaxed">
+                        <p className="text-[11px] md:text-xs font-bold text-white italic leading-snug">
                           &quot;Mengapa Anda memilih opsi ini ({String.fromCharCode(65 + (selectedAnswers[currentIdx] || 0))}) daripada opsi lain? Menurut Anda, opsi mana yang paling tidak tepat dan apa alasannya?&quot;
                         </p>
                       </div>
@@ -489,12 +543,12 @@ export default function ThinkAloudProtocolPage() {
 
                   {/* PERTANYAAN 2: PEMAHAMAN SITUASI & BAHASA */}
                   {probingStep === 2 && (
-                    <div className="space-y-4">
-                      <div className="p-4 bg-rose-900 text-white rounded-2xl border-2 border-rose-950 shadow-md space-y-1">
-                        <span className="text-[9px] font-black uppercase tracking-widest text-rose-300 block">
-                          PERTANYAAN 2: PEMAHAMAN SITUASI & KEJELASAN BAHASA
+                    <div className="space-y-3">
+                      <div className="p-3 bg-rose-900 text-white rounded-xl border-2 border-rose-950 shadow-sm space-y-0.5">
+                        <span className="text-[8px] font-black uppercase tracking-widest text-rose-300 block">
+                          PERTANYAAN 2: PEMAHAMAN SITUASI &amp; KEJELASAN BAHASA
                         </span>
-                        <p className="text-xs md:text-sm font-bold text-white italic leading-relaxed">
+                        <p className="text-[11px] md:text-xs font-bold text-white italic leading-snug">
                           &quot;Dengan kata-kata Anda sendiri, situasi ini menceritakan tentang apa? Adakah kata atau istilah dalam skenario ini yang membingungkan atau terasa asing bagi Anda?&quot;
                         </p>
                       </div>
@@ -522,15 +576,15 @@ export default function ThinkAloudProtocolPage() {
 
                   {/* PERTANYAAN 3: PERTANYAAN KHUSUS SKENARIO & KEYAKINAN */}
                   {probingStep === 3 && (
-                    <div className="space-y-4">
-                      <div className="p-4 bg-rose-900 text-white rounded-2xl border-2 border-rose-950 shadow-md space-y-1">
-                        <span className="text-[9px] font-black uppercase tracking-widest text-rose-300 block">
+                    <div className="space-y-3">
+                      <div className="p-3 bg-rose-900 text-white rounded-xl border-2 border-rose-950 shadow-sm space-y-1">
+                        <span className="text-[8px] font-black uppercase tracking-widest text-rose-300 block">
                           PERTANYAAN 3: PROBING KHUSUS SKENARIO #{itemNo} ({currentProbing?.title})
                         </span>
-                        <p className="text-xs md:text-sm font-bold text-white italic leading-relaxed mb-2">
+                        <p className="text-[11px] md:text-xs font-bold text-white italic leading-snug">
                           &quot;{currentProbing?.question}&quot;
                         </p>
-                        <p className="text-[11px] font-bold text-rose-200 border-t border-rose-800 pt-1.5">
+                        <p className="text-[10px] font-bold text-rose-200 border-t border-rose-800/80 pt-1">
                           <em>Pertanyaan Tambahan:</em> &quot;Seberapa yakin Anda dengan pilihan Anda tadi dari skala 1 (tidak yakin) sampai 5 (sangat yakin)?&quot;
                         </p>
                       </div>
@@ -566,76 +620,13 @@ export default function ThinkAloudProtocolPage() {
 
                 </div>
               ) : (
-                <div className="p-5 bg-amber-50 rounded-2xl border-2 border-amber-300 text-center">
-                  <p className="text-xs font-black text-amber-950 uppercase tracking-wide">
+                <div className="p-3.5 bg-amber-50 rounded-xl border-2 border-amber-300 text-center shadow-sm">
+                  <p className="text-[11px] font-black text-amber-950 uppercase tracking-wide">
                     <i className="fa-solid fa-arrow-up mr-1.5 text-amber-700"></i> Silakan pilih 1 tindakan terbaik di Step 2 untuk membuka Pertanyaan Probing
                   </p>
                 </div>
               )}
 
-            </motion.div>
-          )}
-
-          {/* TAB 2: PANDUAN & RUJUKAN TIMBUL */}
-          {activeTab === "guidance" && (
-            <motion.div
-              key="guidance"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              className="space-y-4"
-            >
-              <div className="card-timbul p-5 md:p-6 rounded-[24px] bg-gradient-to-b from-white via-slate-50 to-slate-100 border-2 border-slate-300 border-b-4 border-b-slate-400 shadow-xl space-y-4">
-                <div className="flex items-center gap-3 border-b border-slate-200 pb-3">
-                  <div className="w-8 h-8 rounded-xl bg-rose-100 text-rose-800 flex items-center justify-center font-black text-sm">
-                    <i className="fa-solid fa-bullseye"></i>
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-black text-slate-900 uppercase">Tujuan Protokol Think-Aloud</h3>
-                    <p className="text-[10px] font-bold text-slate-500">Rujukan: Ericsson &amp; Simon (1993); Willis (2005)</p>
-                  </div>
-                </div>
-
-                <p className="text-[11px] md:text-xs font-bold text-slate-800 leading-relaxed">
-                  Protokol ini bertujuan memperoleh bukti proses respons secara langsung: yaitu memeriksa apakah mahasiswa calon guru memahami skenario dan opsi sebagaimana dimaksud penulis butir, serta apakah penalaran mereka selaras dengan logika kunci penskoran.
-                </p>
-              </div>
-            </motion.div>
-          )}
-
-          {/* TAB 3: INDEKS 30 SJT TIMBUL */}
-          {activeTab === "all_items" && (
-            <motion.div
-              key="all_items"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              className="space-y-4"
-            >
-              <div className="card-timbul p-5 md:p-6 rounded-[24px] bg-gradient-to-b from-white via-slate-50 to-slate-100 border-2 border-slate-300 border-b-4 border-b-slate-400 shadow-xl space-y-3">
-                <h3 className="text-xs font-black text-slate-900 uppercase mb-1">
-                  <i className="fa-solid fa-grid-2 text-rose-700 mr-1.5"></i> Indeks 30 Butir SJT Think-Aloud
-                </h3>
-                <p className="text-[10px] font-bold text-slate-600">
-                  Klik pada butir mana saja untuk langsung membuka skenario dan pertanyaan probing khusus kognitifnya:
-                </p>
-
-                <div className="grid grid-cols-5 sm:grid-cols-10 gap-2 mt-3">
-                  {Array.from({ length: 30 }).map((_, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => { setCurrentIdx(idx); setProbingStep(1); setActiveTab("session"); resetRecordingState(); }}
-                      className={`py-2.5 rounded-xl text-[10px] font-black transition-all border-2 border-b-4 ${
-                        currentIdx === idx
-                          ? "bg-rose-900 text-white border-rose-950 border-b-rose-950 shadow-md scale-105"
-                          : "bg-white hover:bg-rose-100 text-slate-800 border-slate-300 border-b-slate-400"
-                      }`}
-                    >
-                      #{idx + 1}
-                    </button>
-                  ))}
-                </div>
-              </div>
             </motion.div>
           )}
         </AnimatePresence>
