@@ -432,14 +432,40 @@ export default function ThinkAloudProtocolPage() {
   const currentQ = currentSessionQuestions[sessionItemIdx];
   const currentProbing = currentQ ? specialProbings[currentQ.id] : null;
 
-  const resetRecordingState = () => {
+  const resetRecordingState = useCallback(() => {
+    isRecordingRef.current = false;
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+    if (mediaRecorderRef.current) {
+      try {
+        if (mediaRecorderRef.current.state !== "inactive") {
+          mediaRecorderRef.current.stop();
+        }
+        if (mediaRecorderRef.current.stream) {
+          mediaRecorderRef.current.stream.getTracks().forEach((track) => track.stop());
+        }
+      } catch (e) {}
+      mediaRecorderRef.current = null;
+    }
+    if (recognitionRef.current) {
+      try {
+        recognitionRef.current.onend = null;
+        recognitionRef.current.onerror = null;
+        recognitionRef.current.onresult = null;
+        recognitionRef.current.abort();
+      } catch (e) {}
+      recognitionRef.current = null;
+    }
+
     setAudioUrl(null);
     setAudioBlob(null);
     setTranscriptText("");
     setUploadSuccess(false);
     setIsRecording(false);
     setRecordingTime(0);
-  };
+  }, []);
 
   const startRecording = async () => {
     resetRecordingState();
@@ -538,7 +564,9 @@ export default function ThinkAloudProtocolPage() {
     isRecordingRef.current = false;
     if (mediaRecorderRef.current && isRecording) {
       mediaRecorderRef.current.stop();
-      mediaRecorderRef.current.stream.getTracks().forEach((track) => track.stop());
+      if (mediaRecorderRef.current.stream) {
+        mediaRecorderRef.current.stream.getTracks().forEach((track) => track.stop());
+      }
       if (recognitionRef.current) {
         try {
           recognitionRef.current.stop();
@@ -605,7 +633,15 @@ export default function ThinkAloudProtocolPage() {
       if (res.ok && data.success) {
         setUploadSuccess(true);
         markStepCompleted(currentQ.id, probingStep);
-        alert(`✅ Rekaman Audio Pertanyaan ${probingStep} & Transkrip Verbatim Berhasil Tersimpan ke Database Panel Admin!`);
+
+        if (probingStep < 3) {
+          const nextStep = probingStep + 1;
+          alert(`✅ Rekaman Audio Pertanyaan ${probingStep} Berhasil Tersimpan!\nOtomatis beralih ke Pertanyaan Probing ${nextStep}.`);
+          setProbingStep(nextStep);
+          resetRecordingState();
+        } else {
+          alert(`🎉 Selamat! Seluruh 3 tahap probing audio untuk Soal ${sessionItemIdx + 1} telah lengkap tersimpan di Panel Admin!`);
+        }
       } else {
         alert("❌ Gagal mengunggah rekaman ke server admin. Silakan coba lagi.");
       }
