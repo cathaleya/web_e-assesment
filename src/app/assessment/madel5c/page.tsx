@@ -23,13 +23,38 @@ export default function Madel5cAssessment() {
   const [currentStep, setCurrentStep] = useState(0);
   const [answers, setAnswers] = useState<Record<number, number>>({});
   const [loading, setLoading] = useState(true);
-  const [consentAgreed, setConsentAgreed] = useState(false);
+  const [consentChecks, setConsentChecks] = useState<boolean[]>([false, false, false, false, false, false]);
   const [showConsent, setShowConsent] = useState(true);
   const [showInstructions, setShowInstructions] = useState(true);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [showStageBreak, setShowStageBreak] = useState(false);
   const [breakStage, setBreakStage] = useState(1);
   const router = useRouter();
+
+  const consentStatements = [
+    "Saya telah membaca dan memahami penjelasan penelitian di atas.",
+    "Saya mendapat kesempatan bertanya, dan pertanyaan saya telah dijawab dengan memuaskan.",
+    "Saya memahami bahwa keikutsertaan saya bersifat sukarela dan saya dapat mengundurkan diri kapan saja tanpa konsekuensi.",
+    "Saya memahami bahwa data saya dirahasiakan dan hanya dilaporkan dalam bentuk gabungan (agregat).",
+    "Saya berusia 18 tahun atau lebih.",
+    "Saya bersedia ikut serta dalam penelitian pengembangan instrumen e-asesmen MADEL5C ini."
+  ];
+
+  const allConsentChecked = consentChecks.every(Boolean);
+
+  const toggleConsentCheck = (index: number) => {
+    const updated = [...consentChecks];
+    updated[index] = !updated[index];
+    setConsentChecks(updated);
+  };
+
+  const toggleAllConsent = () => {
+    if (allConsentChecked) {
+      setConsentChecks([false, false, false, false, false, false]);
+    } else {
+      setConsentChecks([true, true, true, true, true, true]);
+    }
+  };
 
   const optionColors = [
     "bg-white border-slate-100 text-slate-900",
@@ -158,67 +183,154 @@ export default function Madel5cAssessment() {
               </button>
             </motion.div>
           ) : showConsent ? (
-            /* ─── KARTU INFORMED CONSENT TIMBUL ─── */
+            /* ─── KARTU INFORMED CONSENT TIMBUL RESMI ─── */
             <motion.div key="consent" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
-              className="card-timbul p-6 md:p-8 rounded-[28px] md:rounded-[36px]"
+              className="card-timbul p-5 md:p-8 rounded-[28px] md:rounded-[36px] max-h-[85vh] overflow-y-auto space-y-5"
             >
-              <div className="flex items-center gap-4 mb-6 border-b border-slate-100 pb-5">
-                <div className="w-12 h-12 bg-gradient-to-br from-emerald-600 to-teal-700 rounded-2xl flex items-center justify-center text-white shadow-lg border-b-2 border-emerald-900 shrink-0">
-                  <i className="fa-solid fa-file-signature text-2xl"></i>
+              {/* Header Informasi Riset */}
+              <div className="flex items-start gap-4 border-b border-slate-200/80 pb-4">
+                <div className="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-emerald-600 to-teal-800 rounded-2xl flex items-center justify-center text-white shadow-lg border-b-2 border-emerald-950 shrink-0">
+                  <i className="fa-solid fa-file-signature text-2xl md:text-3xl"></i>
                 </div>
                 <div>
-                  <h1 className="text-xl md:text-2xl font-black text-slate-900 uppercase tracking-tighter leading-tight">Informed Consent</h1>
-                  <span className="text-[9px] font-black text-emerald-700 uppercase tracking-widest">Lembar Persetujuan Partisipasi Riset</span>
+                  <span className="text-[9px] font-black text-emerald-700 uppercase tracking-widest block mb-0.5">LEMBAR PENJELASAN & PERSETUJUAN PENELITIAN</span>
+                  <h1 className="text-lg md:text-xl font-black text-slate-900 uppercase tracking-tighter leading-snug">
+                    INFORMED CONSENT RESPONDEN MADEL-5C
+                  </h1>
+                  <p className="text-[10px] md:text-[11px] font-bold text-slate-500 italic mt-0.5">
+                    &quot;Pengembangan Instrumen E-Asesmen Literasi Digital MADEL5C bagi Mahasiswa Calon Guru Berbasis Website&quot;
+                  </p>
                 </div>
               </div>
 
-              <div className="space-y-4 mb-6">
-                <div className="p-4 bg-emerald-50/80 rounded-2xl border border-emerald-200/80 shadow-sm">
-                  <h3 className="text-[11px] font-black text-emerald-900 uppercase mb-1 flex items-center gap-1.5">
-                    <i className="fa-solid fa-graduation-cap text-emerald-700"></i> Informasi Penelitian:
+              {/* Grid Metadata Peneliti & Doktoral UNJ */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 p-3.5 bg-emerald-50/70 rounded-2xl border border-emerald-200/80 text-[10px] md:text-[11px]">
+                <div className="flex items-center gap-2">
+                  <i className="fa-solid fa-user-graduate text-emerald-700 text-sm w-4"></i>
+                  <div>
+                    <span className="text-slate-400 font-bold uppercase text-[8px] block">Peneliti:</span>
+                    <strong className="font-black text-emerald-950">Ruslina Irianty (NIM 9913924001)</strong>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <i className="fa-solid fa-building-columns text-emerald-700 text-sm w-4"></i>
+                  <div>
+                    <span className="text-slate-400 font-bold uppercase text-[8px] block">Program Studi:</span>
+                    <strong className="font-black text-emerald-950">Doktor PEP Pascasarjana UNJ</strong>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 sm:col-span-2 border-t border-emerald-200/60 pt-2 mt-0.5">
+                  <i className="fa-solid fa-chalkboard-user text-emerald-700 text-sm w-4"></i>
+                  <div>
+                    <span className="text-slate-400 font-bold uppercase text-[8px] block">Tim Promotor:</span>
+                    <strong className="font-black text-emerald-950">Prof. Dr. Dinny Devi Triana, M.Pd. & Prof. Dr. Ari Saptono, SE., M.Pd.</strong>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 sm:col-span-2 border-t border-emerald-200/60 pt-2">
+                  <i className="fa-solid fa-envelope text-emerald-700 text-sm w-4"></i>
+                  <div>
+                    <span className="text-slate-400 font-bold uppercase text-[8px] block">Kontak Resmi Peneliti:</span>
+                    <strong className="font-black text-emerald-950">msloter28@gmail.com</strong>
+                  </div>
+                </div>
+              </div>
+
+              {/* 1. Lembar Penjelasan Penelitian */}
+              <div className="space-y-3">
+                <h3 className="text-xs font-black text-slate-900 uppercase tracking-wide flex items-center gap-2 border-b border-slate-100 pb-1.5">
+                  <i className="fa-solid fa-circle-info text-emerald-600"></i> 1. Lembar Penjelasan Penelitian
+                </h3>
+                <div className="grid grid-cols-1 gap-2.5 text-[11px] font-bold text-slate-700 leading-relaxed">
+                  <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80">
+                    <span className="text-emerald-800 font-black uppercase block text-[10px] mb-0.5">a. Tujuan Penelitian</span>
+                    <p className="text-[10px] md:text-[11px]">
+                      Penelitian ini bertujuan mengembangkan dan menguji kualitas instrumen asesmen literasi digital bagi mahasiswa calon guru berbentuk <em>Situational Judgment Test (SJT)</em>. Penelitian ini menilai kualitas instrumen, bukan menilai kemampuan Anda secara pribadi.
+                    </p>
+                  </div>
+
+                  <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80">
+                    <span className="text-emerald-800 font-black uppercase block text-[10px] mb-0.5">b. Prosedur Pengisian</span>
+                    <p className="text-[10px] md:text-[11px]">
+                      Anda akan mengisi 30 situasi SJT secara daring melalui website e-asesmen MADEL5C (tersedia 5 pilihan tindakan pada tiap situasi). Pengisian memerlukan waktu sekitar 45–60 menit dari perangkat Anda sendiri.
+                    </p>
+                  </div>
+
+                  <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80">
+                    <span className="text-emerald-800 font-black uppercase block text-[10px] mb-0.5">c. Risiko, Kerahasiaan & Partisipasi Sukarela</span>
+                    <p className="text-[10px] md:text-[11px]">
+                      Penelitian ini tidak menimbulkan risiko fisik. Identitas Anda dirahasiakan sepenuhnya dan jawaban hanya dilaporkan dalam bentuk agregat. Keikutsertaan Anda bersifat <strong>sukarela</strong> dan Anda berhak berhenti kapan saja tanpa sanksi atau konsekuensi akademik apapun.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* 2. Pernyataan Persetujuan (Bagian A.2 / Bagian C Checkboxes) */}
+              <div className="space-y-3 pt-2">
+                <div className="flex items-center justify-between border-b border-slate-100 pb-1.5">
+                  <h3 className="text-xs font-black text-slate-900 uppercase tracking-wide flex items-center gap-2">
+                    <i className="fa-solid fa-square-check text-emerald-600"></i> 2. Pernyataan Persetujuan Responden
                   </h3>
-                  <p className="text-[11px] font-bold text-emerald-800 leading-relaxed">
-                    Penelitian ini berjudul <strong className="font-black text-emerald-950">&quot;PENGEMBANGAN INSTRUMEN e-ASSESSMENT LITERASI DIGITAL MADEL5C BAGI MAHASISWA CALON GURU BERBASIS WEBSITE&quot;</strong> oleh <strong className="font-black text-emerald-950">Ruslina Irianty (Program Doktor PEP - Universitas Negeri Jakarta)</strong>.
-                  </p>
+                  <button
+                    type="button"
+                    onClick={toggleAllConsent}
+                    className="text-[9px] font-black text-emerald-700 hover:text-emerald-900 bg-emerald-100/80 px-2.5 py-1 rounded-lg border border-emerald-300 transition-all active:scale-95"
+                  >
+                    {allConsentChecked ? "Batal Centang Semua" : "Centang Semua Point"}
+                  </button>
                 </div>
 
-                <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 shadow-inner space-y-2">
-                  <h3 className="text-[11px] font-black text-slate-900 uppercase flex items-center gap-1.5">
-                    <i className="fa-solid fa-user-shield text-slate-700"></i> Kerahasiaan Data Responden:
-                  </h3>
-                  <p className="text-[11px] font-bold text-slate-600 leading-relaxed italic">
-                    &quot;Seluruh jawaban dan data pribadi yang Anda berikan bersifat konfidensial/rahasia dan hanya digunakan khusus untuk kepentingan analisis statistik riset ilmiah akademis.&quot;
-                  </p>
+                <div className="space-y-2">
+                  {consentStatements.map((statement, idx) => (
+                    <div
+                      key={idx}
+                      onClick={() => toggleConsentCheck(idx)}
+                      className={`p-3 rounded-xl flex items-start gap-3 cursor-pointer transition-all border ${
+                        consentChecks[idx]
+                          ? "bg-emerald-100/90 border-emerald-300 shadow-sm"
+                          : "bg-slate-50 border-slate-200 hover:bg-emerald-50/50"
+                      }`}
+                    >
+                      <div className={`w-5 h-5 rounded-md flex items-center justify-center text-[10px] shrink-0 mt-0.5 transition-all border-2 ${
+                        consentChecks[idx]
+                          ? "bg-emerald-600 border-emerald-700 text-white shadow-xs"
+                          : "bg-white border-slate-300 text-transparent"
+                      }`}>
+                        <i className="fa-solid fa-check"></i>
+                      </div>
+                      <p className="text-[10px] md:text-[11px] font-bold text-slate-800 leading-snug select-none">
+                        {statement}
+                      </p>
+                    </div>
+                  ))}
                 </div>
+              </div>
 
-                <div 
-                  onClick={() => setConsentAgreed(!consentAgreed)}
-                  className={`p-4 rounded-2xl flex items-start gap-3 cursor-pointer transition-all border ${
-                    consentAgreed ? "bg-emerald-100/90 border-emerald-300 shadow-md" : "bg-emerald-50/80 border-emerald-200 hover:bg-emerald-100/50"
+              {/* Buttons Action Grid */}
+              <div className="pt-2 space-y-2">
+                <button 
+                  disabled={!allConsentChecked}
+                  onClick={() => setShowConsent(false)} 
+                  className={`w-full py-4 font-black rounded-2xl text-[11px] uppercase tracking-widest shadow-xl border-b-4 transition-all ${
+                    allConsentChecked 
+                      ? "bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white border-emerald-950 active:scale-95 cursor-pointer"
+                      : "bg-slate-200 text-slate-400 border-slate-300 cursor-not-allowed opacity-70"
                   }`}
                 >
-                  <div className={`w-6 h-6 rounded-lg flex items-center justify-center text-xs shrink-0 mt-0.5 transition-all border-2 ${
-                    consentAgreed ? "bg-emerald-600 border-emerald-700 text-white shadow-sm" : "bg-white border-emerald-400 text-transparent"
-                  }`}>
-                    <i className="fa-solid fa-check"></i>
-                  </div>
-                  <p className="text-[11px] font-black text-emerald-950 leading-snug select-none">
-                    Dengan mengeklik kotak centang di samping ini, Anda menyatakan telah membaca, memahami, dan menyetujui secara sukarela untuk menjadi responden dalam pengisian instrumen ini.
-                  </p>
-                </div>
-              </div>
+                  {allConsentChecked ? (
+                    <>SAYA SETUJU & LANJUT KE PANDUAN <i className="fa-solid fa-arrow-right ml-2"></i></>
+                  ) : (
+                    <>HARAP CENTANG SELURUH POINT PERSETUJUAN DI ATAS</>
+                  )}
+                </button>
 
-              <button 
-                disabled={!consentAgreed}
-                onClick={() => setShowConsent(false)} 
-                className={`w-full py-4 md:py-5 font-black rounded-2xl text-[11px] uppercase tracking-widest shadow-xl border-b-4 transition-all ${
-                  consentAgreed 
-                    ? "bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white border-emerald-900 active:scale-95 cursor-pointer"
-                    : "bg-slate-300 text-slate-500 border-slate-400 cursor-not-allowed opacity-60"
-                }`}
-              >
-                SAYA SETUJU & LANJUT KE PANDUAN <i className="fa-solid fa-arrow-right ml-2"></i>
-              </button>
+                <button
+                  type="button"
+                  onClick={() => router.push("/")}
+                  className="w-full py-2.5 bg-slate-100 hover:bg-rose-50 text-slate-600 hover:text-rose-700 rounded-xl font-bold text-[10px] uppercase tracking-wider transition-all border border-slate-200 hover:border-rose-200"
+                >
+                  <i className="fa-solid fa-xmark mr-1.5"></i> SAYA TIDAK SETUJU (BATALKAN PENGISIAN)
+                </button>
+              </div>
             </motion.div>
           ) : showInstructions ? (
             /* ─── KARTU PANDUAN LANGKAH-LANGKAH TIMBUL ─── */
