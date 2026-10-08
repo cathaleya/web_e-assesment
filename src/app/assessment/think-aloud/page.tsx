@@ -103,6 +103,55 @@ const SESSION_CONFIGS: Record<number, SessionConfig> = {
   },
 };
 
+// TRANSPARENT IMAGE CUTOUT COMPONENT (REMOVES WHITE BACKGROUND PIXELS AUTOMATICALLY)
+function TransparentImage({ src, alt, className }: { src: string; alt: string; className?: string }) {
+  const [cleanSrc, setCleanSrc] = useState<string | null>(null);
+
+  useEffect(() => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.src = src;
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        setCleanSrc(src);
+        return;
+      }
+      ctx.drawImage(img, 0, 0);
+      const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const data = imgData.data;
+
+      for (let i = 0; i < data.length; i += 4) {
+        const r = data[i];
+        const g = data[i + 1];
+        const b = data[i + 2];
+        // Convert white/light-gray background pixels to 100% transparent
+        if (r > 215 && g > 215 && b > 215) {
+          data[i + 3] = 0;
+        } else if (r > 185 && g > 185 && b > 185) {
+          const avg = (r + g + b) / 3;
+          const factor = (215 - avg) / 30;
+          data[i + 3] = Math.max(0, Math.min(255, Math.floor(255 * factor)));
+        }
+      }
+      ctx.putImageData(imgData, 0, 0);
+      setCleanSrc(canvas.toDataURL("image/png"));
+    };
+    img.onerror = () => setCleanSrc(src);
+  }, [src]);
+
+  return (
+    <img
+      src={cleanSrc || src}
+      alt={alt}
+      className={className}
+    />
+  );
+}
+
 // DIGITAL SIGNATURE CANVAS COMPONENT
 function SignaturePad({
   onSave,
@@ -636,21 +685,21 @@ export default function ThinkAloudProtocolPage() {
         backgroundAttachment: "fixed",
       }}
     >
-      {/* ORNAMEN TIMBUL MAHASISWA PAPUA KIRI (UTUH, TANPA BOX, MEMPERBESAR FOTO) */}
-      <div className="hidden xl:flex flex-col items-center justify-center fixed left-0 top-1/2 -translate-y-1/2 z-20 pointer-events-none w-72 text-center">
-        <img
+      {/* ORNAMEN TIMBUL MAHASISWA PAPUA KIRI (100% TRANSPARENT CUTOUT, TANPA BOX, TIDAK MENUTUPI KARTU) */}
+      <div className="hidden xl:flex flex-col items-center justify-center fixed left-2 top-1/2 -translate-y-1/2 z-0 pointer-events-none w-64 text-center">
+        <TransparentImage
           src="/papua_student_male.png"
           alt="Mahasiswa Calon Guru Papua"
-          className="w-64 md:w-72 lg:w-80 h-auto object-contain mix-blend-multiply drop-shadow-[0_25px_35px_rgba(0,0,0,0.25)] hover:scale-105 transition-transform duration-300"
+          className="w-56 lg:w-64 h-auto object-contain drop-shadow-[0_25px_35px_rgba(0,0,0,0.22)] hover:scale-105 transition-transform duration-300"
         />
       </div>
 
-      {/* ORNAMEN TIMBUL MAHASISWA PAPUA KANAN (UTUH, TANPA BOX, MEMPERBESAR FOTO) */}
-      <div className="hidden xl:flex flex-col items-center justify-center fixed right-0 top-1/2 -translate-y-1/2 z-20 pointer-events-none w-72 text-center">
-        <img
+      {/* ORNAMEN TIMBUL MAHASISWA PAPUA KANAN (100% TRANSPARENT CUTOUT, TANPA BOX, TIDAK MENUTUPI KARTU) */}
+      <div className="hidden xl:flex flex-col items-center justify-center fixed right-2 top-1/2 -translate-y-1/2 z-0 pointer-events-none w-64 text-center">
+        <TransparentImage
           src="/papua_student_female.png"
           alt="Pendidik Masa Depan Papua"
-          className="w-64 md:w-72 lg:w-80 h-auto object-contain mix-blend-multiply drop-shadow-[0_25px_35px_rgba(0,0,0,0.25)] hover:scale-105 transition-transform duration-300"
+          className="w-56 lg:w-64 h-auto object-contain drop-shadow-[0_25px_35px_rgba(0,0,0,0.22)] hover:scale-105 transition-transform duration-300"
         />
       </div>
 
