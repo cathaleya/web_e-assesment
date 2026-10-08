@@ -125,6 +125,17 @@ export default function DashboardPage() {
           </button>
 
           <button 
+            onClick={() => router.push("/assessment/think-aloud")} 
+            className="w-full flex items-center justify-between px-4 py-3 rounded-2xl bg-white/10 hover:bg-white/20 text-white text-xs md:text-sm font-black text-left transition-all border border-white/15 border-b-4 border-b-black/20 hover:translate-y-[-2px]"
+          >
+            <span className="flex items-center gap-3.5">
+              <i className="fa-solid fa-microphone-lines text-rose-300 text-sm w-5 text-center"></i>
+              <span>THINK ALOUD (SUARA)</span>
+            </span>
+            <span className="px-2 py-0.5 bg-rose-500/40 text-rose-200 text-[8px] font-black rounded-md border border-rose-400/40">PROTOKOL</span>
+          </button>
+
+          <button 
             onClick={() => router.push("/survey")} 
             className="w-full flex items-center justify-between px-4 py-3 rounded-2xl bg-white/10 hover:bg-white/20 text-white text-xs md:text-sm font-black text-left transition-all border border-white/15 border-b-4 border-b-black/20 hover:translate-y-[-2px]"
           >
@@ -202,82 +213,54 @@ export default function DashboardPage() {
             />
           ) : (
             <>
-              {/* PROGRESS CARDS TIMBUL (3 COLUMNS SOFT CONTRAST) */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-4">
-                {/* TAHAP 1: PDI-DL TES AWAL */}
-                <div className="card-timbul p-4 md:p-5 rounded-[24px] bg-gradient-to-br from-sky-50/90 via-white to-blue-50/60 flex flex-col justify-between border border-sky-200">
+              {/* PROGRESS CARDS TIMBUL (2 COLUMNS FOCUSING ON MADEL5C & SURVEY SUS) */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
+                {/* TAHAP Utama: MADEL5C */}
+                <div className="card-timbul p-5 md:p-6 rounded-[24px] bg-gradient-to-br from-emerald-50/90 via-white to-teal-50/60 flex flex-col justify-between border border-emerald-200">
                    <div>
-                      <div className="flex justify-between items-center mb-2.5">
-                         <span className="px-2.5 py-0.5 bg-sky-100 text-sky-800 rounded-lg text-[8px] font-black uppercase tracking-widest shadow-sm">
-                           Tahap Awal
-                         </span>
-                         {isPdiDone && (
-                           <span className="flex items-center gap-1 text-[10px] font-black text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">
-                             <i className="fa-solid fa-circle-check text-emerald-600"></i> Selesai
-                           </span>
-                         )}
-                      </div>
-                      <h4 className="text-xs font-black text-slate-900 uppercase tracking-tight">PDI-DL (Tes Awal)</h4>
-                      <p className="text-[9px] font-semibold text-slate-600 mt-1">Self-Assessment Mandiri (8 Butir)</p>
-                      {isPdiDone && <p className="mt-2 text-xl font-black text-sky-700 tracking-tight">Skor: {stats?.preliminary}</p>}
-                   </div>
-                   {isPdiDone ? (
-                     <button onClick={() => setShowReflection('pdi')} className="mt-4 py-2.5 bg-sky-100 hover:bg-sky-200 text-sky-900 rounded-xl text-[8px] font-black uppercase tracking-widest shadow-sm transition-all border border-sky-300">
-                       Lihat Refleksi
-                     </button>
-                   ) : (
-                     <button onClick={() => router.push("/assessment/preliminary")} className="mt-4 py-3 bg-gradient-to-r from-sky-600 to-blue-700 hover:from-sky-700 hover:to-blue-800 text-white rounded-xl text-[8px] font-black uppercase tracking-widest shadow-lg border-b-4 border-sky-950 transition-all active:scale-95">
-                       Mulai Tes Awal <i className="fa-solid fa-arrow-right ml-1"></i>
-                     </button>
-                   )}
-                </div>
-
-                {/* TAHAP 2: MADEL5C */}
-                <div className="card-timbul p-4 md:p-5 rounded-[24px] bg-gradient-to-br from-emerald-50/90 via-white to-teal-50/60 flex flex-col justify-between border border-emerald-200">
-                   <div>
-                      <div className="flex justify-between items-center mb-2.5">
-                         <span className="px-2.5 py-0.5 bg-emerald-100 text-emerald-800 rounded-lg text-[8px] font-black uppercase tracking-widest shadow-sm">
-                           Tahap Utama
+                      <div className="flex justify-between items-center mb-3">
+                         <span className="px-3 py-1 bg-emerald-100 text-emerald-800 rounded-lg text-[9px] font-black uppercase tracking-widest shadow-sm">
+                           Tahap Utama (SJT)
                          </span>
                          {isMadelDone && (
-                           <span className="flex items-center gap-1 text-[10px] font-black text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">
+                           <span className="flex items-center gap-1 text-[10px] font-black text-emerald-700 bg-emerald-100 px-2.5 py-0.5 rounded-full">
                              <i className="fa-solid fa-circle-check text-emerald-600"></i> Selesai
                            </span>
                          )}
                       </div>
-                      <h4 className="text-xs font-black text-slate-900 uppercase tracking-tight">MADEL5C (SJT)</h4>
-                      <p className="text-[9px] font-semibold text-slate-600 mt-1">Asesmen 5 Dimensi (30 Butir)</p>
-                      {isMadelDone && <p className="mt-2 text-xl font-black text-emerald-700 tracking-tight">Skor: {stats?.madel5c}</p>}
+                      <h4 className="text-sm font-black text-slate-900 uppercase tracking-tight">MADEL5C (SJT)</h4>
+                      <p className="text-[10px] font-semibold text-slate-600 mt-1">Asesmen Literasi Digital 5 Dimensi (30 Butir)</p>
+                      {isMadelDone && <p className="mt-2 text-2xl font-black text-emerald-700 tracking-tight">Skor: {stats?.madel5c}</p>}
                    </div>
                    {isMadelDone ? (
-                     <button onClick={() => setShowReflection('madel')} className="mt-4 py-2.5 bg-emerald-100 hover:bg-emerald-200 text-emerald-900 rounded-xl text-[8px] font-black uppercase tracking-widest shadow-sm transition-all border border-emerald-300">
+                     <button onClick={() => setShowReflection('madel')} className="mt-5 py-3 bg-emerald-100 hover:bg-emerald-200 text-emerald-900 rounded-xl text-[9px] font-black uppercase tracking-widest shadow-sm transition-all border border-emerald-300">
                        Lihat Refleksi
                      </button>
                    ) : (
-                     <button onClick={() => router.push("/assessment/madel5c")} className="mt-4 py-3 bg-gradient-to-r from-emerald-700 to-[#4B5320] hover:from-emerald-800 hover:to-[#3B4119] text-white rounded-xl text-[8px] font-black uppercase tracking-widest shadow-lg border-b-4 border-emerald-950 transition-all active:scale-95">
-                       Mulai MADEL-5C <i className="fa-solid fa-arrow-right ml-1"></i>
+                     <button onClick={() => router.push("/assessment/madel5c")} className="mt-5 py-3.5 bg-gradient-to-r from-emerald-700 to-[#4B5320] hover:from-emerald-800 hover:to-[#3B4119] text-white rounded-xl text-[9px] font-black uppercase tracking-widest shadow-lg border-b-4 border-emerald-950 transition-all active:scale-95">
+                       Mulai MADEL-5C <i className="fa-solid fa-arrow-right ml-1.5"></i>
                      </button>
                    )}
                 </div>
 
-                {/* TAHAP 3: SURVEY KEPUASAN */}
-                <div className={`card-timbul p-4 md:p-5 rounded-[24px] bg-gradient-to-br from-amber-50/90 via-white to-orange-50/60 flex flex-col justify-between transition-all border ${!isMadelDone ? 'opacity-60 border-slate-200' : 'border-amber-200'}`}>
+                {/* TAHAP Akhir: SURVEY KEPUASAN */}
+                <div className={`card-timbul p-5 md:p-6 rounded-[24px] bg-gradient-to-br from-amber-50/90 via-white to-orange-50/60 flex flex-col justify-between transition-all border ${!isMadelDone ? 'opacity-60 border-slate-200' : 'border-amber-200'}`}>
                    <div>
-                      <div className="flex justify-between items-center mb-2.5">
-                         <span className="px-2.5 py-0.5 bg-amber-100 text-amber-800 rounded-lg text-[8px] font-black uppercase tracking-widest shadow-sm">
-                           Tahap Akhir
+                      <div className="flex justify-between items-center mb-3">
+                         <span className="px-3 py-1 bg-amber-100 text-amber-800 rounded-lg text-[9px] font-black uppercase tracking-widest shadow-sm">
+                           Tahap Evaluasi
                          </span>
                          {isSurveyDone && (
-                           <span className="flex items-center gap-1 text-[10px] font-black text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">
+                           <span className="flex items-center gap-1 text-[10px] font-black text-emerald-700 bg-emerald-100 px-2.5 py-0.5 rounded-full">
                              <i className="fa-solid fa-circle-check text-emerald-600"></i> Selesai
                            </span>
                          )}
                       </div>
-                      <h4 className="text-xs font-black text-slate-900 uppercase tracking-tight">Survey Kepuasan</h4>
-                      <p className="text-[9px] font-semibold text-slate-600 mt-1">Evaluasi SUS (10 Butir)</p>
+                      <h4 className="text-sm font-black text-slate-900 uppercase tracking-tight">Survey Kepuasan (SUS)</h4>
+                      <p className="text-[10px] font-semibold text-slate-600 mt-1">Evaluasi Kebergunaan Sistem (10 Butir)</p>
                    </div>
                    <button disabled={!isMadelDone} onClick={() => router.push("/survey")}
-                      className={`mt-4 py-3 rounded-xl text-[8px] font-black uppercase tracking-widest transition-all ${!isMadelDone ? "bg-slate-200 text-slate-400 border border-slate-300 cursor-not-allowed" : isSurveyDone ? "bg-emerald-100 text-emerald-800 border border-emerald-300" : "bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white shadow-lg border-b-4 border-amber-800 active:scale-95"}`}>
+                      className={`mt-5 py-3.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${!isMadelDone ? "bg-slate-200 text-slate-400 border border-slate-300 cursor-not-allowed" : isSurveyDone ? "bg-emerald-100 text-emerald-800 border border-emerald-300" : "bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white shadow-lg border-b-4 border-amber-800 active:scale-95"}`}>
                       {isSurveyDone ? "Survey Terisi" : "Isi Survey SUS"}
                    </button>
                 </div>
