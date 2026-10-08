@@ -63,19 +63,23 @@ export default function ThinkAloudProtocolPage() {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentIdx, setCurrentIdx] = useState<number>(0);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, number>>({});
+  const [probingStep, setProbingStep] = useState<number>(1); // 1, 2, 3
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"session" | "guidance" | "all_items">("session");
 
-  // Audio recording state
+  // Audio & Speech-to-Text Verbatim state
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
+  const [transcriptText, setTranscriptText] = useState<string>("");
   const [isUploading, setIsUploading] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState(false);
+
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const recognitionRef = useRef<any>(null);
 
   const fetchQuestions = useCallback(async () => {
     setLoading(true);
@@ -96,15 +100,25 @@ export default function ThinkAloudProtocolPage() {
     fetchQuestions();
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
+      if (recognitionRef.current) recognitionRef.current.stop();
     };
   }, [fetchQuestions]);
 
+  const resetRecordingState = () => {
+    setAudioUrl(null);
+    setAudioBlob(null);
+    setTranscriptText("");
+    setUploadSuccess(false);
+    setIsRecording(false);
+    setRecordingTime(0);
+  };
+
   const startRecording = async () => {
+    resetRecordingState();
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       mediaRecorderRef.current = new MediaRecorder(stream);
       audioChunksRef.current = [];
-      setUploadSuccess(false);
 
       mediaRecorderRef.current.ondataavailable = (event) => {
         if (event.data.size > 0) {
@@ -117,19 +131,31 @@ export default function ThinkAloudProtocolPage() {
         const url = URL.createObjectURL(blob);
         setAudioBlob(blob);
         setAudioUrl(url);
-
-        // Auto Save to Local Storage as backup
-        const reader = new FileReader();
-        reader.readAsDataURL(blob);
-        reader.onloadend = () => {
-          const base64data = reader.result;
-          localStorage.setItem(`think_aloud_audio_item_${currentIdx + 1}`, base64data as string);
-        };
       };
+
+      // Live Speech-to-Text Recognition (Verbatim Transkrip id-ID)
+      if (typeof window !== "undefined") {
+        const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+        if (SpeechRecognition) {
+          recognitionRef.current = new SpeechRecognition();
+          recognitionRef.current.continuous = true;
+          recognitionRef.current.interimResults = true;
+          recognitionRef.current.lang = "id-ID";
+
+          recognitionRef.current.onresult = (event: any) => {
+            let currentTranscript = "";
+            for (let i = 0; i < event.results.length; i++) {
+              currentTranscript += event.results[i][0].transcript;
+            }
+            setTranscriptText(currentTranscript);
+          };
+
+          recognitionRef.current.start();
+        }
+      }
 
       mediaRecorderRef.current.start();
       setIsRecording(true);
-      setRecordingTime(0);
 
       timerRef.current = setInterval(() => {
         setRecordingTime((prev) => prev + 1);
@@ -144,14 +170,17 @@ export default function ThinkAloudProtocolPage() {
     if (mediaRecorderRef.current && isRecording) {
       mediaRecorderRef.current.stop();
       mediaRecorderRef.current.stream.getTracks().forEach((track) => track.stop());
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
       setIsRecording(false);
       if (timerRef.current) clearInterval(timerRef.current);
     }
   };
 
-  const uploadAudioToServer = async () => {
+  const uploadAudioToServer = async (questionTitle: string) => {
     if (!audioBlob) {
-      alert("Belum ada rekaman suara yang tersedia untuk diunggah.");
+      alert("Silakan rekam suara Anda terlebih dahulu sebelum mengirim.");
       return;
     }
     setIsUploading(true);
@@ -166,14 +195,17 @@ export default function ThinkAloudProtocolPage() {
         : "Belum Memilih Opsi";
 
       const formData = new FormData();
-      formData.append("audio", audioBlob, `ThinkAloud_Soal_${currentIdx + 1}.webm`);
+      formData.append("audio", audioBlob, `ThinkAloud_Soal_${currentIdx + 1}_P${probingStep}.webm`);
       formData.append("userId", userId);
       formData.append("userName", userName);
       formData.append("userCampus", userCampus);
       formData.append("itemNo", (currentIdx + 1).toString());
       formData.append("sjtId", specialProbings[currentIdx + 1]?.sjtId || `SJT_${(currentIdx + 1).toString().padStart(2, "0")}`);
+      formData.append("probingStep", probingStep.toString());
+      formData.append("questionTitle", questionTitle);
       formData.append("selectedOption", selectedOptText);
       formData.append("duration", recordingTime.toString());
+      formData.append("transcript", transcriptText || "Tidak ada transkrip teks");
 
       const res = await fetch("/api/think-aloud/audio", {
         method: "POST",
@@ -182,7 +214,7 @@ export default function ThinkAloudProtocolPage() {
       const data = await res.json();
       if (res.ok && data.success) {
         setUploadSuccess(true);
-        alert("✅ Berhasil! Rekaman suara Think-Aloud Anda telah tersimpan secara resmi di database Server Admin.");
+        alert(`✅ Berhasil! Rekaman suara Pertanyaan ${probingStep} & Transkrip Verbatim tersimpan di Panel Admin.`);
       } else {
         alert("Gagal mengunggah rekaman ke server admin.");
       }
@@ -198,7 +230,7 @@ export default function ThinkAloudProtocolPage() {
     if (!audioUrl) return;
     const a = document.createElement("a");
     a.href = audioUrl;
-    a.download = `ThinkAloud_Soal_${currentIdx + 1}_${new Date().toISOString().slice(0, 10)}.webm`;
+    a.download = `ThinkAloud_Soal_${currentIdx + 1}_P${probingStep}_${new Date().toISOString().slice(0, 10)}.webm`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -206,6 +238,8 @@ export default function ThinkAloudProtocolPage() {
 
   const handleSelectOption = (optIdx: number) => {
     setSelectedAnswers({ ...selectedAnswers, [currentIdx]: optIdx });
+    setProbingStep(1);
+    resetRecordingState();
   };
 
   const formatTime = (seconds: number) => {
@@ -253,7 +287,7 @@ export default function ThinkAloudProtocolPage() {
                   PROTOKOL SUARA MADEL-5C
                 </h1>
                 <p className="text-[10px] md:text-[11px] font-bold text-rose-100/90 mt-0.5">
-                  Alur: Skenario → Pilih Jawaban → Pertanyaan Probing → Rekam Suara Think-Aloud
+                  Alur Berurutan: Skenario → Pilih Opsi → Pertanyaan 1 → Pertanyaan 2 → Pertanyaan 3
                 </p>
               </div>
             </div>
@@ -264,88 +298,6 @@ export default function ThinkAloudProtocolPage() {
             >
               <i className="fa-solid fa-arrow-left mr-1.5"></i> Dashboard
             </button>
-          </div>
-
-          {/* AUDIO RECORDING & STORAGE WIDGET TIMBUL */}
-          <div className="mt-5 p-4 bg-black/40 backdrop-blur-md rounded-2xl border-2 border-white/20 shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <div
-                className={`w-11 h-11 rounded-full flex items-center justify-center font-black text-sm transition-all border-2 ${
-                  isRecording
-                    ? "bg-rose-600 border-rose-400 text-white animate-pulse shadow-[0_0_20px_rgba(225,29,72,0.9)]"
-                    : "bg-white/15 border-white/20 text-rose-200"
-                }`}
-              >
-                <i className={`fa-solid ${isRecording ? "fa-circle-dot" : "fa-microphone"}`}></i>
-              </div>
-              <div>
-                <span className="text-[8px] font-black uppercase tracking-widest text-rose-200 block">
-                  Perekam Suara Think-Aloud (Soal #{itemNo})
-                </span>
-                <p className="text-sm font-black text-white font-mono">
-                  {isRecording ? (
-                    <span className="text-emerald-400 flex items-center gap-1.5">
-                      <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
-                      MEREKAM SUARA... {formatTime(recordingTime)}
-                    </span>
-                  ) : audioUrl ? (
-                    <span className="text-rose-200 flex items-center gap-1.5">
-                      <i className="fa-solid fa-check-circle text-emerald-400"></i> Rekaman Siap Disimpan
-                    </span>
-                  ) : (
-                    "Tekan Mulai Rekam saat Menyuarakan Jawaban"
-                  )}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-2">
-              {!isRecording ? (
-                <button
-                  onClick={startRecording}
-                  className="px-4 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white text-[10px] font-black uppercase tracking-wider rounded-xl shadow-lg border-b-4 border-emerald-950 transition-all active:scale-95"
-                >
-                  <i className="fa-solid fa-microphone mr-1.5"></i> Mulai Rekam
-                </button>
-              ) : (
-                <button
-                  onClick={stopRecording}
-                  className="px-4 py-2.5 bg-rose-600 hover:bg-rose-700 text-white text-[10px] font-black uppercase tracking-wider rounded-xl shadow-lg border-b-4 border-rose-950 transition-all active:scale-95"
-                >
-                  <i className="fa-solid fa-square mr-1.5"></i> Hentikan Rekaman
-                </button>
-              )}
-
-              {audioUrl && !isRecording && (
-                <>
-                  <audio controls src={audioUrl} className="h-9 max-w-[180px] rounded-lg shadow-md" />
-                  <button
-                    onClick={downloadAudio}
-                    className="px-3 py-2 bg-sky-600 hover:bg-sky-700 text-white text-[9px] font-black uppercase tracking-wider rounded-xl shadow-md border-b-2 border-sky-900 transition-all active:scale-95"
-                    title="Unduh Rekaman Suara ke Perangkat"
-                  >
-                    <i className="fa-solid fa-download mr-1"></i> Unduh
-                  </button>
-                  <button
-                    onClick={uploadAudioToServer}
-                    disabled={isUploading}
-                    className={`px-3 py-2 text-white text-[9px] font-black uppercase tracking-wider rounded-xl shadow-md border-b-2 transition-all active:scale-95 ${
-                      uploadSuccess
-                        ? "bg-emerald-600 border-emerald-900"
-                        : "bg-purple-600 hover:bg-purple-700 border-purple-950"
-                    }`}
-                  >
-                    {isUploading ? (
-                      <><i className="fa-solid fa-spinner animate-spin mr-1"></i> Mengirim...</>
-                    ) : uploadSuccess ? (
-                      <><i className="fa-solid fa-cloud-check mr-1"></i> Tersimpan di Admin</>
-                    ) : (
-                      <><i className="fa-solid fa-cloud-arrow-up mr-1"></i> Simpan ke Admin DB</>
-                    )}
-                  </button>
-                </>
-              )}
-            </div>
           </div>
         </div>
 
@@ -385,7 +337,7 @@ export default function ThinkAloudProtocolPage() {
           </button>
         </div>
 
-        {/* TAB 1: SESI PENGERJAAN & PROBING INTERAKTIF */}
+        {/* TAB 1: SESI PENGERJAAN & PROBING SEQUENTIAL */}
         <AnimatePresence mode="wait">
           {activeTab === "session" && currentQ && (
             <motion.div
@@ -399,7 +351,7 @@ export default function ThinkAloudProtocolPage() {
               <div className="card-timbul p-3.5 rounded-[22px] bg-gradient-to-r from-white via-slate-50 to-white border-2 border-slate-300 border-b-4 border-b-slate-400 flex items-center justify-between shadow-md">
                 <button
                   disabled={currentIdx === 0}
-                  onClick={() => { setCurrentIdx(currentIdx - 1); setAudioUrl(null); }}
+                  onClick={() => { setCurrentIdx(currentIdx - 1); setProbingStep(1); resetRecordingState(); }}
                   className="px-3.5 py-1.5 bg-white hover:bg-slate-100 disabled:opacity-30 text-slate-800 rounded-xl text-[10px] font-black uppercase border-2 border-slate-300 border-b-4 border-b-slate-400 transition-all active:scale-95"
                 >
                   <i className="fa-solid fa-arrow-left mr-1"></i> Sebelum
@@ -416,7 +368,7 @@ export default function ThinkAloudProtocolPage() {
 
                 <button
                   disabled={currentIdx === questions.length - 1}
-                  onClick={() => { setCurrentIdx(currentIdx + 1); setAudioUrl(null); }}
+                  onClick={() => { setCurrentIdx(currentIdx + 1); setProbingStep(1); resetRecordingState(); }}
                   className="px-3.5 py-1.5 bg-rose-800 hover:bg-rose-900 disabled:opacity-30 text-white rounded-xl text-[10px] font-black uppercase border-2 border-rose-900 border-b-4 border-b-rose-950 transition-all active:scale-95 shadow-md"
                 >
                   Lanjut <i className="fa-solid fa-arrow-right ml-1"></i>
@@ -476,93 +428,150 @@ export default function ThinkAloudProtocolPage() {
                 </div>
               </div>
 
-              {/* 3. PERTANYAAN PROBING KOGNITIF (TAMPIL OTOMATIS SETELAH MEMILIH OPSI) */}
-              <div className="card-timbul p-5 md:p-6 rounded-[28px] bg-gradient-to-b from-white via-rose-50/40 to-slate-50 border-2 border-rose-300 border-b-4 border-b-rose-400 shadow-xl space-y-4">
-                <div className="flex items-center justify-between border-b border-rose-200 pb-2.5">
-                  <span className="text-[10px] font-black text-rose-900 uppercase tracking-widest flex items-center gap-1.5">
-                    <i className="fa-solid fa-comments text-rose-700"></i> STEP 3: PERTANYAAN PROBING KOGNITIF (THINK-ALOUD)
-                  </span>
-                  {selectedOpt ? (
-                    <span className="text-[9px] font-black text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-md border border-emerald-300">
-                      <i className="fa-solid fa-check mr-1"></i> Opsi Terpilih
+              {/* 3. PERTANYAAN PROBING SEQUENTIAL (PERTANYAAN 1 -> PERTANYAAN 2 -> PERTANYAAN 3) */}
+              {selectedOpt ? (
+                <div className="card-timbul p-5 md:p-6 rounded-[28px] bg-gradient-to-b from-white via-rose-50/40 to-slate-50 border-2 border-rose-300 border-b-4 border-b-rose-400 shadow-xl space-y-4">
+                  
+                  {/* STEP INDICATOR TABS */}
+                  <div className="flex items-center justify-between border-b border-rose-200 pb-3">
+                    <span className="text-[10px] font-black text-rose-900 uppercase tracking-widest flex items-center gap-1.5">
+                      <i className="fa-solid fa-comments text-rose-700"></i> STEP 3: PROBING KOGNITIF (PERTANYAAN {probingStep} DARI 3)
                     </span>
-                  ) : (
-                    <span className="text-[9px] font-black text-amber-800 bg-amber-100 px-2 py-0.5 rounded-md border border-amber-300">
-                      Pilih Opsi di Atas Dulu
-                    </span>
-                  )}
-                </div>
-
-                {/* PERTANYAAN KHUSUS PER BUTIR DARI DOKUMEN */}
-                {currentProbing && (
-                  <div className="p-4 bg-rose-900 text-white rounded-2xl border-2 border-rose-950 shadow-md space-y-1.5">
-                    <span className="text-[9px] font-black uppercase tracking-widest text-rose-300 block">
-                      <i className="fa-solid fa-circle-question text-rose-300 mr-1"></i> Pertanyaan Khusus Butir #{itemNo} ({currentProbing.title}):
-                    </span>
-                    <p className="text-xs md:text-sm font-bold text-white italic leading-relaxed">
-                      &quot;{currentProbing.question}&quot;
-                    </p>
-                  </div>
-                )}
-
-                {/* PERTANYAAN PROBING UMUM RELEVASI KOGNITIF */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-[11px] font-bold">
-                  <div className="p-3.5 bg-white rounded-xl border-2 border-slate-200 border-b-4 border-b-slate-300 shadow-sm space-y-1">
-                    <span className="text-rose-900 font-black uppercase text-[9px] block">
-                      P1 & P2: Pemahaman Situasi & Masalah Utama
-                    </span>
-                    <p className="text-slate-800 text-[10px] leading-relaxed">
-                      &quot;Dengan kata-kata Anda sendiri, situasi ini menceritakan tentang apa dan apa masalah utamanya?&quot;
-                    </p>
-                  </div>
-
-                  <div className="p-3.5 bg-white rounded-xl border-2 border-slate-200 border-b-4 border-b-slate-300 shadow-sm space-y-1">
-                    <span className="text-emerald-900 font-black uppercase text-[9px] block">
-                      O1 & O2: Alasan Pemilihan & Evaluasi Opsi
-                    </span>
-                    <p className="text-slate-800 text-[10px] leading-relaxed">
-                      &quot;Mengapa Anda memilih opsi ini daripada opsi lain? Opsi mana yang menurut Anda paling tidak tepat?&quot;
-                    </p>
-                  </div>
-
-                  <div className="p-3.5 bg-white rounded-xl border-2 border-slate-200 border-b-4 border-b-slate-300 shadow-sm space-y-1 sm:col-span-2">
-                    <span className="text-amber-900 font-black uppercase text-[9px] block">
-                      D1 & D2: Keyakinan Decision (Skala 1–5)
-                    </span>
-                    <p className="text-slate-800 text-[10px] leading-relaxed">
-                      &quot;Seberapa yakin Anda dengan pilihan tadi (1-5)? Apakah Anda memilih tindakan yang paling tepat atau yang benar-benar akan Anda lakukan?&quot;
-                    </p>
-                  </div>
-                </div>
-
-                {/* SUARA & MIKROFON DIRECT ACTION */}
-                <div className="p-4 bg-emerald-50 rounded-2xl border-2 border-emerald-300 shadow-inner flex flex-col sm:flex-row items-center justify-between gap-3">
-                  <div className="flex items-center gap-2.5">
-                    <i className="fa-solid fa-volume-high text-emerald-700 text-lg"></i>
-                    <div>
-                      <h5 className="text-xs font-black text-emerald-950 uppercase">Suarakan Jawaban Anda Sekarang</h5>
-                      <p className="text-[10px] font-bold text-emerald-800">
-                        Nyalakan perekam di atas, lalu katakan jawaban Anda secara lisan.
-                      </p>
+                    <div className="flex items-center gap-1">
+                      {[1, 2, 3].map((stepNum) => (
+                        <button
+                          key={stepNum}
+                          onClick={() => { setProbingStep(stepNum); resetRecordingState(); }}
+                          className={`w-7 h-7 rounded-lg text-xs font-black transition-all ${
+                            probingStep === stepNum
+                              ? "bg-rose-900 text-white shadow-md border-b-2 border-rose-950 scale-105"
+                              : "bg-slate-100 text-slate-600 hover:bg-rose-100"
+                          }`}
+                        >
+                          P{stepNum}
+                        </button>
+                      ))}
                     </div>
                   </div>
-                  {!isRecording ? (
-                    <button
-                      onClick={startRecording}
-                      className="w-full sm:w-auto px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white font-black text-[10px] uppercase tracking-wider rounded-xl shadow-md border-b-2 border-emerald-950 active:scale-95"
-                    >
-                      <i className="fa-solid fa-microphone mr-1.5"></i> Mulai Rekam
-                    </button>
-                  ) : (
-                    <button
-                      onClick={stopRecording}
-                      className="w-full sm:w-auto px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-black text-[10px] uppercase tracking-wider rounded-xl shadow-md border-b-2 border-rose-950 active:scale-95"
-                    >
-                      <i className="fa-solid fa-square mr-1.5"></i> Hentikan
-                    </button>
+
+                  {/* PERTANYAAN 1: ALASAN PEMILIHAN OPSI */}
+                  {probingStep === 1 && (
+                    <div className="space-y-4">
+                      <div className="p-4 bg-rose-900 text-white rounded-2xl border-2 border-rose-950 shadow-md space-y-1">
+                        <span className="text-[9px] font-black uppercase tracking-widest text-rose-300 block">
+                          PERTANYAAN 1: ALASAN PEMILIHAN & EVALUASI OPSI
+                        </span>
+                        <p className="text-xs md:text-sm font-bold text-white italic leading-relaxed">
+                          &quot;Mengapa Anda memilih opsi ini ({String.fromCharCode(65 + (selectedAnswers[currentIdx] || 0))}) daripada opsi lain? Menurut Anda, opsi mana yang paling tidak tepat dan apa alasannya?&quot;
+                        </p>
+                      </div>
+
+                      {/* INTEGRATED RECORDING & VERBATIM FOR P1 */}
+                      <AudioProbingRecorder
+                        questionTitle="Pertanyaan 1: Alasan Pemilihan & Evaluasi Opsi"
+                        isRecording={isRecording}
+                        recordingTime={recordingTime}
+                        audioUrl={audioUrl}
+                        transcriptText={transcriptText}
+                        setTranscriptText={setTranscriptText}
+                        isUploading={isUploading}
+                        uploadSuccess={uploadSuccess}
+                        startRecording={startRecording}
+                        stopRecording={stopRecording}
+                        uploadAudioToServer={() => uploadAudioToServer("Pertanyaan 1: Alasan Pemilihan Opsi")}
+                        downloadAudio={downloadAudio}
+                        formatTime={formatTime}
+                        onNext={() => { setProbingStep(2); resetRecordingState(); }}
+                        nextLabel="Lanjut ke Pertanyaan 2"
+                      />
+                    </div>
                   )}
+
+                  {/* PERTANYAAN 2: PEMAHAMAN SITUASI & BAHASA */}
+                  {probingStep === 2 && (
+                    <div className="space-y-4">
+                      <div className="p-4 bg-rose-900 text-white rounded-2xl border-2 border-rose-950 shadow-md space-y-1">
+                        <span className="text-[9px] font-black uppercase tracking-widest text-rose-300 block">
+                          PERTANYAAN 2: PEMAHAMAN SITUASI & KEJELASAN BAHASA
+                        </span>
+                        <p className="text-xs md:text-sm font-bold text-white italic leading-relaxed">
+                          &quot;Dengan kata-kata Anda sendiri, situasi ini menceritakan tentang apa? Adakah kata atau istilah dalam skenario ini yang membingungkan atau terasa asing bagi Anda?&quot;
+                        </p>
+                      </div>
+
+                      {/* INTEGRATED RECORDING & VERBATIM FOR P2 */}
+                      <AudioProbingRecorder
+                        questionTitle="Pertanyaan 2: Pemahaman Situasi & Kejelasan Bahasa"
+                        isRecording={isRecording}
+                        recordingTime={recordingTime}
+                        audioUrl={audioUrl}
+                        transcriptText={transcriptText}
+                        setTranscriptText={setTranscriptText}
+                        isUploading={isUploading}
+                        uploadSuccess={uploadSuccess}
+                        startRecording={startRecording}
+                        stopRecording={stopRecording}
+                        uploadAudioToServer={() => uploadAudioToServer("Pertanyaan 2: Pemahaman Situasi & Bahasa")}
+                        downloadAudio={downloadAudio}
+                        formatTime={formatTime}
+                        onNext={() => { setProbingStep(3); resetRecordingState(); }}
+                        nextLabel="Lanjut ke Pertanyaan 3"
+                      />
+                    </div>
+                  )}
+
+                  {/* PERTANYAAN 3: PERTANYAAN KHUSUS SKENARIO & KEYAKINAN */}
+                  {probingStep === 3 && (
+                    <div className="space-y-4">
+                      <div className="p-4 bg-rose-900 text-white rounded-2xl border-2 border-rose-950 shadow-md space-y-1">
+                        <span className="text-[9px] font-black uppercase tracking-widest text-rose-300 block">
+                          PERTANYAAN 3: PROBING KHUSUS SKENARIO #{itemNo} ({currentProbing?.title})
+                        </span>
+                        <p className="text-xs md:text-sm font-bold text-white italic leading-relaxed mb-2">
+                          &quot;{currentProbing?.question}&quot;
+                        </p>
+                        <p className="text-[11px] font-bold text-rose-200 border-t border-rose-800 pt-1.5">
+                          <em>Pertanyaan Tambahan:</em> &quot;Seberapa yakin Anda dengan pilihan Anda tadi dari skala 1 (tidak yakin) sampai 5 (sangat yakin)?&quot;
+                        </p>
+                      </div>
+
+                      {/* INTEGRATED RECORDING & VERBATIM FOR P3 */}
+                      <AudioProbingRecorder
+                        questionTitle={`Pertanyaan 3: Probing Khusus (${currentProbing?.title})`}
+                        isRecording={isRecording}
+                        recordingTime={recordingTime}
+                        audioUrl={audioUrl}
+                        transcriptText={transcriptText}
+                        setTranscriptText={setTranscriptText}
+                        isUploading={isUploading}
+                        uploadSuccess={uploadSuccess}
+                        startRecording={startRecording}
+                        stopRecording={stopRecording}
+                        uploadAudioToServer={() => uploadAudioToServer(`Pertanyaan 3: Probing Khusus (${currentProbing?.title})`)}
+                        downloadAudio={downloadAudio}
+                        formatTime={formatTime}
+                        onNext={() => {
+                          if (currentIdx < questions.length - 1) {
+                            setCurrentIdx(currentIdx + 1);
+                            setProbingStep(1);
+                            resetRecordingState();
+                          } else {
+                            alert("Selamat! Anda telah menyelesaikan seluruh 30 butir Think-Aloud Suara.");
+                          }
+                        }}
+                        nextLabel={currentIdx < questions.length - 1 ? `Lanjut ke Soal SJT #${itemNo + 1}` : "Selesai Seluruh Sesi"}
+                      />
+                    </div>
+                  )}
+
                 </div>
-              </div>
+              ) : (
+                <div className="p-5 bg-amber-50 rounded-2xl border-2 border-amber-300 text-center">
+                  <p className="text-xs font-black text-amber-950 uppercase tracking-wide">
+                    <i className="fa-solid fa-arrow-up mr-1.5 text-amber-700"></i> Silakan pilih 1 tindakan terbaik di Step 2 untuk membuka Pertanyaan Probing
+                  </p>
+                </div>
+              )}
 
             </motion.div>
           )}
@@ -615,7 +624,7 @@ export default function ThinkAloudProtocolPage() {
                   {Array.from({ length: 30 }).map((_, idx) => (
                     <button
                       key={idx}
-                      onClick={() => { setCurrentIdx(idx); setActiveTab("session"); setAudioUrl(null); }}
+                      onClick={() => { setCurrentIdx(idx); setProbingStep(1); setActiveTab("session"); resetRecordingState(); }}
                       className={`py-2.5 rounded-xl text-[10px] font-black transition-all border-2 border-b-4 ${
                         currentIdx === idx
                           ? "bg-rose-900 text-white border-rose-950 border-b-rose-950 shadow-md scale-105"
@@ -631,6 +640,155 @@ export default function ThinkAloudProtocolPage() {
           )}
         </AnimatePresence>
       </main>
+    </div>
+  );
+}
+
+{/* COMPONENT PEREKAM SUARA & VERBATIM UNDER EACH QUESTION */}
+function AudioProbingRecorder({
+  questionTitle,
+  isRecording,
+  recordingTime,
+  audioUrl,
+  transcriptText,
+  setTranscriptText,
+  isUploading,
+  uploadSuccess,
+  startRecording,
+  stopRecording,
+  uploadAudioToServer,
+  downloadAudio,
+  formatTime,
+  onNext,
+  nextLabel
+}: {
+  questionTitle: string;
+  isRecording: boolean;
+  recordingTime: number;
+  audioUrl: string | null;
+  transcriptText: string;
+  setTranscriptText: (t: string) => void;
+  isUploading: boolean;
+  uploadSuccess: boolean;
+  startRecording: () => void;
+  stopRecording: () => void;
+  uploadAudioToServer: () => void;
+  downloadAudio: () => void;
+  formatTime: (s: number) => string;
+  onNext: () => void;
+  nextLabel: string;
+}) {
+  return (
+    <div className="p-4 bg-gradient-to-br from-white via-slate-50 to-slate-100 rounded-2xl border-2 border-slate-300 border-b-4 border-b-slate-400 shadow-lg space-y-3">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 pb-3">
+        <div className="flex items-center gap-3">
+          <div
+            className={`w-10 h-10 rounded-full flex items-center justify-center font-black text-sm transition-all border-2 ${
+              isRecording
+                ? "bg-rose-600 border-rose-400 text-white animate-pulse shadow-[0_0_15px_rgba(225,29,72,0.8)]"
+                : "bg-rose-100 border-rose-300 text-rose-800"
+            }`}
+          >
+            <i className={`fa-solid ${isRecording ? "fa-circle-dot" : "fa-microphone"}`}></i>
+          </div>
+          <div>
+            <span className="text-[8px] font-black uppercase tracking-widest text-rose-800 block">
+              Perekam Suara &amp; Speech-to-Text Verbatim
+            </span>
+            <p className="text-xs font-black text-slate-900 font-mono">
+              {isRecording ? (
+                <span className="text-emerald-700 flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-emerald-600 animate-ping"></span>
+                  MEREKAM... {formatTime(recordingTime)}
+                </span>
+              ) : audioUrl ? (
+                <span className="text-emerald-800 flex items-center gap-1">
+                  <i className="fa-solid fa-circle-check text-emerald-600"></i> Rekaman Siap Dikirim
+                </span>
+              ) : (
+                "Tekan Rekam Suara saat Menyuarakan Jawaban"
+              )}
+            </p>
+          </div>
+        </div>
+
+        {/* REKAM / STOP BUTTONS */}
+        <div className="flex items-center gap-2">
+          {!isRecording ? (
+            <button
+              onClick={startRecording}
+              className="px-4 py-2 bg-rose-800 hover:bg-rose-900 text-white font-black text-[10px] uppercase tracking-wider rounded-xl shadow-md border-b-3 border-rose-950 active:scale-95"
+            >
+              <i className="fa-solid fa-microphone mr-1.5"></i> Rekam Suara
+            </button>
+          ) : (
+            <button
+              onClick={stopRecording}
+              className="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white font-black text-[10px] uppercase tracking-wider rounded-xl shadow-md border-b-3 border-slate-950 active:scale-95"
+            >
+              <i className="fa-solid fa-square mr-1.5"></i> Hentikan
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* VERBATIM TRANSCRIPT TEXTAREA */}
+      <div className="space-y-1">
+        <label className="text-[9px] font-black text-slate-700 uppercase tracking-widest flex items-center gap-1">
+          <i className="fa-solid fa-[#4B5320] text-rose-700"></i> Teks Verbatim (Transkrip Suara Otomatis):
+        </label>
+        <textarea
+          rows={3}
+          value={transcriptText}
+          onChange={(e) => setTranscriptText(e.target.value)}
+          placeholder="Hasil transkrip verbatim otomatis dari rekaman suara Anda akan tampil di sini..."
+          className="w-full p-2.5 text-xs font-bold text-slate-900 bg-white rounded-xl border border-slate-300 focus:ring-2 focus:ring-rose-500 outline-none leading-relaxed"
+        />
+      </div>
+
+      {/* SUBMIT TO ADMIN & DOWNLOAD BUTTONS */}
+      {audioUrl && !isRecording && (
+        <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-200">
+          <div className="flex items-center gap-2">
+            <audio controls src={audioUrl} className="h-8 max-w-[170px] rounded-lg shadow-sm" />
+            <button
+              onClick={downloadAudio}
+              className="px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-800 text-[9px] font-black uppercase rounded-lg border border-slate-300 transition-all active:scale-95"
+            >
+              <i className="fa-solid fa-download mr-1"></i> Unduh
+            </button>
+          </div>
+
+          <button
+            onClick={uploadAudioToServer}
+            disabled={isUploading}
+            className={`px-4 py-2 text-white font-black text-[10px] uppercase tracking-wider rounded-xl shadow-md border-b-3 transition-all active:scale-95 ${
+              uploadSuccess
+                ? "bg-emerald-600 border-emerald-900"
+                : "bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 border-emerald-950"
+            }`}
+          >
+            {isUploading ? (
+              <><i className="fa-solid fa-spinner animate-spin mr-1"></i> Mengirim ke Admin...</>
+            ) : uploadSuccess ? (
+              <><i className="fa-solid fa-cloud-check mr-1"></i> Terikirim ke Panel Admin</>
+            ) : (
+              <><i className="fa-solid fa-paper-plane mr-1.5"></i> Kirim Suara &amp; Transkrip ke Admin</>
+            )}
+          </button>
+        </div>
+      )}
+
+      {/* NEXT STEP BUTTON */}
+      <div className="pt-2 flex justify-end">
+        <button
+          onClick={onNext}
+          className="px-4 py-2.5 bg-gradient-to-r from-rose-800 to-red-900 hover:from-rose-900 hover:to-red-950 text-white font-black text-[10px] uppercase tracking-wider rounded-xl shadow-md border-b-3 border-rose-950 transition-all active:scale-95 flex items-center gap-1.5"
+        >
+          <span>{nextLabel}</span>
+          <i className="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
     </div>
   );
 }

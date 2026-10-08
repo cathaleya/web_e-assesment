@@ -40,8 +40,11 @@ export async function POST(req: Request) {
     const userCampus = (formData.get("userCampus") as string) || "LPTK";
     const itemNo = parseInt((formData.get("itemNo") as string) || "1", 10);
     const sjtId = (formData.get("sjtId") as string) || `SJT_${itemNo.toString().padStart(2, "0")}`;
+    const probingStep = parseInt((formData.get("probingStep") as string) || "1", 10);
+    const questionTitle = (formData.get("questionTitle") as string) || "Pertanyaan Probing";
     const selectedOption = (formData.get("selectedOption") as string) || "Belum Memilih Opsi";
     const duration = parseInt((formData.get("duration") as string) || "0", 10);
+    const transcript = (formData.get("transcript") as string) || "";
 
     if (!audioFile) {
       return NextResponse.json({ error: "Berkas audio tidak ditemukan dalam request." }, { status: 400 });
@@ -51,7 +54,7 @@ export async function POST(req: Request) {
     const buffer = Buffer.from(bytes);
 
     const sanitizeName = userName.replace(/[^a-zA-Z0-9]/g, "_");
-    const filename = `ThinkAloud_Soal${itemNo}_${Date.now()}_${sanitizeName}.webm`;
+    const filename = `ThinkAloud_Soal${itemNo}_P${probingStep}_${Date.now()}_${sanitizeName}.webm`;
     const filePath = path.join(uploadDir, filename);
 
     fs.writeFileSync(filePath, buffer);
@@ -65,8 +68,11 @@ export async function POST(req: Request) {
       userCampus,
       itemNo,
       sjtId,
+      probingStep,
+      questionTitle,
       selectedOption,
       duration,
+      transcript,
       filename,
       audioUrl: publicAudioUrl,
       createdAt: new Date().toISOString()

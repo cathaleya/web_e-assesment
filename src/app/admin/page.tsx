@@ -1343,37 +1343,71 @@ export default function AdminDashboard() {
           {/* ═══════════════════════════════════════════════════
               TAB: THINK-ALOUD AUDIO DATABASE
           ═══════════════════════════════════════════════════ */}
+          {/* ═══════════════════════════════════════════════════
+              TAB: THINK-ALOUD AUDIO & VERBATIM DATABASE
+          ═══════════════════════════════════════════════════ */}
           {currentTab === 'thinkaloud' && (
             <div className="space-y-6 animate-in fade-in duration-300">
-              <div className="bg-white border border-slate-200 rounded-xl p-5 flex items-center justify-between gap-4">
+              <div className="bg-white border border-slate-200 rounded-xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-rose-50 text-rose-600 rounded-xl flex items-center justify-center border border-rose-200">
+                  <div className="w-10 h-10 bg-rose-50 text-rose-600 rounded-xl flex items-center justify-center border border-rose-200 shadow-sm">
                     <i className="fa-solid fa-microphone-lines text-lg"></i>
                   </div>
                   <div>
-                    <h2 className="text-base font-bold text-slate-900">Think-Aloud Audio Database</h2>
-                    <p className="text-xs text-slate-500 mt-0.5">Database Penyimpanan & Pemutar Rekaman Suara Wawancara Kognitif Mahasiswa</p>
+                    <h2 className="text-base font-bold text-slate-900">Database Suara &amp; Transkrip Verbatim Think-Aloud</h2>
+                    <p className="text-xs text-slate-500 mt-0.5">Penyimpanan Berkas Audio, Transkrip Verbatim Otomatis, &amp; Manajemen Wawancara Kognitif</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => {
+                      if (audioRecordings.length === 0) return alert("Belum ada data rekaman suara.");
+                      const headers = ["ID", "Nama Peserta", "Kampus", "Soal No", "SJT ID", "Step Pertanyaan", "Judul Pertanyaan", "Opsi Terpilih", "Durasi (detik)", "Teks Verbatim", "Audio URL", "Waktu Submit"];
+                      const rows = audioRecordings.map(rec => [
+                        `"${rec.id || ''}"`,
+                        `"${(rec.userName || '').replace(/"/g, '""')}"`,
+                        `"${(rec.userCampus || '').replace(/"/g, '""')}"`,
+                        rec.itemNo || 1,
+                        `"${rec.sjtId || ''}"`,
+                        rec.probingStep || 1,
+                        `"${(rec.questionTitle || '').replace(/"/g, '""')}"`,
+                        `"${(rec.selectedOption || '').replace(/"/g, '""')}"`,
+                        rec.duration || 0,
+                        `"${(rec.transcript || '').replace(/"/g, '""')}"`,
+                        `"${rec.audioUrl || ''}"`,
+                        `"${rec.createdAt || ''}"`
+                      ]);
+                      const csvContent = "data:text/csv;charset=utf-8," + [headers.join(","), ...rows.map(e => e.join(","))].join("\n");
+                      const encodedUri = encodeURI(csvContent);
+                      const link = document.createElement("a");
+                      link.setAttribute("href", encodedUri);
+                      link.setAttribute("download", `ThinkAloud_Verbatim_Dataset_${new Date().toISOString().slice(0, 10)}.csv`);
+                      document.body.appendChild(link);
+                      link.click();
+                      document.body.removeChild(link);
+                    }}
+                    className="h-9 px-3.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-sm"
+                  >
+                    <i className="fa-solid fa-file-csv text-xs"></i> Unduh Dataset CSV Verbatim
+                  </button>
                   <button onClick={fetchAudioRecordings}
                     className="h-9 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors border border-slate-300">
-                    <i className="fa-solid fa-rotate text-xs"></i> Refresh Data
+                    <i className="fa-solid fa-rotate text-xs"></i> Refresh
                   </button>
                   <span className="px-3 py-1.5 bg-rose-50 border border-rose-200 text-rose-700 rounded-lg text-[10px] font-bold">
-                    {audioRecordings.length} Rekaman Suara
+                    {audioRecordings.length} Entri Suara
                   </span>
                 </div>
               </div>
 
-              {/* DATA TABLE REKAMAN SUARA */}
+              {/* DATA TABLE REKAMAN SUARA & VERBATIM */}
               <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
                 <div className="overflow-x-auto">
                   <table className="w-full text-left">
                     <thead className="bg-slate-50 border-b border-slate-200">
                       <tr>
-                        {['Peserta / Responden', 'Nomor & Skenario SJT', 'Opsi Terpilih', 'Durasi', 'Pemutar Audio', 'Aksi Unduh'].map(h => (
-                          <th key={h} className="px-5 py-3.5 text-[10px] font-bold text-slate-500 uppercase tracking-wide">{h}</th>
+                        {['Peserta / Responden', 'Nomor & Skenario SJT', 'Step Pertanyaan Probing', 'Opsi Terpilih', 'Teks Verbatim (Transkrip Suara)', 'Pemutar Audio', 'Aksi'].map(h => (
+                          <th key={h} className="px-4 py-3.5 text-[10px] font-bold text-slate-500 uppercase tracking-wide">{h}</th>
                         ))}
                       </tr>
                     </thead>
@@ -1381,45 +1415,72 @@ export default function AdminDashboard() {
                       {audioRecordings.length > 0 ? (
                         audioRecordings.map((rec: any, idx: number) => (
                           <tr key={rec.id || idx} className="hover:bg-slate-50/80 transition-colors">
-                            <td className="px-5 py-4">
+                            <td className="px-4 py-4">
                               <p className="text-xs font-black text-slate-900">{rec.userName}</p>
-                              <p className="text-[10px] font-semibold text-slate-400">{rec.userCampus}</p>
+                              <p className="text-[10px] font-semibold text-slate-500">{rec.userCampus}</p>
                               <span className="text-[9px] text-slate-400 font-mono block mt-0.5">{new Date(rec.createdAt).toLocaleString('id-ID')}</span>
                             </td>
-                            <td className="px-5 py-4">
+                            <td className="px-4 py-4">
                               <span className="px-2.5 py-0.5 bg-rose-100 text-rose-900 rounded-md text-[9px] font-black uppercase tracking-wider">
                                 {rec.sjtId || `SJT_${rec.itemNo}`}
                               </span>
                               <p className="text-xs font-bold text-slate-800 mt-1">Soal #{rec.itemNo}</p>
                             </td>
-                            <td className="px-5 py-4 max-w-xs">
-                              <p className="text-[11px] font-bold text-slate-700 leading-snug line-clamp-2">
+                            <td className="px-4 py-4">
+                              <span className="px-2 py-0.5 bg-purple-100 text-purple-900 rounded text-[9px] font-black uppercase block w-fit mb-1">
+                                Pertanyaan {rec.probingStep || 1}
+                              </span>
+                              <p className="text-[10px] font-bold text-slate-600 line-clamp-1">
+                                {rec.questionTitle || "Probing Kognitif"}
+                              </p>
+                            </td>
+                            <td className="px-4 py-4 max-w-[180px]">
+                              <p className="text-[10px] font-bold text-slate-700 leading-snug line-clamp-2">
                                 {rec.selectedOption}
                               </p>
                             </td>
-                            <td className="px-5 py-4">
-                              <span className="text-xs font-mono font-bold text-slate-600">
-                                {Math.floor(rec.duration / 60)}m {rec.duration % 60}s
+                            <td className="px-4 py-4 max-w-xs">
+                              <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-200 space-y-1">
+                                <span className="text-[8px] font-black text-rose-800 uppercase tracking-widest block">
+                                  Transkrip Verbatim:
+                                </span>
+                                <p className="text-[11px] font-bold text-slate-800 italic leading-relaxed line-clamp-3">
+                                  &quot;{rec.transcript || "Tidak ada transkrip teks (Hanya berkas audio)"}&quot;
+                                </p>
+                                {rec.transcript && (
+                                  <button
+                                    onClick={() => {
+                                      navigator.clipboard.writeText(rec.transcript);
+                                      alert("Teks verbatim berhasil disalin ke clipboard!");
+                                    }}
+                                    className="text-[8px] font-black text-blue-600 hover:text-blue-800 uppercase tracking-wider block mt-1"
+                                  >
+                                    <i className="fa-solid fa-copy mr-1"></i> Salin Teks Verbatim
+                                  </button>
+                                )}
+                              </div>
+                            </td>
+                            <td className="px-4 py-4">
+                              <audio controls src={rec.audioUrl} className="h-8 max-w-[170px] rounded-lg shadow-sm" />
+                              <span className="text-[9px] font-mono text-slate-400 block mt-1">
+                                Durasi: {Math.floor((rec.duration || 0) / 60)}m {(rec.duration || 0) % 60}s
                               </span>
                             </td>
-                            <td className="px-5 py-4">
-                              <audio controls src={rec.audioUrl} className="h-8 max-w-[190px] rounded-lg shadow-sm" />
-                            </td>
-                            <td className="px-5 py-4">
+                            <td className="px-4 py-4">
                               <a
                                 href={rec.audioUrl}
                                 download={rec.filename}
-                                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[10px] font-black uppercase tracking-wider shadow-sm transition-all active:scale-95"
+                                className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[9px] font-black uppercase tracking-wider shadow-sm transition-all active:scale-95"
                               >
-                                <i className="fa-solid fa-download text-xs"></i> Unduh Audio
+                                <i className="fa-solid fa-download text-xs"></i> Unduh
                               </a>
                             </td>
                           </tr>
                         ))
                       ) : (
                         <tr>
-                          <td colSpan={6} className="px-5 py-16 text-center text-xs text-slate-400 font-bold">
-                            Belum ada rekaman suara Think-Aloud yang diunggah oleh mahasiswa.
+                          <td colSpan={7} className="px-5 py-16 text-center text-xs text-slate-400 font-bold">
+                            Belum ada rekaman suara &amp; transkrip verbatim Think-Aloud yang diunggah oleh mahasiswa.
                           </td>
                         </tr>
                       )}
