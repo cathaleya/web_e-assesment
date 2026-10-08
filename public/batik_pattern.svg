@@ -1,0 +1,33 @@
+<svg width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+  <!-- Seamless Subtle Indonesian Batik Kawung & Megamendung Pattern Overlay -->
+  <g fill="none" stroke="#b4833e" stroke-width="0.8" opacity="0.14">
+    <!-- Center Kawung Flower -->
+    <ellipse cx="40" cy="40" rx="18" ry="10" transform="rotate(0 40 40)" />
+    <ellipse cx="40" cy="40" rx="18" ry="10" transform="rotate(90 40 40)" />
+    <circle cx="40" cy="40" r="3" fill="#b4833e" opacity="0.2" />
+    <circle cx="40" cy="40" r="6" />
+
+    <!-- Corner Kawung Petals -->
+    <ellipse cx="0" cy="0" rx="18" ry="10" transform="rotate(45 0 0)" />
+    <ellipse cx="0" cy="0" rx="18" ry="10" transform="rotate(-45 0 0)" />
+    <circle cx="0" cy="0" r="3" fill="#b4833e" opacity="0.2" />
+
+    <ellipse cx="80" cy="0" rx="18" ry="10" transform="rotate(45 80 0)" />
+    <ellipse cx="80" cy="0" rx="18" ry="10" transform="rotate(-45 80 0)" />
+    <circle cx="80" cy="0" r="3" fill="#b4833e" opacity="0.2" />
+
+    <ellipse cx="0" cy="80" rx="18" ry="10" transform="rotate(45 0 80)" />
+    <ellipse cx="0" cy="80" rx="18" ry="10" transform="rotate(-45 0 80)" />
+    <circle cx="0" cy="80" r="3" fill="#b4833e" opacity="0.2" />
+
+    <ellipse cx="80" cy="80" rx="18" ry="10" transform="rotate(45 80 80)" />
+    <ellipse cx="80" cy="80" rx="18" ry="10" transform="rotate(-45 80 80)" />
+    <circle cx="80" cy="80" r="3" fill="#b4833e" opacity="0.2" />
+
+    <!-- Connecting Floral Accent Lines -->
+    <path d="M40 0 C 30 15, 30 25, 40 40 C 50 25, 50 15, 40 0 Z" />
+    <path d="M40 80 C 30 65, 30 55, 40 40 C 50 55, 50 65, 40 80 Z" />
+    <path d="M0 40 C 15 30, 25 30, 40 40 C 25 50, 15 50, 0 40 Z" />
+    <path d="M80 40 C 65 30, 55 30, 40 40 C 55 50, 65 50, 80 40 Z" />
+  </g>
+</svg>

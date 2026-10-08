@@ -268,6 +268,7 @@ export default function ThinkAloudProtocolPage() {
   const audioChunksRef = useRef<Blob[]>([]);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const recognitionRef = useRef<any>(null);
+  const isRecordingRef = useRef<boolean>(false);
 
   // STOP TEXT-TO-SPEECH AUDIO
   const stopSpeaking = useCallback(() => {
@@ -364,7 +365,9 @@ export default function ThinkAloudProtocolPage() {
     return () => {
       stopSpeaking();
       if (timerRef.current) clearInterval(timerRef.current);
-      if (recognitionRef.current) recognitionRef.current.stop();
+      if (recognitionRef.current) {
+        try { recognitionRef.current.abort(); } catch (e) {}
+      }
     };
   }, [fetchQuestions, stopSpeaking]);
 
@@ -409,29 +412,55 @@ export default function ThinkAloudProtocolPage() {
         setAudioUrl(url);
       };
 
-      // Live Speech-to-Text Recognition (Verbatim Transkrip Bahasa Indonesia id-ID)
+      mediaRecorderRef.current.start();
+      setIsRecording(true);
+      isRecordingRef.current = true;
+
+      // SPEECH-TO-TEXT VERBATIM TRANSCRIPTION (LIVE & AUTO-RESTARTING)
       if (typeof window !== "undefined") {
         const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
         if (SpeechRecognition) {
-          recognitionRef.current = new SpeechRecognition();
-          recognitionRef.current.continuous = true;
-          recognitionRef.current.interimResults = true;
-          recognitionRef.current.lang = "id-ID";
-
-          recognitionRef.current.onresult = (event: any) => {
-            let currentTranscript = "";
-            for (let i = 0; i < event.results.length; i++) {
-              currentTranscript += event.results[i][0].transcript;
+          try {
+            if (recognitionRef.current) {
+              try { recognitionRef.current.abort(); } catch (e) {}
             }
-            setTranscriptText(currentTranscript);
-          };
 
-          recognitionRef.current.start();
+            const recognition = new SpeechRecognition();
+            recognition.continuous = true;
+            recognition.interimResults = true;
+            recognition.maxAlternatives = 1;
+            recognition.lang = "id-ID";
+
+            recognition.onresult = (event: any) => {
+              let currentText = "";
+              for (let i = 0; i < event.results.length; ++i) {
+                currentText += event.results[i][0].transcript + " ";
+              }
+              const cleanText = currentText.trim();
+              if (cleanText) {
+                setTranscriptText(cleanText);
+              }
+            };
+
+            recognition.onerror = (event: any) => {
+              console.warn("Speech recognition notice:", event.error);
+            };
+
+            recognition.onend = () => {
+              if (isRecordingRef.current) {
+                try {
+                  recognition.start();
+                } catch (e) {}
+              }
+            };
+
+            recognitionRef.current = recognition;
+            recognition.start();
+          } catch (err) {
+            console.warn("Speech recognition error on start:", err);
+          }
         }
       }
-
-      mediaRecorderRef.current.start();
-      setIsRecording(true);
 
       timerRef.current = setInterval(() => {
         setRecordingTime((prev) => prev + 1);
@@ -443,11 +472,14 @@ export default function ThinkAloudProtocolPage() {
   };
 
   const stopRecording = () => {
+    isRecordingRef.current = false;
     if (mediaRecorderRef.current && isRecording) {
       mediaRecorderRef.current.stop();
       mediaRecorderRef.current.stream.getTracks().forEach((track) => track.stop());
       if (recognitionRef.current) {
-        recognitionRef.current.stop();
+        try {
+          recognitionRef.current.stop();
+        } catch (e) {}
       }
       setIsRecording(false);
       if (timerRef.current) clearInterval(timerRef.current);
@@ -596,15 +628,43 @@ export default function ThinkAloudProtocolPage() {
 
   return (
     <div
-      className="min-h-screen relative overflow-x-hidden flex flex-col py-3 px-2 md:px-5 font-sans"
+      className="min-h-screen relative overflow-x-hidden flex flex-col py-3 px-2 md:px-5 font-sans bg-[#FAF6EE]"
       style={{
-        backgroundImage: "url('/unj_bg_v2.png')",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
+        backgroundImage: "url('/batik_pattern.svg')",
+        backgroundSize: "140px 140px",
+        backgroundRepeat: "repeat",
         backgroundAttachment: "fixed",
       }}
     >
-      <main className="relative z-10 w-full max-w-5xl mx-auto space-y-3">
+      {/* ORNAMEN TIMBUL MAHASISWA PAPUA KIRI (OUTSIDE MAIN CARD, NOT OVERLAPPED) */}
+      <div className="hidden xl:flex flex-col items-center justify-center fixed left-4 top-1/2 -translate-y-1/2 z-20 pointer-events-none w-52 text-center">
+        <div className="relative">
+          <img
+            src="/papua_student_male.png"
+            alt="Mahasiswa Calon Guru Papua"
+            className="w-48 h-auto object-contain drop-shadow-[0_20px_30px_rgba(0,0,0,0.25)] rounded-2xl border-2 border-amber-400/40 bg-white/60 backdrop-blur-sm p-1.5"
+          />
+          <div className="mt-2 px-3 py-1.5 bg-slate-900/95 backdrop-blur-md text-amber-300 text-[10px] font-black uppercase tracking-wider rounded-xl border border-amber-500/50 shadow-2xl">
+            🎓 Mahasiswa Calon Guru Papua
+          </div>
+        </div>
+      </div>
+
+      {/* ORNAMEN TIMBUL MAHASISWA PAPUA KANAN (OUTSIDE MAIN CARD, NOT OVERLAPPED) */}
+      <div className="hidden xl:flex flex-col items-center justify-center fixed right-4 top-1/2 -translate-y-1/2 z-20 pointer-events-none w-52 text-center">
+        <div className="relative">
+          <img
+            src="/papua_student_female.png"
+            alt="Pendidik Masa Depan Papua"
+            className="w-48 h-auto object-contain drop-shadow-[0_20px_30px_rgba(0,0,0,0.25)] rounded-2xl border-2 border-rose-400/40 bg-white/60 backdrop-blur-sm p-1.5"
+          />
+          <div className="mt-2 px-3 py-1.5 bg-slate-900/95 backdrop-blur-md text-rose-300 text-[10px] font-black uppercase tracking-wider rounded-xl border border-rose-500/50 shadow-2xl">
+            👩‍🏫 Pendidik Masa Depan Papua
+          </div>
+        </div>
+      </div>
+
+      <main className="relative z-10 w-full max-w-4xl mx-auto space-y-3">
         
         {/* HEADER BAR & SESSION SWITCHER (3D TIMBUL FIT ON SCREEN) */}
         <div className="bg-slate-900/95 backdrop-blur-xl p-3 rounded-2xl border-2 border-slate-700/80 shadow-2xl text-white space-y-2.5">
