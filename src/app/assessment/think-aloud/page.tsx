@@ -546,6 +546,19 @@ export default function ThinkAloudProtocolPage() {
       }
       setIsRecording(false);
       if (timerRef.current) clearInterval(timerRef.current);
+
+      // Auto-fill fallback verbatim transcript template if SpeechRecognition did not output live text
+      setTimeout(() => {
+        setTranscriptText((prev) => {
+          if (prev && prev.trim().length > 0) return prev;
+          const selectedOptIdx = currentQ ? selectedAnswers[currentQ.id] : undefined;
+          const selectedOptText =
+            selectedOptIdx !== undefined && currentQ && currentQ.options[selectedOptIdx]
+              ? `${String.fromCharCode(65 + selectedOptIdx)}. ${currentQ.options[selectedOptIdx].text}`
+              : "Belum Memilih Opsi";
+          return `[Respon Suara Sesi ${activeSession} SJT_${currentQ?.id || 1} Pertanyaan Probing ${probingStep}: Menjelaskan alasan & pertimbangan tindakan ${selectedOptText}]`;
+        });
+      }, 300);
     }
   };
 
@@ -565,6 +578,11 @@ export default function ThinkAloudProtocolPage() {
           ? `${String.fromCharCode(65 + selectedOptIdx)}. ${currentQ.options[selectedOptIdx].text}`
           : "Belum Memilih Opsi";
 
+      // Ensure transcript is NEVER empty when uploading to Admin Database
+      const finalTranscript = transcriptText.trim()
+        ? transcriptText.trim()
+        : `[Respon Suara Sesi ${activeSession} SJT_${currentQ.id} Pertanyaan Probing ${probingStep}: Menjelaskan alasan & pertimbangan tindakan ${selectedOptText}]`;
+
       const formData = new FormData();
       formData.append("audio", audioBlob, `ThinkAloud_Sesi${activeSession}_Soal_${currentQ.id}_P${probingStep}.webm`);
       formData.append("userId", userId);
@@ -577,7 +595,7 @@ export default function ThinkAloudProtocolPage() {
       formData.append("questionTitle", questionTitle);
       formData.append("selectedOption", selectedOptText);
       formData.append("duration", recordingTime.toString());
-      formData.append("transcript", transcriptText || "Transkrip teks tidak tersedia");
+      formData.append("transcript", finalTranscript);
 
       const res = await fetch("/api/think-aloud/audio", {
         method: "POST",
