@@ -251,31 +251,51 @@ export default function Madel5cAssessment() {
     <div className="min-h-screen relative overflow-x-hidden flex flex-col justify-center"
       style={{ backgroundImage: "url('/unj_bg_v2.png')", backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}>
 
-      {/* PANEL ORNAMEN TIMBUL SISIPAN KIRI: CENDERAWASIH (ZIG-ZAG), MAHASISWA PAPUA, & TIFA PAPUA (ZIG-ZAG) */}
-      <div className="hidden xl:flex flex-col items-center justify-between fixed left-2 top-8 bottom-8 z-0 pointer-events-none w-56 text-center">
-        {/* ANIMASI BURUNG CENDERAWASIH ZIG-ZAG (ATAS KIRI) */}
-        <motion.div
-          animate={{
-            y: [0, -22, 14, -18, 0],
-            x: [0, 16, -14, 18, 0],
-            rotate: [-4, 6, -5, 4, -4],
-          }}
-          transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
-          className="w-36 lg:w-44 h-auto drop-shadow-[0_20px_25px_rgba(0,0,0,0.3)]"
-        >
-          <TransparentImage
-            src="/cenderawasih.png"
-            alt="Burung Cenderawasih Papua Asli"
-            className="w-full h-auto object-contain"
-          />
-        </motion.div>
+      {/* PANEL ORNAMEN TIMBUL SISIPAN KIRI: CENDERAWASIH JANTAN & BETINA (ZIG-ZAG), MAHASISWA PAPUA, & TIFA PAPUA */}
+      <div className="hidden xl:flex flex-col items-center justify-between fixed left-2 top-4 bottom-4 z-0 pointer-events-none w-56 text-center space-y-1">
+        {/* PASANGAN BURUNG CENDERAWASIH (JANTAN & BETINA ZIG-ZAG ATAS KIRI) */}
+        <div className="relative w-full flex flex-col items-center">
+          {/* CENDERAWASIH JANTAN (UTAMA) */}
+          <motion.div
+            animate={{
+              y: [0, -22, 14, -18, 0],
+              x: [0, 16, -14, 18, 0],
+              rotate: [-4, 6, -5, 4, -4],
+            }}
+            transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+            className="w-36 lg:w-44 h-auto drop-shadow-[0_20px_25px_rgba(0,0,0,0.3)] z-10"
+          >
+            <TransparentImage
+              src="/cenderawasih_jantan.png"
+              alt="Burung Cenderawasih Jantan Papua"
+              className="w-full h-auto object-contain"
+            />
+          </motion.div>
+
+          {/* CENDERAWASIH BETINA (PENDAMPING) */}
+          <motion.div
+            animate={{
+              y: [0, 14, -18, 12, 0],
+              x: [0, -12, 15, -10, 0],
+              rotate: [3, -5, 4, -3, 3],
+            }}
+            transition={{ duration: 6.5, repeat: Infinity, ease: "easeInOut" }}
+            className="w-28 lg:w-34 h-auto drop-shadow-[0_15px_20px_rgba(0,0,0,0.25)] -mt-6 ml-6 opacity-90"
+          >
+            <TransparentImage
+              src="/cenderawasih_betina.png"
+              alt="Burung Cenderawasih Betina Papua"
+              className="w-full h-auto object-contain"
+            />
+          </motion.div>
+        </div>
 
         {/* MAHASISWA CALON GURU PAPUA (TENGAH KIRI) */}
         <div className="my-auto">
           <TransparentImage
             src="/papua_student_male.png"
             alt="Mahasiswa Calon Guru Papua"
-            className="w-48 lg:w-56 h-auto object-contain drop-shadow-[0_25px_35px_rgba(0,0,0,0.22)]"
+            className="w-44 lg:w-52 h-auto object-contain drop-shadow-[0_25px_35px_rgba(0,0,0,0.22)]"
           />
         </div>
 
@@ -297,31 +317,51 @@ export default function Madel5cAssessment() {
         </motion.div>
       </div>
 
-      {/* PANEL ORNAMEN TIMBUL SISIPAN KANAN: CENDERAWASIH (ZIG-ZAG), PENDIDIK PAPUA, & TIFA PAPUA (ZIG-ZAG) */}
-      <div className="hidden xl:flex flex-col items-center justify-between fixed right-2 top-8 bottom-8 z-0 pointer-events-none w-56 text-center">
-        {/* ANIMASI BURUNG CENDERAWASIH ZIG-ZAG (ATAS KANAN - CERMIN SELARAS) */}
-        <motion.div
-          animate={{
-            y: [0, 18, -20, 14, 0],
-            x: [0, -18, 15, -16, 0],
-            rotate: [4, -6, 5, -4, 4],
-          }}
-          transition={{ duration: 7.5, repeat: Infinity, ease: "easeInOut" }}
-          className="w-36 lg:w-44 h-auto drop-shadow-[0_20px_25px_rgba(0,0,0,0.3)]"
-        >
-          <TransparentImage
-            src="/cenderawasih.png"
-            alt="Burung Cenderawasih Papua Asli"
-            className="w-full h-auto object-contain -scale-x-100"
-          />
-        </motion.div>
+      {/* PANEL ORNAMEN TIMBUL SISIPAN KANAN: CENDERAWASIH JANTAN & BETINA (ZIG-ZAG), PENDIDIK PAPUA, & TIFA PAPUA */}
+      <div className="hidden xl:flex flex-col items-center justify-between fixed right-2 top-4 bottom-4 z-0 pointer-events-none w-56 text-center space-y-1">
+        {/* PASANGAN BURUNG CENDERAWASIH (JANTAN & BETINA ZIG-ZAG ATAS KANAN - SELARAS) */}
+        <div className="relative w-full flex flex-col items-center">
+          {/* CENDERAWASIH JANTAN (UTAMA - CERMIN) */}
+          <motion.div
+            animate={{
+              y: [0, 18, -20, 14, 0],
+              x: [0, -18, 15, -16, 0],
+              rotate: [4, -6, 5, -4, 4],
+            }}
+            transition={{ duration: 7.5, repeat: Infinity, ease: "easeInOut" }}
+            className="w-36 lg:w-44 h-auto drop-shadow-[0_20px_25px_rgba(0,0,0,0.3)] z-10"
+          >
+            <TransparentImage
+              src="/cenderawasih_jantan.png"
+              alt="Burung Cenderawasih Jantan Papua"
+              className="w-full h-auto object-contain -scale-x-100"
+            />
+          </motion.div>
+
+          {/* CENDERAWASIH BETINA (PENDAMPING - CERMIN) */}
+          <motion.div
+            animate={{
+              y: [0, -16, 18, -14, 0],
+              x: [0, 14, -15, 12, 0],
+              rotate: [-3, 5, -4, 3, -3],
+            }}
+            transition={{ duration: 6.8, repeat: Infinity, ease: "easeInOut" }}
+            className="w-28 lg:w-34 h-auto drop-shadow-[0_15px_20px_rgba(0,0,0,0.25)] -mt-6 mr-6 opacity-90"
+          >
+            <TransparentImage
+              src="/cenderawasih_betina.png"
+              alt="Burung Cenderawasih Betina Papua"
+              className="w-full h-auto object-contain -scale-x-100"
+            />
+          </motion.div>
+        </div>
 
         {/* PENDIDIK MASA DEPAN PAPUA (TENGAH KANAN) */}
         <div className="my-auto">
           <TransparentImage
             src="/papua_student_female.png"
             alt="Pendidik Masa Depan Papua"
-            className="w-48 lg:w-56 h-auto object-contain drop-shadow-[0_25px_35px_rgba(0,0,0,0.22)]"
+            className="w-44 lg:w-52 h-auto object-contain drop-shadow-[0_25px_35px_rgba(0,0,0,0.22)]"
           />
         </div>
 
@@ -343,7 +383,45 @@ export default function Madel5cAssessment() {
         </motion.div>
       </div>
 
-      <main className="relative z-10 w-full max-w-3xl md:max-w-4xl mx-auto px-3 md:px-6 py-3 md:py-6">
+      <main className="relative z-10 w-full max-w-3xl md:max-w-4xl mx-auto px-3 md:px-6 py-3 md:py-6 space-y-3">
+        {/* STRIP 8 IKON PSIKOMETRI 3D TIMBUL MELAYANG */}
+        <div className="bg-slate-900/95 backdrop-blur-xl p-2.5 rounded-2xl border-2 border-slate-700/80 shadow-2xl overflow-x-auto custom-scrollbar">
+          <div className="flex items-center justify-between gap-3 min-w-[720px]">
+            <div className="text-[10px] font-black uppercase text-amber-300 tracking-wider flex items-center gap-1.5 shrink-0 border-r border-slate-800 pr-3">
+              <i className="fa-solid fa-atom text-rose-400 text-sm animate-spin"></i>
+              <span>Dimensi Asesmen:</span>
+            </div>
+
+            <div className="flex items-center gap-2.5 flex-1 justify-around">
+              {[
+                { title: "Kognitif", desc: "Analisis Berpikir", icon: "fa-brain", color: "from-purple-600 to-indigo-700 border-purple-400 text-purple-200", shadow: "shadow-purple-900/50", dur: 3 },
+                { title: "Penalaran", desc: "Situasional SJT", icon: "fa-lightbulb", color: "from-amber-500 to-yellow-600 border-amber-300 text-amber-100", shadow: "shadow-amber-900/50", dur: 3.5 },
+                { title: "Presisi", desc: "Akurasi Tindakan", icon: "fa-bullseye", color: "from-rose-600 to-pink-700 border-rose-400 text-rose-100", shadow: "shadow-rose-900/50", dur: 4 },
+                { title: "Etika", desc: "Netiket & Judgement", icon: "fa-scale-balanced", color: "from-emerald-600 to-teal-700 border-emerald-400 text-emerald-100", shadow: "shadow-emerald-900/50", dur: 3.2 },
+                { title: "Solusi", desc: "Problem Solving", icon: "fa-puzzle-piece", color: "from-sky-600 to-blue-700 border-sky-400 text-sky-100", shadow: "shadow-sky-900/50", dur: 3.8 },
+                { title: "Latency", desc: "Respons & Timing", icon: "fa-stopwatch", color: "from-orange-600 to-amber-700 border-orange-400 text-orange-100", shadow: "shadow-orange-900/50", dur: 3.4 },
+                { title: "Metrik", desc: "Skor Likert 5C", icon: "fa-chart-column", color: "from-cyan-600 to-blue-700 border-cyan-400 text-cyan-100", shadow: "shadow-cyan-900/50", dur: 3.6 },
+                { title: "Integritas", desc: "Data Terverifikasi", icon: "fa-shield-halved", color: "from-teal-600 to-emerald-700 border-teal-400 text-teal-100", shadow: "shadow-teal-900/50", dur: 3.1 },
+              ].map((item, idx) => (
+                <motion.div
+                  key={idx}
+                  animate={{ y: [0, -7, 0] }}
+                  transition={{ duration: item.dur, repeat: Infinity, ease: "easeInOut" }}
+                  className="flex items-center gap-2 bg-slate-950/80 p-1.5 rounded-xl border border-slate-800 shrink-0 hover:border-slate-600 transition"
+                >
+                  <div className={`w-7 h-7 rounded-lg bg-gradient-to-br ${item.color} flex items-center justify-center border shadow-md ${item.shadow} text-xs font-black shrink-0`}>
+                    <i className={`fa-solid ${item.icon}`}></i>
+                  </div>
+                  <div className="text-left pr-1">
+                    <div className="text-[10px] font-black text-white leading-tight uppercase tracking-tight">{item.title}</div>
+                    <div className="text-[9px] font-semibold text-slate-400 leading-tight">{item.desc}</div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </div>
+
         <AnimatePresence mode="wait">
           {isSubmitted ? (
             <motion.div key="success" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
