@@ -6,7 +6,6 @@ import Image from "next/image";
 import dynamic from "next/dynamic";
 
 import PapuanSideOrnaments from "./components/PapuanSideOrnaments";
-import PsychometricIconStrip from "./components/PsychometricIconStrip";
 
 // Import FlipBookSection secara dinamis
 const FlipBookSection = dynamic(() => import("./components/FlipBookSection"), { 
@@ -330,11 +329,6 @@ export default function Home() {
             </div>
           </div>
 
-        </div>
-
-        {/* ─── 8 IKON PSIKOMETRI 3D TIMBUL MELAYANG (LANDING PAGE STRIP) ─── */}
-        <div className="relative z-20 max-w-6xl mx-auto px-4 mt-8">
-          <PsychometricIconStrip label="Kompetensi Psikometri Literasi Digital:" />
         </div>
       </section>
 

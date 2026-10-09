@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 import PapuanSideOrnaments from "../components/PapuanSideOrnaments";
-import PsychometricIconStrip from "../components/PsychometricIconStrip";
 
 // Menghindari timeout saat build di VPS
 export const dynamic = "force-dynamic";
@@ -289,9 +288,6 @@ export default function LoginPage() {
             </button>
           </form>
         </div>
-
-        {/* STRIP 8 IKON PSIKOMETRI 3D TIMBUL MELAYANG */}
-        <PsychometricIconStrip label="Metrik Psikometri HDAP Portal:" />
       </div>
     </div>
   );

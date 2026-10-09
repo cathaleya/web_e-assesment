@@ -15,7 +15,6 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import AssessmentOverview from "../components/AssessmentOverview";
 import PapuanSideOrnaments from "../components/PapuanSideOrnaments";
-import PsychometricIconStrip from "../components/PsychometricIconStrip";
 
 // Menghindari timeout saat build di VPS
 export const dynamic = "force-dynamic";

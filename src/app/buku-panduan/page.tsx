@@ -5,7 +5,6 @@ import HTMLFlipBook from "react-pageflip";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import PapuanSideOrnaments from "../components/PapuanSideOrnaments";
-import PsychometricIconStrip from "../components/PsychometricIconStrip";
 
 // Komponen Client murni tidak memerlukan force-dynamic karena tidak melakukan server fetching.
 
@@ -149,7 +148,7 @@ export default function BukuPanduan() {
       <PapuanSideOrnaments />
       
       {/* ─── HEADER ─── */}
-      <div className="max-w-4xl w-full mb-4 flex items-center justify-between">
+      <div className="max-w-4xl w-full mb-8 flex items-center justify-between">
         <button 
           onClick={() => router.push("/")}
           className="flex items-center gap-2 text-slate-500 hover:text-blue-600 transition-colors font-black text-[10px] uppercase tracking-widest"
@@ -160,11 +159,6 @@ export default function BukuPanduan() {
           <h2 className="text-xl font-black text-[#1E3A8A] tracking-tighter uppercase italic leading-none">Buku Panduan</h2>
           <p className="text-[9px] font-bold text-blue-600 uppercase tracking-widest mt-1">E-Asesmen Literasi Digital</p>
         </div>
-      </div>
-
-      {/* STRIP IKON PSIKOMETRI 3D TIMBUL MELAYANG */}
-      <div className="max-w-4xl w-full mb-4">
-        <PsychometricIconStrip label="Metodologi Psikometri Monograf:" />
       </div>
 
       {/* ─── FLIPBOOK ENGINE ─── */}

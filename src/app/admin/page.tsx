@@ -26,7 +26,6 @@ import {
 } from "@/lib/psychometrics";
 import AssessmentOverview from "../components/AssessmentOverview";
 import PapuanSideOrnaments from "../components/PapuanSideOrnaments";
-import PsychometricIconStrip from "../components/PsychometricIconStrip";
 
 // Menghindari timeout saat build di VPS
 export const dynamic = "force-dynamic";
@@ -910,9 +909,6 @@ export default function AdminDashboard() {
 
         {/* Page Content */}
         <div className="p-6 max-w-[1400px] mx-auto space-y-4">
-          {/* STRIP 8 IKON PSIKOMETRI 3D TIMBUL MELAYANG */}
-          <PsychometricIconStrip label="Indikator Mesin Psikometri HDAP Admin:" />
-
           {/* ═══════════════════════════════════════════════════
               TAB: MADEL5C ANALYSIS
           ═══════════════════════════════════════════════════ */}

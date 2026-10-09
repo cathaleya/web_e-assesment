@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 
 import PapuanSideOrnaments from "../components/PapuanSideOrnaments";
-import PsychometricIconStrip from "../components/PsychometricIconStrip";
 
 // Menghindari timeout saat build di VPS
 export const dynamic = "force-dynamic";
@@ -81,9 +80,7 @@ export default function SurveyPage() {
       {/* PANEL ORNAMEN TIMBUL SISIPAN KIRI & KANAN (PAPUA THEME) */}
       <PapuanSideOrnaments />
 
-      <main className="relative z-10 max-w-xl mx-auto px-4 py-6 space-y-4">
-        {/* STRIP 8 IKON PSIKOMETRI 3D TIMBUL MELAYANG */}
-        <PsychometricIconStrip label="Evaluasi Pengalaman Pengguna (SUS):" />
+      <main className="relative z-10 max-w-xl mx-auto px-4 py-6">
         <AnimatePresence mode="wait">
           {showInstructions ? (
             <motion.div
