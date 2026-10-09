@@ -25,6 +25,8 @@ import {
   estimateRaschLogits
 } from "@/lib/psychometrics";
 import AssessmentOverview from "../components/AssessmentOverview";
+import PapuanSideOrnaments from "../components/PapuanSideOrnaments";
+import PsychometricIconStrip from "../components/PsychometricIconStrip";
 
 // Menghindari timeout saat build di VPS
 export const dynamic = "force-dynamic";
@@ -870,7 +872,9 @@ export default function AdminDashboard() {
       </aside>
 
       {/* ── Main Content ── */}
-      <main className="flex-1 overflow-y-auto min-w-0">
+      <main className="flex-1 overflow-y-auto min-w-0 relative">
+        {/* PANEL ORNAMEN TIMBUL SISIPAN KIRI & KANAN (PAPUA THEME) */}
+        <PapuanSideOrnaments />
         {/* Top Bar */}
         <header className="h-14 bg-white border-b border-slate-200 px-6 flex items-center justify-between sticky top-0 z-20">
           <div className="flex items-center gap-2 text-sm min-w-0">
@@ -905,7 +909,9 @@ export default function AdminDashboard() {
         </header>
 
         {/* Page Content */}
-        <div className="p-6 max-w-[1400px] mx-auto">
+        <div className="p-6 max-w-[1400px] mx-auto space-y-4">
+          {/* STRIP 8 IKON PSIKOMETRI 3D TIMBUL MELAYANG */}
+          <PsychometricIconStrip label="Indikator Mesin Psikometri HDAP Admin:" />
 
           {/* ═══════════════════════════════════════════════════
               TAB: MADEL5C ANALYSIS

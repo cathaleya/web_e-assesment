@@ -14,6 +14,8 @@ import {
 } from "chart.js";
 import { motion, AnimatePresence } from "framer-motion";
 import AssessmentOverview from "../components/AssessmentOverview";
+import PapuanSideOrnaments from "../components/PapuanSideOrnaments";
+import PsychometricIconStrip from "../components/PsychometricIconStrip";
 
 // Menghindari timeout saat build di VPS
 export const dynamic = "force-dynamic";
@@ -166,6 +168,9 @@ export default function DashboardPage() {
               backgroundPosition: 'center',
               backgroundAttachment: 'fixed'
             }}>
+        
+        {/* PANEL ORNAMEN TIMBUL SISIPAN KIRI & KANAN (PAPUA THEME) */}
+        <PapuanSideOrnaments />
         
         <header className="sticky top-0 z-10 px-4 md:px-6 py-3 bg-white/95 backdrop-blur-md border-b border-slate-200 flex items-center justify-between shadow-md">
            <div className="flex items-center gap-2.5 md:gap-3">

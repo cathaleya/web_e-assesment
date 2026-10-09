@@ -3,6 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
+import PapuanSideOrnaments from "../components/PapuanSideOrnaments";
+import PsychometricIconStrip from "../components/PsychometricIconStrip";
+
 // Menghindari timeout saat build di VPS
 export const dynamic = "force-dynamic";
 
@@ -81,7 +84,10 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center relative py-8 px-4 overflow-x-hidden"
          style={{ backgroundImage: "url('/unj_bg_v2.png')", backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}>
       
-      <div className="w-full max-w-sm md:max-w-md relative z-10">
+      {/* PANEL ORNAMEN TIMBUL SISIPAN KIRI & KANAN (PAPUA THEME) */}
+      <PapuanSideOrnaments />
+
+      <div className="w-full max-w-sm md:max-w-md relative z-10 space-y-4">
         {/* LOGO BRAND TIMBUL */}
         <div className="text-center mb-6">
           <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-amber-400 to-yellow-500 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-2xl border-b-4 border-amber-700">
@@ -283,6 +289,9 @@ export default function LoginPage() {
             </button>
           </form>
         </div>
+
+        {/* STRIP 8 IKON PSIKOMETRI 3D TIMBUL MELAYANG */}
+        <PsychometricIconStrip label="Metrik Psikometri HDAP Portal:" />
       </div>
     </div>
   );

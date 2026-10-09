@@ -5,6 +5,9 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import dynamic from "next/dynamic";
 
+import PapuanSideOrnaments from "./components/PapuanSideOrnaments";
+import PsychometricIconStrip from "./components/PsychometricIconStrip";
+
 // Import FlipBookSection secara dinamis
 const FlipBookSection = dynamic(() => import("./components/FlipBookSection"), { 
   ssr: false,
@@ -65,7 +68,9 @@ export default function Home() {
 
 
   return (
-    <div className="font-sans selection:bg-blue-100 overflow-x-hidden bg-[#FAF8F5]">
+    <div className="font-sans selection:bg-blue-100 overflow-x-hidden bg-[#FAF8F5] relative">
+      {/* PANEL ORNAMEN TIMBUL SISIPAN KIRI & KANAN (PAPUA THEME) */}
+      <PapuanSideOrnaments />
 
       {/* ─── NAVBAR TIMBUL 3D ─── */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md px-4 md:px-10 py-3.5 flex items-center justify-between border-b-4 border-amber-200 shadow-2xl">
@@ -325,6 +330,11 @@ export default function Home() {
             </div>
           </div>
 
+        </div>
+
+        {/* ─── 8 IKON PSIKOMETRI 3D TIMBUL MELAYANG (LANDING PAGE STRIP) ─── */}
+        <div className="relative z-20 max-w-6xl mx-auto px-4 mt-8">
+          <PsychometricIconStrip label="Kompetensi Psikometri Literasi Digital:" />
         </div>
       </section>
 
