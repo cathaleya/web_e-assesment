@@ -833,22 +833,96 @@ export default function ThinkAloudProtocolPage() {
         backgroundAttachment: "fixed",
       }}
     >
-      {/* ORNAMEN TIMBUL MAHASISWA PAPUA KIRI (100% TRANSPARENT CUTOUT, TANPA BOX, TIDAK MENUTUPI KARTU) */}
-      <div className="hidden xl:flex flex-col items-center justify-center fixed left-2 top-1/2 -translate-y-1/2 z-0 pointer-events-none w-64 text-center">
-        <TransparentImage
-          src="/papua_student_male.png"
-          alt="Mahasiswa Calon Guru Papua"
-          className="w-56 lg:w-64 h-auto object-contain drop-shadow-[0_25px_35px_rgba(0,0,0,0.22)] hover:scale-105 transition-transform duration-300"
-        />
+      {/* PANEL ORNAMEN TIMBUL SISIPAN KIRI: CENDERAWASIH (ZIG-ZAG), MAHASISWA PAPUA, & TIFA PAPUA (ZIG-ZAG) */}
+      <div className="hidden xl:flex flex-col items-center justify-between fixed left-2 top-8 bottom-8 z-0 pointer-events-none w-56 text-center">
+        {/* ANIMASI BURUNG CENDERAWASIH ZIG-ZAG (ATAS KIRI) */}
+        <motion.div
+          animate={{
+            y: [0, -22, 14, -18, 0],
+            x: [0, 16, -14, 18, 0],
+            rotate: [-4, 6, -5, 4, -4],
+          }}
+          transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+          className="w-36 lg:w-44 h-auto drop-shadow-[0_20px_25px_rgba(0,0,0,0.3)]"
+        >
+          <TransparentImage
+            src="/cenderawasih.png"
+            alt="Burung Cenderawasih Papua Asli"
+            className="w-full h-auto object-contain"
+          />
+        </motion.div>
+
+        {/* MAHASISWA CALON GURU PAPUA (TENGAH KIRI) */}
+        <div className="my-auto">
+          <TransparentImage
+            src="/papua_student_male.png"
+            alt="Mahasiswa Calon Guru Papua"
+            className="w-48 lg:w-56 h-auto object-contain drop-shadow-[0_25px_35px_rgba(0,0,0,0.22)]"
+          />
+        </div>
+
+        {/* ANIMASI TIFA PAPUA ZIG-ZAG (BAWAH KIRI) */}
+        <motion.div
+          animate={{
+            y: [0, 16, -12, 15, 0],
+            x: [0, -14, 16, -12, 0],
+            rotate: [0, 6, -6, 4, 0],
+          }}
+          transition={{ duration: 6.5, repeat: Infinity, ease: "easeInOut" }}
+          className="w-28 lg:w-36 h-auto drop-shadow-[0_20px_25px_rgba(0,0,0,0.3)]"
+        >
+          <TransparentImage
+            src="/tifa_papua.png"
+            alt="Alat Musik Tifa Papua"
+            className="w-full h-auto object-contain"
+          />
+        </motion.div>
       </div>
 
-      {/* ORNAMEN TIMBUL MAHASISWA PAPUA KANAN (100% TRANSPARENT CUTOUT, TANPA BOX, TIDAK MENUTUPI KARTU) */}
-      <div className="hidden xl:flex flex-col items-center justify-center fixed right-2 top-1/2 -translate-y-1/2 z-0 pointer-events-none w-64 text-center">
-        <TransparentImage
-          src="/papua_student_female.png"
-          alt="Pendidik Masa Depan Papua"
-          className="w-56 lg:w-64 h-auto object-contain drop-shadow-[0_25px_35px_rgba(0,0,0,0.22)] hover:scale-105 transition-transform duration-300"
-        />
+      {/* PANEL ORNAMEN TIMBUL SISIPAN KANAN: CENDERAWASIH (ZIG-ZAG), PENDIDIK PAPUA, & TIFA PAPUA (ZIG-ZAG) */}
+      <div className="hidden xl:flex flex-col items-center justify-between fixed right-2 top-8 bottom-8 z-0 pointer-events-none w-56 text-center">
+        {/* ANIMASI BURUNG CENDERAWASIH ZIG-ZAG (ATAS KANAN - CERMIN SELARAS) */}
+        <motion.div
+          animate={{
+            y: [0, 18, -20, 14, 0],
+            x: [0, -18, 15, -16, 0],
+            rotate: [4, -6, 5, -4, 4],
+          }}
+          transition={{ duration: 7.5, repeat: Infinity, ease: "easeInOut" }}
+          className="w-36 lg:w-44 h-auto drop-shadow-[0_20px_25px_rgba(0,0,0,0.3)]"
+        >
+          <TransparentImage
+            src="/cenderawasih.png"
+            alt="Burung Cenderawasih Papua Asli"
+            className="w-full h-auto object-contain -scale-x-100"
+          />
+        </motion.div>
+
+        {/* PENDIDIK MASA DEPAN PAPUA (TENGAH KANAN) */}
+        <div className="my-auto">
+          <TransparentImage
+            src="/papua_student_female.png"
+            alt="Pendidik Masa Depan Papua"
+            className="w-48 lg:w-56 h-auto object-contain drop-shadow-[0_25px_35px_rgba(0,0,0,0.22)]"
+          />
+        </div>
+
+        {/* ANIMASI TIFA PAPUA ZIG-ZAG (BAWAH KANAN - SELARAS) */}
+        <motion.div
+          animate={{
+            y: [0, -14, 18, -12, 0],
+            x: [0, 15, -16, 14, 0],
+            rotate: [0, -5, 5, -3, 0],
+          }}
+          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+          className="w-28 lg:w-36 h-auto drop-shadow-[0_20px_25px_rgba(0,0,0,0.3)]"
+        >
+          <TransparentImage
+            src="/tifa_papua.png"
+            alt="Alat Musik Tifa Papua"
+            className="w-full h-auto object-contain"
+          />
+        </motion.div>
       </div>
 
       <main className="relative z-10 w-full max-w-4xl mx-auto space-y-3">
