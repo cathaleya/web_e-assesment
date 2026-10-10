@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 // Folder lokasi penyimpanan berkas audio di server
 const uploadDir = path.join(process.cwd(), "public", "uploads", "audio");
@@ -61,6 +62,43 @@ export async function POST(req: Request) {
 
     const publicAudioUrl = `/uploads/audio/${filename}`;
 
+    let finalTranscript = transcript.trim();
+
+    // OTOMATIS TRANSKRIP VIA SERVER AI (GEMINI) JIKA VERBATIM BROWSER HP KOSONG / DEFAULT
+    if (!finalTranscript || finalTranscript.includes("[Respon Suara Terkirim") || finalTranscript.length < 5) {
+      const apiKey = process.env.GEMINI_API_KEY;
+      if (apiKey) {
+        try {
+          const genAI = new GoogleGenerativeAI(apiKey);
+          const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+          const audioBase64 = buffer.toString("base64");
+
+          const aiRes = await model.generateContent([
+            {
+              inlineData: {
+                mimeType: audioFile.type || "audio/webm",
+                data: audioBase64,
+              },
+            },
+            {
+              text: "Tolong buatkan transkrip verbatim kata-demi-kata secara persis dan lengkap dari ucapan Bahasa Indonesia pada rekaman audio ini. Tuliskan HANYA hasil teks verbatim tanpa kata pengantar atau penjelasan tambahan apapun.",
+            },
+          ]);
+
+          const aiText = aiRes.response.text()?.trim();
+          if (aiText && aiText.length > 0) {
+            finalTranscript = aiText;
+          }
+        } catch (aiErr) {
+          console.warn("Gemini AI Auto-transcription notice:", aiErr);
+        }
+      }
+    }
+
+    if (!finalTranscript) {
+      finalTranscript = "[Respon Suara Terkirim (Audio tersimpan di server)]";
+    }
+
     const newRecord = {
       id: `rec_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
       userId,
@@ -72,7 +110,7 @@ export async function POST(req: Request) {
       questionTitle,
       selectedOption,
       duration,
-      transcript,
+      transcript: finalTranscript,
       filename,
       audioUrl: publicAudioUrl,
       createdAt: new Date().toISOString()

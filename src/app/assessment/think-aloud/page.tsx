@@ -712,6 +712,9 @@ export default function ThinkAloudProtocolPage() {
       const data = await res.json();
       if (res.ok && data.success) {
         setUploadSuccess(true);
+        if (data.record?.transcript && !data.record.transcript.includes("[Respon Suara Terkirim")) {
+          setTranscriptText(data.record.transcript);
+        }
         markStepCompleted(currentQ.id, probingStep);
 
         if (probingStep < 3) {
@@ -1581,18 +1584,18 @@ export default function ThinkAloudProtocolPage() {
                     {/* VERBATIM TRANSCRIPT SPEECH-TO-TEXT AREA */}
                     <div className="space-y-1">
                       <div className="flex items-center justify-between text-[10px] font-black uppercase text-slate-400">
-                        <span><i className="fa-solid fa-file-signature text-rose-400 mr-1"></i> Transkrip Teks Verbatim (Otomatis):</span>
+                        <span><i className="fa-solid fa-file-signature text-rose-400 mr-1"></i> Transkrip Teks Verbatim (Otomatis / AI Server):</span>
                         {transcriptText && <span className="text-emerald-400 font-bold">✓ Terisi ({transcriptText.length} karakter)</span>}
                       </div>
                       <textarea
                         rows={2}
                         value={transcriptText}
                         onChange={(e) => setTranscriptText(e.target.value)}
-                        placeholder="Hasil transkrip otomatis ucapan Anda akan tampil di sini saat merekam..."
+                        placeholder="Hasil transkrip otomatis ucapan Anda akan tampil di sini saat merekam atau setelah mengunggah rekaman..."
                         className="w-full p-2.5 bg-slate-900 rounded-lg border border-slate-700 text-xs text-white font-medium focus:border-rose-400 outline-none leading-relaxed"
                       />
                       <p className="text-[10px] text-slate-400 italic">
-                        💡 Teks di atas terisi otomatis saat Anda berbicara di Chrome. Anda juga dapat menyunting atau melengkapi transkrip teks secara manual jika diperlukan.
+                        💡 Teks di atas terisi otomatis via browser (Laptop) atau dikonversi otomatis oleh Server AI saat dikirim (HP/Mobile). Anda juga bebas menyunting atau melengkapi teks secara manual jika diperlukan.
                       </p>
                     </div>
 
