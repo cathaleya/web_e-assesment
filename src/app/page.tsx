@@ -88,8 +88,8 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="hidden lg:flex items-center gap-6 xl:gap-8">
-          <div className="flex items-center gap-3 border-r border-slate-200 pr-6 mr-2">
+        <div className="hidden lg:flex items-center gap-5 xl:gap-7">
+          <div className="flex items-center gap-3 border-r border-slate-200 pr-5 mr-1">
             <Image src="/logo_penari.png" alt="Penari" width={38} height={38} className="object-contain" />
             <Image src="/logo_dikti.png" alt="DIKTI" width={38} height={38} className="object-contain" />
             <Image src="/logo_unj.png" alt="UNJ" width={38} height={38} className="object-contain" />
@@ -104,10 +104,36 @@ export default function Home() {
             BUKU PANDUAN
           </a>
           <button
+            onClick={() => router.push("/assessment/think-aloud-s3")}
+            className="px-3.5 py-2 bg-gradient-to-r from-purple-700 via-indigo-700 to-purple-800 hover:from-purple-800 hover:to-indigo-800 text-white rounded-xl text-[10px] font-black uppercase tracking-wider shadow-md border-b-2 border-purple-950 active:scale-95 transition-all flex items-center gap-1.5"
+            title="Wawancara Kognitif Think-Aloud Khusus Mahasiswa S2 & S3 (15 Butir)"
+          >
+            <i className="fa-solid fa-graduation-cap text-amber-300"></i>
+            <span>THINK-ALOUD (S2/S3)</span>
+            <span className="px-1.5 py-0.5 rounded bg-amber-400 text-slate-950 text-[8px] font-black">15 BUTIR</span>
+          </button>
+          <button
             onClick={() => router.push("/login")}
-            className="ml-2 px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl border-b-4 border-indigo-950 hover:from-blue-700 hover:to-indigo-800 active:scale-95 transition-all"
+            className="px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl border-b-4 border-indigo-950 hover:from-blue-700 hover:to-indigo-800 active:scale-95 transition-all"
           >
             MASUK PORTAL <i className="fa-solid fa-arrow-right ml-1"></i>
+          </button>
+        </div>
+
+        {/* MOBILE VIEW ACTIONS */}
+        <div className="flex lg:hidden items-center gap-2">
+          <button
+            onClick={() => router.push("/assessment/think-aloud-s3")}
+            className="px-2.5 py-1.5 bg-gradient-to-r from-purple-700 to-indigo-800 text-white rounded-xl text-[9px] font-black uppercase tracking-tight flex items-center gap-1 shadow-md border-b-2 border-purple-950"
+          >
+            <i className="fa-solid fa-graduation-cap text-amber-300"></i>
+            <span>S2/S3</span>
+          </button>
+          <button
+            onClick={() => router.push("/login")}
+            className="px-3 py-1.5 bg-blue-600 text-white rounded-xl text-[10px] font-black uppercase tracking-tight shadow-md border-b-2 border-blue-950"
+          >
+            MASUK
           </button>
         </div>
       </nav>
@@ -223,12 +249,22 @@ export default function Home() {
               <p className="text-xs md:text-sm text-slate-800 font-bold leading-relaxed">
                 Integrasi Analisis Item Response Theory (IRT) dengan kecerdasan Generative AI (Google Gemini & Claude Code AI) untuk memetakan profil kompetensi Literasi Digital mahasiswa calon guru secara holistik, presisi, dan objektif.
               </p>
-              <button 
-                onClick={() => router.push("/login")}
-                className="mt-6 w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white rounded-2xl font-black text-[11px] uppercase tracking-widest shadow-xl border-b-4 border-indigo-950 active:scale-95 transition-all"
-              >
-                MULAI SEKARANG <i className="fa-solid fa-rocket ml-2"></i>
-              </button>
+              <div className="mt-6 flex flex-col sm:flex-row items-center gap-3">
+                <button 
+                  onClick={() => router.push("/login")}
+                  className="w-full sm:flex-1 py-4 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white rounded-2xl font-black text-[11px] uppercase tracking-widest shadow-xl border-b-4 border-indigo-950 active:scale-95 transition-all text-center"
+                >
+                  MULAI SEKARANG <i className="fa-solid fa-rocket ml-1"></i>
+                </button>
+                <button 
+                  onClick={() => router.push("/assessment/think-aloud-s3")}
+                  className="w-full sm:flex-1 py-4 bg-gradient-to-r from-purple-700 via-indigo-700 to-purple-900 hover:from-purple-800 hover:to-indigo-800 text-white rounded-2xl font-black text-[11px] uppercase tracking-widest shadow-xl border-b-4 border-purple-950 active:scale-95 transition-all flex items-center justify-center gap-1.5 text-center"
+                >
+                  <i className="fa-solid fa-graduation-cap text-amber-300"></i>
+                  <span>THINK-ALOUD S2/S3</span>
+                  <span className="px-1.5 py-0.5 rounded bg-amber-400 text-slate-950 text-[8px] font-black">15 BUTIR</span>
+                </button>
+              </div>
             </div>
           </div>
 

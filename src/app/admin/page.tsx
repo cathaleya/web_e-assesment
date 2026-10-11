@@ -218,6 +218,7 @@ export default function AdminDashboard() {
   const [sysSettings, setSysSettings] = useState<any>({});
   const [settingsSaved, setSettingsSaved] = useState(false);
   const [audioRecordings, setAudioRecordings] = useState<any[]>([]);
+  const [thinkAloudFilter, setThinkAloudFilter] = useState<'all' | 's2s3' | 's1'>('all');
   const [consents, setConsents] = useState<any[]>([]);
   const [editingTranscriptId, setEditingTranscriptId] = useState<string | null>(null);
   const [editingTranscriptText, setEditingTranscriptText] = useState<string>("");
@@ -3080,63 +3081,140 @@ ${rec.transcript || '[Tanpa Teks Verbatim]'}
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <MetricCard label="Total Rekaman Audio" value={audioRecordings.length} sub="Format .webm" icon="fa-microphone" accent="bg-rose-50 text-rose-600" />
-                <MetricCard label="Partisipan Unik" value={new Set(audioRecordings.map(r => r.userId)).size} sub="Mahasiswa Calon Guru" icon="fa-users" accent="bg-blue-50 text-blue-600" />
-                <MetricCard label="Transkrip Verbatim Terisi" value={audioRecordings.filter(r => r.transcript && !r.transcript.includes("[Respon Suara Terkirim")).length} sub="Otomatis AI &amp; Sunting" icon="fa-file-lines" accent="bg-emerald-50 text-emerald-600" />
-                <MetricCard label="Perlu Transkrip Manual" value={audioRecordings.filter(r => !r.transcript || r.transcript.includes("[Respon Suara Terkirim")).length} sub="Admin dapat ketik manual" icon="fa-pen-to-square" accent="bg-amber-50 text-amber-600" />
-              </div>
+              {/* CALCULATE COUNTS FOR PASCASARJANA VS S1 */}
+              {(() => {
+                const s2s3Recordings = audioRecordings.filter((r: any) => r.respondentLevel && r.respondentLevel.includes('S2/S3'));
+                const s1Recordings = audioRecordings.filter((r: any) => !r.respondentLevel || !r.respondentLevel.includes('S2/S3'));
+                const displayedRecordings = thinkAloudFilter === 's2s3' 
+                  ? s2s3Recordings 
+                  : thinkAloudFilter === 's1' 
+                  ? s1Recordings 
+                  : audioRecordings;
 
-              <div className="card-timbul-admin overflow-hidden">
-                <div className="p-4 bg-slate-50 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3">
-                  <div className="flex items-center gap-2">
-                    <i className="fa-solid fa-database text-rose-600 text-sm"></i>
-                    <h3 className="text-xs font-black uppercase text-slate-800 tracking-wider">Daftar Berkas Rekaman Audio &amp; Transkrip Verbatim</h3>
-                  </div>
-                </div>
+                return (
+                  <>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                      <MetricCard label="Total Rekaman Audio" value={audioRecordings.length} sub="Format .webm (Semua)" icon="fa-microphone" accent="bg-rose-50 text-rose-600" />
+                      <MetricCard label="🎓 S2/S3 Pascasarjana" value={s2s3Recordings.length} sub="15 Butir Strategis" icon="fa-graduation-cap" accent="bg-purple-50 text-purple-600" />
+                      <MetricCard label="👨‍🏫 S1 Calon Guru" value={s1Recordings.length} sub="30 Butir (3 Sesi)" icon="fa-chalkboard-user" accent="bg-emerald-50 text-emerald-600" />
+                      <MetricCard label="Partisipan Unik" value={new Set(audioRecordings.map(r => r.userId)).size} sub="Total Responden Terdata" icon="fa-users" accent="bg-blue-50 text-blue-600" />
+                    </div>
 
-                {audioRecordings.length === 0 ? (
-                  <div className="p-12 text-center">
-                    <i className="fa-solid fa-microphone-slash text-4xl text-slate-300 mb-3"></i>
-                    <p className="text-sm font-bold text-slate-600">Belum ada rekaman suara Think-Aloud di database server.</p>
-                    <p className="text-xs text-slate-400 mt-1">Responden dapat melakukan rekam suara pada tahap Wawancara Think-Aloud MADEL5C.</p>
-                  </div>
-                ) : (
-                  <div className="overflow-x-auto custom-scrollbar">
-                    <table className="w-full text-left border-collapse">
-                      <thead className="bg-slate-900 text-slate-300 text-[10px] font-black uppercase tracking-wider">
-                        <tr>
-                          <th className="p-3.5">No</th>
-                          <th className="p-3.5">Responden / Partisipan</th>
-                          <th className="p-3.5">Soal &amp; Tahap Probing</th>
-                          <th className="p-3.5">Opsi Pilihan</th>
-                          <th className="p-3.5 min-w-[220px]">Putar Audio (Player)</th>
-                          <th className="p-3.5 min-w-[320px]">Transkrip Verbatim Teks</th>
-                          <th className="p-3.5 text-center">Aksi / Unduh</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-slate-100 text-xs text-slate-700 font-medium">
-                        {audioRecordings.map((rec: any, idx: number) => (
-                          <tr key={rec.id || idx} className="hover:bg-slate-50/80 transition-colors">
-                            <td className="p-3.5 font-bold text-slate-400">{idx + 1}</td>
-                            <td className="p-3.5">
-                              <div className="font-bold text-slate-900">{rec.userName}</div>
-                              <div className="text-[10px] text-slate-500">{rec.userCampus}</div>
-                              <div className="text-[10px] text-slate-400 font-mono">ID: {rec.userId}</div>
-                            </td>
-                            <td className="p-3.5">
-                              <span className="px-2 py-0.5 bg-rose-100 text-rose-900 rounded font-black text-[10px] uppercase block w-fit mb-1">
-                                Sesi {rec.sessionNo || 1} — Soal #{rec.itemNo || 1} ({rec.sjtId})
-                              </span>
-                              <span className="px-2 py-0.5 bg-blue-100 text-blue-900 rounded font-bold text-[10px] block w-fit">
-                                Pertanyaan Probing {rec.probingStep}
-                              </span>
-                            </td>
-                            <td className="p-3.5 max-w-[180px]">
-                              <span className="text-[11px] font-medium text-slate-600 line-clamp-2" title={rec.selectedOption}>
-                                {rec.selectedOption}
-                              </span>
-                            </td>
+                    <div className="card-timbul-admin overflow-hidden">
+                      <div className="p-4 bg-slate-50 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3">
+                        <div className="flex items-center gap-2">
+                          <i className="fa-solid fa-database text-rose-600 text-sm"></i>
+                          <h3 className="text-xs font-black uppercase text-slate-800 tracking-wider">Daftar Berkas Rekaman Audio &amp; Transkrip Verbatim</h3>
+                        </div>
+
+                        {/* FILTER BUTTONS: SEMUA / S2-S3 / S1 */}
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] font-black uppercase text-slate-400 mr-1 hidden sm:inline">Filter Kategori:</span>
+                          <button
+                            onClick={() => setThinkAloudFilter('all')}
+                            className={`px-3 py-1.5 rounded-lg text-xs font-black transition-all ${
+                              thinkAloudFilter === 'all'
+                                ? 'bg-slate-900 text-white shadow'
+                                : 'bg-white border border-slate-300 text-slate-700 hover:bg-slate-100'
+                            }`}
+                          >
+                            Semua ({audioRecordings.length})
+                          </button>
+                          <button
+                            onClick={() => setThinkAloudFilter('s2s3')}
+                            className={`px-3 py-1.5 rounded-lg text-xs font-black transition-all flex items-center gap-1.5 ${
+                              thinkAloudFilter === 's2s3'
+                                ? 'bg-purple-700 text-white shadow'
+                                : 'bg-purple-50 border border-purple-200 text-purple-800 hover:bg-purple-100'
+                            }`}
+                          >
+                            <i className="fa-solid fa-graduation-cap text-xs"></i>
+                            S2/S3 Pascasarjana ({s2s3Recordings.length})
+                          </button>
+                          <button
+                            onClick={() => setThinkAloudFilter('s1')}
+                            className={`px-3 py-1.5 rounded-lg text-xs font-black transition-all flex items-center gap-1.5 ${
+                              thinkAloudFilter === 's1'
+                                ? 'bg-emerald-700 text-white shadow'
+                                : 'bg-emerald-50 border border-emerald-200 text-emerald-800 hover:bg-emerald-100'
+                            }`}
+                          >
+                            <i className="fa-solid fa-chalkboard-user text-xs"></i>
+                            S1 Calon Guru ({s1Recordings.length})
+                          </button>
+                        </div>
+                      </div>
+
+                      {displayedRecordings.length === 0 ? (
+                        <div className="p-12 text-center">
+                          <i className="fa-solid fa-microphone-slash text-4xl text-slate-300 mb-3"></i>
+                          <p className="text-sm font-bold text-slate-600">
+                            {thinkAloudFilter === 's2s3'
+                              ? "Belum ada rekaman suara Think-Aloud dari Mahasiswa Pascasarjana (S2 & S3)."
+                              : thinkAloudFilter === 's1'
+                              ? "Belum ada rekaman suara Think-Aloud dari Mahasiswa S1 Calon Guru."
+                              : "Belum ada rekaman suara Think-Aloud di database server."}
+                          </p>
+                          <p className="text-xs text-slate-400 mt-1">
+                            {thinkAloudFilter === 's2s3'
+                              ? "Mahasiswa Pascasarjana dapat mengakses instrumen 15 butir langsung dari Landing Page."
+                              : "Responden dapat melakukan rekam suara pada tahap Wawancara Think-Aloud MADEL5C."}
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="overflow-x-auto custom-scrollbar">
+                          <table className="w-full text-left border-collapse">
+                            <thead className="bg-slate-900 text-slate-300 text-[10px] font-black uppercase tracking-wider">
+                              <tr>
+                                <th className="p-3.5">No</th>
+                                <th className="p-3.5">Responden / Jenjang</th>
+                                <th className="p-3.5">Soal &amp; Tahap Probing</th>
+                                <th className="p-3.5">Opsi Pilihan</th>
+                                <th className="p-3.5 min-w-[220px]">Putar Audio (Player)</th>
+                                <th className="p-3.5 min-w-[320px]">Transkrip Verbatim Teks</th>
+                                <th className="p-3.5 text-center">Aksi / Unduh</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-100 text-xs text-slate-700 font-medium">
+                              {displayedRecordings.map((rec: any, idx: number) => (
+                                <tr key={rec.id || idx} className="hover:bg-slate-50/80 transition-colors">
+                                  <td className="p-3.5 font-bold text-slate-400">{idx + 1}</td>
+                                  <td className="p-3.5">
+                                    {rec.respondentLevel && rec.respondentLevel.includes('S2/S3') ? (
+                                      <span className="px-2 py-0.5 rounded-md text-[9px] font-black uppercase bg-purple-100 text-purple-900 border border-purple-300 inline-block mb-1">
+                                        🎓 {rec.respondentLevel}
+                                      </span>
+                                    ) : (
+                                      <span className="px-2 py-0.5 rounded-md text-[9px] font-black uppercase bg-emerald-100 text-emerald-900 border border-emerald-300 inline-block mb-1">
+                                        👨‍🏫 S1 CALON GURU
+                                      </span>
+                                    )}
+                                    <div className="font-bold text-slate-900">{rec.userName}</div>
+                                    {rec.studyProgram && (
+                                      <div className="text-[10px] text-purple-800 font-semibold">{rec.studyProgram}</div>
+                                    )}
+                                    <div className="text-[10px] text-slate-500">{rec.userCampus}</div>
+                                    <div className="text-[10px] text-slate-400 font-mono">ID: {rec.userId}</div>
+                                  </td>
+                                  <td className="p-3.5">
+                                    {rec.respondentLevel && rec.respondentLevel.includes('S2/S3') ? (
+                                      <span className="px-2 py-0.5 bg-purple-100 text-purple-900 border border-purple-200 rounded font-black text-[10px] uppercase block w-fit mb-1">
+                                        Butir #{rec.itemNo || 1} ({rec.sjtId})
+                                      </span>
+                                    ) : (
+                                      <span className="px-2 py-0.5 bg-rose-100 text-rose-900 rounded font-black text-[10px] uppercase block w-fit mb-1">
+                                        Sesi {rec.sessionNo || 1} — Soal #{rec.itemNo || 1} ({rec.sjtId})
+                                      </span>
+                                    )}
+                                    <span className="px-2 py-0.5 bg-blue-100 text-blue-900 rounded font-bold text-[10px] block w-fit">
+                                      Pertanyaan Probing {rec.probingStep}
+                                    </span>
+                                  </td>
+                                  <td className="p-3.5 max-w-[180px]">
+                                    <span className="text-[11px] font-medium text-slate-600 line-clamp-2" title={rec.selectedOption}>
+                                      {rec.selectedOption}
+                                    </span>
+                                  </td>
                             <td className="p-3.5">
                               {rec.hasAudio && rec.audioUrl ? (
                                 <div className="space-y-1">
@@ -3227,6 +3305,9 @@ ${rec.transcript || '[Tanpa Teks Verbatim]'}
                   </div>
                 )}
               </div>
+            </>
+          );
+        })()}
             </div>
           )}
 
@@ -3299,7 +3380,19 @@ ${rec.transcript || '[Tanpa Teks Verbatim]'}
                           <tr key={c.id || idx} className="hover:bg-slate-50/80 transition-colors">
                             <td className="p-3.5 font-bold text-slate-400">{idx + 1}</td>
                             <td className="p-3.5">
+                              {c.respondentLevel && c.respondentLevel.includes('S2/S3') ? (
+                                <span className="px-2 py-0.5 rounded-md text-[9px] font-black uppercase bg-purple-100 text-purple-900 border border-purple-300 inline-block mb-1">
+                                  🎓 {c.respondentLevel}
+                                </span>
+                              ) : (
+                                <span className="px-2 py-0.5 rounded-md text-[9px] font-black uppercase bg-emerald-100 text-emerald-900 border border-emerald-300 inline-block mb-1">
+                                  👨‍🏫 S1 CALON GURU
+                                </span>
+                              )}
                               <div className="font-bold text-slate-900 text-sm">{c.userName}</div>
+                              {c.studyProgram && (
+                                <div className="text-[10px] text-purple-800 font-semibold">{c.studyProgram}</div>
+                              )}
                               <div className="text-xs text-slate-600 font-medium">{c.userCampus}</div>
                               <div className="text-[10px] text-slate-400 font-mono">NIM: {c.userNim || '-'}</div>
                             </td>

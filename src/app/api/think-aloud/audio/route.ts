@@ -40,6 +40,8 @@ export async function POST(req: Request) {
     const userId = (formData.get("userId") as string) || "anonymous";
     const userName = (formData.get("userName") as string) || "Mahasiswa Calon Guru";
     const userCampus = (formData.get("userCampus") as string) || "LPTK";
+    const respondentLevel = (formData.get("respondentLevel") as string) || "S1 Calon Guru";
+    const studyProgram = (formData.get("studyProgram") as string) || "";
     const sessionNo = parseInt((formData.get("sessionNo") as string) || "1", 10);
     const itemNo = parseInt((formData.get("itemNo") as string) || "1", 10);
     const sjtId = (formData.get("sjtId") as string) || `SJT_${itemNo.toString().padStart(2, "0")}`;
@@ -115,6 +117,8 @@ export async function POST(req: Request) {
       userId,
       userName,
       userCampus,
+      respondentLevel,
+      studyProgram,
       sessionNo,
       itemNo,
       sjtId,
@@ -235,6 +239,8 @@ export async function GET(req: Request) {
       
       return {
         ...rec,
+        respondentLevel: rec.respondentLevel || "S1 Calon Guru",
+        studyProgram: rec.studyProgram || "",
         hasAudio,
         audioUrl: hasAudio && filename ? `/api/think-aloud/audio?file=${encodeURIComponent(filename)}` : null,
         downloadUrl: hasAudio && filename ? `/api/think-aloud/audio?file=${encodeURIComponent(filename)}&download=1` : null,

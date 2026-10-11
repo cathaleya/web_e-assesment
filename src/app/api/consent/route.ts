@@ -33,7 +33,7 @@ export async function POST(req: Request) {
   try {
     ensureUploadDir();
     const body = await req.json();
-    const { userId, userName, userCampus, userNim, sessionNo, signatureDataUrl } = body;
+    const { userId, userName, userCampus, userNim, sessionNo, signatureDataUrl, respondentLevel, studyProgram } = body;
 
     if (!userName || !sessionNo) {
       return NextResponse.json({ error: "Nama dan Sesi wajib diisi." }, { status: 400 });
@@ -45,6 +45,8 @@ export async function POST(req: Request) {
       userName: userName || "Mahasiswa Calon Guru",
       userCampus: userCampus || "LPTK Universitas",
       userNim: userNim || "2026_PLP_01",
+      respondentLevel: respondentLevel || "S1 Calon Guru",
+      studyProgram: studyProgram || "",
       sessionNo: parseInt(sessionNo.toString(), 10) || 1,
       approved: true,
       signatureDataUrl: signatureDataUrl || "",
