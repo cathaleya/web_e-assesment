@@ -1004,67 +1004,69 @@ ${rec.transcript || '[Tanpa Teks Verbatim]'}
         .nav-item-timbul {
           display: flex;
           align-items: center;
-          gap: 10px;
-          padding: 9px 12px;
+          justify-content: flex-start;
+          padding: 10px 14px;
           border-radius: 12px;
-          font-size: 12px;
-          font-weight: 700;
-          transition: all 0.2s ease;
+          font-size: 11.5px;
+          font-weight: 800;
+          letter-spacing: 0.03em;
+          text-transform: uppercase;
+          transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
           cursor: pointer;
           width: 100%;
-          text-align: left;
-          color: #94a3b8;
-          border: 1px solid transparent;
+          color: #ffffff;
+          background: rgba(20, 83, 45, 0.45);
+          border: 1.5px solid rgba(52, 211, 153, 0.35);
+          box-shadow: 0 4px 10px -2px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.2);
         }
         .nav-item-timbul:hover {
-          background: rgba(255,255,255,0.08);
+          background: rgba(22, 101, 52, 0.85);
           color: #ffffff;
-          transform: translateY(-1px);
+          border-color: rgba(52, 211, 153, 0.7);
+          transform: translateY(-2px);
+          box-shadow: 0 6px 14px -2px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.3);
         }
         .nav-item-timbul.active {
-          background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+          background: linear-gradient(135deg, #059669 0%, #0d9488 100%);
           color: #ffffff;
-          border: 1px solid rgba(255, 255, 255, 0.3);
-          box-shadow: 0 6px 16px -2px rgba(37, 99, 235, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+          font-weight: 900;
+          border: 2px solid #6ee7b7;
+          box-shadow: 0 8px 22px -2px rgba(16, 185, 129, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+          transform: scale(1.02);
         }
-        .nav-item-timbul i { width: 16px; text-align: center; font-size: 13px; }
       `}</style>
 
-      {/* ── Sidebar ── */}
-      <aside className={`${sidebarCollapsed ? 'w-16' : 'w-56'} bg-gradient-to-b from-[#0f172a] via-[#090d16] to-[#020617] flex flex-col sticky top-0 h-screen transition-all duration-200 shrink-0 border-r border-white/10 shadow-2xl`}>
-        {/* Logo */}
-        <div className="px-4 py-5 border-b border-white/10 flex items-center gap-3 bg-white/5">
-          <div className="w-9 h-9 bg-gradient-to-br from-blue-500 to-indigo-700 rounded-xl flex items-center justify-center shrink-0 shadow-lg border border-blue-400/40">
-            <i className="fa-solid fa-microchip text-white text-base"></i>
-          </div>
+      {/* ── Sidebar (Hijau Army Theme) ── */}
+      <aside className={`${sidebarCollapsed ? 'w-16' : 'w-60'} bg-gradient-to-b from-[#142518] via-[#0d1a10] to-[#070e08] flex flex-col sticky top-0 h-screen transition-all duration-200 shrink-0 border-r border-emerald-800/50 shadow-2xl z-30`}>
+        {/* Logo Header */}
+        <div className="px-4 py-5 border-b border-emerald-800/40 flex items-center justify-between bg-emerald-950/40">
           {!sidebarCollapsed && (
             <div className="overflow-hidden">
-              <h1 className="font-black text-sm text-white tracking-tight leading-none">HDAP <span className="text-blue-400">PRO</span></h1>
-              <p className="text-[9px] font-bold text-slate-400 mt-1 uppercase tracking-widest">Admin Panel</p>
+              <h1 className="font-black text-base text-white tracking-tight leading-none">HDAP <span className="text-emerald-400">PRO</span></h1>
+              <p className="text-[9px] font-black text-emerald-300/80 mt-1 uppercase tracking-widest">Panel Kontrol Admin</p>
             </div>
           )}
-          <button onClick={() => setSidebarCollapsed(c => !c)} className="ml-auto text-slate-400 hover:text-white transition-colors">
+          <button onClick={() => setSidebarCollapsed(c => !c)} className="text-emerald-300 hover:text-white transition-colors p-1.5 rounded-lg bg-emerald-900/50 border border-emerald-700/50">
             <i className={`fa-solid ${sidebarCollapsed ? 'fa-chevron-right' : 'fa-chevron-left'} text-xs`}></i>
           </button>
         </div>
 
-        {/* Navigation */}
-        <div className="px-3 py-4 flex-1 overflow-y-auto custom-scrollbar space-y-5">
+        {/* Navigation Menu (No Icons, Bold White Text, Embossed Timbul) */}
+        <div className="px-3 py-4 flex-1 overflow-y-auto custom-scrollbar space-y-6">
           {/* Group: Main Analysis */}
           <div>
-            {!sidebarCollapsed && <p className="text-[9px] font-black text-blue-400 uppercase tracking-widest mb-2 px-1">Main Analysis</p>}
-            <nav className="space-y-1">
+            {!sidebarCollapsed && <p className="text-[10px] font-black text-emerald-300 uppercase tracking-widest mb-2 px-1">Analisis Utama</p>}
+            <nav className="space-y-1.5">
               {[
-                { id: 'preliminary', icon: 'fa-chart-simple', label: 'Preliminary' },
-                { id: 'usability', icon: 'fa-wand-magic-sparkles', label: 'SUS Analysis' },
-                { id: 'madel5c', icon: 'fa-brain', label: 'MADEL5C' },
-                { id: 'thinkaloud', icon: 'fa-microphone-lines', label: 'Database Suara' },
+                { id: 'preliminary', label: 'Preliminary (PDI-DL)' },
+                { id: 'usability', label: 'SUS Usability' },
+                { id: 'madel5c', label: 'MADEL5C SJT' },
+                { id: 'thinkaloud', label: 'Database Suara' },
               ].map(item => (
                 <button key={item.id} onClick={() => setCurrentTab(item.id)}
                   title={sidebarCollapsed ? item.label : undefined}
                   className={`nav-item-timbul ${currentTab === item.id ? 'active' : ''}`}>
-                  <i className={`fa-solid ${item.icon}`}></i>
-                  {!sidebarCollapsed && <span>{item.label}</span>}
+                  <span>{sidebarCollapsed ? item.label.substring(0, 2) : item.label}</span>
                 </button>
               ))}
             </nav>
@@ -1072,20 +1074,19 @@ ${rec.transcript || '[Tanpa Teks Verbatim]'}
 
           {/* Group: Psychometric Engine */}
           <div>
-            {!sidebarCollapsed && <p className="text-[9px] font-black text-purple-400 uppercase tracking-widest mb-2 px-1">Psychometric Engine</p>}
-            <nav className="space-y-1">
+            {!sidebarCollapsed && <p className="text-[10px] font-black text-emerald-300 uppercase tracking-widest mb-2 px-1">Mesin Psikometri</p>}
+            <nav className="space-y-1.5">
               {[
-                { id: 'efa', icon: 'fa-chart-pie', label: 'EFA Analysis' },
-                { id: 'cfa', icon: 'fa-diagram-project', label: 'CFA Analysis' },
-                { id: 'rasch', icon: 'fa-stairs', label: 'Rasch / PCM' },
-                { id: 'mfrm', icon: 'fa-cubes', label: 'Many-Facet Rasch' },
-                { id: 'sem', icon: 'fa-route', label: 'SEM Model' },
+                { id: 'efa', label: 'EFA Analysis' },
+                { id: 'cfa', label: 'CFA Analysis' },
+                { id: 'rasch', label: 'Rasch / PCM' },
+                { id: 'mfrm', label: 'Many-Facet Rasch' },
+                { id: 'sem', label: 'SEM Model' },
               ].map(item => (
                 <button key={item.id} onClick={() => setCurrentTab(item.id)}
                   title={sidebarCollapsed ? item.label : undefined}
                   className={`nav-item-timbul ${currentTab === item.id ? 'active' : ''}`}>
-                  <i className={`fa-solid ${item.icon}`}></i>
-                  {!sidebarCollapsed && <span>{item.label}</span>}
+                  <span>{sidebarCollapsed ? item.label.substring(0, 2) : item.label}</span>
                 </button>
               ))}
             </nav>
@@ -1093,19 +1094,18 @@ ${rec.transcript || '[Tanpa Teks Verbatim]'}
 
           {/* Group: Management */}
           <div>
-            {!sidebarCollapsed && <p className="text-[9px] font-black text-emerald-400 uppercase tracking-widest mb-2 px-1">Management</p>}
-            <nav className="space-y-1">
+            {!sidebarCollapsed && <p className="text-[10px] font-black text-emerald-300 uppercase tracking-widest mb-2 px-1">Manajemen & Data</p>}
+            <nav className="space-y-1.5">
               {[
-                { id: 'consent', icon: 'fa-file-signature', label: 'Informed Consent' },
-                { id: 'logs', icon: 'fa-users', label: 'Participants' },
-                { id: 'instruments', icon: 'fa-sliders', label: 'Instruments' },
-                { id: 'settings', icon: 'fa-gear', label: 'Settings' }
+                { id: 'consent', label: 'Informed Consent' },
+                { id: 'logs', label: 'Data Partisipan' },
+                { id: 'instruments', label: 'Kelola Instrumen' },
+                { id: 'settings', label: 'Pengaturan Sistem' }
               ].map(item => (
                 <button key={item.id} onClick={() => setCurrentTab(item.id)}
                   title={sidebarCollapsed ? item.label : undefined}
                   className={`nav-item-timbul ${currentTab === item.id ? 'active' : ''}`}>
-                  <i className={`fa-solid ${item.icon}`}></i>
-                  {!sidebarCollapsed && <span>{item.label}</span>}
+                  <span>{sidebarCollapsed ? item.label.substring(0, 2) : item.label}</span>
                 </button>
               ))}
             </nav>
@@ -1113,12 +1113,11 @@ ${rec.transcript || '[Tanpa Teks Verbatim]'}
         </div>
 
         {/* Logout */}
-        <div className="px-3 py-4 border-t border-white/5">
+        <div className="px-3 py-4 border-t border-emerald-800/40 bg-emerald-950/30">
           <button onClick={() => router.push('/login')}
             title={sidebarCollapsed ? "Log Out" : undefined}
-            className="nav-item text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 w-full">
-            <i className="fa-solid fa-power-off"></i>
-            {!sidebarCollapsed && <span>Log Out</span>}
+            className="w-full py-2.5 px-3 rounded-xl font-black text-xs uppercase tracking-wider bg-rose-950/80 hover:bg-rose-900 text-rose-200 border border-rose-700/60 shadow-md transition-all flex items-center justify-center gap-2">
+            <span>Keluar (Log Out)</span>
           </button>
         </div>
       </aside>
