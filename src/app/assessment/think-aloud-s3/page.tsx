@@ -1100,7 +1100,9 @@ function SignaturePad({
   currentSignature: string | null;
 }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [isDrawing, setIsDrawing] = useState(false);
+  const isInternalDrawingRef = useRef(false);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -1112,8 +1114,55 @@ function SignaturePad({
     ctx.strokeStyle = "#4338ca"; // Royal Indigo Ink
   }, []);
 
+  // When currentSignature is updated from outside/upload, render it cleanly onto canvas
+  useEffect(() => {
+    if (!currentSignature) {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      if (ctx) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+      return;
+    }
+
+    if (isInternalDrawingRef.current) {
+      isInternalDrawingRef.current = false;
+      return;
+    }
+
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const hRatio = canvas.width / img.width;
+      const vRatio = canvas.height / img.height;
+      const ratio = Math.min(hRatio, vRatio, 1);
+      const centerShiftX = (canvas.width - img.width * ratio) / 2;
+      const centerShiftY = (canvas.height - img.height * ratio) / 2;
+      ctx.drawImage(
+        img,
+        0,
+        0,
+        img.width,
+        img.height,
+        centerShiftX,
+        centerShiftY,
+        img.width * ratio,
+        img.height * ratio
+      );
+    };
+    img.src = currentSignature;
+  }, [currentSignature]);
+
   const startDrawing = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
     setIsDrawing(true);
+    isInternalDrawingRef.current = true;
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
@@ -1147,16 +1196,21 @@ function SignaturePad({
     setIsDrawing(false);
     const canvas = canvasRef.current;
     if (canvas) {
-      onSave(canvas.toDataURL());
+      isInternalDrawingRef.current = true;
+      onSave(canvas.toDataURL("image/png"));
     }
   };
 
   const clearCanvas = () => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (ctx) {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (canvas) {
+      const ctx = canvas.getContext("2d");
+      if (ctx) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+    }
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
     }
     onClear();
   };
@@ -1166,11 +1220,39 @@ function SignaturePad({
     if (file) {
       const reader = new FileReader();
       reader.onload = (event) => {
-        if (event.target?.result) {
-          onSave(event.target.result as string);
-        }
+        const result = event.target?.result as string;
+        if (!result) return;
+        const img = new Image();
+        img.onload = () => {
+          const canvas = canvasRef.current;
+          if (!canvas) return;
+          const ctx = canvas.getContext("2d");
+          if (!ctx) return;
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          const hRatio = canvas.width / img.width;
+          const vRatio = canvas.height / img.height;
+          const ratio = Math.min(hRatio, vRatio, 1);
+          const centerShiftX = (canvas.width - img.width * ratio) / 2;
+          const centerShiftY = (canvas.height - img.height * ratio) / 2;
+          ctx.drawImage(
+            img,
+            0,
+            0,
+            img.width,
+            img.height,
+            centerShiftX,
+            centerShiftY,
+            img.width * ratio,
+            img.height * ratio
+          );
+          const dataUrl = canvas.toDataURL("image/png");
+          isInternalDrawingRef.current = false;
+          onSave(dataUrl);
+        };
+        img.src = result;
       };
       reader.readAsDataURL(file);
+      e.target.value = "";
     }
   };
 
@@ -1180,8 +1262,8 @@ function SignaturePad({
         <canvas
           ref={canvasRef}
           width={500}
-          height={150}
-          className="w-full h-36 touch-none cursor-crosshair"
+          height={160}
+          className="w-full h-40 touch-none cursor-crosshair relative z-10"
           onMouseDown={startDrawing}
           onMouseMove={draw}
           onMouseUp={stopDrawing}
@@ -1191,16 +1273,46 @@ function SignaturePad({
           onTouchEnd={stopDrawing}
         />
         {!currentSignature && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-slate-400 text-xs font-semibold p-4 text-center">
+          <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-slate-400 text-xs font-semibold p-4 text-center z-0">
             <i className="fa-solid fa-signature text-purple-600 text-2xl mb-1"></i>
             <span>
               {lang === "en"
-                ? "✍️ Draw your digital signature here (Touchscreen / Mouse / Trackpad)"
-                : "✍️ Goreskan Tanda Tangan Anda di sini (Layar Sentuh HP / Tablet / Mouse Laptop)"}
+                ? "✍️ Draw your digital signature here (Touchscreen / Mouse / Trackpad) or Upload File Below"
+                : "✍️ Goreskan Tanda Tangan Anda di sini (Layar Sentuh HP / Mouse Laptop) atau Unggah Foto TTD di bawah"}
             </span>
           </div>
         )}
+        {currentSignature && (
+          <div className="absolute top-2 right-2 z-20 px-2.5 py-1 rounded-lg bg-emerald-600 text-white text-[10px] font-black flex items-center gap-1 shadow-md pointer-events-none">
+            <i className="fa-solid fa-circle-check"></i>
+            <span>{lang === "en" ? "Signature Ready" : "TTD Berhasil Dimuat"}</span>
+          </div>
+        )}
       </div>
+
+      {/* PREVIEW THUMBNAIL IF SIGNATURE IS ACTIVE */}
+      {currentSignature && (
+        <div className="p-2.5 bg-purple-50 rounded-xl border border-purple-200 flex items-center justify-between gap-3 shadow-xs">
+          <div className="flex items-center gap-2.5">
+            <div className="w-20 h-10 bg-white border border-purple-300 rounded-lg overflow-hidden flex items-center justify-center shadow-xs p-1">
+              <img src={currentSignature} alt="TTD Preview" className="max-w-full max-h-full object-contain" />
+            </div>
+            <div>
+              <p className="text-[11px] font-black text-purple-950 flex items-center gap-1">
+                <i className="fa-solid fa-pen-nib text-purple-700"></i>
+                {lang === "en" ? "Digital Signature Active" : "Tanda Tangan Digital Terpasang"}
+              </p>
+              <p className="text-[10px] text-slate-500 font-medium">
+                {lang === "en" ? "Ready for Informed Consent verification" : "Siap diverifikasi pada lembar persetujuan (Informed Consent)"}
+              </p>
+            </div>
+          </div>
+          <span className="text-[10px] text-emerald-800 bg-emerald-100 border border-emerald-300 px-2 py-0.5 rounded-full font-black flex items-center gap-1 shrink-0">
+            <i className="fa-solid fa-check-double text-emerald-600"></i> {lang === "en" ? "Verified" : "Terverifikasi"}
+          </span>
+        </div>
+      )}
+
       <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
         <button
           type="button"
@@ -1209,9 +1321,16 @@ function SignaturePad({
         >
           <i className="fa-solid fa-rotate-left"></i> {lang === "en" ? "Clear Signature" : "Bersihkan TTD"}
         </button>
-        <label className="px-3.5 py-1.5 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-900 border border-purple-300 cursor-pointer transition active:scale-95 flex items-center gap-1 font-bold">
-          <i className="fa-solid fa-upload"></i> {lang === "en" ? "Upload Signature Image" : "Unggah File Gambar TTD"}
-          <input type="file" accept="image/*" onChange={handleFileUpload} className="hidden" />
+        <label className="px-3.5 py-1.5 rounded-xl bg-purple-100 hover:bg-purple-200 text-purple-900 border border-purple-300 cursor-pointer transition active:scale-95 flex items-center gap-1.5 font-bold shadow-xs">
+          <i className="fa-solid fa-file-arrow-up text-purple-700"></i>
+          <span>{lang === "en" ? "Upload Signature Image (PNG/JPG)" : "Unggah File Gambar TTD (PNG/JPG)"}</span>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleFileUpload}
+            className="hidden"
+          />
         </label>
       </div>
     </div>
@@ -1652,10 +1771,11 @@ export default function ThinkAloudS3ProtocolPage() {
           ? `${String.fromCharCode(65 + selectedOptIdx)}. ${currentQ.options[selectedOptIdx].text[lang]}`
           : "Belum Memilih Opsi / No Option Selected";
 
-      const confidenceVal = confidenceLevels[currentQ.id] || 3;
+      const confidenceVal = confidenceLevels[currentQ.id];
+      const confidenceText = confidenceVal !== undefined ? `${confidenceVal}/5` : (lang === "en" ? "Not rated" : "Belum dinilai");
       const finalTranscript = transcriptText.trim()
-        ? `[Tingkat Keyakinan / Confidence: ${confidenceVal}/5 | Lang: ${lang.toUpperCase()}] — ${transcriptText.trim()}`
-        : `[Tingkat Keyakinan / Confidence: ${confidenceVal}/5 | Lang: ${lang.toUpperCase()}] — [Respon Suara Terkirim / Voice Response Sent]`;
+        ? `[Tingkat Keyakinan / Confidence: ${confidenceText} | Lang: ${lang.toUpperCase()}] — ${transcriptText.trim()}`
+        : `[Tingkat Keyakinan / Confidence: ${confidenceText} | Lang: ${lang.toUpperCase()}] — [Respon Suara Terkirim / Voice Response Sent]`;
 
       const fileToUpload = audioBlob
         ? audioBlob
@@ -1920,53 +2040,64 @@ export default function ThinkAloudS3ProtocolPage() {
             </div>
 
             {/* BILINGUAL LANGUAGE SWITCHER & TAB NAVIGATION */}
-            <div className="flex flex-wrap items-center gap-2 shrink-0">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2.5 shrink-0">
               
-              {/* LANGUAGE TOGGLE (INDONESIA / ENGLISH) */}
-              <div className="flex items-center bg-purple-50 p-1 rounded-2xl border-2 border-purple-200 shadow-sm">
-                <button
-                  type="button"
-                  onClick={() => toggleLanguage("id")}
-                  className={`px-2.5 py-1 rounded-xl text-[10px] font-black tracking-wider transition-all flex items-center gap-1 ${
-                    lang === "id"
-                      ? "bg-purple-700 text-white shadow-md border-b-2 border-purple-950"
-                      : "text-slate-600 hover:text-purple-900"
-                  }`}
-                  title="Ganti ke Bahasa Indonesia"
-                >
-                  <span>🇮🇩</span>
-                  <span>ID</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => toggleLanguage("en")}
-                  className={`px-2.5 py-1 rounded-xl text-[10px] font-black tracking-wider transition-all flex items-center gap-1 ${
-                    lang === "en"
-                      ? "bg-purple-700 text-white shadow-md border-b-2 border-purple-950"
-                      : "text-slate-600 hover:text-purple-900"
-                  }`}
-                  title="Switch to English"
-                >
-                  <span>🇬🇧</span>
-                  <span>EN</span>
-                </button>
+              {/* LANGUAGE TOGGLE (INDONESIA / ENGLISH) DENGAN PETUNJUK JELAS */}
+              <div className="flex flex-col items-start sm:items-end gap-1 bg-gradient-to-r from-purple-50 to-indigo-50 p-2 rounded-2xl border-2 border-purple-200 shadow-xs">
+                <div className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-wider text-purple-950">
+                  <span className="text-sm">🌐</span>
+                  <span>{lang === "en" ? "Select Language:" : "Pilih Bahasa:"}</span>
+                  <span className="text-[10px] text-purple-700 font-semibold normal-case">
+                    {lang === "en" ? "(ID / EN)" : "(ID / EN)"}
+                  </span>
+                </div>
+                <div className="flex items-center bg-white p-0.5 rounded-xl border border-purple-300 shadow-inner">
+                  <button
+                    type="button"
+                    onClick={() => toggleLanguage("id")}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-black tracking-wider transition-all flex items-center gap-1.5 ${
+                      lang === "id"
+                        ? "bg-purple-700 text-white shadow-md border-b-2 border-purple-950 scale-102"
+                        : "text-slate-600 hover:text-purple-900 hover:bg-purple-50"
+                    }`}
+                    title="Pilih Bahasa Indonesia"
+                  >
+                    <span>🇮🇩</span>
+                    <span>Indonesia (ID)</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => toggleLanguage("en")}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-black tracking-wider transition-all flex items-center gap-1.5 ${
+                      lang === "en"
+                        ? "bg-purple-700 text-white shadow-md border-b-2 border-purple-950 scale-102"
+                        : "text-slate-600 hover:text-purple-900 hover:bg-purple-50"
+                    }`}
+                    title="Select English Language"
+                  >
+                    <span>🇬🇧</span>
+                    <span>English (EN)</span>
+                  </button>
+                </div>
               </div>
 
               {/* TAB SWITCHER */}
               <div className="flex items-center gap-1.5 bg-slate-50 p-1.5 rounded-2xl border border-slate-200">
                 <button
                   onClick={() => setActiveTab("guidance")}
-                  className={`px-3 py-1.5 rounded-xl font-black text-[10px] uppercase tracking-wider transition-all flex items-center gap-1.5 ${
+                  className={`px-3.5 py-2 rounded-xl font-black text-xs uppercase tracking-wider transition-all flex items-center gap-1.5 ${
                     activeTab === "guidance"
                       ? "bg-purple-700 text-white shadow-md border-b-2 border-purple-950"
-                      : "text-slate-600 hover:text-purple-900"
+                      : "bg-amber-100 hover:bg-amber-200 text-amber-950 border border-amber-300"
                   }`}
+                  title="Buka Panduan: PROTOKOL THINK-ALOUD MADEL5C PASCASARJANA"
                 >
-                  <i className="fa-solid fa-book-open"></i> {lang === "en" ? "Guidance" : "Panduan"}
+                  <i className="fa-solid fa-book-open text-amber-600"></i>
+                  <span>{lang === "en" ? "Guidance" : "Panduan"}</span>
                 </button>
                 <button
                   onClick={() => setActiveTab(consentApproved ? "session" : "consent")}
-                  className={`px-3.5 py-1.5 rounded-xl font-black text-[10px] uppercase tracking-wider transition-all flex items-center gap-1.5 ${
+                  className={`px-3.5 py-2 rounded-xl font-black text-xs uppercase tracking-wider transition-all flex items-center gap-1.5 ${
                     activeTab !== "guidance" && activeTab !== "profile"
                       ? "bg-gradient-to-r from-purple-700 to-indigo-800 text-white font-black shadow-md border-b-2 border-purple-950"
                       : "text-slate-600 hover:text-purple-900"
@@ -1976,6 +2107,53 @@ export default function ThinkAloudS3ProtocolPage() {
                 </button>
               </div>
             </div>
+          </div>
+
+          {/* BANNER PENUNJUK & PANAH ARAH KE PANDUAN PROTOKOL */}
+          <div className="p-3.5 bg-gradient-to-r from-amber-100 via-amber-50 to-purple-100 rounded-2xl border-2 border-amber-400 shadow-md flex flex-col md:flex-row md:items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-amber-500 text-white flex items-center justify-center text-xl font-black shrink-0 shadow-md animate-bounce">
+                👉
+              </div>
+              <div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="px-2 py-0.5 rounded-md bg-amber-400 text-slate-950 font-black text-[10px] uppercase tracking-wider shadow-xs">
+                    {lang === "en" ? "INSTRUCTION" : "PETUNJUK"}
+                  </span>
+                  <span className="text-xs font-black text-amber-950">
+                    {lang === "en"
+                      ? "Click guidance below to view full instructions:"
+                      : "Silakan klik panduan untuk membaca instruksi & prosedur lengkap:"}
+                  </span>
+                </div>
+                <p className="text-xs md:text-sm font-black text-purple-950 tracking-tight mt-0.5 flex items-center gap-1.5">
+                  <i className="fa-solid fa-book-open text-purple-700"></i>
+                  <span>
+                    {lang === "en"
+                      ? "GUIDANCE: MADEL5C THINK-ALOUD PROTOCOL (POSTGRADUATE)"
+                      : "PANDUAN: PROTOKOL THINK-ALOUD MADEL5C PASCASARJANA"}
+                  </span>
+                </p>
+              </div>
+            </div>
+
+            {/* BUTTON WITH DIRECTIONAL ARROW */}
+            <button
+              type="button"
+              onClick={() => setActiveTab("guidance")}
+              className={`px-5 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider shadow-lg transition-all flex items-center justify-center gap-2.5 active:scale-95 border-b-2 shrink-0 ${
+                activeTab === "guidance"
+                  ? "bg-purple-800 text-white border-purple-950 ring-2 ring-amber-400"
+                  : "bg-gradient-to-r from-purple-700 to-indigo-800 hover:from-purple-800 hover:to-indigo-900 text-white border-purple-950 hover:shadow-xl"
+              }`}
+            >
+              <span>
+                {activeTab === "guidance"
+                  ? (lang === "en" ? "✓ Guidance Currently Open" : "✓ Panduan Sedang Terbuka")
+                  : (lang === "en" ? "Klik Panduan: PROTOKOL THINK-ALOUD" : "Klik Panduan: PROTOKOL THINK-ALOUD MADEL5C PASCASARJANA")}
+              </span>
+              <span className="text-lg font-black text-amber-300 animate-pulse">➔</span>
+            </button>
           </div>
 
           {/* PROGRESS BAR 15 BUTIR */}
@@ -2761,15 +2939,26 @@ export default function ThinkAloudS3ProtocolPage() {
                         </p>
 
                         {/* SKALA KEYAKINAN 1 SAMPAI 5 */}
-                        <div className="p-3 bg-white/90 rounded-xl border border-purple-200 space-y-1.5 pt-2">
-                          <label className="text-[11px] font-bold text-slate-800 block">
-                            {lang === "en"
-                              ? "How confident are you with your chosen decision? (1 = Very Unsure, 5 = Very Confident)"
-                              : "Berapa skor keyakinan Anda terhadap keputusan di atas? (1 = Sangat Ragu, 5 = Sangat Yakin)"}
-                          </label>
+                        <div className="p-3 bg-white/90 rounded-xl border border-purple-200 space-y-1.5 pt-2 shadow-xs">
+                          <div className="flex items-center justify-between text-[11px] font-bold text-slate-800">
+                            <span>
+                              {lang === "en"
+                                ? "How confident are you with your chosen decision? (1 = Very Unsure, 5 = Very Confident)"
+                                : "Berapa skor keyakinan Anda terhadap keputusan di atas? (1 = Sangat Ragu, 5 = Sangat Yakin)"}
+                            </span>
+                            {confidenceLevels[currentQ.id] !== undefined ? (
+                              <span className="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-purple-100 text-purple-900 border border-purple-300">
+                                {lang === "en" ? `Selected: Level ${confidenceLevels[currentQ.id]}` : `Terpilih: Skor ${confidenceLevels[currentQ.id]}`}
+                              </span>
+                            ) : (
+                              <span className="text-[10px] font-semibold text-slate-400 italic">
+                                {lang === "en" ? "(Optional: Click 1 to 5 to rate)" : "(Belum dipilih - klik salah satu angka)"}
+                              </span>
+                            )}
+                          </div>
                           <div className="flex items-center gap-2">
                             {[1, 2, 3, 4, 5].map((lvl) => {
-                              const isSelectedLvl = (confidenceLevels[currentQ.id] || 3) === lvl;
+                              const isSelectedLvl = confidenceLevels[currentQ.id] === lvl;
                               return (
                                 <button
                                   key={lvl}
@@ -2778,7 +2967,7 @@ export default function ThinkAloudS3ProtocolPage() {
                                   className={`flex-1 py-1.5 rounded-lg font-black text-xs border transition ${
                                     isSelectedLvl
                                       ? "bg-purple-700 text-white border-purple-900 shadow-md ring-2 ring-purple-300"
-                                      : "bg-slate-100 hover:bg-purple-50 text-slate-700 border-slate-200"
+                                      : "bg-white hover:bg-purple-50 text-slate-700 border-slate-300 shadow-xs"
                                   }`}
                                 >
                                   {lvl} {lvl === 1 ? (lang === "en" ? "(Unsure)" : "(Ragu)") : lvl === 5 ? (lang === "en" ? "(Confident)" : "(Yakin)") : ""}

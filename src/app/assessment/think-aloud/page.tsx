@@ -163,7 +163,9 @@ function SignaturePad({
   currentSignature: string | null;
 }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [isDrawing, setIsDrawing] = useState(false);
+  const isInternalDrawingRef = useRef(false);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -175,8 +177,55 @@ function SignaturePad({
     ctx.strokeStyle = "#38bdf8"; // Sky blue stroke
   }, []);
 
+  // When currentSignature is updated from outside/upload, render it cleanly onto canvas
+  useEffect(() => {
+    if (!currentSignature) {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      if (ctx) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+      return;
+    }
+
+    if (isInternalDrawingRef.current) {
+      isInternalDrawingRef.current = false;
+      return;
+    }
+
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const hRatio = canvas.width / img.width;
+      const vRatio = canvas.height / img.height;
+      const ratio = Math.min(hRatio, vRatio, 1);
+      const centerShiftX = (canvas.width - img.width * ratio) / 2;
+      const centerShiftY = (canvas.height - img.height * ratio) / 2;
+      ctx.drawImage(
+        img,
+        0,
+        0,
+        img.width,
+        img.height,
+        centerShiftX,
+        centerShiftY,
+        img.width * ratio,
+        img.height * ratio
+      );
+    };
+    img.src = currentSignature;
+  }, [currentSignature]);
+
   const startDrawing = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
     setIsDrawing(true);
+    isInternalDrawingRef.current = true;
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
@@ -210,16 +259,21 @@ function SignaturePad({
     setIsDrawing(false);
     const canvas = canvasRef.current;
     if (canvas) {
-      onSave(canvas.toDataURL());
+      isInternalDrawingRef.current = true;
+      onSave(canvas.toDataURL("image/png"));
     }
   };
 
   const clearCanvas = () => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (ctx) {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (canvas) {
+      const ctx = canvas.getContext("2d");
+      if (ctx) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+    }
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
     }
     onClear();
   };
@@ -229,11 +283,39 @@ function SignaturePad({
     if (file) {
       const reader = new FileReader();
       reader.onload = (event) => {
-        if (event.target?.result) {
-          onSave(event.target.result as string);
-        }
+        const result = event.target?.result as string;
+        if (!result) return;
+        const img = new Image();
+        img.onload = () => {
+          const canvas = canvasRef.current;
+          if (!canvas) return;
+          const ctx = canvas.getContext("2d");
+          if (!ctx) return;
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          const hRatio = canvas.width / img.width;
+          const vRatio = canvas.height / img.height;
+          const ratio = Math.min(hRatio, vRatio, 1);
+          const centerShiftX = (canvas.width - img.width * ratio) / 2;
+          const centerShiftY = (canvas.height - img.height * ratio) / 2;
+          ctx.drawImage(
+            img,
+            0,
+            0,
+            img.width,
+            img.height,
+            centerShiftX,
+            centerShiftY,
+            img.width * ratio,
+            img.height * ratio
+          );
+          const dataUrl = canvas.toDataURL("image/png");
+          isInternalDrawingRef.current = false;
+          onSave(dataUrl);
+        };
+        img.src = result;
       };
       reader.readAsDataURL(file);
+      e.target.value = "";
     }
   };
 
@@ -244,7 +326,7 @@ function SignaturePad({
           ref={canvasRef}
           width={500}
           height={160}
-          className="w-full h-36 touch-none cursor-crosshair"
+          className="w-full h-36 touch-none cursor-crosshair relative z-10"
           onMouseDown={startDrawing}
           onMouseMove={draw}
           onMouseUp={stopDrawing}
@@ -254,12 +336,33 @@ function SignaturePad({
           onTouchEnd={stopDrawing}
         />
         {!currentSignature && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-slate-400 text-xs font-semibold p-4 text-center">
+          <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-slate-400 text-xs font-semibold p-4 text-center z-0">
             <i className="fa-solid fa-signature text-sky-400 text-xl mb-1"></i>
-            <span>✍️ Goreskan Tanda Tangan Anda di sini (Layar Sentuh HP / Mouse Laptop)</span>
+            <span>✍️ Goreskan Tanda Tangan Anda di sini (Layar Sentuh HP / Mouse Laptop) atau Unggah Foto TTD di bawah</span>
+          </div>
+        )}
+        {currentSignature && (
+          <div className="absolute top-2 right-2 z-20 px-2 py-0.5 rounded bg-emerald-600 text-white text-[10px] font-bold flex items-center gap-1 shadow-md pointer-events-none">
+            <i className="fa-solid fa-circle-check"></i>
+            <span>TTD Dimuat</span>
           </div>
         )}
       </div>
+
+      {currentSignature && (
+        <div className="p-2 bg-slate-900 border border-slate-800 rounded-lg flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <div className="w-16 h-8 bg-slate-950 border border-slate-700 rounded overflow-hidden flex items-center justify-center p-0.5">
+              <img src={currentSignature} alt="TTD Preview" className="max-w-full max-h-full object-contain" />
+            </div>
+            <span className="text-[11px] font-medium text-slate-300">Tanda Tangan Digital Terpasang</span>
+          </div>
+          <span className="text-[10px] text-emerald-400 font-bold flex items-center gap-1">
+            <i className="fa-solid fa-check"></i> Siap Digunakan
+          </span>
+        </div>
+      )}
+
       <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
         <button
           type="button"
@@ -268,9 +371,15 @@ function SignaturePad({
         >
           <i className="fa-solid fa-rotate-left"></i> Bersihkan TTD
         </button>
-        <label className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-sky-300 border border-slate-700 cursor-pointer transition active:scale-95 flex items-center gap-1 font-bold">
-          <i className="fa-solid fa-upload"></i> Unggah File Gambar TTD
-          <input type="file" accept="image/*" onChange={handleFileUpload} className="hidden" />
+        <label className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-sky-300 border border-slate-700 cursor-pointer transition active:scale-95 flex items-center gap-1.5 font-bold">
+          <i className="fa-solid fa-upload"></i> Unggah File Gambar TTD (PNG/JPG)
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleFileUpload}
+            className="hidden"
+          />
         </label>
       </div>
     </div>
