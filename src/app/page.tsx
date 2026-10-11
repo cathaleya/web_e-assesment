@@ -23,6 +23,7 @@ export default function Home() {
       name: "Pendidikan Guru Sekolah Dasar (PGSD)",
       desc: "Model Utama Asesmen 5 Dimensi Kompetensi Literasi Digital Guru Sekolah Dasar (PGSD) berbasis Item Response Theory (IRT).",
       color: "from-emerald-400 via-teal-500 to-emerald-600",
+      sphereClass: "sphere-timbul-emerald",
       accent: "border-emerald-300 text-emerald-800 bg-emerald-50/90 shadow-sm",
       icon: "fa-chalkboard-user"
     },
@@ -32,6 +33,7 @@ export default function Home() {
       name: "Guru Olahraga (Pendidikan Jasmani)",
       desc: "Model Asesmen Literasi Digital & Integrasi Teknologi Pembelajaran Olahraga, Kesehatan, serta Kebugaran Jasmani Guru.",
       color: "from-sky-400 via-blue-500 to-cyan-600",
+      sphereClass: "sphere-timbul-blue",
       accent: "border-sky-300 text-sky-800 bg-sky-50/90 shadow-sm",
       icon: "fa-person-running"
     },
@@ -41,6 +43,7 @@ export default function Home() {
       name: "Guru Agama (Pendidikan Karakter)",
       desc: "Model Asesmen Literasi Digital Pengetahuan Pedagogik & Etika Digital dalam Integrasi Nilai Keagamaan serta Pembentukan Karakter Siswa.",
       color: "from-amber-400 via-yellow-500 to-orange-500",
+      sphereClass: "sphere-timbul-amber",
       accent: "border-amber-300 text-amber-900 bg-amber-50/90 shadow-sm",
       icon: "fa-hands-praying"
     },
@@ -50,6 +53,7 @@ export default function Home() {
       name: "Guru Seni & Budaya",
       desc: "Model Asesmen Literasi Digital Kreativitas Seni, Media Ekspresi Digital Rupa, Musik, & Pembelajaran Kebudayaan Interaktif.",
       color: "from-purple-400 via-indigo-500 to-violet-600",
+      sphereClass: "sphere-timbul-purple",
       accent: "border-purple-300 text-purple-800 bg-purple-50/90 shadow-sm",
       icon: "fa-palette"
     },
@@ -59,6 +63,7 @@ export default function Home() {
       name: "Guru Vokasi & Keahlian Terapan",
       desc: "Model Asesmen Literasi Digital Keterampilan Praktik Vokasi, Terapan Teknologi Industri, & Uji Kompetensi Keahlian Terapan.",
       color: "from-rose-400 via-pink-500 to-red-600",
+      sphereClass: "sphere-timbul-rose",
       accent: "border-rose-300 text-rose-800 bg-rose-50/90 shadow-sm",
       icon: "fa-screwdriver-wrench"
     }
@@ -207,8 +212,8 @@ export default function Home() {
               <i className="fa-solid fa-square-poll-vertical text-blue-700 animate-bounce"></i> HYBRID-DIAGNOSTIC ASSESSMENT PLATFORM (HDAP)
             </div>
 
-            <h1 className="text-3xl md:text-5xl lg:text-[60px] xl:text-[70px] font-black italic text-slate-900 uppercase tracking-tighter leading-[1.1] drop-shadow-sm break-words">
-              E-ASSESSMENT <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-700 via-indigo-700 to-emerald-700">LITERASI DIGITAL</span>.
+            <h1 className="text-3xl md:text-5xl lg:text-[60px] xl:text-[70px] font-black italic text-slate-900 uppercase tracking-tighter leading-[1.1] text-timbul-gradient break-words">
+              E-ASSESSMENT <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-700 via-indigo-700 to-emerald-700 drop-shadow-[0_4px_8px_rgba(30,58,138,0.3)]">LITERASI DIGITAL</span>
             </h1>
 
             <div className="mt-8 max-w-xl card-timbul p-6 md:p-8 rounded-[32px] bg-white/95 backdrop-blur-md shadow-2xl border-t-4 border-t-blue-600 border-x-2 border-b-4 border-slate-200">
@@ -445,8 +450,8 @@ export default function Home() {
             <span className="px-4 py-1.5 bg-amber-100 text-amber-900 rounded-full text-[10px] font-black uppercase tracking-[0.25em] border border-amber-300 shadow-md inline-flex items-center gap-2">
               <i className="fa-solid fa-diagram-project text-blue-700 animate-spin-slow"></i> INTEGRATED FRAMEWORK NETWORK
             </span>
-            <h2 className="text-3xl md:text-5xl lg:text-6xl font-black italic text-slate-900 uppercase tracking-tight leading-tight drop-shadow-sm">
-              PLATFORM <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-600 via-emerald-600 to-blue-700">MADEL</span>
+            <h2 className="text-3xl md:text-5xl lg:text-6xl font-black italic text-slate-900 uppercase tracking-tight leading-tight text-timbul-gradient">
+              PLATFORM <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-600 via-emerald-600 to-blue-700 drop-shadow-[0_4px_8px_rgba(217,119,6,0.35)]">MADEL</span>
             </h2>
             <div className="w-24 h-1.5 bg-gradient-to-r from-amber-500 via-emerald-500 to-blue-500 mx-auto rounded-full shadow-lg"></div>
             <p className="text-slate-700 font-bold max-w-3xl mx-auto text-xs md:text-sm leading-relaxed">
@@ -478,18 +483,18 @@ export default function Home() {
 
             {/* CORE HUB (PUSAT FRAMEWORK MADEL) */}
             <div className="relative z-20 mb-12">
-              <div className="w-56 h-56 md:w-64 md:h-64 rounded-full bg-gradient-to-br from-amber-400 via-yellow-500 to-amber-600 p-2 shadow-[0_0_80px_rgba(245,158,11,0.4)] border-4 border-white flex flex-col items-center justify-center text-center z-20 hover:scale-105 transition-all duration-300 relative network-pulse-glow">
+              <div className="w-56 h-56 md:w-64 md:h-64 rounded-full bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 p-2 shadow-[0_20px_50px_rgba(217,119,6,0.45),inset_0_4px_8px_rgba(255,255,255,0.8),inset_0_-6px_12px_rgba(0,0,0,0.35)] border-4 border-amber-200 border-b-8 border-b-amber-800 flex flex-col items-center justify-center text-center z-20 hover:scale-105 transition-all duration-300 relative network-pulse-glow">
                 
                 {/* Rotating Outer Ring */}
-                <div className="absolute -inset-4 rounded-full stroke-amber-500 border-2 border-dashed border-amber-500/60 animate-spin-slow pointer-events-none"></div>
+                <div className="absolute -inset-4 rounded-full border-2 border-dashed border-amber-500/80 animate-spin-slow pointer-events-none"></div>
 
-                <div className="w-14 h-14 rounded-full bg-slate-900 text-amber-300 flex items-center justify-center text-3xl mb-2 shadow-xl border-2 border-amber-300">
+                <div className="w-14 h-14 rounded-full bg-slate-900 text-amber-300 flex items-center justify-center text-3xl mb-2 shadow-2xl border-2 border-amber-300">
                   <i className="fa-solid fa-diagram-project"></i>
                 </div>
-                <span className="text-[9px] font-black text-slate-950 uppercase tracking-widest block bg-white/90 px-3 py-0.5 rounded-full mb-1 border border-amber-300">
+                <span className="text-[9px] font-black text-slate-950 uppercase tracking-widest block bg-white/95 px-3 py-0.5 rounded-full mb-1 border border-amber-300 shadow-md">
                   MODEL INDUK UTAMA
                 </span>
-                <h3 className="text-xl md:text-2xl font-black text-slate-950 uppercase tracking-tight italic drop-shadow-sm leading-tight">
+                <h3 className="text-xl md:text-2xl font-black text-slate-950 uppercase tracking-tight italic drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)] leading-tight">
                   PLATFORM MADEL
                 </h3>
                 <p className="text-[9px] font-black text-slate-900 mt-1 max-w-[170px] leading-tight">
@@ -498,24 +503,24 @@ export default function Home() {
               </div>
             </div>
 
-            {/* 5 SATELLITE CIRCULAR SPHERES (SUB-MODEL PRODI BULAT WITH DUAL-TONE CONTRAST CREAM & WHITE) */}
+            {/* 5 SATELLITE CIRCULAR SPHERES (BULATAN EMBOS TIMBUL WITH VARIED 2-COLOR GRADIENTS) */}
             <div className="grid grid-cols-2 md:grid-cols-5 gap-6 md:gap-8 w-full max-w-6xl z-10">
               {subModels.map((m, idx) => (
                 <div 
                   key={m.id}
                   onClick={() => router.push("/login")}
-                  className="card-timbul w-44 h-44 md:w-52 md:h-52 mx-auto rounded-full bg-gradient-to-br from-white via-[#FFFDF9] to-[#FAF5EF] text-slate-900 border-4 border-amber-300/90 flex flex-col items-center justify-center text-center p-4 shadow-[0_16px_36px_rgba(0,0,0,0.12)] hover:scale-105 hover:translate-y-[-6px] transition-all duration-300 group cursor-pointer relative overflow-hidden ring-4 ring-white"
+                  className={`w-44 h-44 md:w-52 md:h-52 mx-auto rounded-full ${m.sphereClass} text-white flex flex-col items-center justify-center text-center p-4 hover:scale-110 hover:-translate-y-2 transition-all duration-300 group cursor-pointer relative overflow-hidden ring-4 ring-white/80`}
                 >
-                  <div className={`w-13 h-13 md:w-16 md:h-16 rounded-full bg-gradient-to-br ${m.color} text-white flex items-center justify-center text-2xl shadow-xl border-2 border-white mb-2 ring-4 ring-amber-200/80 group-hover:scale-110 transition-transform shrink-0`}>
-                    <i className={`fa-solid ${m.icon}`}></i>
+                  <div className="w-13 h-13 md:w-16 md:h-16 rounded-full bg-white/20 backdrop-blur-md text-white flex items-center justify-center text-2xl shadow-inner border-2 border-white/60 mb-2 group-hover:scale-110 transition-transform shrink-0">
+                    <i className={`fa-solid ${m.icon} drop-shadow-md`}></i>
                   </div>
-                  <span className={`px-2.5 py-0.5 rounded-full text-[8px] font-black uppercase mb-1 border ${m.accent}`}>
+                  <span className="px-2.5 py-0.5 rounded-full text-[8px] font-black uppercase mb-1 bg-white/20 border border-white/40 text-white shadow-sm">
                     Sub-Model #{idx + 1}
                   </span>
-                  <h4 className="text-sm md:text-base font-black text-slate-900 uppercase tracking-tight italic leading-none">
+                  <h4 className="text-base md:text-lg font-black text-white uppercase tracking-tight italic leading-none drop-shadow-md">
                     {m.code}
                   </h4>
-                  <p className="text-[9px] font-black text-slate-700 leading-tight mt-1 px-2 line-clamp-2">
+                  <p className="text-[9px] font-bold text-white/90 leading-tight mt-1 px-2 line-clamp-2 drop-shadow-sm">
                     {m.name}
                   </p>
                 </div>
