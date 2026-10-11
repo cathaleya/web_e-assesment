@@ -970,18 +970,60 @@ ${rec.transcript || '[Tanpa Teks Verbatim]'}
   );
 
   // ── Metric Card ─────────────────────────────────────────────────────────
-  const MetricCard = ({ label, value, sub, icon, accent }: { label: string; value: any; sub?: string; icon: string; accent: string }) => (
-    <div className="card-timbul-admin p-5 flex flex-col justify-between relative overflow-hidden group">
-      <div className="flex items-start justify-between mb-3">
-        <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-base font-black shadow-md border border-white/40 ${accent}`}>
-          <i className={`fa-solid ${icon}`}></i>
+  const MetricCard = ({ label, value, sub, icon, accent }: { label: string; value: any; sub?: string; icon?: string; accent: string }) => {
+    let gradient = 'from-blue-600 to-indigo-600';
+    let badgeBg = 'bg-blue-600 text-white shadow-blue-300/50';
+    let subBg = 'bg-blue-50 text-blue-800 border-blue-200/80';
+    let borderAccent = 'border-blue-200';
+
+    if (accent.includes('rose') || accent.includes('red')) {
+      gradient = 'from-rose-500 to-red-600';
+      badgeBg = 'bg-rose-600 text-white shadow-rose-300/50';
+      subBg = 'bg-rose-50 text-rose-800 border-rose-200/80';
+      borderAccent = 'border-rose-200';
+    } else if (accent.includes('purple') || accent.includes('indigo') || accent.includes('violet')) {
+      gradient = 'from-purple-600 to-indigo-700';
+      badgeBg = 'bg-purple-600 text-white shadow-purple-300/50';
+      subBg = 'bg-purple-50 text-purple-800 border-purple-200/80';
+      borderAccent = 'border-purple-200';
+    } else if (accent.includes('emerald') || accent.includes('teal') || accent.includes('green')) {
+      gradient = 'from-emerald-600 to-teal-700';
+      badgeBg = 'bg-emerald-600 text-white shadow-emerald-300/50';
+      subBg = 'bg-emerald-50 text-emerald-800 border-emerald-200/80';
+      borderAccent = 'border-emerald-200';
+    } else if (accent.includes('amber') || accent.includes('yellow') || accent.includes('orange')) {
+      gradient = 'from-amber-500 to-orange-600';
+      badgeBg = 'bg-amber-500 text-white shadow-amber-300/50';
+      subBg = 'bg-amber-50 text-amber-800 border-amber-200/80';
+      borderAccent = 'border-amber-200';
+    } else if (accent.includes('slate') || accent.includes('gray')) {
+      gradient = 'from-slate-600 to-slate-800';
+      badgeBg = 'bg-slate-700 text-white shadow-slate-300/50';
+      subBg = 'bg-slate-100 text-slate-800 border-slate-200/80';
+      borderAccent = 'border-slate-300';
+    }
+
+    return (
+      <div className={`card-timbul-metric p-5 flex flex-col justify-between relative overflow-hidden group ${borderAccent}`}>
+        <div className={`absolute top-0 left-0 right-0 h-2 bg-gradient-to-r ${gradient}`}></div>
+        
+        <div className="flex items-center justify-between mb-3 mt-1">
+          <span className="text-[11px] font-black text-slate-700 uppercase tracking-widest">{label}</span>
+          <span className={`px-2.5 py-1 rounded-xl text-[10px] font-black uppercase tracking-wider shadow-md border border-white/50 ${badgeBg}`}>
+            {label.split(' ')[0]}
+          </span>
         </div>
-        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{label}</span>
+        
+        <div className="text-3xl font-black text-slate-900 tabular-nums leading-none tracking-tight drop-shadow-sm my-1">{value}</div>
+        
+        {sub && (
+          <p className={`text-[11px] font-extrabold mt-3 flex items-center gap-1.5 px-2.5 py-1 rounded-lg border w-fit shadow-sm ${subBg}`}>
+            {sub}
+          </p>
+        )}
       </div>
-      <div className="text-3xl font-black text-slate-900 tabular-nums leading-none tracking-tight">{value}</div>
-      {sub && <p className="text-[11px] font-bold text-slate-500 mt-2 flex items-center gap-1">{sub}</p>}
-    </div>
-  );
+    );
+  };
 
   return (
     <div className="min-h-screen bg-[#f8f9fb] text-slate-800 flex font-sans">
@@ -992,14 +1034,25 @@ ${rec.transcript || '[Tanpa Teks Verbatim]'}
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         .card-timbul-admin {
           background: #ffffff;
-          border: 2px solid #e2e8f0;
-          box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+          border: 2px solid #cbd5e1;
+          box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04), inset 0 2px 0 rgba(255, 255, 255, 1);
           border-radius: 1.25rem;
           transition: all 0.2s ease-in-out;
         }
         .card-timbul-admin:hover {
           transform: translateY(-2px);
           box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.12), 0 10px 15px -5px rgba(0, 0, 0, 0.06);
+        }
+        .card-timbul-metric {
+          background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+          border: 2px solid #cbd5e1;
+          box-shadow: 0 12px 28px -6px rgba(15, 23, 42, 0.12), 0 4px 8px -2px rgba(15, 23, 42, 0.06), inset 0 2px 0 rgba(255, 255, 255, 1);
+          border-radius: 1.25rem;
+          transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .card-timbul-metric:hover {
+          transform: translateY(-3px) scale(1.01);
+          box-shadow: 0 22px 35px -8px rgba(15, 23, 42, 0.18), 0 8px 16px -4px rgba(15, 23, 42, 0.08), inset 0 2px 0 rgba(255, 255, 255, 1);
         }
         .nav-item-timbul {
           display: flex;
@@ -1143,18 +1196,13 @@ ${rec.transcript || '[Tanpa Teks Verbatim]'}
             <button
               onClick={handleResetDatabase}
               disabled={isResetting}
-              className="h-8 px-3 bg-white border border-rose-200 text-rose-600 hover:bg-rose-50 disabled:opacity-50 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors"
+              className="h-8 px-3.5 bg-white border border-rose-300 text-rose-700 hover:bg-rose-50 disabled:opacity-50 rounded-xl text-xs font-bold transition-all shadow-sm"
             >
-              <i className="fa-solid fa-trash-can text-xs"></i>
               <span className="hidden sm:inline">{isResetting ? "Resetting…" : "Reset DB"}</span>
             </button>
-            {/* Notification */}
-            <button className="w-8 h-8 bg-slate-100 text-slate-500 rounded-lg flex items-center justify-center hover:bg-slate-200 transition-colors">
-              <i className="fa-solid fa-bell text-xs"></i>
-            </button>
-            {/* Avatar */}
-            <div className="w-8 h-8 bg-blue-100 rounded-full overflow-hidden border border-blue-200">
-              <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Admin" alt="Admin" />
+            {/* Avatar Badge */}
+            <div className="h-8 px-3 bg-gradient-to-r from-emerald-800 to-teal-900 text-white rounded-xl border border-emerald-600 shadow-sm flex items-center justify-center font-black text-xs tracking-wider">
+              ADMIN
             </div>
           </div>
         </header>
