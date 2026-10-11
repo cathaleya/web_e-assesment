@@ -3138,15 +3138,23 @@ ${rec.transcript || '[Tanpa Teks Verbatim]'}
                               </span>
                             </td>
                             <td className="p-3.5">
-                              {rec.audioUrl ? (
+                              {rec.hasAudio && rec.audioUrl ? (
                                 <div className="space-y-1">
-                                  <audio controls src={rec.audioUrl} className="h-9 w-56 rounded-lg shadow-sm border border-slate-200" />
-                                  <div className="text-[9px] text-slate-400 font-mono">
-                                    Durasi: {rec.duration || 0} detik · WebM
+                                  <audio 
+                                    controls 
+                                    preload="metadata" 
+                                    src={rec.audioUrl} 
+                                    className="h-9 w-60 rounded-lg shadow-sm border border-slate-200" 
+                                  />
+                                  <div className="text-[9px] text-slate-500 font-mono flex items-center justify-between">
+                                    <span>Durasi: {rec.duration || 0}s</span>
+                                    <span className="text-emerald-700 font-bold">Audio WebM Siap Putar</span>
                                   </div>
                                 </div>
                               ) : (
-                                <span className="text-rose-500 font-bold text-[10px]">Audio Tidak Ditemukan</span>
+                                <div className="px-3 py-1.5 bg-amber-50 border border-amber-200 text-amber-800 rounded-lg text-[10px] font-bold">
+                                  Respon Teks Manual (Tanpa Audio)
+                                </div>
                               )}
                             </td>
                             <td className="p-3.5">
@@ -3189,11 +3197,11 @@ ${rec.transcript || '[Tanpa Teks Verbatim]'}
                             </td>
                             <td className="p-3.5 text-center">
                               <div className="flex flex-col gap-1.5 items-center">
-                                {rec.audioUrl && (
+                                {rec.hasAudio && (rec.downloadUrl || rec.audioUrl) && (
                                   <a
-                                    href={rec.audioUrl}
-                                    download={rec.filename || "audio.webm"}
-                                    className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-[10px] font-bold flex items-center gap-1 transition w-full justify-center"
+                                    href={rec.downloadUrl || `${rec.audioUrl}&download=1`}
+                                    download={rec.filename || "ThinkAloud_Audio.webm"}
+                                    className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-[10px] font-bold flex items-center gap-1 transition w-full justify-center shadow-sm"
                                   >
                                     <i className="fa-solid fa-download"></i> Unduh Audio
                                   </a>

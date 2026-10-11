@@ -700,6 +700,7 @@ export default function ThinkAloudProtocolPage() {
 
       const formData = new FormData();
       formData.append("audio", fileToUpload, `ThinkAloud_Sesi${activeSession}_Soal_${currentQ.id}_P${probingStep}.webm`);
+      formData.append("isTextOnly", audioBlob ? "false" : "true");
       formData.append("userId", userId);
       formData.append("userName", userName);
       formData.append("userCampus", userCampus);
