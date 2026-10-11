@@ -4,7 +4,6 @@ import React, { useRef, useState, useEffect } from "react";
 import HTMLFlipBook from "react-pageflip";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import PapuanSideOrnaments from "../components/PapuanSideOrnaments";
 
 // Komponen Client murni tidak memerlukan force-dynamic karena tidak melakukan server fetching.
 
@@ -144,8 +143,6 @@ export default function BukuPanduan() {
 
   return (
     <div className="min-h-screen bg-[#F1F5F9] flex flex-col items-center justify-center py-10 px-4 overflow-hidden relative">
-      {/* PANEL ORNAMEN TIMBUL SISIPAN KIRI & KANAN (PAPUA THEME) */}
-      <PapuanSideOrnaments />
       
       {/* ─── HEADER ─── */}
       <div className="max-w-4xl w-full mb-8 flex items-center justify-between">

@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-import PapuanSideOrnaments from "../components/PapuanSideOrnaments";
+import { motion } from "framer-motion";
+import { TransparentImage } from "../components/PapuanSideOrnaments";
 
 // Menghindari timeout saat build di VPS
 export const dynamic = "force-dynamic";
@@ -83,8 +84,73 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center relative py-8 px-4 overflow-x-hidden"
          style={{ backgroundImage: "url('/unj_bg_v2.png')", backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}>
       
-      {/* PANEL ORNAMEN TIMBUL SISIPAN KIRI & KANAN (PAPUA THEME) */}
-      <PapuanSideOrnaments />
+      {/* SEPASANG CENDERAWASIH BESAR KIRI (MENGHADAP KANAN KE ARAH FORM) */}
+      <div className="hidden lg:flex fixed left-4 xl:left-12 top-1/2 -translate-y-1/2 z-10 pointer-events-none flex-col items-center">
+        <motion.div
+          animate={{
+            y: [0, -18, 12, -15, 0],
+            x: [0, 14, -12, 16, 0],
+            rotate: [-4, 6, -5, 4, -4],
+          }}
+          transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+          className="w-64 xl:w-80 h-auto drop-shadow-[0_25px_35px_rgba(0,0,0,0.45)]"
+        >
+          <TransparentImage
+            src="/cenderawasih_jantan.png"
+            alt="Burung Cenderawasih Jantan Papua Kiri"
+            className="w-full h-auto object-contain"
+          />
+        </motion.div>
+        <motion.div
+          animate={{
+            y: [0, 14, -16, 10, 0],
+            x: [0, -10, 12, -8, 0],
+            rotate: [3, -5, 4, -3, 3],
+          }}
+          transition={{ duration: 6.5, repeat: Infinity, ease: "easeInOut" }}
+          className="w-52 xl:w-64 h-auto drop-shadow-[0_20px_30px_rgba(0,0,0,0.35)] -mt-10 ml-8 opacity-95"
+        >
+          <TransparentImage
+            src="/cenderawasih_betina.png"
+            alt="Burung Cenderawasih Betina Papua Kiri"
+            className="w-full h-auto object-contain"
+          />
+        </motion.div>
+      </div>
+
+      {/* SEPASANG CENDERAWASIH BESAR KANAN (MENGHADAP KIRI KE ARAH FORM - BERHADAP-HADAPAN) */}
+      <div className="hidden lg:flex fixed right-4 xl:right-12 top-1/2 -translate-y-1/2 z-10 pointer-events-none flex-col items-center">
+        <motion.div
+          animate={{
+            y: [0, 16, -18, 12, 0],
+            x: [0, -16, 14, -14, 0],
+            rotate: [4, -6, 5, -4, 4],
+          }}
+          transition={{ duration: 7.5, repeat: Infinity, ease: "easeInOut" }}
+          className="w-64 xl:w-80 h-auto drop-shadow-[0_25px_35px_rgba(0,0,0,0.45)]"
+        >
+          <TransparentImage
+            src="/cenderawasih_jantan.png"
+            alt="Burung Cenderawasih Jantan Papua Kanan"
+            className="w-full h-auto object-contain -scale-x-100"
+          />
+        </motion.div>
+        <motion.div
+          animate={{
+            y: [0, -14, 16, -12, 0],
+            x: [0, 12, -14, 10, 0],
+            rotate: [-3, 5, -4, 3, -3],
+          }}
+          transition={{ duration: 6.8, repeat: Infinity, ease: "easeInOut" }}
+          className="w-52 xl:w-64 h-auto drop-shadow-[0_20px_30px_rgba(0,0,0,0.35)] -mt-10 mr-8 opacity-95"
+        >
+          <TransparentImage
+            src="/cenderawasih_betina.png"
+            alt="Burung Cenderawasih Betina Papua Kanan"
+            className="w-full h-auto object-contain -scale-x-100"
+          />
+        </motion.div>
+      </div>
 
       <div className="w-full max-w-sm md:max-w-md relative z-10 space-y-4">
         {/* LOGO BRAND TIMBUL */}
