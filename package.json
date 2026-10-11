@@ -4,15 +4,15 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "npx prisma generate && next build",
+    "build": "npx prisma@5.22.0 generate && next build",
     "start": "next start",
     "lint": "eslint",
-    "db:setup": "npx prisma db push && npx prisma generate",
-    "postinstall": "npx prisma generate"
+    "db:setup": "npx prisma@5.22.0 db push && npx prisma@5.22.0 generate",
+    "postinstall": "npx prisma@5.22.0 generate"
   },
   "dependencies": {
     "@google/generative-ai": "^0.21.0",
-    "@prisma/client": "^5.22.0",
+    "@prisma/client": "5.22.0",
     "adm-zip": "^0.5.18",
     "chart.js": "^4.4.0",
     "clsx": "^2.1.1",
@@ -36,7 +36,7 @@
     "eslint": "^9",
     "eslint-config-next": "^15.3.0",
     "postcss": "^8.4.49",
-    "prisma": "^5.22.0",
+    "prisma": "5.22.0",
     "tailwindcss": "^4.0.0",
     "typescript": "^5"
   }
