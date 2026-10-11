@@ -212,8 +212,9 @@ export default function Home() {
               <i className="fa-solid fa-square-poll-vertical text-blue-700 animate-bounce"></i> HYBRID-DIAGNOSTIC ASSESSMENT PLATFORM (HDAP)
             </div>
 
-            <h1 className="text-3xl md:text-5xl lg:text-[60px] xl:text-[70px] font-black italic text-slate-900 uppercase tracking-tighter leading-[1.1] text-timbul-gradient break-words">
-              E-ASSESSMENT <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-700 via-indigo-700 to-emerald-700 drop-shadow-[0_4px_8px_rgba(30,58,138,0.3)]">LITERASI DIGITAL</span>
+            <h1 className="text-3xl md:text-5xl lg:text-[60px] xl:text-[70px] font-black italic uppercase tracking-tighter leading-[1.1] break-words">
+              <span className="text-slate-900 text-timbul-heavy">E-ASSESSMENT</span>{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-700 via-indigo-600 to-emerald-600 text-emboss-3d-title">LITERASI DIGITAL</span>
             </h1>
 
             <div className="mt-8 max-w-xl card-timbul p-6 md:p-8 rounded-[32px] bg-white/95 backdrop-blur-md shadow-2xl border-t-4 border-t-blue-600 border-x-2 border-b-4 border-slate-200">
@@ -450,8 +451,9 @@ export default function Home() {
             <span className="px-4 py-1.5 bg-amber-100 text-amber-900 rounded-full text-[10px] font-black uppercase tracking-[0.25em] border border-amber-300 shadow-md inline-flex items-center gap-2">
               <i className="fa-solid fa-diagram-project text-blue-700 animate-spin-slow"></i> INTEGRATED FRAMEWORK NETWORK
             </span>
-            <h2 className="text-3xl md:text-5xl lg:text-6xl font-black italic text-slate-900 uppercase tracking-tight leading-tight text-timbul-gradient">
-              PLATFORM <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-600 via-emerald-600 to-blue-700 drop-shadow-[0_4px_8px_rgba(217,119,6,0.35)]">MADEL</span>
+            <h2 className="text-3xl md:text-5xl lg:text-6xl font-black italic uppercase tracking-tight leading-tight">
+              <span className="text-slate-900 text-timbul-heavy">PLATFORM</span>{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-600 via-emerald-600 to-blue-700 text-emboss-3d-madel">MADEL</span>
             </h2>
             <div className="w-24 h-1.5 bg-gradient-to-r from-amber-500 via-emerald-500 to-blue-500 mx-auto rounded-full shadow-lg"></div>
             <p className="text-slate-700 font-bold max-w-3xl mx-auto text-xs md:text-sm leading-relaxed">
@@ -673,15 +675,17 @@ export default function Home() {
         </div>
 
         <div className="max-w-7xl mx-auto w-full flex flex-col items-center gap-10 text-center relative z-10">
-          <div className="space-y-3 card-timbul p-6 md:p-8 rounded-[36px] bg-white/95 backdrop-blur-md max-w-2xl mx-auto border-2 border-slate-200">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-800 text-[9px] font-black uppercase tracking-widest shadow-sm mb-1">
+          <div className="card-timbul w-fit px-8 md:px-14 py-6 rounded-[36px] bg-white/95 backdrop-blur-md mx-auto text-center border-2 border-slate-300 border-b-8 border-b-slate-400 shadow-2xl space-y-2">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-800 text-[10px] font-black uppercase tracking-widest shadow-sm mb-1">
               <i className="fa-solid fa-circle-play text-blue-600"></i> MEDIA EDUKASI PLATFORM
             </div>
-            <h2 className="text-2xl md:text-5xl font-black italic text-slate-900 uppercase tracking-tighter leading-tight drop-shadow-sm">
+            <h2 className="text-2xl md:text-4xl lg:text-5xl font-black italic text-slate-900 uppercase tracking-tighter leading-tight text-timbul-heavy">
               PANDUAN VISUAL PLATFORM
             </h2>
-            <div className="w-20 h-1.5 bg-blue-600 mx-auto rounded-full shadow-sm"></div>
-            <p className="text-slate-800 font-black uppercase tracking-[0.3em] text-[10px]">Video Tutorial Lengkap HDAP</p>
+            <div className="w-20 h-1.5 bg-gradient-to-r from-blue-600 to-indigo-700 mx-auto rounded-full shadow-sm"></div>
+            <p className="text-blue-900 font-black uppercase tracking-[0.25em] text-[11px] bg-blue-50/90 px-4 py-1 rounded-full border border-blue-200 w-fit mx-auto shadow-sm">
+              Video Tutorial Lengkap HDAP
+            </p>
           </div>
 
           {/* FRAME VIDEO TIMBUL 3D TERJAGA 100% */}
@@ -787,15 +791,17 @@ export default function Home() {
         </div>
 
         <div className="max-w-7xl mx-auto w-full flex flex-col items-center gap-10 relative z-10">
-          <div className="space-y-3 text-center card-timbul p-6 md:p-8 rounded-[36px] bg-white/95 backdrop-blur-md max-w-2xl mx-auto border-2 border-slate-200">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-900 text-[9px] font-black uppercase tracking-widest shadow-sm mb-1">
+          <div className="card-timbul w-fit px-8 md:px-14 py-6 rounded-[36px] bg-white/95 backdrop-blur-md mx-auto text-center border-2 border-slate-300 border-b-8 border-b-slate-400 shadow-2xl space-y-2">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-900 text-[10px] font-black uppercase tracking-widest shadow-sm mb-1">
               <i className="fa-solid fa-book-bookmark text-amber-600"></i> MONOGRAF & MANUAL OPERASIONAL
             </div>
-            <h2 className="text-2xl md:text-5xl font-black italic text-slate-900 uppercase tracking-tighter leading-tight drop-shadow-sm">
+            <h2 className="text-2xl md:text-4xl lg:text-5xl font-black italic text-slate-900 uppercase tracking-tighter leading-tight text-timbul-heavy">
               BUKU PANDUAN DIGITAL
             </h2>
-            <div className="w-20 h-1.5 bg-blue-600 mx-auto rounded-full shadow-sm"></div>
-            <p className="text-slate-800 font-black uppercase tracking-[0.3em] text-[10px]">Monograf & Manual Penggunaan Platform</p>
+            <div className="w-20 h-1.5 bg-gradient-to-r from-amber-500 to-orange-600 mx-auto rounded-full shadow-sm"></div>
+            <p className="text-amber-950 font-black uppercase tracking-[0.25em] text-[11px] bg-amber-50/90 px-4 py-1 rounded-full border border-amber-200 w-fit mx-auto shadow-sm">
+              Monograf & Manual Penggunaan Platform
+            </p>
           </div>
 
           <div className="w-full flex justify-center">

@@ -241,6 +241,25 @@ body {
   filter: drop-shadow(0 4px 8px rgba(30, 58, 138, 0.35)) drop-shadow(0 2px 2px rgba(0, 0, 0, 0.2));
 }
 
+/* Super Heavy 3D Extruded Embossed Text (Real 3D Extrusion) */
+.text-emboss-3d-title {
+  display: inline-block;
+  filter: 
+    drop-shadow(0 2px 0 #1e3a8a)
+    drop-shadow(0 4px 0 #1e293b)
+    drop-shadow(0 6px 0 #0f172a)
+    drop-shadow(0 10px 18px rgba(0, 0, 0, 0.5));
+}
+
+.text-emboss-3d-madel {
+  display: inline-block;
+  filter: 
+    drop-shadow(0 2px 0 #b45309)
+    drop-shadow(0 4px 0 #047857)
+    drop-shadow(0 6px 0 #1e3a8a)
+    drop-shadow(0 10px 18px rgba(0, 0, 0, 0.5));
+}
+
 /* 3D Embossed Spheres / Circles (Halaman 2 Varied 2-Color Gradients) */
 .sphere-timbul-emerald {
   background: linear-gradient(135deg, #10b981 0%, #047857 100%);
