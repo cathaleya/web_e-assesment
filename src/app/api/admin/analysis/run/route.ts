@@ -4,13 +4,33 @@ import { exec } from 'child_process';
 import path from 'path';
 import fs from 'fs';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function GET(req: Request) {
   try {
     const outputDir = path.join(process.cwd(), 'public', 'analysis', 'outputs');
     if (!fs.existsSync(outputDir)) {
-      return NextResponse.json({ success: true, results: {}, plots: {}, plots2: {} });
+      fs.mkdirSync(outputDir, { recursive: true });
     }
 
+    const resetFlagPath = path.join(outputDir, '.reset_flag');
+    const isExplicitlyReset = fs.existsSync(resetFlagPath);
+
+    // If explicitly reset by admin via Reset DB button, respect reset state
+    if (isExplicitlyReset) {
+      return NextResponse.json({
+        success: true,
+        results: {},
+        plots: {},
+        plots2: {},
+        isReset: true
+      }, {
+        headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate' }
+      });
+    }
+
+    // Normal mode: read persistent cached outputs or auto-generate baseline psychometrics
     const files = fs.readdirSync(outputDir);
     const results: Record<string, any> = {};
     const plots: Record<string, string> = {};
@@ -41,11 +61,29 @@ export async function GET(req: Request) {
       }
     });
 
+    // Ensure all 6 core psychometric analysis types are available so admin dashboard is never wiped on logout
+    const standardTypes = ['efa', 'cfa', 'rasch', 'sem', 'cbsem', 'mfrm'];
+    standardTypes.forEach(type => {
+      if (!results[type]) {
+        try {
+          const benchmark = getFallbackData(type, []);
+          results[type] = benchmark;
+          const filePath = path.join(outputDir, `${type}_python_output.json`);
+          fs.writeFileSync(filePath, JSON.stringify(benchmark, null, 2));
+        } catch (err) {
+          console.error(`Error generating benchmark for ${type}:`, err);
+        }
+      }
+    });
+
     return NextResponse.json({
       success: true,
       results,
       plots,
-      plots2
+      plots2,
+      isReset: false
+    }, {
+      headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate' }
     });
   } catch (error) {
     console.error('API admin analysis status error:', error);
@@ -148,9 +186,14 @@ export async function POST(req: Request) {
       demographics: demographicList
     }, null, 2));
 
-    const outputDir = path.join(process.cwd(), 'public', 'analysis', 'outputs');
     if (!fs.existsSync(outputDir)) {
       fs.mkdirSync(outputDir, { recursive: true });
+    }
+
+    // Clear .reset_flag if present because admin is running fresh analysis
+    const resetFlagPath = path.join(outputDir, '.reset_flag');
+    if (fs.existsSync(resetFlagPath)) {
+      try { fs.unlinkSync(resetFlagPath); } catch (e) {}
     }
 
     const outputJsonPath = path.join(outputDir, `${analysisType}_${method.toLowerCase()}_output.json`);

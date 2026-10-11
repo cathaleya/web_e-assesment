@@ -194,23 +194,21 @@ Jika VPS Bapak pernah terkena malware sebelumnya, pastikan sistem bersih dengan 
 
 ---
 *Dokumen ini merupakan bagian dari panduan implementasi teknologi Riset BIMA S3.*
-masuk folder di vps:
 
+### Perintah Rutin Update di VPS (Data Database & Upload Aman Tersimpan)
+Jalankan langkah ini setiap kali ada pembaruan kode dari GitHub:
+```bash
 cd /var/www/web_e-assesment
+git pull origin main
+docker compose build --no-cache
+docker compose up -d
+```
+*(Catatan: Jangan gunakan flag `-v` pada `docker compose down` agar volume database PostgreSQL dan berkas uploads tidak terhapus).*
 
-docker compose down -v
-
-docker compose up -d --build
-
-reset data:
-
+### Reset Database (HANYA JIKA DIBUTUHKAN):
+Pembersihan database dapat dilakukan langsung secara aman lewat:
+1. **Tombol "Reset DB" di Panel Admin** (`/admin`), atau
+2. Perintah manual di VPS:
+```bash
 docker exec -it hdap-db psql -U postgres -d hdap -c 'TRUNCATE TABLE "Assessment", "Survey", "User" RESTART IDENTITY CASCADE;'
-
-
-# 1. Masuk ke folder project di VPS
-cd /var/www/web_e-assesment
-# 2. Reset total database (Menghapus container & volume database lama)
-docker compose down -v
-docker compose up -d --build
-# 3. Bersihkan seluruh file grafik/cache analisis lama
-rm -rf public/analysis/outputs/*
+```

@@ -2,6 +2,9 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function POST(req: Request) {
   try {
     const { userId, totalScore, answersJson, feedback } = await req.json();
@@ -71,7 +74,10 @@ export async function GET() {
       }
     });
 
-    return NextResponse.json(results, { status: 200 });
+    return NextResponse.json(results, { 
+      status: 200,
+      headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate' }
+    });
   } catch (error) {
     console.error('Error fetching survey results:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });

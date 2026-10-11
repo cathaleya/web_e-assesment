@@ -77,6 +77,17 @@ export default function DashboardPage() {
   const isSurveyDone = stats?.surveyDone ?? false;
   const isMadelDone = (stats?.madel5c ?? 0) > 0;
 
+  const handleUserLogout = () => {
+    localStorage.removeItem("userId");
+    localStorage.removeItem("userName");
+    localStorage.removeItem("userCampus");
+    localStorage.removeItem("userGender");
+    localStorage.removeItem("userOrigin");
+    localStorage.removeItem("userSpecialNeeds");
+    localStorage.removeItem("isAdmin");
+    router.push("/login");
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col md:flex-row overflow-hidden font-sans">
       {/* SIDEBAR TIMBUL & ENLARGED */}
@@ -148,7 +159,7 @@ export default function DashboardPage() {
 
           <div className="pt-4 border-t border-white/10">
             <button 
-              onClick={() => { localStorage.clear(); router.push("/login"); }} 
+              onClick={handleUserLogout} 
               className="w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl bg-rose-600/30 hover:bg-rose-600/50 text-rose-100 text-xs md:text-sm font-black text-left transition-all border border-rose-400/30 border-b-4 border-b-rose-950 hover:translate-y-[-2px]"
             >
               <i className="fa-solid fa-power-off text-rose-400 text-sm w-5 text-center"></i> 
@@ -209,7 +220,7 @@ export default function DashboardPage() {
               surveyDone={stats?.surveyDone || false}
               radarData={stats?.radar || [85, 90, 80, 75, 88]}
               onShowReflection={() => setShowReflection('madel')}
-              onExit={() => { localStorage.clear(); router.push("/login"); }}
+              onExit={handleUserLogout}
             />
           ) : (
             <>

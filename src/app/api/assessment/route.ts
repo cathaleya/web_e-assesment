@@ -1,6 +1,12 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
+import path from 'path';
+import fs from 'fs';
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function POST(req: Request) {
   try {
     const { userId, type, totalScore, answersJson } = await req.json();
@@ -18,6 +24,14 @@ export async function POST(req: Request) {
       },
       include: { user: true }
     });
+
+    // If .reset_flag exists, remove it because live user activity is happening
+    try {
+      const resetFlagPath = path.join(process.cwd(), 'public', 'analysis', 'outputs', '.reset_flag');
+      if (fs.existsSync(resetFlagPath)) {
+        fs.unlinkSync(resetFlagPath);
+      }
+    } catch (e) {}
 
     // Real-time sync to Google Sheets
     try {
@@ -58,7 +72,10 @@ export async function GET(req: Request) {
       }
     });
 
-    return NextResponse.json(results, { status: 200 });
+    return NextResponse.json(results, { 
+      status: 200,
+      headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate' }
+    });
   } catch (error) {
     console.error('Error fetching assessment results:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });

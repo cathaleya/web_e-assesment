@@ -354,6 +354,37 @@ export default function LoginPage() {
             </button>
           </form>
         </div>
+
+        {/* BANNER KHUSUS PASCASARJANA (S2/S3) THINK-ALOUD */}
+        <div className="card-timbul p-4.5 rounded-[24px] bg-gradient-to-r from-purple-950/90 via-indigo-950/90 to-purple-950/90 border-2 border-purple-400/50 text-center shadow-2xl backdrop-blur-md">
+          <div className="flex items-center justify-center gap-2 mb-1">
+            <i className="fa-solid fa-graduation-cap text-amber-300 text-sm"></i>
+            <span className="text-[10px] font-black text-amber-300 uppercase tracking-widest">
+              Responden Pascasarjana (S2 & S3)?
+            </span>
+          </div>
+          <p className="text-[11px] text-purple-100 font-bold mb-3">
+            Masuk melalui form login terpisah khusus Wawancara Kognitif Think-Aloud Protocol (15 Butir)
+          </p>
+          <button
+            type="button"
+            onClick={() => router.push("/login/think-aloud-s3")}
+            className="w-full py-3 px-4 bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-300 hover:to-yellow-400 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl shadow-lg border-b-4 border-amber-700 active:scale-95 transition-all flex items-center justify-center gap-2"
+          >
+            <span>FORM LOGIN KHUSUS S2 / S3</span>
+            <i className="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
+
+        <div className="text-center">
+          <button
+            type="button"
+            onClick={() => router.push("/")}
+            className="text-xs font-black text-white/90 hover:text-white drop-shadow transition-colors"
+          >
+            ← Kembali ke Landing Page Utama
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -1357,6 +1357,12 @@ export default function ThinkAloudS3ProtocolPage() {
       if (savedLang === "id" || savedLang === "en") setLang(savedLang);
 
       const savedName = localStorage.getItem("s3_userName");
+      if (!savedName) {
+        // Belum login lewat form terpisah -> arahkan ke form login khusus S2/S3
+        router.push("/login/think-aloud-s3");
+        return;
+      }
+
       const savedLevel = localStorage.getItem("s3_respondentLevel");
       const savedProdi = localStorage.getItem("s3_studyProgram");
       const savedCampus = localStorage.getItem("s3_userCampus");

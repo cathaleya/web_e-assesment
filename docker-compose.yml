@@ -30,7 +30,14 @@ services:
       # Override DATABASE_URL agar menunjuk ke container database
       DATABASE_URL: postgresql://postgres:${DB_PASSWORD:-Faithbless21}@db:5432/hdap?schema=public
       NODE_ENV: production
+    volumes:
+      - app_uploads:/app/public/uploads
+      - app_analysis:/app/public/analysis/outputs
 
 volumes:
   postgres_data:
+    driver: local
+  app_uploads:
+    driver: local
+  app_analysis:
     driver: local
