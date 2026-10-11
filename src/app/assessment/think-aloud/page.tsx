@@ -671,8 +671,11 @@ export default function ThinkAloudProtocolPage() {
   };
 
   const uploadAudioToServer = async (questionTitle: string) => {
-    if (!audioBlob) {
-      alert("⚠️ Silakan tekan 'Rekam Suara' dan suarakan jawaban Anda terlebih dahulu sebelum mengunggah!");
+    const hasAudio = !!audioBlob;
+    const hasText = transcriptText.trim().length > 0;
+
+    if (!hasAudio && !hasText) {
+      alert("⚠️ Silakan rekam suara Anda ATAU ketik teks jawaban Anda pada kotak transkrip terlebih dahulu sebelum mengunggah!");
       return;
     }
     if (!currentQ) return;
@@ -686,13 +689,17 @@ export default function ThinkAloudProtocolPage() {
           ? `${String.fromCharCode(65 + selectedOptIdx)}. ${currentQ.options[selectedOptIdx].text}`
           : "Belum Memilih Opsi";
 
-      // Use actual spoken transcript or clean label if no speech was detected
+      // Use actual spoken transcript or typed text
       const finalTranscript = transcriptText.trim()
         ? transcriptText.trim()
         : "[Respon Suara Terkirim (Tanpa Transkrip Teks)]";
 
+      const fileToUpload = audioBlob
+        ? audioBlob
+        : new Blob(["[Respon Teks Manual Tanpa Berkas Audio]"], { type: "audio/webm" });
+
       const formData = new FormData();
-      formData.append("audio", audioBlob, `ThinkAloud_Sesi${activeSession}_Soal_${currentQ.id}_P${probingStep}.webm`);
+      formData.append("audio", fileToUpload, `ThinkAloud_Sesi${activeSession}_Soal_${currentQ.id}_P${probingStep}.webm`);
       formData.append("userId", userId);
       formData.append("userName", userName);
       formData.append("userCampus", userCampus);
@@ -719,18 +726,18 @@ export default function ThinkAloudProtocolPage() {
 
         if (probingStep < 3) {
           const nextStep = probingStep + 1;
-          alert(`✅ Rekaman Audio Pertanyaan ${probingStep} Berhasil Tersimpan!\nOtomatis beralih ke Pertanyaan Probing ${nextStep}.`);
+          alert(`✅ Respon Pertanyaan Probing ${probingStep} Berhasil Tersimpan!\nOtomatis beralih ke Pertanyaan Probing ${nextStep}.`);
           setProbingStep(nextStep);
           resetRecordingState();
         } else {
-          alert(`🎉 Selamat! Seluruh 3 tahap probing audio untuk Soal ${sessionItemIdx + 1} telah lengkap tersimpan di Panel Admin!`);
+          alert(`🎉 Selamat! Seluruh 3 tahap probing untuk Soal ${sessionItemIdx + 1} telah lengkap tersimpan di Panel Admin!`);
         }
       } else {
-        alert("❌ Gagal mengunggah rekaman ke server admin. Silakan coba lagi.");
+        alert("❌ Gagal mengunggah respon ke server admin. Silakan coba lagi.");
       }
     } catch (err) {
-      console.error("Gagal mengunggah rekaman suara:", err);
-      alert("❌ Terjadi kesalahan koneksi saat mengunggah rekaman.");
+      console.error("Gagal mengunggah respon:", err);
+      alert("❌ Terjadi kesalahan koneksi saat mengunggah respon.");
     } finally {
       setIsUploading(false);
     }
@@ -1555,7 +1562,7 @@ export default function ThinkAloudProtocolPage() {
 
                         <button
                           onClick={() => uploadAudioToServer(currentProbing?.title || `Probing P${probingStep}`)}
-                          disabled={isUploading || isRecording || !audioBlob}
+                          disabled={isUploading || isRecording || (!audioBlob && !transcriptText.trim())}
                           className={`px-4 py-2 font-black text-xs uppercase tracking-wider rounded-xl shadow-lg border transition active:scale-95 flex items-center gap-1.5 ${
                             uploadSuccess || isStepCompleted(currentQ.id, probingStep)
                               ? "bg-emerald-600 text-white border-emerald-400"
@@ -1565,9 +1572,9 @@ export default function ThinkAloudProtocolPage() {
                           {isUploading ? (
                             <><i className="fa-solid fa-spinner animate-spin"></i> Mengirim...</>
                           ) : uploadSuccess || isStepCompleted(currentQ.id, probingStep) ? (
-                            <><i className="fa-solid fa-circle-check"></i> Terkirim ke Admin</>
+                            <><i className="fa-solid fa-circle-check"></i> Jawaban Terkirim ke Admin</>
                           ) : (
-                            <><i className="fa-solid fa-paper-plane"></i> 2. Kirim Suara ke Admin</>
+                            <><i className="fa-solid fa-paper-plane"></i> 2. Kirim Jawaban (Suara / Teks) ke Admin</>
                           )}
                         </button>
                       </div>
@@ -1602,21 +1609,21 @@ export default function ThinkAloudProtocolPage() {
                       </div>
                     )}
 
-                    {/* VERBATIM TRANSCRIPT SPEECH-TO-TEXT AREA */}
+                    {/* VERBATIM TRANSCRIPT SPEECH-TO-TEXT / MANUAL INPUT AREA */}
                     <div className="space-y-1">
                       <div className="flex items-center justify-between text-[10px] font-black uppercase text-slate-400">
-                        <span><i className="fa-solid fa-file-signature text-rose-400 mr-1"></i> Transkrip Teks Verbatim (Otomatis / AI Server):</span>
+                        <span><i className="fa-solid fa-file-signature text-rose-400 mr-1"></i> Kotak Transkrip Verbatim (Otomatis &amp; Input Manual Teks):</span>
                         {transcriptText && <span className="text-emerald-400 font-bold">✓ Terisi ({transcriptText.length} karakter)</span>}
                       </div>
                       <textarea
-                        rows={2}
+                        rows={3}
                         value={transcriptText}
                         onChange={(e) => setTranscriptText(e.target.value)}
-                        placeholder="Hasil transkrip otomatis ucapan Anda akan tampil di sini saat merekam atau setelah mengunggah rekaman..."
+                        placeholder="Hasil transkrip ucapan Anda akan muncul otomatis di sini saat merekam. Jika mikrofon/verbatim HP tidak terdeteksi otomatis, Anda dapat MENGETIK JAWABAN ANDA SECARA MANUAL di sini lalu menekan tombol 'Kirim Jawaban' di atas."
                         className="w-full p-2.5 bg-slate-900 rounded-lg border border-slate-700 text-xs text-white font-medium focus:border-rose-400 outline-none leading-relaxed"
                       />
-                      <p className="text-[10px] text-slate-400 italic">
-                        💡 Teks di atas terisi otomatis via browser (Laptop) atau dikonversi otomatis oleh Server AI saat dikirim (HP/Mobile). Anda juga bebas menyunting atau melengkapi teks secara manual jika diperlukan.
+                      <p className="text-[10px] text-slate-300 italic">
+                        💡 <strong>Catatan:</strong> Teks dapat terisi otomatis via rekaman suara (Laptop/Server AI). Jika Anda memilih untuk mengetik jawaban secara manual, cukup ketik di kotak di atas dan tekan tombol <strong>"Kirim Jawaban"</strong>.
                       </p>
                     </div>
 
