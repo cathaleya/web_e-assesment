@@ -173,3 +173,20 @@ export async function DELETE(req: Request) {
     return NextResponse.json({ error: "Gagal menghapus rekaman." }, { status: 500 });
   }
 }
+
+export async function PUT(req: Request) {
+  try {
+    const { id, transcript } = await req.json();
+    ensureUploadDir();
+    let current = getRecordings();
+    const index = current.findIndex((r: any) => r.id === id);
+    if (index !== -1) {
+      current[index].transcript = transcript;
+      saveRecordings(current);
+      return NextResponse.json({ success: true, record: current[index] });
+    }
+    return NextResponse.json({ error: "Rekaman tidak ditemukan." }, { status: 404 });
+  } catch (err) {
+    return NextResponse.json({ error: "Gagal menyunting transkrip." }, { status: 500 });
+  }
+}

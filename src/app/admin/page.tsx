@@ -219,6 +219,9 @@ export default function AdminDashboard() {
   const [sysSettings, setSysSettings] = useState<any>({});
   const [settingsSaved, setSettingsSaved] = useState(false);
   const [audioRecordings, setAudioRecordings] = useState<any[]>([]);
+  const [consents, setConsents] = useState<any[]>([]);
+  const [editingTranscriptId, setEditingTranscriptId] = useState<string | null>(null);
+  const [editingTranscriptText, setEditingTranscriptText] = useState<string>("");
 
   const fetchAudioRecordings = useCallback(async () => {
     try {
@@ -233,6 +236,255 @@ export default function AdminDashboard() {
       console.error("Gagal mengambil data rekaman Think-Aloud:", err);
     }
   }, []);
+
+  const fetchConsents = useCallback(async () => {
+    try {
+      const res = await fetch('/api/consent?t=' + Date.now(), { cache: 'no-store' });
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          setConsents(data);
+        }
+      }
+    } catch (err) {
+      console.error("Gagal mengambil data Informed Consent:", err);
+    }
+  }, []);
+
+  const handleSaveTranscript = async (id: string, transcript: string) => {
+    try {
+      const res = await fetch("/api/think-aloud/audio", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, transcript }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        alert("✅ Transkrip verbatim berhasil diperbarui!");
+        setEditingTranscriptId(null);
+        setEditingTranscriptText("");
+        fetchAudioRecordings();
+      } else {
+        alert("❌ Gagal memperbarui transkrip.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("❌ Terjadi kesalahan koneksi.");
+    }
+  };
+
+  const handleDeleteRecording = async (id: string, filename: string) => {
+    if (!window.confirm("Apakah Anda yakin ingin menghapus rekaman audio ini?")) return;
+    try {
+      const res = await fetch("/api/think-aloud/audio", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, filename }),
+      });
+      if (res.ok) {
+        alert("✅ Rekaman berhasil dihapus!");
+        fetchAudioRecordings();
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleDeleteConsent = async (id: string) => {
+    if (!window.confirm("Apakah Anda yakin ingin menghapus data Informed Consent ini?")) return;
+    try {
+      const res = await fetch("/api/consent", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
+      });
+      if (res.ok) {
+        alert("✅ Informed consent berhasil dihapus!");
+        fetchConsents();
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const downloadConsentDocx = (consent: any) => {
+    const content = `
+      <html xmlns:o='urn:schemas-microsoft-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+      <head>
+        <meta charset='utf-8'>
+        <title>Informed Consent - ${consent.userName}</title>
+        <style>
+          body { font-family: 'Calibri', 'Times New Roman', serif; font-size: 11pt; line-height: 1.5; color: #111; margin: 40px; }
+          h1 { font-size: 14pt; font-weight: bold; text-align: center; text-transform: uppercase; margin-bottom: 5px; }
+          h2 { font-size: 11pt; font-weight: bold; text-align: center; color: #333; margin-top: 0; margin-bottom: 20px; }
+          .table-meta { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+          .table-meta td { padding: 5px 8px; vertical-align: top; border-bottom: 1px solid #eee; }
+          .bold { font-weight: bold; }
+          .box-statement { border: 1px solid #777; padding: 14px; background-color: #f8fafc; margin-bottom: 25px; border-radius: 4px; }
+        </style>
+      </head>
+      <body>
+        <h1>KEMENTERIAN PENDIDIKAN, KEBUDAYAAN, RISET, DAN TEKNOLOGI</h1>
+        <h2>UNIVERSITAS NEGERI JAKARTA — PROGRAM DOKTOR (S3)</h2>
+        <hr style="border: 1.5px solid #111; margin-bottom: 20px;" />
+        
+        <h1 style="font-size: 13pt; text-align: center; color: #002b49;">LEMBAR PERSETUJUAN KEIKUTSERTAAN (INFORMED CONSENT)</h1>
+        <p style="text-align: center; font-size: 10pt; color: #555; margin-bottom: 25px;">Instrumen Asesmen HDAP MADEL-5C (Model Literasi Digital Ekspansif Calon Guru SD)</p>
+        
+        <p>Saya yang bertanda tangan di bawah ini:</p>
+        <table class="table-meta">
+          <tr><td width="30%" class="bold">Nama Lengkap Partisipan</td><td width="5%">:</td><td><strong>${consent.userName}</strong></td></tr>
+          <tr><td class="bold">NIM / NPM / ID</td><td>:</td><td>${consent.userNim || '-'}</td></tr>
+          <tr><td class="bold">LPTK / Instansi Perguruan Tinggi</td><td>:</td><td>${consent.userCampus}</td></tr>
+          <tr><td class="bold">Sesi Asesmen</td><td>:</td><td>Sesi ${consent.sessionNo} — Wawancara Think-Aloud Protocol</td></tr>
+          <tr><td class="bold">Tanggal & Waktu Persetujuan</td><td>:</td><td>${new Date(consent.createdAt).toLocaleString('id-ID', { dateStyle: 'full', timeStyle: 'medium' })} WITA/WIB</td></tr>
+          <tr><td class="bold">Status Persetujuan Legal</td><td>:</td><td><strong style="color: green;">DISERTAKAN & DISETUJUI SECARA SADAR (VALID & LEGAL)</strong></td></tr>
+        </table>
+
+        <div class="box-statement">
+          <p class="bold">PERNYATAAN KETENTUAN ETIKA PENELITIAN & PERSETUJUAN:</p>
+          <ol>
+            <li>Saya menyatakan telah membaca, memahami, dan menyetujui seluruh prosedur penelitian instrumen HDAP MADEL-5C ini secara sadar dan tanpa paksaan dari pihak manapun.</li>
+            <li>Saya bersedia memberikan respon tertulis dan suara (audio Think-Aloud) untuk keperluan analisis data ilmiah Disertasi & Publikasi Artikel Jurnal Internasional Bereputasi.</li>
+            <li>Saya memahami bahwa seluruh identitas pribadi saya akan dijaga kerahasiaannya dan dianonimkan (<em>anonymized</em>) sesuai standar kode etik penelitian universitas.</li>
+          </ol>
+        </div>
+
+        <table style="width: 100%; margin-top: 40px;">
+          <tr>
+            <td width="50%"></td>
+            <td width="50%" align="center">
+              <p>Yang Membuat Pernyataan,</p>
+              ${consent.signatureDataUrl ? `<img src="${consent.signatureDataUrl}" style="max-height: 90px; max-width: 220px; border-bottom: 1px solid #333; padding-bottom: 4px;" alt="Tanda Tangan Digital" /><br/>` : '<div style="height: 60px;"></div>'}
+              <p class="bold" style="text-decoration: underline; margin-top: 5px;">${consent.userName}</p>
+              <p style="font-size: 9pt; color: #666;">NIM: ${consent.userNim || '-'}</p>
+            </td>
+          </tr>
+        </table>
+      </body>
+      </html>
+    `;
+
+    const blob = new Blob(['\ufeff', content], { type: 'application/msword' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `InformedConsent_Sesi${consent.sessionNo}_${consent.userName.replace(/[^a-zA-Z0-9]/g, '_')}.docx`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const downloadConsentPdf = (consent: any) => {
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) return alert("Pop-up diblokir oleh browser. Harap izinkan pop-up.");
+    
+    printWindow.document.write(`
+      <html>
+      <head>
+        <title>Cetak Informed Consent - ${consent.userName}</title>
+        <style>
+          body { font-family: Arial, sans-serif; font-size: 11pt; line-height: 1.6; color: #111; padding: 40px; }
+          .header { text-align: center; border-bottom: 2px solid #111; padding-bottom: 15px; margin-bottom: 25px; }
+          .title { font-size: 14pt; font-weight: bold; margin-bottom: 5px; text-transform: uppercase; }
+          .subtitle { font-size: 10pt; color: #444; }
+          .table-meta { width: 100%; margin: 20px 0; border-collapse: collapse; }
+          .table-meta td { padding: 6px 8px; border-bottom: 1px solid #eee; }
+          .bold { font-weight: bold; }
+          .box { border: 1px solid #333; padding: 15px; background: #f8fafc; border-radius: 6px; margin: 20px 0; }
+          .sig-container { text-align: center; width: 250px; float: right; margin-top: 40px; }
+          .sig-img { max-height: 100px; max-width: 220px; margin: 10px 0; }
+          @media print {
+            body { padding: 0; }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <div class="title">UNIVERSITAS NEGERI JAKARTA</div>
+          <div class="subtitle">PROGRAM DOKTOR (S3) PENELITIAN &amp; EVALUASI PENDIDIKAN — HDAP MADEL-5C</div>
+        </div>
+        <h2 style="text-align: center; font-size: 13pt; color: #002b49;">LEMBAR INFORMED CONSENT &amp; HAK PARTISIPAN</h2>
+        
+        <p>Data Responden Penelitian Disertasi:</p>
+        <table class="table-meta">
+          <tr><td width="32%" class="bold">Nama Partisipan</td><td>: <strong>${consent.userName}</strong></td></tr>
+          <tr><td class="bold">NIM / NPM / ID</td><td>: ${consent.userNim || '-'}</td></tr>
+          <tr><td class="bold">LPTK / Perguruan Tinggi</td><td>: ${consent.userCampus}</td></tr>
+          <tr><td class="bold">Sesi Wawancara</td><td>: Sesi ${consent.sessionNo} (Think-Aloud Protocol)</td></tr>
+          <tr><td class="bold">Tanggal &amp; Waktu Persetujuan</td><td>: ${new Date(consent.createdAt).toLocaleString('id-ID')} WITA/WIB</td></tr>
+        </table>
+
+        <div class="box">
+          <strong>Ketentuan Persetujuan Etika Penelitian:</strong>
+          <ol style="margin-top: 8px;">
+            <li>Partisipan berpartisipasi secara sukarela tanpa ada paksaan dari pihak manapun.</li>
+            <li>Data rekaman suara dan transkrip digunakan untuk keperluan analisis akademik disertasi dan publikasi artikel jurnal.</li>
+            <li>Kerahasiaan identitas dijamin 100% oleh peneliti (<em>Anonymized</em>).</li>
+          </ol>
+        </div>
+
+        <div class="sig-container">
+          <p>Yang Menyatakan,</p>
+          ${consent.signatureDataUrl ? `<img src="${consent.signatureDataUrl}" class="sig-img" /><br/>` : '<div style="height:70px;"></div>'}
+          <strong style="text-decoration: underline;">${consent.userName}</strong>
+          <p style="font-size: 10pt; margin-top:2px; color: #555;">NIM: ${consent.userNim || '-'}</p>
+        </div>
+
+        <script>
+          window.onload = function() {
+            setTimeout(function() {
+              window.print();
+            }, 500);
+          };
+        </script>
+      </body>
+      </html>
+    `);
+    printWindow.document.close();
+  };
+
+  const downloadVerbatimTxt = (rec: any) => {
+    const content = `=====================================================
+TRANSKRIP VERBATIM WAWANCARA THINK-ALOUD PROTOCOL
+Platform Asesmen HDAP MADEL-5C (PGSD UNJ)
+=====================================================
+
+Informasi Responden:
+---------------------
+Nama Lengkap    : ${rec.userName}
+NIM / NPM       : ${rec.userNim || '-'}
+LPTK / Kampus   : ${rec.userCampus}
+User ID         : ${rec.userId}
+
+Detail Asesmen:
+---------------------
+Sesi Asesmen    : Sesi ${rec.sessionNo || 1}
+Soal SJT #      : Soal ${rec.itemNo || 1} (${rec.sjtId})
+Tahap Probing   : Pertanyaan Probing ${rec.probingStep}
+Judul Probing   : ${rec.questionTitle}
+Opsi Diberikan  : ${rec.selectedOption}
+Durasi Rekaman  : ${rec.duration || 0} detik
+Tanggal Rekam   : ${new Date(rec.createdAt).toLocaleString('id-ID')}
+Berkas Audio    : ${rec.audioUrl || '-'}
+
+TEKS VERBATIM UCAPAN RESPONDEN:
+-----------------------------------------------------
+${rec.transcript || '[Tanpa Teks Verbatim]'}
+-----------------------------------------------------
+`;
+
+    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Transkrip_Soal${rec.itemNo}_P${rec.probingStep}_${rec.userName.replace(/[^a-zA-Z0-9]/g, '_')}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
 
   const router = useRouter();
   const [downloading, setDownloading] = useState<string | null>(null);
@@ -519,8 +771,9 @@ export default function AdminDashboard() {
         setStats(prev => ({ ...prev, participants: uniqueUsers || 284 }));
       }
       fetchAudioRecordings();
+      fetchConsents();
     } catch (err) { console.error(err); }
-  }, [fetchAudioRecordings]);
+  }, [fetchAudioRecordings, fetchConsents]);
 
   useEffect(() => {
     setIsMounted(true);
@@ -662,9 +915,8 @@ export default function AdminDashboard() {
 
   // ── Tab metadata ────────────────────────────────────────────────────────
   const tabMeta: Record<string, { label: string; icon: string; breadcrumb: string }> = {
-    preliminary: { label: "Preliminary Analysis", icon: "fa-chart-simple", breadcrumb: "Main Analysis" },
-    usability: { label: "SUS Usability Analysis", icon: "fa-wand-magic-sparkles", breadcrumb: "Main Analysis" },
-    madel5c: { label: "MADEL5C Analysis", icon: "fa-brain", breadcrumb: "Main Analysis" },
+    thinkaloud: { label: "Database Suara Think-Aloud", icon: "fa-microphone-lines", breadcrumb: "Main Analysis" },
+    consent: { label: "Informed Consent & TTD Digital", icon: "fa-file-signature", breadcrumb: "Management" },
     efa: { label: "Exploratory Factor Analysis", icon: "fa-chart-pie", breadcrumb: "Psychometric Engine" },
     cfa: { label: "Confirmatory Factor Analysis", icon: "fa-diagram-project", breadcrumb: "Psychometric Engine" },
     rasch: { label: "Rasch / PCM Model", icon: "fa-stairs", breadcrumb: "Psychometric Engine" },
@@ -844,8 +1096,9 @@ export default function AdminDashboard() {
             {!sidebarCollapsed && <p className="text-[9px] font-black text-emerald-400 uppercase tracking-widest mb-2 px-1">Management</p>}
             <nav className="space-y-1">
               {[
+                { id: 'consent', icon: 'fa-file-signature', label: 'Informed Consent' },
                 { id: 'logs', icon: 'fa-users', label: 'Participants' },
-                { id: 'instruments', icon: 'fa-file-signature', label: 'Instruments' },
+                { id: 'instruments', icon: 'fa-sliders', label: 'Instruments' },
                 { id: 'settings', icon: 'fa-gear', label: 'Settings' }
               ].map(item => (
                 <button key={item.id} onClick={() => setCurrentTab(item.id)}
@@ -2750,6 +3003,302 @@ export default function AdminDashboard() {
               ) : (
                 <EmptyState icon="fa-route" message={`${selectedSemModel === 'cbsem' ? 'CB-SEM' : 'PLS-SEM'} belum dijalankan.`} sub='Pilih engine dan klik tombol "Run SEM" untuk memproses model struktural.' />
               )}
+            </div>
+          )}
+
+          {/* ═══════════════════════════════════════════════════
+              TAB: DATABASE SUARA THINK-ALOUD
+          ═══════════════════════════════════════════════════ */}
+          {currentTab === 'thinkaloud' && (
+            <div className="space-y-6 animate-in fade-in slide-in-from-bottom-3 duration-300">
+              <div className="card-timbul-admin p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-rose-950/10 via-white to-white">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-gradient-to-br from-rose-500 to-amber-600 text-white rounded-2xl flex items-center justify-center shadow-lg border-b-2 border-rose-900 shrink-0">
+                    <i className="fa-solid fa-microphone-lines text-xl"></i>
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-black text-slate-900 tracking-tight">Database Rekaman Suara Think-Aloud Protocol</h2>
+                    <p className="text-xs font-bold text-slate-500 mt-0.5">
+                      Daftar rekaman suara audio real-time responden mahasiswa beserta transkrip teks verbatim (Server AI / Browser / Sunting Manual Admin)
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 shrink-0">
+                  <button
+                    onClick={fetchAudioRecordings}
+                    className="h-10 px-4 bg-slate-900 hover:bg-black text-white rounded-xl text-xs font-black uppercase tracking-wider flex items-center gap-2 shadow-lg border-b-2 border-black transition-all active:scale-95"
+                  >
+                    <i className="fa-solid fa-arrows-rotate text-xs"></i> Refresh Data
+                  </button>
+                  <span className="px-3.5 py-2 bg-rose-100 border border-rose-300 text-rose-900 rounded-xl text-xs font-black">
+                    {audioRecordings.length} File Rekaman Tersimpan
+                  </span>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <MetricCard label="Total Rekaman Audio" value={audioRecordings.length} sub="Format .webm" icon="fa-microphone" accent="bg-rose-50 text-rose-600" />
+                <MetricCard label="Partisipan Unik" value={new Set(audioRecordings.map(r => r.userId)).size} sub="Mahasiswa Calon Guru" icon="fa-users" accent="bg-blue-50 text-blue-600" />
+                <MetricCard label="Transkrip Verbatim Terisi" value={audioRecordings.filter(r => r.transcript && !r.transcript.includes("[Respon Suara Terkirim")).length} sub="Otomatis AI &amp; Sunting" icon="fa-file-lines" accent="bg-emerald-50 text-emerald-600" />
+                <MetricCard label="Perlu Transkrip Manual" value={audioRecordings.filter(r => !r.transcript || r.transcript.includes("[Respon Suara Terkirim")).length} sub="Admin dapat ketik manual" icon="fa-pen-to-square" accent="bg-amber-50 text-amber-600" />
+              </div>
+
+              <div className="card-timbul-admin overflow-hidden">
+                <div className="p-4 bg-slate-50 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex items-center gap-2">
+                    <i className="fa-solid fa-database text-rose-600 text-sm"></i>
+                    <h3 className="text-xs font-black uppercase text-slate-800 tracking-wider">Daftar Berkas Rekaman Audio &amp; Transkrip Verbatim</h3>
+                  </div>
+                </div>
+
+                {audioRecordings.length === 0 ? (
+                  <div className="p-12 text-center">
+                    <i className="fa-solid fa-microphone-slash text-4xl text-slate-300 mb-3"></i>
+                    <p className="text-sm font-bold text-slate-600">Belum ada rekaman suara Think-Aloud di database server.</p>
+                    <p className="text-xs text-slate-400 mt-1">Responden dapat melakukan rekam suara pada tahap Wawancara Think-Aloud MADEL5C.</p>
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto custom-scrollbar">
+                    <table className="w-full text-left border-collapse">
+                      <thead className="bg-slate-900 text-slate-300 text-[10px] font-black uppercase tracking-wider">
+                        <tr>
+                          <th className="p-3.5">No</th>
+                          <th className="p-3.5">Responden / Partisipan</th>
+                          <th className="p-3.5">Soal &amp; Tahap Probing</th>
+                          <th className="p-3.5">Opsi Pilihan</th>
+                          <th className="p-3.5 min-w-[220px]">Putar Audio (Player)</th>
+                          <th className="p-3.5 min-w-[320px]">Transkrip Verbatim Teks</th>
+                          <th className="p-3.5 text-center">Aksi / Unduh</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100 text-xs text-slate-700 font-medium">
+                        {audioRecordings.map((rec: any, idx: number) => (
+                          <tr key={rec.id || idx} className="hover:bg-slate-50/80 transition-colors">
+                            <td className="p-3.5 font-bold text-slate-400">{idx + 1}</td>
+                            <td className="p-3.5">
+                              <div className="font-bold text-slate-900">{rec.userName}</div>
+                              <div className="text-[10px] text-slate-500">{rec.userCampus}</div>
+                              <div className="text-[10px] text-slate-400 font-mono">ID: {rec.userId}</div>
+                            </td>
+                            <td className="p-3.5">
+                              <span className="px-2 py-0.5 bg-rose-100 text-rose-900 rounded font-black text-[10px] uppercase block w-fit mb-1">
+                                Sesi {rec.sessionNo || 1} — Soal #{rec.itemNo || 1} ({rec.sjtId})
+                              </span>
+                              <span className="px-2 py-0.5 bg-blue-100 text-blue-900 rounded font-bold text-[10px] block w-fit">
+                                Pertanyaan Probing {rec.probingStep}
+                              </span>
+                            </td>
+                            <td className="p-3.5 max-w-[180px]">
+                              <span className="text-[11px] font-medium text-slate-600 line-clamp-2" title={rec.selectedOption}>
+                                {rec.selectedOption}
+                              </span>
+                            </td>
+                            <td className="p-3.5">
+                              {rec.audioUrl ? (
+                                <div className="space-y-1">
+                                  <audio controls src={rec.audioUrl} className="h-9 w-56 rounded-lg shadow-sm border border-slate-200" />
+                                  <div className="text-[9px] text-slate-400 font-mono">
+                                    Durasi: {rec.duration || 0} detik · WebM
+                                  </div>
+                                </div>
+                              ) : (
+                                <span className="text-rose-500 font-bold text-[10px]">Audio Tidak Ditemukan</span>
+                              )}
+                            </td>
+                            <td className="p-3.5">
+                              {editingTranscriptId === rec.id ? (
+                                <div className="space-y-2">
+                                  <textarea
+                                    rows={3}
+                                    value={editingTranscriptText}
+                                    onChange={(e) => setEditingTranscriptText(e.target.value)}
+                                    className="w-full p-2 bg-white border-2 border-amber-400 rounded-lg text-xs font-medium focus:outline-none"
+                                  />
+                                  <div className="flex items-center gap-2">
+                                    <button
+                                      onClick={() => handleSaveTranscript(rec.id, editingTranscriptText)}
+                                      className="px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[10px] rounded-md transition"
+                                    >
+                                      <i className="fa-solid fa-floppy-disk mr-1"></i> Simpan
+                                    </button>
+                                    <button
+                                      onClick={() => { setEditingTranscriptId(null); setEditingTranscriptText(""); }}
+                                      className="px-3 py-1 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold text-[10px] rounded-md transition"
+                                    >
+                                      Batal
+                                    </button>
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="group relative bg-slate-50 border border-slate-200 rounded-xl p-2.5 space-y-1.5">
+                                  <p className="text-xs text-slate-800 leading-relaxed font-medium">
+                                    {rec.transcript || "[Belum ada transkrip verbatim]"}
+                                  </p>
+                                  <button
+                                    onClick={() => { setEditingTranscriptId(rec.id); setEditingTranscriptText(rec.transcript || ""); }}
+                                    className="text-[10px] font-bold text-amber-700 hover:text-amber-900 underline flex items-center gap-1"
+                                  >
+                                    <i className="fa-solid fa-pen-to-square"></i> Sunting Transkrip Manual
+                                  </button>
+                                </div>
+                              )}
+                            </td>
+                            <td className="p-3.5 text-center">
+                              <div className="flex flex-col gap-1.5 items-center">
+                                {rec.audioUrl && (
+                                  <a
+                                    href={rec.audioUrl}
+                                    download={rec.filename || "audio.webm"}
+                                    className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-[10px] font-bold flex items-center gap-1 transition w-full justify-center"
+                                  >
+                                    <i className="fa-solid fa-download"></i> Unduh Audio
+                                  </a>
+                                )}
+                                <button
+                                  onClick={() => downloadVerbatimTxt(rec)}
+                                  className="px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[10px] font-bold flex items-center gap-1 transition w-full justify-center"
+                                >
+                                  <i className="fa-solid fa-file-word"></i> Unduh Teks
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteRecording(rec.id, rec.filename)}
+                                  className="px-2 py-0.5 bg-rose-50 text-rose-600 hover:bg-rose-100 rounded text-[9px] font-bold transition"
+                                >
+                                  <i className="fa-solid fa-trash mr-0.5"></i> Hapus
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* ═══════════════════════════════════════════════════
+              TAB: INFORMED CONSENT & DIGITAL SIGNATURE
+          ═══════════════════════════════════════════════════ */}
+          {currentTab === 'consent' && (
+            <div className="space-y-6 animate-in fade-in slide-in-from-bottom-3 duration-300">
+              <div className="card-timbul-admin p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-emerald-950/10 via-white to-white">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-gradient-to-br from-emerald-600 to-teal-700 text-white rounded-2xl flex items-center justify-center shadow-lg border-b-2 border-emerald-900 shrink-0">
+                    <i className="fa-solid fa-file-signature text-xl"></i>
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-black text-slate-900 tracking-tight">Database Informed Consent &amp; Tanda Tangan Digital</h2>
+                    <p className="text-xs font-bold text-slate-500 mt-0.5">
+                      Arsip lengkap lembar persetujuan partisipan terisi beserta tanda tangan digital untuk bukti etika penelitian Disertasi &amp; Jurnal
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 shrink-0">
+                  <button
+                    onClick={fetchConsents}
+                    className="h-10 px-4 bg-slate-900 hover:bg-black text-white rounded-xl text-xs font-black uppercase tracking-wider flex items-center gap-2 shadow-lg border-b-2 border-black transition-all active:scale-95"
+                  >
+                    <i className="fa-solid fa-arrows-rotate text-xs"></i> Refresh Data
+                  </button>
+                  <span className="px-3.5 py-2 bg-emerald-100 border border-emerald-300 text-emerald-900 rounded-xl text-xs font-black">
+                    {consents.length} Informed Consent Valid
+                  </span>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <MetricCard label="Total Consent Disetujui" value={consents.length} sub="Legal &amp; Valid" icon="fa-file-circle-check" accent="bg-emerald-50 text-emerald-600" />
+                <MetricCard label="Responden Terverifikasi" value={new Set(consents.map(c => c.userName)).size} sub="Mahasiswa Calon Guru" icon="fa-user-check" accent="bg-blue-50 text-blue-600" />
+                <MetricCard label="TTD Digital Tersimpan" value={consents.filter(c => c.signatureDataUrl).length} sub="PNG Base64 Canvas" icon="fa-pen-nib" accent="bg-purple-50 text-purple-600" />
+              </div>
+
+              <div className="card-timbul-admin overflow-hidden">
+                <div className="p-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+                  <h3 className="text-xs font-black uppercase text-slate-800 tracking-wider flex items-center gap-2">
+                    <i className="fa-solid fa-file-contract text-emerald-600"></i>
+                    Daftar Responden &amp; Berkas Persetujuan Etika Penelitian
+                  </h3>
+                </div>
+
+                {consents.length === 0 ? (
+                  <div className="p-12 text-center">
+                    <i className="fa-solid fa-file-circle-xmark text-4xl text-slate-300 mb-3"></i>
+                    <p className="text-sm font-bold text-slate-600">Belum ada data Informed Consent yang tersimpan di server.</p>
+                    <p className="text-xs text-slate-400 mt-1">Data Informed Consent akan masuk saat responden menyetujui &amp; menandatangani di sesi Think-Aloud.</p>
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto custom-scrollbar">
+                    <table className="w-full text-left border-collapse">
+                      <thead className="bg-slate-900 text-slate-300 text-[10px] font-black uppercase tracking-wider">
+                        <tr>
+                          <th className="p-3.5">No</th>
+                          <th className="p-3.5">Nama &amp; Identitas Responden</th>
+                          <th className="p-3.5">Sesi Asesmen</th>
+                          <th className="p-3.5">Waktu Persetujuan</th>
+                          <th className="p-3.5 text-center">Tanda Tangan Digital</th>
+                          <th className="p-3.5 text-center">Unduh Berkas Lampiran</th>
+                          <th className="p-3.5 text-center">Aksi</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100 text-xs text-slate-700 font-medium">
+                        {consents.map((c: any, idx: number) => (
+                          <tr key={c.id || idx} className="hover:bg-slate-50/80 transition-colors">
+                            <td className="p-3.5 font-bold text-slate-400">{idx + 1}</td>
+                            <td className="p-3.5">
+                              <div className="font-bold text-slate-900 text-sm">{c.userName}</div>
+                              <div className="text-xs text-slate-600 font-medium">{c.userCampus}</div>
+                              <div className="text-[10px] text-slate-400 font-mono">NIM: {c.userNim || '-'}</div>
+                            </td>
+                            <td className="p-3.5">
+                              <span className="px-2.5 py-1 bg-amber-100 text-amber-900 rounded-lg font-black text-xs block w-fit">
+                                Sesi {c.sessionNo || 1} Think-Aloud
+                              </span>
+                            </td>
+                            <td className="p-3.5 text-slate-600">
+                              {new Date(c.createdAt).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' })}
+                            </td>
+                            <td className="p-3.5 text-center">
+                              {c.signatureDataUrl ? (
+                                <div className="inline-block p-1 bg-white border border-slate-200 rounded-lg shadow-sm">
+                                  <img src={c.signatureDataUrl} alt="TTD" className="h-12 max-w-[150px] object-contain mx-auto" />
+                                </div>
+                              ) : (
+                                <span className="text-slate-400 text-[10px]">Tidak ada TTD</span>
+                              )}
+                            </td>
+                            <td className="p-3.5 text-center">
+                              <div className="flex flex-col sm:flex-row items-center justify-center gap-2">
+                                <button
+                                  onClick={() => downloadConsentDocx(c)}
+                                  className="px-3 py-1.5 bg-blue-700 hover:bg-blue-800 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-sm transition"
+                                >
+                                  <i className="fa-solid fa-file-word text-sm"></i> Unduh DOCX
+                                </button>
+                                <button
+                                  onClick={() => downloadConsentPdf(c)}
+                                  className="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-sm transition"
+                                >
+                                  <i className="fa-solid fa-file-pdf text-sm"></i> Unduh / Cetak PDF
+                                </button>
+                              </div>
+                            </td>
+                            <td className="p-3.5 text-center">
+                              <button
+                                onClick={() => handleDeleteConsent(c.id)}
+                                className="px-2 py-1 bg-rose-50 text-rose-600 hover:bg-rose-100 rounded text-[10px] font-bold transition"
+                              >
+                                <i className="fa-solid fa-trash mr-1"></i> Hapus
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
             </div>
           )}
         </div>

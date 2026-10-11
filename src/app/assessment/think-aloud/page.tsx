@@ -794,15 +794,36 @@ export default function ThinkAloudProtocolPage() {
     }
   };
 
-  const handleApproveConsent = () => {
+  const handleApproveConsent = async () => {
     if (!consentChecked) {
       alert("⚠️ Harap centang kotak persetujuan ketentuan Informed Consent!");
       return;
     }
-    if (!consentSignatures[activeSession]) {
+    const signature = consentSignatures[activeSession];
+    if (!signature) {
       alert("⚠️ Harap berikan Tanda Tangan Digital Anda (goreskan di kanvas atau unggah gambar TTD)!");
       return;
     }
+
+    const userId = localStorage.getItem("userId") || "user_anon";
+
+    try {
+      await fetch("/api/consent", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId,
+          userName,
+          userCampus,
+          userNim,
+          sessionNo: activeSession,
+          signatureDataUrl: signature,
+        }),
+      });
+    } catch (err) {
+      console.error("Gagal mengirim Informed Consent ke server:", err);
+    }
+
     setConsentApproved({ ...consentApproved, [activeSession]: true });
     setActiveTab("session");
   };
