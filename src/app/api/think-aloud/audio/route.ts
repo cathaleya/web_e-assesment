@@ -162,6 +162,103 @@ export async function GET(req: Request) {
     const file = url.searchParams.get("file");
     const download = url.searchParams.get("download");
 
+    // ── Mode 0: Unduh Seluruh Berkas Audio Sebagai Arsip ZIP (Bulk Download) ───
+    const downloadAll = url.searchParams.get("download_all") || url.searchParams.get("zip");
+    if (downloadAll === "true" || downloadAll === "1") {
+      const AdmZip = require("adm-zip");
+      const zip = new AdmZip();
+      const recordings = getRecordings();
+      const filterLevel = url.searchParams.get("level"); // 's2s3' | 's1' | 'all'
+
+      let targetRecordings = recordings;
+      if (filterLevel === "s2s3") {
+        targetRecordings = recordings.filter((r: any) => r.respondentLevel && r.respondentLevel.includes("S2/S3"));
+      } else if (filterLevel === "s1") {
+        targetRecordings = recordings.filter((r: any) => !r.respondentLevel || !r.respondentLevel.includes("S2/S3"));
+      }
+
+      let addedAudioCount = 0;
+      targetRecordings.forEach((rec: any) => {
+        const rawFilename = rec.filename || (rec.audioUrl ? path.basename(decodeURIComponent(rec.audioUrl.split("?")[0].replace("/api/think-aloud/audio?file=", ""))) : null);
+        if (rawFilename) {
+          const safeFilename = path.basename(rawFilename);
+          const filePath = path.join(uploadDir, safeFilename);
+          if (fs.existsSync(filePath)) {
+            zip.addLocalFile(filePath, "berkas_suara_webm");
+            addedAudioCount++;
+          }
+        }
+      });
+
+      // Buat file CSV metadata lengkap berisi transkrip verbatim, profil responden, dan mapping file audio
+      const csvHeaders = [
+        "No",
+        "ID Rekaman",
+        "Nama Peserta",
+        "Kampus",
+        "Jenjang",
+        "Program Studi",
+        "Sesi",
+        "Soal No",
+        "SJT ID",
+        "Step Probing",
+        "Judul Pertanyaan",
+        "Opsi Pilihan",
+        "Durasi (detik)",
+        "Nama Berkas Audio",
+        "Transkrip Verbatim Teks",
+        "Waktu Submit"
+      ];
+
+      const csvRows = targetRecordings.map((rec: any, idx: number) => [
+        idx + 1,
+        `"${rec.id || ''}"`,
+        `"${(rec.userName || '').replace(/"/g, '""')}"`,
+        `"${(rec.userCampus || '').replace(/"/g, '""')}"`,
+        `"${(rec.respondentLevel || 'S1 Calon Guru').replace(/"/g, '""')}"`,
+        `"${(rec.studyProgram || '').replace(/"/g, '""')}"`,
+        rec.sessionNo || 1,
+        rec.itemNo || 1,
+        `"${rec.sjtId || ''}"`,
+        rec.probingStep || 1,
+        `"${(rec.questionTitle || '').replace(/"/g, '""')}"`,
+        `"${(rec.selectedOption || '').replace(/"/g, '""')}"`,
+        rec.duration || 0,
+        `"${rec.filename || ''}"`,
+        `"${(rec.transcript || '').replace(/"/g, '""')}"`,
+        `"${rec.createdAt || ''}"`
+      ].join(","));
+
+      const csvContent = "\uFEFF" + [csvHeaders.join(","), ...csvRows].join("\r\n");
+      zip.addFile("DAFTAR_TRANSKRIP_DAN_METADATA.csv", Buffer.from(csvContent, "utf-8"));
+
+      if (addedAudioCount === 0) {
+        zip.addFile(
+          "PANDUAN_RISET.txt",
+          Buffer.from(
+            "Arsip Rekaman Think-Aloud MADEL5C.\n" +
+            "Catatan: Belum ada berkas fisik audio .webm yang diunggah responden atau semua respon berupa teks manual.\n" +
+            "Lihat berkas DAFTAR_TRANSKRIP_DAN_METADATA.csv untuk melihat transkrip dan log respon.",
+            "utf-8"
+          )
+        );
+      }
+
+      const zipBuffer = zip.toBuffer();
+      const levelLabel = filterLevel === "s2s3" ? "Pascasarjana_S2_S3" : filterLevel === "s1" ? "S1_Calon_Guru" : "Semua";
+      const zipFilename = `Rekaman_Audio_ThinkAloud_${levelLabel}_${new Date().toISOString().slice(0, 10)}.zip`;
+
+      return new NextResponse(zipBuffer, {
+        status: 200,
+        headers: {
+          "Content-Type": "application/zip",
+          "Content-Disposition": `attachment; filename="${zipFilename}"`,
+          "Content-Length": zipBuffer.length.toString(),
+          "Cache-Control": "no-store, no-cache, must-revalidate",
+        },
+      });
+    }
+
     // ── Mode 1: Streaming / Unduh Berkas Audio Asli ────────────────────────
     if (file) {
       const safeFilename = path.basename(file);

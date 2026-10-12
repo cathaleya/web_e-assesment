@@ -35,28 +35,24 @@ export async function POST(req: Request) {
     fs.writeFileSync(path.join(outputDir, '.reset_flag'), new Date().toISOString());
     console.log(`Cleared ${deletedCount} files from analysis outputs directory and set .reset_flag.`);
 
-    // 3. Clear audio recordings registry and files if present
-    const audioDir = path.join(process.cwd(), 'public', 'uploads', 'audio');
-    const audioRegistry = path.join(audioDir, 'recordings.json');
-    if (fs.existsSync(audioDir)) {
-      const audioFiles = fs.readdirSync(audioDir);
-      audioFiles.forEach(file => {
-        try { fs.unlinkSync(path.join(audioDir, file)); } catch (e) {}
-      });
-      fs.writeFileSync(audioRegistry, JSON.stringify([], null, 2));
-      console.log("Audio recordings registry cleared.");
-    }
+    // 3. PROTEKSI DATA RISET: Berkas Rekaman Audio & Informed Consent TIDAK BOLEH Terhapus Saat Reset DB
+    // Menjamin integritas data rekaman suara responden disertasi tetap aman di server.
+    const body = await req.json().catch(() => ({}));
+    const purgeAudioExplicit = body.purgeAudio === true && body.confirmSecret === "PURGE_AUDIO_IRREVERSIBLE";
 
-    // 4. Clear consent forms registry and files if present
-    const consentDir = path.join(process.cwd(), 'public', 'uploads', 'consent');
-    const consentRegistry = path.join(consentDir, 'consents.json');
-    if (fs.existsSync(consentDir)) {
-      const consentFiles = fs.readdirSync(consentDir);
-      consentFiles.forEach(file => {
-        try { fs.unlinkSync(path.join(consentDir, file)); } catch (e) {}
-      });
-      fs.writeFileSync(consentRegistry, JSON.stringify([], null, 2));
-      console.log("Consent registry cleared.");
+    if (purgeAudioExplicit) {
+      const audioDir = path.join(process.cwd(), 'public', 'uploads', 'audio');
+      const audioRegistry = path.join(audioDir, 'recordings.json');
+      if (fs.existsSync(audioDir)) {
+        const audioFiles = fs.readdirSync(audioDir);
+        audioFiles.forEach(file => {
+          try { fs.unlinkSync(path.join(audioDir, file)); } catch (e) {}
+        });
+        fs.writeFileSync(audioRegistry, JSON.stringify([], null, 2));
+        console.log("Audio recordings registry cleared by explicit admin authorization.");
+      }
+    } else {
+      console.log("🛡️ PROTEKSI PERMANEN AKTIF: Berkas rekaman suara Think-Aloud & Informed Consent TIDAK dihapus demi integritas data ilmiah.");
     }
 
     return NextResponse.json({ 

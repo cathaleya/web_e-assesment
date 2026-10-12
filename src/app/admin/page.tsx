@@ -297,6 +297,56 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleDownloadAllAudioZip = (filter?: string) => {
+    if (audioRecordings.length === 0) {
+      alert("Belum ada data berkas rekaman suara yang tersimpan di server.");
+      return;
+    }
+    const filterParam = filter && filter !== 'all' ? `&level=${filter}` : '';
+    const downloadUrl = `/api/think-aloud/audio?download_all=1${filterParam}`;
+    window.open(downloadUrl, '_blank');
+  };
+
+  const handleExportVerbatimCsv = (filter?: string) => {
+    if (audioRecordings.length === 0) {
+      alert("Belum ada data rekaman suara untuk diekspor.");
+      return;
+    }
+    const target = filter === 's2s3' 
+      ? audioRecordings.filter((r: any) => r.respondentLevel && r.respondentLevel.includes('S2/S3'))
+      : filter === 's1'
+      ? audioRecordings.filter((r: any) => !r.respondentLevel || !r.respondentLevel.includes('S2/S3'))
+      : audioRecordings;
+
+    const headers = ["No", "ID", "Nama Peserta", "Kampus", "Jenjang", "Program Studi", "Sesi", "Soal No", "SJT ID", "Step Probing", "Judul Pertanyaan", "Opsi Terpilih", "Durasi (detik)", "Transkrip Verbatim", "Audio URL", "Waktu Submit"];
+    const rows = target.map((rec: any, idx: number) => [
+      idx + 1,
+      `"${rec.id || ''}"`,
+      `"${(rec.userName || '').replace(/"/g, '""')}"`,
+      `"${(rec.userCampus || '').replace(/"/g, '""')}"`,
+      `"${(rec.respondentLevel || 'S1 Calon Guru').replace(/"/g, '""')}"`,
+      `"${(rec.studyProgram || '').replace(/"/g, '""')}"`,
+      rec.sessionNo || 1,
+      rec.itemNo || 1,
+      `"${rec.sjtId || ''}"`,
+      rec.probingStep || 1,
+      `"${(rec.questionTitle || '').replace(/"/g, '""')}"`,
+      `"${(rec.selectedOption || '').replace(/"/g, '""')}"`,
+      rec.duration || 0,
+      `"${(rec.transcript || '').replace(/"/g, '""')}"`,
+      `"${rec.audioUrl || ''}"`,
+      `"${rec.createdAt || ''}"`
+    ]);
+    const csvContent = "\uFEFF" + [headers.join(","), ...rows.map(e => e.join(","))].join("\r\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `ThinkAloud_Transkrip_Verbatim_${filter || 'Semua'}_${new Date().toISOString().slice(0, 10)}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
   const handleDeleteConsent = async (id: string) => {
     if (!window.confirm("Apakah Anda yakin ingin menghapus data Informed Consent ini?")) return;
     try {
@@ -709,20 +759,34 @@ ${rec.transcript || '[Tanpa Teks Verbatim]'}
   };
 
   const handleResetDatabase = async () => {
-    const confirmReset = window.confirm("Apakah Anda yakin ingin menghapus seluruh data responden (User, Assessment, Survey, Rekaman Suara, Consent) dan cache analisis di VPS?\n\nPERINGATAN: Tindakan penghapusan ini HANYA terjadi saat Anda menekan tombol Reset DB ini.");
-    if (!confirmReset) return;
+    const confirmation = window.prompt(
+      "🛡️ PERINGATAN KEAMANAN RISET:\n\n" +
+      "Apakah Anda yakin ingin mereset data responden simulasi (User, Assessment, Survey)?\n" +
+      "✅ CATATAN: Seluruh Berkas Rekaman Suara Audio Think-Aloud & Informed Consent DIPROTEKSI secara permanen dan TIDAK AKAN TERHAPUS.\n\n" +
+      "Ketik 'RESET-DATA' untuk konfirmasi penghapusan data:"
+    );
+    if (confirmation !== "RESET-DATA") {
+      if (confirmation !== null) {
+        alert("Konfirmasi dibatalkan. Kata kunci tidak cocok. Data Anda tetap aman!");
+      }
+      return;
+    }
 
     setIsResetting(true);
     try {
-      const res = await fetch('/api/admin/reset', { method: 'POST' });
+      const res = await fetch('/api/admin/reset', { 
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ purgeAudio: false })
+      });
       const data = await res.json();
       if (data.success) {
-        alert("✅ Database dan seluruh data responden berhasil dibersihkan!");
+        alert("✅ Data responden asesmen berhasil dibersihkan! Seluruh rekaman suara audio Think-Aloud tetap aman tersimpan.");
         setUsers([]);
         setAssessments([]);
         setSurveys([]);
-        setAudioRecordings([]);
-        setConsents([]);
+        fetchAudioRecordings();
+        fetchConsents();
         setAnalysisResults({
           efa: null, cfa: null, rasch: null, sem: null, cbsem: null, mfrm: null
         });
@@ -1797,157 +1861,6 @@ ${rec.transcript || '[Tanpa Teks Verbatim]'}
                     )}
                   </tbody>
                 </table>
-              </div>
-            </div>
-          )}
-
-          {/* ═══════════════════════════════════════════════════
-              TAB: THINK-ALOUD AUDIO DATABASE
-          ═══════════════════════════════════════════════════ */}
-          {/* ═══════════════════════════════════════════════════
-              TAB: THINK-ALOUD AUDIO & VERBATIM DATABASE
-          ═══════════════════════════════════════════════════ */}
-          {currentTab === 'thinkaloud' && (
-            <div className="space-y-6 animate-in fade-in duration-300">
-              <div className="card-timbul-admin p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-rose-950/5 via-white to-white">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-rose-500 to-rose-700 text-white rounded-2xl flex items-center justify-center shadow-lg border-b-2 border-rose-900 shrink-0">
-                    <i className="fa-solid fa-microphone-lines text-xl"></i>
-                  </div>
-                  <div>
-                    <h2 className="text-lg font-black text-slate-900 tracking-tight">Database Suara &amp; Transkrip Verbatim Think-Aloud</h2>
-                    <p className="text-xs font-bold text-slate-500 mt-0.5">Penyimpanan Berkas Audio Persistent, Transkrip Verbatim Otomatis, &amp; Wawancara Kognitif</p>
-                  </div>
-                </div>
-                <div className="flex flex-wrap items-center gap-2.5">
-                  <button
-                    onClick={() => {
-                      if (audioRecordings.length === 0) return alert("Belum ada data rekaman suara.");
-                      const headers = ["ID", "Nama Peserta", "Kampus", "Soal No", "SJT ID", "Step Pertanyaan", "Judul Pertanyaan", "Opsi Terpilih", "Durasi (detik)", "Teks Verbatim", "Audio URL", "Waktu Submit"];
-                      const rows = audioRecordings.map(rec => [
-                        `"${rec.id || ''}"`,
-                        `"${(rec.userName || '').replace(/"/g, '""')}"`,
-                        `"${(rec.userCampus || '').replace(/"/g, '""')}"`,
-                        rec.itemNo || 1,
-                        `"${rec.sjtId || ''}"`,
-                        rec.probingStep || 1,
-                        `"${(rec.questionTitle || '').replace(/"/g, '""')}"`,
-                        `"${(rec.selectedOption || '').replace(/"/g, '""')}"`,
-                        rec.duration || 0,
-                        `"${(rec.transcript || '').replace(/"/g, '""')}"`,
-                        `"${rec.audioUrl || ''}"`,
-                        `"${rec.createdAt || ''}"`
-                      ]);
-                      const csvContent = "data:text/csv;charset=utf-8," + [headers.join(","), ...rows.map(e => e.join(","))].join("\n");
-                      const encodedUri = encodeURI(csvContent);
-                      const link = document.createElement("a");
-                      link.setAttribute("href", encodedUri);
-                      link.setAttribute("download", `ThinkAloud_Verbatim_Dataset_${new Date().toISOString().slice(0, 10)}.csv`);
-                      document.body.appendChild(link);
-                      link.click();
-                      document.body.removeChild(link);
-                    }}
-                    className="h-10 px-4 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-black uppercase tracking-wider flex items-center gap-2 shadow-lg border-b-2 border-emerald-900 transition-all active:scale-95"
-                  >
-                    <i className="fa-solid fa-file-csv text-xs"></i> Unduh Dataset CSV
-                  </button>
-                  <button onClick={fetchAudioRecordings}
-                    className="h-10 px-4 bg-slate-900 hover:bg-black text-white rounded-xl text-xs font-black uppercase tracking-wider flex items-center gap-2 shadow-lg border-b-2 border-black transition-all active:scale-95">
-                    <i className="fa-solid fa-rotate text-xs"></i> Refresh Rekaman
-                  </button>
-                  <span className="px-3 py-2 bg-rose-100 border border-rose-300 text-rose-950 rounded-xl text-xs font-black">
-                    {audioRecordings.length} Rekaman
-                  </span>
-                </div>
-              </div>
-
-              {/* DATA TABLE REKAMAN SUARA & VERBATIM */}
-              <div className="card-timbul-admin overflow-hidden">
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left">
-                    <thead className="bg-slate-900 text-white border-b-2 border-slate-950">
-                      <tr>
-                        {['Peserta / Responden', 'Nomor & Skenario SJT', 'Step Pertanyaan Probing', 'Opsi Terpilih', 'Teks Verbatim (Transkrip Suara)', 'Pemutar Audio', 'Aksi'].map(h => (
-                          <th key={h} className="px-4 py-4 text-[10px] font-black uppercase tracking-wider text-slate-300">{h}</th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100">
-                      {audioRecordings.length > 0 ? (
-                        audioRecordings.map((rec: any, idx: number) => (
-                          <tr key={rec.id || idx} className="hover:bg-slate-50/80 transition-colors">
-                            <td className="px-4 py-4">
-                              <p className="text-xs font-black text-slate-900">{rec.userName}</p>
-                              <p className="text-[10px] font-semibold text-slate-500">{rec.userCampus}</p>
-                              <span className="text-[9px] text-slate-400 font-mono block mt-0.5">{new Date(rec.createdAt).toLocaleString('id-ID')}</span>
-                            </td>
-                            <td className="px-4 py-4">
-                              <span className="px-2.5 py-0.5 bg-rose-100 text-rose-900 rounded-md text-[9px] font-black uppercase tracking-wider">
-                                {rec.sjtId || `SJT_${rec.itemNo}`}
-                              </span>
-                              <p className="text-xs font-bold text-slate-800 mt-1">Soal #{rec.itemNo}</p>
-                            </td>
-                            <td className="px-4 py-4">
-                              <span className="px-2 py-0.5 bg-purple-100 text-purple-900 rounded text-[9px] font-black uppercase block w-fit mb-1">
-                                Pertanyaan {rec.probingStep || 1}
-                              </span>
-                              <p className="text-[10px] font-bold text-slate-600 line-clamp-1">
-                                {rec.questionTitle || "Probing Kognitif"}
-                              </p>
-                            </td>
-                            <td className="px-4 py-4 max-w-[180px]">
-                              <p className="text-[10px] font-bold text-slate-700 leading-snug line-clamp-2">
-                                {rec.selectedOption}
-                              </p>
-                            </td>
-                            <td className="px-4 py-4 max-w-xs">
-                              <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-200 space-y-1">
-                                <span className="text-[8px] font-black text-rose-800 uppercase tracking-widest block">
-                                  Transkrip Verbatim:
-                                </span>
-                                <p className="text-[11px] font-bold text-slate-800 italic leading-relaxed line-clamp-3">
-                                  &quot;{rec.transcript || "Tidak ada transkrip teks (Hanya berkas audio)"}&quot;
-                                </p>
-                                {rec.transcript && (
-                                  <button
-                                    onClick={() => {
-                                      navigator.clipboard.writeText(rec.transcript);
-                                      alert("Teks verbatim berhasil disalin ke clipboard!");
-                                    }}
-                                    className="text-[8px] font-black text-blue-600 hover:text-blue-800 uppercase tracking-wider block mt-1"
-                                  >
-                                    <i className="fa-solid fa-copy mr-1"></i> Salin Teks Verbatim
-                                  </button>
-                                )}
-                              </div>
-                            </td>
-                            <td className="px-4 py-4">
-                              <audio controls src={rec.audioUrl} className="h-8 max-w-[170px] rounded-lg shadow-sm" />
-                              <span className="text-[9px] font-mono text-slate-400 block mt-1">
-                                Durasi: {Math.floor((rec.duration || 0) / 60)}m {(rec.duration || 0) % 60}s
-                              </span>
-                            </td>
-                            <td className="px-4 py-4">
-                              <a
-                                href={rec.audioUrl}
-                                download={rec.filename}
-                                className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[9px] font-black uppercase tracking-wider shadow-sm transition-all active:scale-95"
-                              >
-                                <i className="fa-solid fa-download text-xs"></i> Unduh
-                              </a>
-                            </td>
-                          </tr>
-                        ))
-                      ) : (
-                        <tr>
-                          <td colSpan={7} className="px-5 py-16 text-center text-xs text-slate-400 font-bold">
-                            Belum ada rekaman suara &amp; transkrip verbatim Think-Aloud yang diunggah oleh mahasiswa.
-                          </td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
-                </div>
               </div>
             </div>
           )}
@@ -3103,15 +3016,30 @@ ${rec.transcript || '[Tanpa Teks Verbatim]'}
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 shrink-0">
+                <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+                  <a
+                    href={`/api/think-aloud/audio?download_all=1${thinkAloudFilter !== 'all' ? `&level=${thinkAloudFilter}` : ''}`}
+                    download
+                    className="h-10 px-4 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white rounded-xl text-xs font-black uppercase tracking-wider flex items-center gap-2 shadow-lg border-b-2 border-indigo-950 transition-all active:scale-95 cursor-pointer"
+                    title="Unduh seluruh file audio .webm dan CSV metadata dalam 1 paket ZIP"
+                  >
+                    <i className="fa-solid fa-file-zipper text-sm"></i> Unduh Semua Audio (ZIP)
+                  </a>
+                  <button
+                    onClick={() => handleExportVerbatimCsv(thinkAloudFilter)}
+                    className="h-10 px-3.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-black uppercase tracking-wider flex items-center gap-2 shadow-lg border-b-2 border-emerald-950 transition-all active:scale-95"
+                    title="Ekspor daftar transkrip verbatim ke format Excel / CSV"
+                  >
+                    <i className="fa-solid fa-file-excel text-sm"></i> Ekspor CSV
+                  </button>
                   <button
                     onClick={fetchAudioRecordings}
-                    className="h-10 px-4 bg-slate-900 hover:bg-black text-white rounded-xl text-xs font-black uppercase tracking-wider flex items-center gap-2 shadow-lg border-b-2 border-black transition-all active:scale-95"
+                    className="h-10 px-3.5 bg-slate-900 hover:bg-black text-white rounded-xl text-xs font-black uppercase tracking-wider flex items-center gap-2 shadow-lg border-b-2 border-black transition-all active:scale-95"
                   >
-                    <i className="fa-solid fa-arrows-rotate text-xs"></i> Refresh Data
+                    <i className="fa-solid fa-arrows-rotate text-xs"></i> Refresh
                   </button>
-                  <span className="px-3.5 py-2 bg-rose-100 border border-rose-300 text-rose-900 rounded-xl text-xs font-black">
-                    {audioRecordings.length} File Rekaman Tersimpan
+                  <span className="px-3 py-2 bg-rose-100 border border-rose-300 text-rose-900 rounded-xl text-xs font-black">
+                    {audioRecordings.length} File Tersimpan
                   </span>
                 </div>
               </div>
@@ -3142,8 +3070,8 @@ ${rec.transcript || '[Tanpa Teks Verbatim]'}
                           <h3 className="text-xs font-black uppercase text-slate-800 tracking-wider">Daftar Berkas Rekaman Audio &amp; Transkrip Verbatim</h3>
                         </div>
 
-                        {/* FILTER BUTTONS: SEMUA / S2-S3 / S1 */}
-                        <div className="flex items-center gap-2">
+                        {/* FILTER BUTTONS: SEMUA / S2-S3 / S1 + TOMBOL UNDUH SEMUA */}
+                        <div className="flex flex-wrap items-center gap-2">
                           <span className="text-[10px] font-black uppercase text-slate-400 mr-1 hidden sm:inline">Filter Kategori:</span>
                           <button
                             onClick={() => setThinkAloudFilter('all')}
@@ -3177,6 +3105,15 @@ ${rec.transcript || '[Tanpa Teks Verbatim]'}
                             <i className="fa-solid fa-chalkboard-user text-xs"></i>
                             S1 Calon Guru ({s1Recordings.length})
                           </button>
+                          <a
+                            href={`/api/think-aloud/audio?download_all=1${thinkAloudFilter !== 'all' ? `&level=${thinkAloudFilter}` : ''}`}
+                            download
+                            className="ml-2 px-3 py-1.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-lg text-xs font-black transition-all flex items-center gap-1.5 shadow-md border-b-2 border-indigo-900 active:scale-95 cursor-pointer"
+                            title="Unduh seluruh file audio saat ini dalam arsip ZIP"
+                          >
+                            <i className="fa-solid fa-cloud-arrow-down text-xs"></i>
+                            <span>Unduh Semua ({displayedRecordings.length} Audio ZIP)</span>
+                          </a>
                         </div>
                       </div>
 

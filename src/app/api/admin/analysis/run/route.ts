@@ -186,6 +186,7 @@ export async function POST(req: Request) {
       demographics: demographicList
     }, null, 2));
 
+    const outputDir = path.join(process.cwd(), 'public', 'analysis', 'outputs');
     if (!fs.existsSync(outputDir)) {
       fs.mkdirSync(outputDir, { recursive: true });
     }
