@@ -51,3 +51,6 @@ next-env.d.ts
 
 # credentials
 login_admin.txt
+
+# persistent user data
+/public/uploads/

@@ -365,72 +365,46 @@ export default function AdminDashboard() {
   };
 
   const downloadConsentDocx = (consent: any) => {
-    const content = `
-      <html xmlns:o='urn:schemas-microsoft-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
-      <head>
-        <meta charset='utf-8'>
-        <title>Informed Consent - ${consent.userName}</title>
-        <style>
-          body { font-family: 'Calibri', 'Times New Roman', serif; font-size: 11pt; line-height: 1.5; color: #111; margin: 40px; }
-          h1 { font-size: 14pt; font-weight: bold; text-align: center; text-transform: uppercase; margin-bottom: 5px; }
-          h2 { font-size: 11pt; font-weight: bold; text-align: center; color: #333; margin-top: 0; margin-bottom: 20px; }
-          .table-meta { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-          .table-meta td { padding: 5px 8px; vertical-align: top; border-bottom: 1px solid #eee; }
-          .bold { font-weight: bold; }
-          .box-statement { border: 1px solid #777; padding: 14px; background-color: #f8fafc; margin-bottom: 25px; border-radius: 4px; }
-        </style>
-      </head>
-      <body>
-        <h1>KEMENTERIAN PENDIDIKAN, KEBUDAYAAN, RISET, DAN TEKNOLOGI</h1>
-        <h2>UNIVERSITAS NEGERI JAKARTA — PROGRAM DOKTOR (S3)</h2>
-        <hr style="border: 1.5px solid #111; margin-bottom: 20px;" />
-        
-        <h1 style="font-size: 13pt; text-align: center; color: #002b49;">LEMBAR PERSETUJUAN KEIKUTSERTAAN (INFORMED CONSENT)</h1>
-        <p style="text-align: center; font-size: 10pt; color: #555; margin-bottom: 25px;">Instrumen Asesmen HDAP MADEL-5C (Model Literasi Digital Ekspansif Calon Guru SD)</p>
-        
-        <p>Saya yang bertanda tangan di bawah ini:</p>
-        <table class="table-meta">
-          <tr><td width="30%" class="bold">Nama Lengkap Partisipan</td><td width="5%">:</td><td><strong>${consent.userName}</strong></td></tr>
-          <tr><td class="bold">NIM / NPM / ID</td><td>:</td><td>${consent.userNim || '-'}</td></tr>
-          <tr><td class="bold">LPTK / Instansi Perguruan Tinggi</td><td>:</td><td>${consent.userCampus}</td></tr>
-          <tr><td class="bold">Sesi Asesmen</td><td>:</td><td>Sesi ${consent.sessionNo} — Wawancara Think-Aloud Protocol</td></tr>
-          <tr><td class="bold">Tanggal & Waktu Persetujuan</td><td>:</td><td>${new Date(consent.createdAt).toLocaleString('id-ID', { dateStyle: 'full', timeStyle: 'medium' })} WITA/WIB</td></tr>
-          <tr><td class="bold">Status Persetujuan Legal</td><td>:</td><td><strong style="color: green;">DISERTAKAN & DISETUJUI SECARA SADAR (VALID & LEGAL)</strong></td></tr>
-        </table>
+    try {
+      const downloadUrl = `/api/consent/export?id=${encodeURIComponent(consent.id || '')}&format=docx`;
+      const a = document.createElement('a');
+      a.href = downloadUrl;
+      a.download = `InformedConsent_Sesi${consent.sessionNo || 1}_${(consent.userName || 'Responden').replace(/[^a-zA-Z0-9]/g, '_')}.docx`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    } catch (e) {
+      console.error("Gagal unduh DOCX:", e);
+      window.open(`/api/consent/export?id=${encodeURIComponent(consent.id || '')}&format=docx`, '_blank');
+    }
+  };
 
-        <div class="box-statement">
-          <p class="bold">PERNYATAAN KETENTUAN ETIKA PENELITIAN & PERSETUJUAN:</p>
-          <ol>
-            <li>Saya menyatakan telah membaca, memahami, dan menyetujui seluruh prosedur penelitian instrumen HDAP MADEL-5C ini secara sadar dan tanpa paksaan dari pihak manapun.</li>
-            <li>Saya bersedia memberikan respon tertulis dan suara (audio Think-Aloud) untuk keperluan analisis data ilmiah Disertasi & Publikasi Artikel Jurnal Internasional Bereputasi.</li>
-            <li>Saya memahami bahwa seluruh identitas pribadi saya akan dijaga kerahasiaannya dan dianonimkan (<em>anonymized</em>) sesuai standar kode etik penelitian universitas.</li>
-          </ol>
-        </div>
-
-        <table style="width: 100%; margin-top: 40px;">
-          <tr>
-            <td width="50%"></td>
-            <td width="50%" align="center">
-              <p>Yang Membuat Pernyataan,</p>
-              ${consent.signatureDataUrl ? `<img src="${consent.signatureDataUrl}" style="max-height: 90px; max-width: 220px; border-bottom: 1px solid #333; padding-bottom: 4px;" alt="Tanda Tangan Digital" /><br/>` : '<div style="height: 60px;"></div>'}
-              <p class="bold" style="text-decoration: underline; margin-top: 5px;">${consent.userName}</p>
-              <p style="font-size: 9pt; color: #666;">NIM: ${consent.userNim || '-'}</p>
-            </td>
-          </tr>
-        </table>
-      </body>
-      </html>
-    `;
-
-    const blob = new Blob(['\ufeff', content], { type: 'application/msword' });
-    const url = URL.createObjectURL(blob);
+  const downloadAllConsentsDocx = () => {
+    if (!consents || consents.length === 0) {
+      alert("Belum ada data Informed Consent untuk diunduh.");
+      return;
+    }
+    const downloadUrl = `/api/consent/export?type=all&format=docx`;
     const a = document.createElement('a');
-    a.href = url;
-    a.download = `InformedConsent_Sesi${consent.sessionNo}_${consent.userName.replace(/[^a-zA-Z0-9]/g, '_')}.docx`;
+    a.href = downloadUrl;
+    a.download = `InformedConsent_SEMUA_RESPONDEN_MADEL5C_${new Date().toISOString().slice(0, 10)}.docx`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+  };
+
+  const downloadAllConsentsZip = () => {
+    if (!consents || consents.length === 0) {
+      alert("Belum ada data Informed Consent untuk diunduh.");
+      return;
+    }
+    const downloadUrl = `/api/consent/export?format=zip`;
+    const a = document.createElement('a');
+    a.href = downloadUrl;
+    a.download = `Arsip_Informed_Consent_MADEL5C_${new Date().toISOString().slice(0, 10)}.zip`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
   };
 
   const downloadConsentPdf = (consent: any) => {
@@ -438,20 +412,24 @@ export default function AdminDashboard() {
     if (!printWindow) return alert("Pop-up diblokir oleh browser. Harap izinkan pop-up.");
     
     printWindow.document.write(`
+      <!DOCTYPE html>
       <html>
       <head>
+        <meta charset="utf-8">
         <title>Cetak Informed Consent - ${consent.userName}</title>
         <style>
-          body { font-family: Arial, sans-serif; font-size: 11pt; line-height: 1.6; color: #111; padding: 40px; }
-          .header { text-align: center; border-bottom: 2px solid #111; padding-bottom: 15px; margin-bottom: 25px; }
-          .title { font-size: 14pt; font-weight: bold; margin-bottom: 5px; text-transform: uppercase; }
+          @page { size: A4 portrait; margin: 15mm 20mm; }
+          body { font-family: 'Times New Roman', Times, serif; font-size: 11pt; line-height: 1.6; color: #111; padding: 20px; }
+          .header { text-align: center; border-bottom: 2px solid #111; padding-bottom: 12px; margin-bottom: 20px; }
+          .inst-line { font-size: 10.5pt; font-weight: bold; }
+          .title { font-size: 13pt; font-weight: bold; margin-top: 2px; }
           .subtitle { font-size: 10pt; color: #444; }
-          .table-meta { width: 100%; margin: 20px 0; border-collapse: collapse; }
-          .table-meta td { padding: 6px 8px; border-bottom: 1px solid #eee; }
+          .table-meta { width: 100%; margin: 18px 0; border-collapse: collapse; font-size: 10.5pt; }
+          .table-meta td { padding: 6px 8px; border-bottom: 1px solid #e2e8f0; vertical-align: top; }
           .bold { font-weight: bold; }
-          .box { border: 1px solid #333; padding: 15px; background: #f8fafc; border-radius: 6px; margin: 20px 0; }
-          .sig-container { text-align: center; width: 250px; float: right; margin-top: 40px; }
-          .sig-img { max-height: 100px; max-width: 220px; margin: 10px 0; }
+          .box { border: 1px solid #475569; padding: 14px 16px; background: #f8fafc; border-radius: 4px; margin: 20px 0; }
+          .sig-container { text-align: center; width: 260px; float: right; margin-top: 30px; font-size: 10.5pt; }
+          .sig-img { max-height: 85px; max-width: 220px; margin: 8px 0; border-bottom: 1px solid #333; padding-bottom: 2px; }
           @media print {
             body { padding: 0; }
           }
@@ -459,41 +437,147 @@ export default function AdminDashboard() {
       </head>
       <body>
         <div class="header">
+          <div class="inst-line">KEMENTERIAN PENDIDIKAN TINGGI, SAINS, DAN TEKNOLOGI</div>
           <div class="title">UNIVERSITAS NEGERI JAKARTA</div>
           <div class="subtitle">PROGRAM DOKTOR (S3) PENELITIAN &amp; EVALUASI PENDIDIKAN — HDAP MADEL-5C</div>
         </div>
-        <h2 style="text-align: center; font-size: 13pt; color: #002b49;">LEMBAR INFORMED CONSENT &amp; HAK PARTISIPAN</h2>
+        <h2 style="text-align: center; font-size: 13pt; color: #002b49; margin-top: 15px; margin-bottom: 4px; text-transform: uppercase;">
+          LEMBAR INFORMED CONSENT &amp; HAK PARTISIPAN
+        </h2>
+        <p style="text-align: center; font-size: 9.5pt; color: #555; margin-bottom: 20px; font-style: italic;">
+          Instrumen Asesmen HDAP MADEL-5C (Model Literasi Digital Ekspansif Calon Guru SD)
+        </p>
         
-        <p>Data Responden Penelitian Disertasi:</p>
+        <p style="font-size: 10.5pt;">Data Responden Penelitian Disertasi:</p>
         <table class="table-meta">
-          <tr><td width="32%" class="bold">Nama Partisipan</td><td>: <strong>${consent.userName}</strong></td></tr>
+          <tr><td width="32%" class="bold">Nama Lengkap Partisipan</td><td>: <strong>${consent.userName}</strong></td></tr>
+          <tr><td class="bold">Jenjang Responden</td><td>: ${consent.respondentLevel || 'S1 Calon Guru'}</td></tr>
+          ${consent.studyProgram ? `<tr><td class="bold">Program Studi</td><td>: ${consent.studyProgram}</td></tr>` : ''}
           <tr><td class="bold">NIM / NPM / ID</td><td>: ${consent.userNim || '-'}</td></tr>
           <tr><td class="bold">LPTK / Perguruan Tinggi</td><td>: ${consent.userCampus}</td></tr>
-          <tr><td class="bold">Sesi Wawancara</td><td>: Sesi ${consent.sessionNo} (Think-Aloud Protocol)</td></tr>
-          <tr><td class="bold">Tanggal &amp; Waktu Persetujuan</td><td>: ${new Date(consent.createdAt).toLocaleString('id-ID')} WITA/WIB</td></tr>
+          <tr><td class="bold">Sesi Wawancara</td><td>: Sesi ${consent.sessionNo || 1} (Think-Aloud Protocol)</td></tr>
+          <tr><td class="bold">Tanggal &amp; Waktu Persetujuan</td><td>: ${new Date(consent.createdAt).toLocaleString('id-ID', { dateStyle: 'full', timeStyle: 'medium' })} WIB</td></tr>
+          <tr><td class="bold">Status Persetujuan Legal</td><td>: <span style="color: #15803d; font-weight: bold;">DISETUJUI SECARA SADAR (VALID &amp; LEGAL)</span></td></tr>
         </table>
 
         <div class="box">
-          <strong>Ketentuan Persetujuan Etika Penelitian:</strong>
-          <ol style="margin-top: 8px;">
+          <strong style="font-size: 10.5pt;">Ketentuan Persetujuan Etika Penelitian:</strong>
+          <ol style="margin-top: 8px; padding-left: 20px; font-size: 10pt; line-height: 1.5;">
             <li>Partisipan berpartisipasi secara sukarela tanpa ada paksaan dari pihak manapun.</li>
-            <li>Data rekaman suara dan transkrip digunakan untuk keperluan analisis akademik disertasi dan publikasi artikel jurnal.</li>
+            <li>Data rekaman suara dan transkrip digunakan untuk keperluan analisis akademik disertasi dan publikasi artikel jurnal bereputasi internasional.</li>
             <li>Kerahasiaan identitas dijamin 100% oleh peneliti (<em>Anonymized</em>).</li>
+            <li>Hak partisipan untuk mengundurkan diri sewaktu-waktu dijamin tanpa ada sanksi apapun.</li>
           </ol>
         </div>
 
         <div class="sig-container">
-          <p>Yang Menyatakan,</p>
-          ${consent.signatureDataUrl ? `<img src="${consent.signatureDataUrl}" class="sig-img" /><br/>` : '<div style="height:70px;"></div>'}
-          <strong style="text-decoration: underline;">${consent.userName}</strong>
-          <p style="font-size: 10pt; margin-top:2px; color: #555;">NIM: ${consent.userNim || '-'}</p>
+          <p style="font-size: 10.5pt;">Partisipan yang Membuat Pernyataan,</p>
+          ${consent.signatureDataUrl ? `<img src="${consent.signatureDataUrl}" class="sig-img" alt="Tanda Tangan Digital" /><br/>` : '<div style="height:70px;"></div>'}
+          <strong style="text-decoration: underline; font-size: 11pt;">${consent.userName}</strong>
+          <p style="font-size: 9.5pt; margin-top:2px; color: #555;">NIM: ${consent.userNim || '-'}</p>
         </div>
+        <div style="clear: both;"></div>
 
         <script>
           window.onload = function() {
             setTimeout(function() {
               window.print();
             }, 500);
+          };
+        </script>
+      </body>
+      </html>
+    `);
+    printWindow.document.close();
+  };
+
+  const downloadAllConsentsPdf = () => {
+    if (!consents || consents.length === 0) {
+      alert("Belum ada data Informed Consent untuk diunduh.");
+      return;
+    }
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) return alert("Pop-up diblokir oleh browser. Harap izinkan pop-up.");
+
+    const sheetsHtml = consents.map((consent: any, idx: number) => `
+      <div class="consent-sheet ${idx < consents.length - 1 ? 'page-break' : ''}">
+        <div class="header">
+          <div class="inst-line">KEMENTERIAN PENDIDIKAN TINGGI, SAINS, DAN TEKNOLOGI</div>
+          <div class="title">UNIVERSITAS NEGERI JAKARTA</div>
+          <div class="subtitle">PROGRAM DOKTOR (S3) PENELITIAN &amp; EVALUASI PENDIDIKAN (PEP)</div>
+        </div>
+        <h2 style="text-align: center; font-size: 13pt; color: #002b49; margin-top: 15px; margin-bottom: 4px; text-transform: uppercase;">
+          LEMBAR PERSETUJUAN KEIKUTSERTAAN (INFORMED CONSENT)
+        </h2>
+        <p style="text-align: center; font-size: 9.5pt; color: #555; margin-bottom: 20px; font-style: italic;">
+          Instrumen Asesmen HDAP MADEL-5C (Model Literasi Digital Ekspansif Calon Guru SD)
+        </p>
+        
+        <p style="font-size: 10.5pt; margin-bottom: 10px;">Saya yang bertanda tangan di bawah ini:</p>
+        <table class="table-meta">
+          <tr><td width="32%" class="bold">Nama Lengkap Partisipan</td><td>: <strong>${consent.userName}</strong></td></tr>
+          <tr><td class="bold">Jenjang Responden</td><td>: ${consent.respondentLevel || 'S1 Calon Guru'}</td></tr>
+          ${consent.studyProgram ? `<tr><td class="bold">Program Studi</td><td>: ${consent.studyProgram}</td></tr>` : ''}
+          <tr><td class="bold">NIM / NPM / ID</td><td>: ${consent.userNim || '-'}</td></tr>
+          <tr><td class="bold">LPTK / Perguruan Tinggi</td><td>: ${consent.userCampus}</td></tr>
+          <tr><td class="bold">Sesi Wawancara</td><td>: Sesi ${consent.sessionNo || 1} (Think-Aloud Protocol)</td></tr>
+          <tr><td class="bold">Tanggal &amp; Waktu Persetujuan</td><td>: ${new Date(consent.createdAt).toLocaleString('id-ID', { dateStyle: 'full', timeStyle: 'medium' })} WIB</td></tr>
+          <tr><td class="bold">Status Persetujuan Legal</td><td>: <span style="color: #15803d; font-weight: bold;">DISETUJUI SECARA SADAR (VALID &amp; LEGAL)</span></td></tr>
+        </table>
+
+        <div class="box">
+          <strong style="font-size: 10.5pt;">Ketentuan Persetujuan Etika Penelitian:</strong>
+          <ol style="margin-top: 6px; padding-left: 20px; font-size: 10pt; line-height: 1.5;">
+            <li>Partisipan berpartisipasi secara sadar dan sukarela tanpa ada paksaan dari pihak manapun.</li>
+            <li>Data rekaman suara dan transkrip digunakan untuk keperluan analisis akademik Disertasi dan publikasi artikel jurnal ilmiah bereputasi internasional.</li>
+            <li>Kerahasiaan identitas dijamin sepenuhnya oleh tim peneliti melalui prosedur anonimisasi (<em>anonymized</em>).</li>
+            <li>Hak partisipan untuk mengundurkan diri sewaktu-waktu dijamin tanpa ada konsekuensi atau sanksi apapun.</li>
+          </ol>
+        </div>
+
+        <div class="sig-container">
+          <p style="font-size: 10.5pt;">Partisipan yang Membuat Pernyataan,</p>
+          ${consent.signatureDataUrl ? `<img src="${consent.signatureDataUrl}" class="sig-img" alt="Tanda Tangan Digital" /><br/>` : '<div style="height:70px;"></div>'}
+          <strong style="text-decoration: underline; font-size: 11pt;">${consent.userName}</strong>
+          <p style="font-size: 9.5pt; margin-top:2px; color: #555;">NIM: ${consent.userNim || '-'}</p>
+        </div>
+        <div style="clear: both;"></div>
+      </div>
+    `).join('');
+
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <title>Koleksi Lengkap Informed Consent - Seluruh Responden</title>
+        <style>
+          @page { size: A4 portrait; margin: 15mm 20mm; }
+          body { font-family: 'Times New Roman', Times, serif; font-size: 11pt; line-height: 1.5; color: #111; padding: 20px; }
+          .consent-sheet { margin-bottom: 40px; }
+          .header { text-align: center; border-bottom: 2px solid #111; padding-bottom: 12px; margin-bottom: 18px; }
+          .inst-line { font-size: 10.5pt; font-weight: bold; }
+          .title { font-size: 13pt; font-weight: bold; margin-top: 2px; }
+          .subtitle { font-size: 10pt; color: #333; }
+          .table-meta { width: 100%; margin: 15px 0; border-collapse: collapse; font-size: 10.5pt; }
+          .table-meta td { padding: 5px 8px; border-bottom: 1px solid #e2e8f0; vertical-align: top; }
+          .bold { font-weight: bold; }
+          .box { border: 1px solid #64748b; padding: 12px 16px; background: #f8fafc; border-radius: 4px; margin: 18px 0; }
+          .sig-container { text-align: center; width: 260px; float: right; margin-top: 25px; }
+          .sig-img { max-height: 85px; max-width: 220px; margin: 8px 0; border-bottom: 1px solid #333; padding-bottom: 2px; }
+          @media print {
+            body { padding: 0; }
+            .page-break { break-after: page; page-break-after: always; }
+          }
+        </style>
+      </head>
+      <body>
+        ${sheetsHtml}
+        <script>
+          window.onload = function() {
+            setTimeout(function() {
+              window.print();
+            }, 600);
           };
         </script>
       </body>
@@ -3320,11 +3404,36 @@ ${rec.transcript || '[Tanpa Teks Verbatim]'}
               </div>
 
               <div className="card-timbul-admin overflow-hidden">
-                <div className="p-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+                <div className="p-4 bg-slate-50 border-b border-slate-200 flex flex-col lg:flex-row lg:items-center justify-between gap-3">
                   <h3 className="text-xs font-black uppercase text-slate-800 tracking-wider flex items-center gap-2">
                     <i className="fa-solid fa-file-contract text-emerald-600"></i>
                     Daftar Responden &amp; Berkas Persetujuan Etika Penelitian
                   </h3>
+                  {consents.length > 0 && (
+                    <div className="flex flex-wrap items-center gap-2">
+                      <button
+                        onClick={downloadAllConsentsDocx}
+                        className="px-3 py-1.5 bg-blue-700 hover:bg-blue-800 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-sm transition active:scale-95 cursor-pointer"
+                        title="Unduh seluruh Informed Consent responden dalam satu dokumen Word (.docx) gabungan"
+                      >
+                        <i className="fa-solid fa-file-word"></i> Unduh Semua Word (DOCX)
+                      </button>
+                      <button
+                        onClick={downloadAllConsentsPdf}
+                        className="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-sm transition active:scale-95 cursor-pointer"
+                        title="Cetak atau Simpan PDF seluruh Informed Consent responden sekaligus"
+                      >
+                        <i className="fa-solid fa-file-pdf"></i> Cetak / Simpan Semua PDF
+                      </button>
+                      <button
+                        onClick={downloadAllConsentsZip}
+                        className="px-3 py-1.5 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-sm transition active:scale-95 cursor-pointer"
+                        title="Unduh paket ZIP berisi file .docx terpisah untuk setiap responden dan rekap CSV"
+                      >
+                        <i className="fa-solid fa-file-zipper"></i> Unduh ZIP (Per Berkas)
+                      </button>
+                    </div>
+                  )}
                 </div>
 
                 {consents.length === 0 ? (
