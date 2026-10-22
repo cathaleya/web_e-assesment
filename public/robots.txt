@@ -1,0 +1,14 @@
+# Robots.txt for HDAP MADEL-5C (madel5c.com)
+User-agent: *
+Allow: /
+Allow: /assessment/
+Allow: /survey
+Allow: /login
+Allow: /buku-panduan
+
+# Disallow indexing for sensitive admin & internal API endpoints
+Disallow: /admin
+Disallow: /api/
+Disallow: /_next/
+
+Sitemap: https://madel5c.com/sitemap.xml

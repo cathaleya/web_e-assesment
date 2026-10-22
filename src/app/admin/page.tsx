@@ -181,6 +181,13 @@ export default function AdminDashboard() {
   const [currentTab, setCurrentTab] = useState("madel5c");
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState<boolean>(false);
+  const [isCheckingAuth, setIsCheckingAuth] = useState<boolean>(true);
+  const [loginUsername, setLoginUsername] = useState<string>("");
+  const [loginPassword, setLoginPassword] = useState<string>("");
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [loginError, setLoginError] = useState<string>("");
+  const [loginLoading, setLoginLoading] = useState<boolean>(false);
   const [users, setUsers] = useState<any[]>([]);
   const [selectedUser, setSelectedUser] = useState<any>(null);
   const [selectedUserStats, setSelectedUserStats] = useState<any>(null);
@@ -945,36 +952,66 @@ ${rec.transcript || '[Tanpa Teks Verbatim]'}
 
   useEffect(() => {
     setIsMounted(true);
-    fetchData();
+    const authStatus = localStorage.getItem("isAdmin") === "true" || sessionStorage.getItem("isAdmin") === "true";
+    if (authStatus) {
+      setIsAdminAuthenticated(true);
+      fetchData();
 
-    const timestamp = Date.now();
-    fetch(`/api/admin/analysis/run?t=${timestamp}`, { cache: 'no-store' })
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          if (data.isReset) {
-            // User explicitly clicked Reset DB
-            setStats({
-              participants: 0, alpha: 0, omega: 0, rmsea: 0, cfi: 0, tli: 0, difCount: 0, predictiveValidity: 0
-            });
-            setAnalysisResults({
-              efa: null, cfa: null, rasch: null, sem: null, cbsem: null, mfrm: null
-            });
-          } else {
-            if (data.results) {
-              setAnalysisResults(prev => ({ ...prev, ...data.results }));
-            }
-            if (data.plots) {
-              setAnalysisPlots(prev => ({ ...prev, ...data.plots }));
-            }
-            if (data.plots2) {
-              setAnalysisPlots2(prev => ({ ...prev, ...data.plots2 }));
+      const timestamp = Date.now();
+      fetch(`/api/admin/analysis/run?t=${timestamp}`, { cache: 'no-store' })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            if (data.isReset) {
+              setStats({
+                participants: 0, alpha: 0, omega: 0, rmsea: 0, cfi: 0, tli: 0, difCount: 0, predictiveValidity: 0
+              });
+              setAnalysisResults({
+                efa: null, cfa: null, rasch: null, sem: null, cbsem: null, mfrm: null
+              });
+            } else {
+              if (data.results) {
+                setAnalysisResults(prev => ({ ...prev, ...data.results }));
+              }
+              if (data.plots) {
+                setAnalysisPlots(prev => ({ ...prev, ...data.plots }));
+              }
+              if (data.plots2) {
+                setAnalysisPlots2(prev => ({ ...prev, ...data.plots2 }));
+              }
             }
           }
-        }
-      })
-      .catch(err => console.error("Error loading analysis status:", err));
+        })
+        .catch(err => console.error("Error loading analysis status:", err));
+    }
+    setIsCheckingAuth(false);
   }, [fetchData]);
+
+  const handleAdminLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoginLoading(true);
+    setLoginError("");
+    try {
+      const res = await fetch("/api/admin/auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: loginUsername, password: loginPassword }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        sessionStorage.setItem("isAdmin", "true");
+        localStorage.setItem("isAdmin", "true");
+        setIsAdminAuthenticated(true);
+        fetchData();
+      } else {
+        setLoginError(data.error || "Username atau password admin salah.");
+      }
+    } catch (err) {
+      setLoginError("Gagal menghubungi server autentikasi.");
+    } finally {
+      setLoginLoading(false);
+    }
+  };
 
   // Sync analysisResults to UI state
   useEffect(() => {
@@ -1204,6 +1241,109 @@ ${rec.transcript || '[Tanpa Teks Verbatim]'}
     );
   };
 
+  if (isCheckingAuth) {
+    return (
+      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center text-white">
+        <div className="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+        <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Memeriksa Hak Akses Admin HDAP...</p>
+      </div>
+    );
+  }
+
+  if (!isAdminAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-emerald-950 flex flex-col items-center justify-center p-4 relative overflow-hidden">
+        <div className="w-full max-w-md bg-white/95 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-emerald-500/30 relative z-10">
+          <div className="text-center mb-6">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-800 text-white flex items-center justify-center text-2xl mx-auto shadow-lg shadow-emerald-600/30 mb-3 border-2 border-emerald-300">
+              <i className="fa-solid fa-shield-halved"></i>
+            </div>
+            <h1 className="text-xl font-black text-slate-900 uppercase tracking-tight">HDAP ADMIN GATEWAY</h1>
+            <p className="text-xs font-bold text-slate-500 mt-1">Otorisasi Akses Panel Evaluasi Psikometri &amp; Riset</p>
+          </div>
+
+          {loginError && (
+            <div className="mb-4 p-3 rounded-xl bg-rose-50 border border-rose-300 text-rose-800 text-xs font-bold flex items-center gap-2">
+              <i className="fa-solid fa-triangle-exclamation text-rose-600 shrink-0"></i>
+              <span>{loginError}</span>
+            </div>
+          )}
+
+          <form onSubmit={handleAdminLogin} className="space-y-4">
+            <div>
+              <label className="block text-[11px] font-black uppercase text-slate-700 tracking-wider mb-1.5">
+                Username / Email Admin
+              </label>
+              <div className="relative">
+                <i className="fa-solid fa-user absolute left-3.5 top-3.5 text-slate-400 text-xs"></i>
+                <input
+                  type="text"
+                  required
+                  value={loginUsername}
+                  onChange={(e) => setLoginUsername(e.target.value)}
+                  placeholder="Masukkan username admin..."
+                  className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-[11px] font-black uppercase text-slate-700 tracking-wider mb-1.5">
+                Password Keamanan
+              </label>
+              <div className="relative">
+                <i className="fa-solid fa-lock absolute left-3.5 top-3.5 text-slate-400 text-xs"></i>
+                <input
+                  type={showPassword ? "text" : "password"}
+                  required
+                  value={loginPassword}
+                  onChange={(e) => setLoginPassword(e.target.value)}
+                  placeholder="Masukkan password admin..."
+                  className="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3.5 top-3 text-slate-400 hover:text-slate-600 text-xs"
+                >
+                  <i className={`fa-solid ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}></i>
+                </button>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loginLoading}
+              className="w-full py-3.5 bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 disabled:opacity-50 text-white rounded-xl font-black text-xs uppercase tracking-widest shadow-xl border-b-2 border-emerald-950 active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer"
+            >
+              {loginLoading ? (
+                <>
+                  <i className="fa-solid fa-spinner animate-spin"></i>
+                  <span>MEMVERIFIKASI...</span>
+                </>
+              ) : (
+                <>
+                  <i className="fa-solid fa-arrow-right-to-bracket"></i>
+                  <span>MASUK PANEL ADMIN</span>
+                </>
+              )}
+            </button>
+          </form>
+
+          <div className="mt-6 pt-4 border-t border-slate-200 flex items-center justify-between text-[11px]">
+            <button
+              onClick={() => router.push("/")}
+              className="font-bold text-slate-500 hover:text-slate-800 flex items-center gap-1.5 transition-colors cursor-pointer"
+            >
+              <i className="fa-solid fa-arrow-left"></i> Kembali ke Beranda
+            </button>
+            <span className="text-slate-400 font-medium">HDAP Platform © 2026</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#f8f9fb] text-slate-800 flex font-sans">
       <style>{`
@@ -1348,10 +1488,10 @@ ${rec.transcript || '[Tanpa Teks Verbatim]'}
         <div className="px-3 py-4 border-t border-emerald-800/40 bg-emerald-950/30">
           <button 
             onClick={() => {
-              // Hanya hapus tanda login sesi admin, database dan data partisipan tetap 100% aman
               localStorage.removeItem("isAdmin");
-              localStorage.removeItem("userName");
-              router.push('/login');
+              sessionStorage.removeItem("isAdmin");
+              setIsAdminAuthenticated(false);
+              router.push('/');
             }}
             title={sidebarCollapsed ? "Log Out" : undefined}
             className="w-full py-2.5 px-3 rounded-xl font-black text-xs uppercase tracking-wider bg-rose-950/80 hover:bg-rose-900 text-rose-200 border border-rose-700/60 shadow-md transition-all flex items-center justify-center gap-2">
