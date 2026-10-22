@@ -221,6 +221,7 @@ export default function DashboardPage() {
               radarData={stats?.radar || [85, 90, 80, 75, 88]}
               onShowReflection={() => setShowReflection('madel')}
               onExit={handleUserLogout}
+              isAdminMode={false}
             />
           ) : (
             <>
@@ -241,7 +242,11 @@ export default function DashboardPage() {
                       </div>
                       <h4 className="text-sm font-black text-slate-900 uppercase tracking-tight">MADEL5C (SJT)</h4>
                       <p className="text-[10px] font-semibold text-slate-600 mt-1">Asesmen Literasi Digital 5 Dimensi (30 Butir)</p>
-                      {isMadelDone && <p className="mt-2 text-2xl font-black text-emerald-700 tracking-tight">Skor: {stats?.madel5c}</p>}
+                      {isMadelDone && (
+                        <p className="mt-2 text-xs font-bold text-emerald-700 tracking-tight flex items-center gap-1.5">
+                          <i className="fa-solid fa-circle-check"></i> Asesmen Selesai Dikerjakan
+                        </p>
+                      )}
                    </div>
                    {isMadelDone ? (
                      <button onClick={() => setShowReflection('madel')} className="mt-5 py-3 bg-emerald-100 hover:bg-emerald-200 text-emerald-900 rounded-xl text-[9px] font-black uppercase tracking-widest shadow-sm transition-all border border-emerald-300">
@@ -277,26 +282,29 @@ export default function DashboardPage() {
                 </div>
               </div>
 
-              {/* RADAR & STATUS AKHIR CARDS TIMBUL */}
+              {/* OVERVIEW 5 DIMENSI & STATUS AKHIR CARDS TIMBUL */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-5">
-                 {/* RADAR CHART CARD TIMBUL */}
-                 <div className="card-timbul p-5 md:p-6 rounded-[24px] md:rounded-[28px] bg-white flex flex-col items-center border border-slate-200">
-                    <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-3">Profil Kompetensi Digital 5 Dimensi</p>
-                    <div className="w-full max-w-[210px]">
-                      <Radar data={{
-                        labels: ['C1', 'C2', 'C3', 'C4', 'C5'],
-                        datasets: [{
-                          label: 'Kompetensi',
-                          data: stats?.radar || [0,0,0,0,0],
-                          backgroundColor: 'rgba(75, 83, 32, 0.2)',
-                          borderColor: '#4B5320',
-                          borderWidth: 2,
-                          pointRadius: 3
-                        }]
-                      }} options={{
-                        scales: { r: { suggestedMin: 0, suggestedMax: 100, pointLabels: { font: { size: 9, weight: 'bold' } }, ticks: { display: false } } },
-                        plugins: { legend: { display: false } }
-                      }} />
+                 {/* CARD LITERASI DIGITAL 5 DIMENSI */}
+                 <div className="card-timbul p-5 md:p-6 rounded-[24px] md:rounded-[28px] bg-white flex flex-col justify-between border border-slate-200">
+                    <div>
+                      <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-3">5 Dimensi Kompetensi MADEL5C</p>
+                      <div className="space-y-2">
+                        {[
+                          { code: "C1", label: "Contextual Understanding", desc: "Verifikasi informasi & data digital" },
+                          { code: "C2", label: "Digital Communication", desc: "Etika & netiket komunikasi siber" },
+                          { code: "C3", label: "Collaboration", desc: "Kolaborasi digital & kerja kelompok" },
+                          { code: "C4", label: "Content Creation", desc: "Kreasi konten ajar adaptif & HKI" },
+                          { code: "C5", label: "Critical Thinking & PS", desc: "Penalaran kritis & solusi teknis" },
+                        ].map((dim, i) => (
+                          <div key={i} className="flex items-center justify-between p-2 rounded-xl bg-slate-50 border border-slate-100 text-[10px]">
+                            <div className="flex items-center gap-2">
+                              <span className="w-5 h-5 rounded-md bg-[#4B5320] text-white font-black text-[9px] flex items-center justify-center shrink-0">{dim.code}</span>
+                              <span className="font-bold text-slate-800">{dim.label}</span>
+                            </div>
+                            <span className="text-[9px] font-semibold text-slate-400">{dim.desc}</span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                  </div>
 
@@ -307,7 +315,7 @@ export default function DashboardPage() {
                     </h3>
                     <div className="p-4 scenario-timbul rounded-2xl">
                        <p className="text-[11px] font-bold text-emerald-950 leading-relaxed italic">
-                         &quot;Silakan selesaikan seluruh 30 butir instrumen MADEL5C dan 10 butir survey kepuasan untuk mengunduh laporan kompetensi digital utuh Anda.&quot;
+                         &quot;Silakan selesaikan seluruh 30 butir instrumen MADEL5C dan 10 butir survey kepuasan untuk melengkapi data partisipasi riset Anda.&quot;
                        </p>
                     </div>
                  </div>
@@ -326,16 +334,16 @@ export default function DashboardPage() {
             <motion.div initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9, y: 20 }} className="relative w-full max-w-lg bg-white rounded-[40px] p-8 shadow-3xl border border-slate-100 max-h-[80vh] flex flex-col">
                <h2 className="text-xl font-black text-slate-900 mb-6 tracking-tight uppercase border-b pb-4">Refleksi Jawaban {showReflection.toUpperCase()}</h2>
                <div className="flex-1 overflow-y-auto pr-4 space-y-4">
-                  {showReflection === 'pdi' && stats?.pdiAnswers && Object.entries(stats.pdiAnswers).map(([key, val], i) => (
+                  {showReflection === 'pdi' && stats?.pdiAnswers && Object.entries(stats.pdiAnswers).map(([key, _val], i) => (
                     <div key={i} className="p-4 bg-blue-50 rounded-2xl border border-blue-100">
                        <p className="text-[9px] font-black text-blue-500 uppercase mb-1">Butir Pertanyaan {Number(key) + 1}</p>
-                       <p className="text-xs font-bold text-slate-900">Skor Kemampuan Mandiri: <span className="text-blue-600">{val}</span> / 5</p>
+                       <p className="text-xs font-bold text-slate-700 flex items-center gap-1.5"><i className="fa-solid fa-circle-check text-blue-600"></i> Status: <span className="text-blue-700 font-bold">Respon Terekam</span></p>
                     </div>
                   ))}
-                  {showReflection === 'madel' && stats?.madelAnswers && Object.entries(stats.madelAnswers).map(([key, val], i) => (
+                  {showReflection === 'madel' && stats?.madelAnswers && Object.entries(stats.madelAnswers).map(([key, _val], i) => (
                     <div key={i} className="p-4 bg-[#4B5320]/10 rounded-2xl border border-[#4B5320]/20">
                        <p className="text-[9px] font-black text-[#4B5320] uppercase mb-1">Skenario Situasi {Number(key) + 1}</p>
-                       <p className="text-xs font-bold text-slate-900">Skor Efektivitas Tindakan: <span className="text-[#4B5320]">{val}</span> / 5</p>
+                       <p className="text-xs font-bold text-slate-700 flex items-center gap-1.5"><i className="fa-solid fa-circle-check text-emerald-600"></i> Status: <span className="text-[#4B5320] font-bold">Respon Terekam</span></p>
                     </div>
                   ))}
                </div>

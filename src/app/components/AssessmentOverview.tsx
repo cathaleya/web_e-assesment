@@ -106,146 +106,229 @@ export default function AssessmentOverview({
           </p>
         </div>
 
-        {/* Dynamic Navigation Tabs */}
-        <div className="flex items-center bg-slate-100 p-1.5 rounded-xl border border-slate-200/50 self-start md:self-auto shadow-inner">
-          <button
-            onClick={() => setActivePage(1)}
-            className={`px-4 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all duration-300 ${
-              activePage === 1
-                ? "bg-white text-slate-900 shadow-sm"
-                : "text-slate-500 hover:text-slate-800"
-            }`}
-          >
-            Halaman 1
-          </button>
-          <button
-            onClick={() => setActivePage(2)}
-            className={`px-4 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all duration-300 ${
-              activePage === 2
-                ? "bg-white text-slate-900 shadow-sm"
-                : "text-slate-500 hover:text-slate-800"
-            }`}
-          >
-            Halaman 2
-          </button>
-          <button
-            onClick={() => setActivePage(3)}
-            className={`px-4 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all duration-300 ${
-              activePage === 3
-                ? "bg-white text-slate-900 shadow-sm"
-                : "text-slate-500 hover:text-slate-800"
-            }`}
-          >
-            Halaman 3
-          </button>
-        </div>
+        {/* Navigation Tabs (Only in Admin Mode) */}
+        {isAdminMode ? (
+          <div className="flex items-center bg-slate-100 p-1.5 rounded-xl border border-slate-200/50 self-start md:self-auto shadow-inner">
+            <button
+              onClick={() => setActivePage(1)}
+              className={`px-4 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all duration-300 ${
+                activePage === 1
+                  ? "bg-white text-slate-900 shadow-sm"
+                  : "text-slate-500 hover:text-slate-800"
+              }`}
+            >
+              Halaman 1
+            </button>
+            <button
+              onClick={() => setActivePage(2)}
+              className={`px-4 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all duration-300 ${
+                activePage === 2
+                  ? "bg-white text-slate-900 shadow-sm"
+                  : "text-slate-500 hover:text-slate-800"
+              }`}
+            >
+              Halaman 2
+            </button>
+            <button
+              onClick={() => setActivePage(3)}
+              className={`px-4 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all duration-300 ${
+                activePage === 3
+                  ? "bg-white text-slate-900 shadow-sm"
+                  : "text-slate-500 hover:text-slate-800"
+              }`}
+            >
+              Halaman 3
+            </button>
+          </div>
+        ) : (
+          <div className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-100 text-emerald-800 rounded-xl text-[10px] font-black uppercase tracking-wider border border-emerald-200">
+            <i className="fa-solid fa-circle-check text-emerald-600"></i>
+            <span>Respons Selesai &amp; Tersimpan</span>
+          </div>
+        )}
       </div>
 
       {/* 3-PAGE CONTAINER */}
       <div className="relative min-h-[500px]">
-        {/* PAGE 1: RINGKASAN HASIL & RADAR CHART */}
+        {/* PAGE 1: RINGKASAN HASIL */}
         {activePage === 1 && (
           <div className="space-y-6 animate-in fade-in slide-in-from-right-5 duration-300">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
               
-              {/* HASIL PREDIKSI CARD */}
-              <div className="lg:col-span-6 flex flex-col justify-between p-6 md:p-8 rounded-2xl text-white bg-gradient-to-br from-slate-900 to-slate-800 border border-slate-700 shadow-2xl relative overflow-hidden">
-                <div className="absolute right-4 top-4 opacity-5 text-9xl pointer-events-none">
-                  <i className="fa-solid fa-circle-arrow-up"></i>
+              {/* ADMIN MODE: HASIL PREDIKSI SCORE CARD */}
+              {isAdminMode ? (
+                <div className="lg:col-span-6 flex flex-col justify-between p-6 md:p-8 rounded-2xl text-white bg-gradient-to-br from-slate-900 to-slate-800 border border-slate-700 shadow-2xl relative overflow-hidden">
+                  <div className="absolute right-4 top-4 opacity-5 text-9xl pointer-events-none">
+                    <i className="fa-solid fa-circle-arrow-up"></i>
+                  </div>
+                  
+                  <div>
+                    <div className={`px-4 py-1.5 bg-gradient-to-r ${bgGradient} rounded-xl inline-flex items-center gap-2.5 mb-6 border border-white/10 shadow-lg`}>
+                      <i className="fa-solid fa-arrow-up-long text-white text-xs animate-bounce"></i>
+                      <span className="text-[10px] font-black uppercase tracking-wider">{predictionText}</span>
+                    </div>
+
+                    <div className="space-y-1">
+                      <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Skor Total (30 - 150)</p>
+                      <h3 className="text-5xl md:text-6xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-100 to-slate-300">
+                        {actualScore} <span className="text-lg font-medium text-slate-400">/ 150</span>
+                      </h3>
+                    </div>
+
+                    <div className="mt-6 pt-5 border-t border-white/10 flex items-center justify-between">
+                      <div>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Kategorisasi Normatif</p>
+                        <p className={`text-2xl font-black italic ${predictionColor} tracking-tight`}>{predictionCategory}</p>
+                      </div>
+                      <div className="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center border border-white/10 shadow-inner">
+                        <i className={`fa-solid fa-chart-line ${predictionColor} text-xl`}></i>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-6 text-[9px] text-slate-400 bg-white/5 p-3 rounded-lg border border-white/10 leading-relaxed">
+                    <span className="font-bold text-white uppercase block mb-1">Acuan Rumus Norma:</span>
+                    Tinggi: &gt; 105 | Sedang: 75 s.d 105 | Rendah: &lt; 75 (Rata-rata teoritis dengan SD)
+                  </div>
+
+                  <p className="mt-4 text-xs font-bold leading-relaxed italic text-slate-300 border-l-2 border-blue-500 pl-3">
+                    &quot;{predictionDesc}&quot;
+                  </p>
                 </div>
-                
-                <div>
-                  <div className={`px-4 py-1.5 bg-gradient-to-r ${bgGradient} rounded-xl inline-flex items-center gap-2.5 mb-6 border border-white/10 shadow-lg`}>
-                    <i className="fa-solid fa-arrow-up-long text-white text-xs animate-bounce"></i>
-                    <span className="text-[10px] font-black uppercase tracking-wider">{predictionText}</span>
+              ) : (
+                /* USER MODE: NO SCORE CARD - ONLY CONFIRMATION & ETHICAL NOTICE */
+                <div className="lg:col-span-6 flex flex-col justify-between p-6 md:p-8 rounded-2xl text-white bg-gradient-to-br from-slate-900 to-slate-800 border border-slate-700 shadow-2xl relative overflow-hidden">
+                  <div className="absolute right-4 top-4 opacity-5 text-9xl pointer-events-none">
+                    <i className="fa-solid fa-circle-check"></i>
+                  </div>
+                  
+                  <div>
+                    <div className="px-4 py-1.5 bg-gradient-to-r from-emerald-600 to-teal-700 rounded-xl inline-flex items-center gap-2 mb-6 border border-white/10 shadow-lg">
+                      <i className="fa-solid fa-circle-check text-white text-xs"></i>
+                      <span className="text-[10px] font-black uppercase tracking-wider">ASESMEN SELESAI &amp; TERSIMPAN</span>
+                    </div>
+
+                    <div className="space-y-2">
+                      <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Status Partisipasi Riset</p>
+                      <h3 className="text-2xl md:text-3xl font-black tracking-tight text-white">
+                        Respons Berhasil Direkam
+                      </h3>
+                      <p className="text-xs font-semibold text-slate-300 leading-relaxed pt-1">
+                        Terima kasih <strong className="text-emerald-400 font-black">{userName}</strong> ({userCampus}). Seluruh 30 butir instrumen MADEL5C dan 10 butir survei evaluasi sistem telah terekam secara utuh di basis data penelitian.
+                      </p>
+                    </div>
                   </div>
 
-                  <div className="space-y-1">
-                    <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Skor Total (30 - 150)</p>
-                    <h3 className="text-5xl md:text-6xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-100 to-slate-300">
-                      {actualScore} <span className="text-lg font-medium text-slate-400">/ 150</span>
-                    </h3>
-                  </div>
-
-                  <div className="mt-6 pt-5 border-t border-white/10 flex items-center justify-between">
+                  <div className="mt-6 text-[10px] text-amber-200 bg-amber-500/10 p-3.5 rounded-xl border border-amber-500/30 leading-relaxed flex items-start gap-2.5">
+                    <i className="fa-solid fa-shield-halved text-amber-400 text-sm mt-0.5 shrink-0"></i>
                     <div>
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Kategorisasi Normatif</p>
-                      <p className={`text-2xl font-black italic ${predictionColor} tracking-tight`}>{predictionCategory}</p>
-                    </div>
-                    <div className="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center border border-white/10 shadow-inner">
-                      <i className={`fa-solid fa-chart-line ${predictionColor} text-xl`}></i>
+                      <span className="font-bold text-white uppercase block mb-0.5">Pemberitahuan Kerahasiaan Skor:</span>
+                      Sesuai standar pengujian instrumen dan pedoman etika penelitian, rekapitulasi skor kuantitatif serta analisis psikometri hanya diproses dan dapat diakses oleh Dosen/Peneliti melalui <strong>Panel Admin</strong>.
                     </div>
                   </div>
                 </div>
+              )}
 
-                <div className="mt-6 text-[9px] text-slate-400 bg-white/5 p-3 rounded-lg border border-white/10 leading-relaxed">
-                  <span className="font-bold text-white uppercase block mb-1">Acuan Rumus Norma:</span>
-                  Tinggi: &gt; 105 | Sedang: 75 s.d 105 | Rendah: &lt; 75 (Rata-rata teoritis dengan SD)
-                </div>
-
-                <p className="mt-4 text-xs font-bold leading-relaxed italic text-slate-300 border-l-2 border-blue-500 pl-3">
-                  &quot;{predictionDesc}&quot;
-                </p>
-              </div>
-
-              {/* RADAR CHART COMPONENT */}
-              <div className="lg:col-span-6 bg-white border border-slate-200/80 rounded-2xl p-6 shadow-xl flex flex-col items-center justify-center min-h-[350px]">
-                <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-6 text-center">
-                  Profil Kompetensi 5 Dimensi MADEL5C
-                </p>
-                <div className="w-full max-w-[240px]">
-                  <Radar
-                    data={{
-                      labels: [
-                        "C1. Contextual Understanding",
-                        "C2. Digital Communication",
-                        "C3. Collaboration",
-                        "C4. Content Creation",
-                        "C5. Critical Thinking",
-                      ],
-                      datasets: [
-                        {
-                          label: "Skor Kompetensi",
-                          data: radarData,
-                          backgroundColor: "rgba(75, 83, 32, 0.2)",
-                          borderColor: "#4B5320",
-                          borderWidth: 3,
-                          pointRadius: 5,
-                          pointBackgroundColor: "#4B5320",
-                          pointHoverRadius: 7,
-                        },
-                      ],
-                    }}
-                    options={{
-                      scales: {
-                        r: {
-                          suggestedMin: 0,
-                          suggestedMax: 100,
-                          pointLabels: {
-                            font: { size: 8, weight: "bold", family: "sans-serif" },
-                            color: "#1e293b",
+              {/* RIGHT CARD: ADMIN (RADAR CHART) VS USER (5-DIMENSION COVERAGE) */}
+              {isAdminMode ? (
+                <div className="lg:col-span-6 bg-white border border-slate-200/80 rounded-2xl p-6 shadow-xl flex flex-col items-center justify-center min-h-[350px]">
+                  <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-6 text-center">
+                    Profil Kompetensi 5 Dimensi MADEL5C
+                  </p>
+                  <div className="w-full max-w-[240px]">
+                    <Radar
+                      data={{
+                        labels: [
+                          "C1. Contextual Understanding",
+                          "C2. Digital Communication",
+                          "C3. Collaboration",
+                          "C4. Content Creation",
+                          "C5. Critical Thinking",
+                        ],
+                        datasets: [
+                          {
+                            label: "Skor Kompetensi",
+                            data: radarData,
+                            backgroundColor: "rgba(75, 83, 32, 0.2)",
+                            borderColor: "#4B5320",
+                            borderWidth: 3,
+                            pointRadius: 5,
+                            pointBackgroundColor: "#4B5320",
+                            pointHoverRadius: 7,
                           },
-                          ticks: { display: false },
-                          grid: { color: "rgba(148, 163, 184, 0.15)" },
+                        ],
+                      }}
+                      options={{
+                        scales: {
+                          r: {
+                            suggestedMin: 0,
+                            suggestedMax: 100,
+                            pointLabels: {
+                              font: { size: 8, weight: "bold", family: "sans-serif" },
+                              color: "#1e293b",
+                            },
+                            ticks: { display: false },
+                            grid: { color: "rgba(148, 163, 184, 0.15)" },
+                          },
                         },
-                      },
-                      plugins: {
-                        legend: { display: false },
-                      },
-                    }}
-                  />
-                </div>
-                <div className="flex items-center gap-6 mt-6 border-t border-slate-100 pt-4 w-full justify-center text-[9px] font-bold text-slate-600 uppercase tracking-wider">
-                  <div className="flex items-center gap-2">
-                    <span className="w-3 h-3 bg-[#4B5320] rounded"></span>
-                    <span>Persentase Capaian</span>
+                        plugins: {
+                          legend: { display: false },
+                        },
+                      }}
+                    />
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="w-3 h-3 bg-blue-600 rounded"></span>
-                    <span>Target Ideal: &ge; 80%</span>
+                  <div className="flex items-center gap-6 mt-6 border-t border-slate-100 pt-4 w-full justify-center text-[9px] font-bold text-slate-600 uppercase tracking-wider">
+                    <div className="flex items-center gap-2">
+                      <span className="w-3 h-3 bg-[#4B5320] rounded"></span>
+                      <span>Persentase Capaian</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="w-3 h-3 bg-blue-600 rounded"></span>
+                      <span>Target Ideal: &ge; 80%</span>
+                    </div>
                   </div>
                 </div>
-              </div>
+              ) : (
+                /* USER MODE: 5 DIMENSI LITERASI DIGITAL CHECKLIST */
+                <div className="lg:col-span-6 bg-white border border-slate-200/80 rounded-2xl p-6 shadow-xl flex flex-col justify-between min-h-[350px]">
+                  <div>
+                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-4 flex items-center gap-2">
+                      <i className="fa-solid fa-cubes text-[#4B5320]"></i> Cakupan 5 Dimensi Literasi Digital Teruji
+                    </p>
+                    <div className="space-y-2.5">
+                      {[
+                        { code: "C1", label: "Contextual Understanding", desc: "Memilah & memverifikasi validitas informasi digital" },
+                        { code: "C2", label: "Digital Communication", desc: "Etika komunikasi & netiket di ruang siber" },
+                        { code: "C3", label: "Collaboration", desc: "Kolaborasi dokumen & manajemen tugas kelompok tertib" },
+                        { code: "C4", label: "Digital Content Creation", desc: "Kreasi bahan ajar digital adaptif & kepatuhan HKI" },
+                        { code: "C5", label: "Critical Thinking & Problem Solving", desc: "Penalaran kritis & pemecahan kendala teknis" },
+                      ].map((dim, i) => (
+                        <div key={i} className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+                          <div className="flex items-center gap-2.5">
+                            <span className="w-6 h-6 rounded-lg bg-[#4B5320] text-white font-black text-[10px] flex items-center justify-center shrink-0 shadow-sm">{dim.code}</span>
+                            <div>
+                              <p className="text-[11px] font-bold text-slate-800 leading-none">{dim.label}</p>
+                              <p className="text-[9px] font-medium text-slate-500 mt-1">{dim.desc}</p>
+                            </div>
+                          </div>
+                          <span className="text-[9px] font-black text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full flex items-center gap-1">
+                            <i className="fa-solid fa-check text-[8px]"></i> Selesai
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-[9px] font-bold text-slate-500">
+                    <span className="flex items-center gap-1.5 text-emerald-700">
+                      <i className="fa-solid fa-circle-check"></i> 30 Skenario Situasional (SJT) Lengkap
+                    </span>
+                    <span className="flex items-center gap-1.5 text-blue-700">
+                      <i className="fa-solid fa-circle-check"></i> 10 Butir Evaluasi Sistem (SUS) Lengkap
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* REKOMENDASI CERDAS SECTION */}
@@ -545,39 +628,41 @@ export default function AssessmentOverview({
                 </div>
               </div>
             </div>
-
-            {/* BUTTON BAR FOOTER */}
-            {(onShowReflection || onExit) && (
-              <div className="mt-8 flex flex-col md:flex-row items-center justify-between gap-4 p-4 bg-white rounded-2xl border border-slate-200 shadow-sm">
-                <div className="flex items-center gap-2">
-                  <div className="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse"></div>
-                  <p className="text-[10px] font-bold text-slate-500 leading-relaxed italic">
-                    * Profil Asesmen Digital Literasi 5 Komponen (C1 - C5) Berbasis Validasi Rasch & CFA.
-                  </p>
-                </div>
-                <div className="flex gap-2 w-full md:w-auto">
-                  {onShowReflection && (
-                    <button
-                      onClick={onShowReflection}
-                      className="flex-1 md:flex-none px-6 py-3 bg-slate-100 text-slate-700 rounded-xl font-black text-[10px] uppercase tracking-widest active:scale-95 transition-all hover:bg-slate-200"
-                    >
-                      Refleksi Jawaban
-                    </button>
-                  )}
-                  {onExit && (
-                    <button
-                      onClick={onExit}
-                      className="flex-1 md:flex-none px-6 py-3 bg-rose-500 text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-rose-500/20 active:scale-95 transition-all hover:bg-rose-600"
-                    >
-                      {isAdminMode ? "Tutup Detail" : "Keluar"}
-                    </button>
-                  )}
-                </div>
-              </div>
-            )}
           </div>
         )}
       </div>
+
+      {/* BUTTON BAR FOOTER (Available on all pages) */}
+      {(onShowReflection || onExit) && (
+        <div className="mt-6 flex flex-col md:flex-row items-center justify-between gap-4 p-4 bg-white rounded-2xl border border-slate-200 shadow-sm">
+          <div className="flex items-center gap-2">
+            <div className="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse"></div>
+            <p className="text-[10px] font-bold text-slate-500 leading-relaxed italic">
+              {isAdminMode
+                ? "* Profil Asesmen Digital Literasi 5 Komponen (C1 - C5) Berbasis Validasi Rasch & CFA."
+                : "* Seluruh data respons MADEL5C dan Survey Kepuasan Anda telah berhasil terekam aman di sistem."}
+            </p>
+          </div>
+          <div className="flex gap-2 w-full md:w-auto">
+            {onShowReflection && (
+              <button
+                onClick={onShowReflection}
+                className="flex-1 md:flex-none px-6 py-3 bg-slate-100 text-slate-700 rounded-xl font-black text-[10px] uppercase tracking-widest active:scale-95 transition-all hover:bg-slate-200"
+              >
+                Refleksi Jawaban
+              </button>
+            )}
+            {onExit && (
+              <button
+                onClick={onExit}
+                className="flex-1 md:flex-none px-6 py-3 bg-rose-500 text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-rose-500/20 active:scale-95 transition-all hover:bg-rose-600"
+              >
+                {isAdminMode ? "Tutup Detail" : "Keluar"}
+              </button>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

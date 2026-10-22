@@ -2,7 +2,7 @@
   {
     "id": 1,
     "dim": "C1 - Contextual Understanding",
-    "scenario": "Skenario:\nValidasi Modul Pembelajaran dari Blog GuruAnda menemukan draf modul digital di internet. Blog pembuat modul tersebut menulis: \"Ini adalah rumus cepat praktis mencari energi tanpa perlu memahami konsep dasar fisika yang berbelit-belit.\"\n\nPertanyaan:\nBagaimana Anda memvalidasi keandalan bahan ajar tersebut sebelum digunakan di kelas Anda?",
+    "scenario": "Skenario:\nVerifikasi Modul Pembelajaran dari Blog Guru\nAnda menemukan draf modul digital di internet. Blog pembuat modul tersebut menulis: \"Ini adalah rumus cepat praktis mencari energi tanpa perlu memahami konsep dasar fisika yang berbelit-belit.\"\n\nPertanyaan:\nBagaimana Anda memverifikasi keandalan bahan ajar tersebut sebelum digunakan di kelas Anda?",
     "options": [
       {
         "text": "Langsung menggunakan modul tersebut karena tampilannya sangat menarik dan akan menghemat waktu Anda dalam mempersiapkan materi pelajaran besok.",
@@ -29,7 +29,7 @@
   {
     "id": 2,
     "dim": "C1 - Contextual Understanding",
-    "scenario": "Skenario:\nMengatasi Kebosanan Sejarah dengan Advanced SearchDi akhir pelajaran sejarah, beber\n\nPertanyaan:\napa siswa mengeluh kepada Anda: \"Bu, pelajaran sejarah ini hanya menghafal tahun dan nama tokoh yang tidak ada gunanya untuk masa depan kami.\"Langkah pencarian informasi ilmiah apa yang Anda lakukan untuk menemukan solusi masalah ini?",
+    "scenario": "Skenario:\nMengatasi Kebosanan Sejarah dengan Advanced Search\nDi akhir pelajaran sejarah, beberapa siswa mengeluh kepada Anda: \"Bu, pelajaran sejarah ini hanya menghafal tahun dan nama tokoh yang tidak ada gunanya untuk masa depan kami.\"\n\nPertanyaan:\nLangkah pencarian informasi ilmiah apa yang Anda lakukan untuk menemukan solusi masalah ini?",
     "options": [
       {
         "text": "Mencari jurnal penelitian tindakan kelas tentang penerapan pembelajaran sejarah digital di Google Scholar untuk mendapatkan ide-ide praktis mengajar.",
@@ -56,7 +56,7 @@
   {
     "id": 3,
     "dim": "C1 - Contextual Understanding",
-    "scenario": "Skenario:\nMenyikapi Klaim Gamifikasi Instan di Media SosialRekan magang menunjukkan postingan Instagram dan berkata: \"Akun @GuruHebat memposting bahwa gamifikasi 100% menjamin kelulusan siswa tanpa perlu membaca buku teks cetak sekolah.\"\n\nPertanyaan:\nBagaimana respon kritis Anda sebagai calon pendidik akademik?",
+    "scenario": "Skenario:\nMenyikapi Klaim Gamifikasi Instan di Media Sosial\nRekan magang menunjukkan postingan Instagram dan berkata: \"Akun @GuruHebat memposting bahwa gamifikasi 100% menjamin kelulusan siswa tanpa perlu membaca buku teks cetak sekolah.\"\n\nPertanyaan:\nBagaimana respon kritis Anda sebagai calon pendidik akademik?",
     "options": [
       {
         "text": "Membaca kolom komentar di postingan tersebut untuk melihat apakah ada guru lain yang sudah membuktikan klaim itu sukses.",
@@ -83,7 +83,7 @@
   {
     "id": 4,
     "dim": "C1 - Contextual Understanding",
-    "scenario": "Skenario:\nMengelola File Referensi yang Menumpuk di LaptopAnda menyadari tumpukan file di komputer Anda berantakan dan bergumam: \"Ratusan file PDF materi kuliah dan RPP saya menumpuk acak di folder Downloads dengan nama file tidak jelas.\"\n\nPertanyaan:\nBagaimana langkah pengelolaan data referensi digital yang Anda ambil?",
+    "scenario": "Skenario:\nMengelola File Referensi yang Menumpuk di Laptop\nAnda menyadari tumpukan file di komputer Anda berantakan dan bergumam: \"Ratusan file PDF materi kuliah dan RPP saya menumpuk acak di folder Downloads dengan nama file tidak jelas.\"\n\nPertanyaan:\nBagaimana langkah pengelolaan data referensi digital yang Anda ambil?",
     "options": [
       {
         "text": "Membuat hierarki folder yang rapi berdasarkan topik, mengganti nama file secara konsisten, lalu menyimpannya di harddisk eksternal.",
@@ -110,7 +110,7 @@
   {
     "id": 5,
     "dim": "C1 - Contextual Understanding",
-    "scenario": "Skenario:\nMenyaring Kebocoran Soal Palsu di Grup AngkatanDi grup WhatsApp angkatan, beredar pesan bertantai: \"Ini link bocoran soal ujian kelulusan PPG tahun ini, segera transfer biaya registrasi untuk mendapatkan kunci jawaban lengkap.\"\n\nPertanyaan:\nLangkah kritis apa yang Anda lakukan pertama kali menyikapi informasi ini?",
+    "scenario": "Skenario:\nMenyaring Kebocoran Soal Palsu di Grup Angkatan\nDi grup WhatsApp angkatan, beredar pesan berantai: \"Ini link bocoran soal ujian kelulusan PPG tahun ini, segera transfer biaya registrasi untuk mendapatkan kunci jawaban lengkap.\"\n\nPertanyaan:\nLangkah kritis apa yang Anda lakukan pertama kali menyikapi informasi ini?",
     "options": [
       {
         "text": "Menyebarkan kembali pesan berantai tersebut ke grup kelas magang agar mahasiswa lain tidak ketinggalan info penting ini.",
@@ -129,7 +129,7 @@
         "score": 2
       },
       {
-        "text": "Menanyakan keaslian pesan tersebut kepada admin koordinator program PPG di kampus untuk memastikan validitas link yang disebarkan.",
+        "text": "Menanyakan keaslian pesan tersebut kepada admin koordinator program PPG di kampus untuk mengklarifikasi validitas link yang disebarkan.",
         "score": 4
       }
     ]
@@ -137,7 +137,7 @@
   {
     "id": 6,
     "dim": "C1 - Contextual Understanding",
-    "scenario": "Skenario:\nPengumpulan Data Kebutuhan E-Book KelasKepala sekolah bertanya kepada Anda di ruang guru: \"\"Langkah pengumpulan data awal apa yang Anda usulkan kepada kepala sekolah?\n\nPertanyaan:\nBagaimana cara kita memetakan minat baca digital siswa kelas kita untuk menentukan alokasi anggaran pembelian e-book perpustakaan?",
+    "scenario": "Skenario:\nPengumpulan Data Kebutuhan E-Book Kelas\nKepala sekolah bertanya kepada Anda di ruang guru: \"Bagaimana cara kita memetakan minat baca digital siswa kelas kita untuk menentukan alokasi anggaran pembelian e-book perpustakaan?\"\n\nPertanyaan:\nLangkah pengumpulan data awal apa yang Anda usulkan kepada kepala sekolah?",
     "options": [
       {
         "text": "Menyarankan pembelian e-book secara acak berdasarkan judul buku fiksi yang saat ini sedang populer di media sosial.",
@@ -164,7 +164,7 @@
   {
     "id": 7,
     "dim": "C2 - Communication",
-    "scenario": "Skenario:\nPenyalahgunaan Aset Visual Milik Profesor TerkenalRekan mahasiswa berkata kepada Anda saat menyusun presentasi: \"Salin saja diagram siklus hidrologi dari buku Profesor Hartono ini tanpa perlu menuliskan nama beliau agar slide presentasi bersih.\"\n\nPertanyaan:\nTindakan komunikasi etis apa yang Anda lakukan dalam membagikan konten akademik ini?",
+    "scenario": "Skenario:\nPenyalahgunaan Aset Visual Milik Profesor Terkenal\nRekan mahasiswa berkata kepada Anda saat menyusun presentasi: \"Salin saja diagram siklus hidrologi dari buku Profesor Hartono ini tanpa perlu menuliskan nama beliau agar slide presentasi bersih.\"\n\nPertanyaan:\nTindakan komunikasi etis apa yang Anda lakukan dalam membagikan konten akademik ini?",
     "options": [
       {
         "text": "Menggunakan gambar diagram tersebut, lalu mencantumkan nama Profesor Hartono, judul buku, tahun terbit, dan penerbit di bawah gambar.",
@@ -191,14 +191,14 @@
   {
     "id": 8,
     "dim": "C2 - Communication",
-    "scenario": "Skenario:\nKasus Perundungan Siber Halus di YouTube KelasDi kolom komentar video praktik mengajar siswa, seorang siswa menulis: \"Presentasi kelompok 3 ini sangat buruk, penjelasannya membingungkan dan suaranya terdengar lucu.\"\n\nPertanyaan:\nBagaimana respon komunikasi Anda sebagai guru yang bertanggung jawab atas ruang siber kelas?",
+    "scenario": "Skenario:\nKasus Perundungan Siber Halus di YouTube Kelas\nDi kolom komentar video praktik mengajar siswa, seorang siswa menulis: \"Presentasi kelompok 3 ini sangat buruk, penjelasannya membingungkan dan suaranya terdengar lucu.\"\n\nPertanyaan:\nBagaimana respon komunikasi Anda sebagai guru yang bertanggung jawab atas ruang siber kelas?",
     "options": [
       {
         "text": "Menghapus komentar tersebut dan langsung mematikan kolom komentar pada semua video agar tidak terjadi konflik antar siswa.",
         "score": 3
       },
       {
-        "text": "Menghapus komentar tersebut, lalu memanggil siswa yang mengejek secara pribadi untuk menasehati perilakunya di ruang siber.",
+        "text": "Menghapus komentar tersebut, lalu memanggil siswa yang mengejek secara pribadi untuk menasihati perilakunya di ruang siber.",
         "score": 4
       },
       {
@@ -218,7 +218,7 @@
   {
     "id": 9,
     "dim": "C2 - Communication",
-    "scenario": "Skenario:\nPenolakan Agresif Teknologi Ujian oleh Guru SeniorDi rapat sekolah, guru senior berkata dengan ketus: \"Usulan ujian pakai Google Classroom ini merepotkan saja, kami sudah terbiasa pakai kertas fisik puluhan tahun dan terbukti sukses.\"\n\nPertanyaan:\nBagaimana respon komunikasi verbal Anda menghadapi penolakan agresif ini?",
+    "scenario": "Skenario:\nPenolakan Agresif Teknologi Ujian oleh Guru Senior\nDi rapat sekolah, guru senior berkata dengan ketus: \"Usulan ujian pakai Google Classroom ini merepotkan saja, kami sudah terbiasa pakai kertas fisik puluhan tahun dan terbukti sukses.\"\n\nPertanyaan:\nBagaimana respon komunikasi verbal Anda menghadapi penolakan agresif ini?",
     "options": [
       {
         "text": "Menerima kritik, berterima kasih atas masukan sejarah sekolah, lalu mendemonstrasikan kemudahan otomatisasi koreksi nilai di Google Classroom.",
@@ -237,7 +237,7 @@
         "score": 5
       },
       {
-        "text": "Menjawab balik dengan nada tinggi dan menyatakan bahwa guru senior tersebut menghambat kemajuan sistem pendidikan digital di sekolah.",
+        "text": "Menjawab kembali dengan nada tinggi dan menyatakan bahwa guru senior tersebut menghambat kemajuan sistem pendidikan digital di sekolah.",
         "score": 2
       }
     ]
@@ -245,7 +245,7 @@
   {
     "id": 10,
     "dim": "C2 - Communication",
-    "scenario": "Skenario:\nPenanganan Keluhan Dosen Mengenai Format Tugas di EmailDosen menulis di grup WhatsApp kelas: \"Saya tidak akan memeriksa tugas mahasiswa yang dikirimkan tanpa subjek email dan isi pesan pengantar yang sopan.\"\n\nPertanyaan:\nBagaimana tindakan komunikasi Anda untuk memperbaiki kesalahan pengiriman tugas ini?",
+    "scenario": "Skenario:\nPenanganan Keluhan Dosen Mengenai Format Tugas di Email\nDosen menulis di grup WhatsApp kelas: \"Saya tidak akan memeriksa tugas mahasiswa yang dikirimkan tanpa subjek email dan isi pesan pengantar yang sopan.\"\n\nPertanyaan:\nBagaimana tindakan komunikasi Anda untuk memperbaiki kesalahan pengiriman tugas ini?",
     "options": [
       {
         "text": "Melakukan protes di grup kelas WhatsApp karena menganggap dosen mempersulit pengumpulan tugas mahasiswa hanya karena masalah teknis administratif.",
@@ -272,7 +272,7 @@
   {
     "id": 11,
     "dim": "C2 - Communication",
-    "scenario": "Skenario:\nMenghubungi Guru Pamong yang Resisten via WhatsAppAnda ingin berkonsultasi mengenai RPP via WhatsApp, namun guru pamong senior mengirim pesan ketus: \"Saya tidak suka memeriksa dokumen pelajaran yang panjang lewat HP, bikin mata lelah.\"\n\nPertanyaan:\nBagaimana langkah Anda merespons kendala komunikasi dengan guru pamong tersebut?",
+    "scenario": "Skenario:\nMenghubungi Guru Pamong yang Resisten via WhatsApp\nAnda ingin berkonsultasi mengenai RPP via WhatsApp, namun guru pamong senior mengirim pesan ketus: \"Saya tidak suka memeriksa dokumen pelajaran yang panjang lewat HP, bikin mata lelah.\"\n\nPertanyaan:\nBagaimana langkah Anda merespons kendala komunikasi dengan guru pamong tersebut?",
     "options": [
       {
         "text": "Memohon izin mencetak RPP fisik untuk ditaruh di meja beliau, serta menawarkan asistensi koreksi tatap muka di sekolah.",
@@ -299,7 +299,7 @@
   {
     "id": 12,
     "dim": "C2 - Communication",
-    "scenario": "Skenario:\nMenjawab Pertanyaan Sensitif Siswa di Forum Publik DaringDi forum diskusi umum daring sekolah, seorang siswa di kelas tempat Anda magang menulis: \"Kak, apakah benar bapak kepala sekolah sering melakukan pemotongan uang beasiswa prestasi siswa di sekolah ini?\"\n\nPertanyaan:\nBagaimana langkah komunikasi tertulis Anda menghadapi pertanyaan sensitif ini?",
+    "scenario": "Skenario:\nMenjawab Pertanyaan Sensitif Siswa di Forum Publik Daring\nDi forum diskusi umum daring sekolah, seorang siswa di kelas tempat Anda magang menulis: \"Kak, apakah benar bapak kepala sekolah sering melakukan pemotongan uang beasiswa prestasi siswa di sekolah ini?\"\n\nPertanyaan:\nBagaimana langkah komunikasi tertulis Anda menghadapi pertanyaan sensitif ini?",
     "options": [
       {
         "text": "Menjelaskan batas topik forum secara edukatif, menghimbau konfirmasi ke jalur resmi sekolah, serta mengajak siswa berdiskusi secara luring.",
@@ -326,7 +326,7 @@
   {
     "id": 13,
     "dim": "C3 - Collaboration",
-    "scenario": "Skenario:\nMenghadapi Anggota Kelompok yang Pasif (Freerider)Ketua kelompok mengeluh di grup koordinasi: \"Batas pengumpulan video profil sekolah tinggal 2 hari, tetapi satu anggota kelompok kita masih belum mengumpulkan draf naskahnya.\"\n\nPertanyaan:\nBagaimana langkah Anda dalam mengelola pembagian kerja kelompok ini?",
+    "scenario": "Skenario:\nMenghadapi Anggota Kelompok yang Pasif (Freerider)\nKetua kelompok mengeluh di grup koordinasi: \"Batas pengumpulan video profil sekolah tinggal 2 hari, tetapi satu anggota kelompok kita masih belum mengumpulkan draf naskahnya.\"\n\nPertanyaan:\nBagaimana langkah Anda dalam mengelola pembagian kerja kelompok ini?",
     "options": [
       {
         "text": "Mengadakan rapat kelompok virtual mengevaluasi beban kerja, membantu kendala teknis anggota pasif, lalu mencatat kontribusi riil di log tugas.",
@@ -353,7 +353,7 @@
   {
     "id": 14,
     "dim": "C3 - Collaboration",
-    "scenario": "Skenario:\nKonflik Tumpang Tindih Kewenangan Divisi Publikasi DigitalDi kepanitiaan pameran karya siswa, koordinator humas mengeluh kepada Anda: \"Divisi desain terus mengunggah gambar ke Instagram sekolah tanpa persetujuan jadwal kami, sehingga tampilan unggahan (feed) kami berantakan dan ganda.\"\n\nPertanyaan:\nBagaimana langkah Anda untuk menata ulang pembagian kerja digital ini?",
+    "scenario": "Skenario:\nKonflik Tumpang Tindih Kewenangan Divisi Publikasi Digital\nDi kepanitiaan pameran karya siswa, koordinator humas mengeluh kepada Anda: \"Divisi desain terus mengunggah gambar ke Instagram sekolah tanpa persetujuan jadwal kami, sehingga tampilan unggahan (feed) kami berantakan dan ganda.\"\n\nPertanyaan:\nBagaimana langkah Anda untuk menata ulang pembagian kerja digital ini?",
     "options": [
       {
         "text": "Melaporkan masalah koordinasi ini langsung ke kepala sekolah agar beliau menegur kedua koordinator divisi di rapat sekolah.",
@@ -380,7 +380,7 @@
   {
     "id": 15,
     "dim": "C3 - Collaboration",
-    "scenario": "Skenario:\nMenghindari Kekacauan Edit Bersama di Google DocsRekan magang berteriak panik saat menulis laporan: \"Aduh, paragraf kesimpulan RPP yang baru kutulis terhapus oleh orang lain di Google Docs karena kita semua mengedit baris yang sama!\"\n\nPertanyaan:\nBagaimana Anda mereorganisasi kolaborasi dokumen ini agar berjalan tertib?",
+    "scenario": "Skenario:\nMenghindari Kekacauan Edit Bersama di Google Docs\nRekan magang berteriak panik saat menulis laporan: \"Aduh, paragraf kesimpulan RPP yang baru kutulis terhapus oleh orang lain di Google Docs karena kita semua mengedit baris yang sama!\"\n\nPertanyaan:\nBagaimana Anda mereorganisasi kolaborasi dokumen ini agar berjalan tertib?",
     "options": [
       {
         "text": "Meminta anggota kelompok untuk bergantian mengedit Google Docs dengan jadwal satu orang per jam agar tidak terjadi tabrakan.",
@@ -407,7 +407,7 @@
   {
     "id": 16,
     "dim": "C3 - Collaboration",
-    "scenario": "Skenario:\nDelegasi Tugas Projek Akhir yang Kompleks via TrelloAnggota kelompok projek aplikasi ajar mulai cemas. Salah satu anggota berkata: \"Tugas pembuatan aplikasi web ini terlalu rumit, kita tidak tahu harus mulai bekerja dari bagian mana.\"\n\nPertanyaan:\nBagaimana langkah Anda mendelegasikan tugas menggunakan alat digital?",
+    "scenario": "Skenario:\nDelegasi Tugas Projek Akhir yang Kompleks via Trello\nAnggota kelompok projek aplikasi ajar mulai cemas. Salah satu anggota berkata: \"Tugas pembuatan aplikasi web ini terlalu rumit, kita tidak tahu harus mulai bekerja dari bagian mana.\"\n\nPertanyaan:\nBagaimana langkah Anda mendelegasikan tugas menggunakan alat digital?",
     "options": [
       {
         "text": "Membuat grup koordinasi proyek di WhatsApp, menulis daftar pembagian tugas di deskripsi grup, dan meminta anggota mengonfirmasi kesiapan.",
@@ -434,7 +434,7 @@
   {
     "id": 17,
     "dim": "C3 - Collaboration",
-    "scenario": "Skenario:\nMelacak Kontribusi Menggunakan Riwayat Versi (Version History) Google DocsAnggota kelompok mengklaim di grup WhatsApp: \"Aku sudah begadang semalaman menulis Bab 4 di Google Docs.\" Namun, Anda melihat kalimat di Bab 4 tersebut sangat mirip dengan artikel Wikipedia.\n\nPertanyaan:\nBagaimana langkah Anda memanfaatkan alat digital untuk memverifikasi kebenaran klaim ini?",
+    "scenario": "Skenario:\nMelacak Kontribusi Menggunakan Riwayat Versi (Version History) Google Docs\nAnggota kelompok mengklaim di grup WhatsApp: \"Aku sudah begadang semalaman menulis Bab 4 di Google Docs.\" Namun, Anda melihat kalimat di Bab 4 tersebut sangat mirip dengan artikel Wikipedia.\n\nPertanyaan:\nBagaimana langkah Anda memanfaatkan alat digital untuk memverifikasi kebenaran klaim ini?",
     "options": [
       {
         "text": "Melaporkan anggota tersebut kepada dosen pembimbing magang sebagai pelaku tindakan plagiarisme tanpa melakukan konfirmasi terlebih dahulu.",
@@ -461,7 +461,7 @@
   {
     "id": 18,
     "dim": "C3 - Collaboration",
-    "scenario": "Skenario:\nBerbagi Beban Berpikir saat Menyusun RPP Tematik TerpaduRekan satu kelompok magang berkata: \"Menyusun RPP tematik terpadu 3 mata pelajaran sekaligus sangat melelahkan jika kita semua memikirkan semua sub-materinya.\"\n\nPertanyaan:\nBagaimana Anda mendistribusikan beban berpikir penyusunan RPP ini di kelompok?",
+    "scenario": "Skenario:\nBerbagi Beban Berpikir saat Menyusun RPP Tematik Terpadu\nRekan satu kelompok magang berkata: \"Menyusun RPP tematik terpadu 3 mata pelajaran sekaligus sangat melelahkan jika kita semua memikirkan semua sub-materinya.\"\n\nPertanyaan:\nBagaimana Anda mendistribusikan beban berpikir penyusunan RPP ini di kelompok?",
     "options": [
       {
         "text": "Meminta guru pamong untuk meminjamkan RPP tematik tahun lalu milik sekolah agar kelompok Anda cukup menyalin isinya.",
@@ -488,7 +488,7 @@
   {
     "id": 19,
     "dim": "C4 - Critical Creation",
-    "scenario": "Skenario:\nDesain Slide Pembelajaran Sains SD yang InteraktifGuru pamong mengingatkan Anda sebelum mengajar kelas SD: \"Besok pagi kamu mengajar materi Siklus Air, buatlah slide presentasi yang menarik untuk anak-anak.\"\n\nPertanyaan:\nBagaimana Anda merancang presentasi visual pembelajaran ini?",
+    "scenario": "Skenario:\nDesain Slide Pembelajaran Sains SD yang Interaktif\nGuru pamong mengingatkan Anda sebelum mengajar kelas SD: \"Besok pagi kamu mengajar materi Siklus Air, buatlah slide presentasi yang menarik untuk anak-anak.\"\n\nPertanyaan:\nBagaimana Anda merancang presentasi visual pembelajaran ini?",
     "options": [
       {
         "text": "Mengunduh template slide visual gratis dari Canva dan menyalin poin teks ajar tanpa mempersiapkan penjelasan lisan yang memadai.",
@@ -515,7 +515,7 @@
   {
     "id": 20,
     "dim": "C4 - Critical Creation",
-    "scenario": "Skenario:\nMemotong Klip Video Sejarah Menggunakan EdpuzzleRekan magang menyarankan saat Anda ingin menunjukkan video sejarah: \"Potong saja bagian video YouTube yang penting itu menggunakan aplikasi agar siswa tidak bosan.\"\n\nPertanyaan:\nBagaimana langkah Anda mengintegrasikan konten video eksternal ini secara efektif?",
+    "scenario": "Skenario:\nMemotong Klip Video Sejarah Menggunakan Edpuzzle\nRekan magang menyarankan saat Anda ingin menunjukkan video sejarah: \"Potong saja bagian video YouTube yang penting itu menggunakan aplikasi agar siswa tidak bosan.\"\n\nPertanyaan:\nBagaimana langkah Anda mengintegrasikan konten video eksternal ini secara efektif?",
     "options": [
       {
         "text": "Memutar video YouTube 60 menit tersebut dari awal di kelas, lalu membiarkan siswa menonton secara mandiri tanpa panduan.",
@@ -542,7 +542,7 @@
   {
     "id": 21,
     "dim": "C4 - Critical Creation",
-    "scenario": "Skenario:\nMenyediakan Takarir (Subtitle) Video untuk Lingkungan BisingOrang tua siswa mengirim pesan WhatsApp kepada Anda: \"Suara penjelasan guru di video fisika kemarin kurang jelas terdengar karena kondisi rumah kami bising.\"\n\nPertanyaan:\nLangkah modifikasi konten video apa yang Anda lakukan untuk menjaga aksesibilitas?",
+    "scenario": "Skenario:\nMenyediakan Takarir (Subtitle) Video untuk Lingkungan Bising\nOrang tua siswa mengirim pesan WhatsApp kepada Anda: \"Suara penjelasan guru di video fisika kemarin kurang jelas terdengar karena kondisi rumah kami bising.\"\n\nPertanyaan:\nLangkah modifikasi konten video apa yang Anda lakukan untuk menjaga aksesibilitas?",
     "options": [
       {
         "text": "Memproses ulang video, menerapkan fitur noise reduction, serta menambahkan takarir (subtitle) otomatis di sepanjang video ajar fisika.",
@@ -569,7 +569,7 @@
   {
     "id": 22,
     "dim": "C4 - Critical Creation",
-    "scenario": "Skenario:\nMerancang Modul Biologi Adaptif untuk Berbagai Gaya BelajarDosen pembimbing berpesan sebelum Anda menyusun bahan ajar: \"Materi Biologi SMA ini cukup kompleks, rancanglah bahan ajar digital yang adaptif bagi siswa.\"\n\nPertanyaan:\nBagaimana Anda mendesain konten bahan ajar digital biologi tersebut?",
+    "scenario": "Skenario:\nMerancang Modul Biologi Adaptif untuk Berbagai Gaya Belajar\nDosen pembimbing berpesan sebelum Anda menyusun bahan ajar: \"Materi Biologi SMA ini cukup kompleks, rancanglah bahan ajar digital yang adaptif bagi siswa.\"\n\nPertanyaan:\nBagaimana Anda mendesain konten bahan ajar digital biologi tersebut?",
     "options": [
       {
         "text": "Menyediakan dua file ajar terpisah: satu file dokumen PDF materi untuk dibaca dan satu file rekaman penjelasan audio.",
@@ -596,7 +596,7 @@
   {
     "id": 23,
     "dim": "C4 - Critical Creation",
-    "scenario": "Skenario:\nMerancang Modul Bencana Alam yang Bebas Pelanggaran Hak CiptaRekan magang mengingatkan Anda saat menyusun buku saku mitigasi bencana: \"Gambar diagram evakuasi gempa ini dilabeli hak cipta terlindungi, jangan asal comot.\"\n\nPertanyaan:\nTindakan pembuatan konten mana yang mencerminkan etika digital paling tinggi?",
+    "scenario": "Skenario:\nMerancang Modul Bencana Alam yang Bebas Pelanggaran Hak Cipta\nRekan magang mengingatkan Anda saat menyusun buku saku mitigasi bencana: \"Gambar diagram evakuasi gempa ini dilabeli hak cipta terlindungi, jangan asal comot.\"\n\nPertanyaan:\nTindakan pembuatan konten mana yang mencerminkan etika digital paling tinggi?",
     "options": [
       {
         "text": "Mencari diagram evakuasi bencana alternatif yang berlisensi terbuka di situs penyedia gambar gratis bebas royalti secara legal.",
@@ -623,7 +623,7 @@
   {
     "id": 24,
     "dim": "C4 - Critical Creation",
-    "scenario": "Skenario:\nMengamankan Video Pembelajaran Menggunakan WatermarkRekan mahasiswa magang memperingatkan Anda di sekolah: \"Video mengajar buatanku diunggah ulang oleh akun bimbingan belajar lain tanpa izin dan tanpa kredit.\"\n\nPertanyaan:\nLangkah pencegahan apa yang Anda lakukan saat membuat video pembelajaran di masa depan?",
+    "scenario": "Skenario:\nMengamankan Video Pembelajaran Menggunakan Watermark\nRekan mahasiswa magang memperingatkan Anda di sekolah: \"Video mengajar buatanku diunggah ulang oleh akun bimbingan belajar lain tanpa izin dan tanpa kredit.\"\n\nPertanyaan:\nLangkah pencegahan apa yang Anda lakukan saat membuat video pembelajaran di masa depan?",
     "options": [
       {
         "text": "Mengabaikan hal tersebut karena menganggap penyebaran video Anda di luar secara ilegal merupakan bentuk amal ibadah pendidikan.",
@@ -650,7 +650,7 @@
   {
     "id": 25,
     "dim": "C5 - Critical Problem Solving",
-    "scenario": "Skenario:\nTugas Mengolah 1000 Baris Data Nilai Rapor via ExcelGuru pamong menugaskan Anda saat magang: \"Tolong olah 1000 baris data nilai rapor kelas paralel ini menggunakan rumus VLOOKUP besok pagi.\" Anda belum pernah mempelajari rumus tersebut.\n\nPertanyaan:\nBagaimana tindakan Anda untuk mengidentifikasi celah kompetensi dan menyelesaikan tugas ini?",
+    "scenario": "Skenario:\nTugas Mengolah 1000 Baris Data Nilai Rapor via Excel\nGuru pamong menugaskan Anda saat magang: \"Tolong olah 1000 baris data nilai rapor kelas paralel ini menggunakan rumus VLOOKUP besok pagi.\" Anda belum pernah mempelajari rumus tersebut.\n\nPertanyaan:\nBagaimana tindakan Anda untuk mengidentifikasi celah kompetensi dan menyelesaikan tugas ini?",
     "options": [
       {
         "text": "Mempelajari tutorial rumus VLOOKUP di YouTube secara cepat, menguji rumus pada sampel data, lalu mengeksekusi pengolahan data mandiri.",
@@ -669,7 +669,7 @@
         "score": 1
       },
       {
-        "text": "Menhubungi teman yang paham Excel meminta panduan via telepon, lalu mengerjakannya sambil sesekali bertanya jika ada rumus error.",
+        "text": "Menghubungi teman yang paham Excel meminta panduan via telepon, lalu mengerjakannya sambil sesekali bertanya jika ada rumus error.",
         "score": 4
       }
     ]
@@ -677,7 +677,7 @@
   {
     "id": 26,
     "dim": "C5 - Critical Problem Solving",
-    "scenario": "Skenario:\nGawat Darurat Internet Terputus Saat ANBK di SekolahDi tengah pelaksanaan Asesmen Nasional Berbasis Komputer (ANBK), jaringan Wi-Fi sekolah mendadak mati total. Layar 30 komputer siswa menampilkan pesan kesalahan koneksi server.\n\nPertanyaan:\nBagaimana langkah penanganan cepat Anda sebagai proktor (pengawas teknis ujian berbasis komputer)?",
+    "scenario": "Skenario:\nGawat Darurat Internet Terputus Saat ANBK di Sekolah\nDi tengah pelaksanaan Asesmen Nasional Berbasis Komputer (ANBK), jaringan Wi-Fi sekolah mendadak mati total. Layar 30 komputer siswa menampilkan pesan kesalahan koneksi server.\n\nPertanyaan:\nBagaimana langkah penanganan cepat Anda sebagai proktor (pengawas teknis ujian berbasis komputer)?",
     "options": [
       {
         "text": "Menenangkan siswa, mengaktifkan tethering hot-spot gawai proktor, beralih ke jaringan internet cadangan, serta mencatat tambahan waktu ujian.",
@@ -704,7 +704,7 @@
   {
     "id": 27,
     "dim": "C5 - Critical Problem Solving",
-    "scenario": "Skenario:\nMateri Literasi Digital di Sekolah Tanpa ListrikAnda ditugaskan mengajar di sekolah pelosok tanpa aliran listrik dan tanpa sinyal internet. RPP yang Anda susun berisi materi cara membuat email.\n\nPertanyaan:\nBagaimana langkah adaptasi kritis Anda menyampaikan materi tersebut?",
+    "scenario": "Skenario:\nMateri Literasi Digital di Sekolah Tanpa Listrik\nAnda ditugaskan mengajar di sekolah pelosok tanpa aliran listrik dan tanpa sinyal internet. RPP yang Anda susun berisi materi cara membuat email.\n\nPertanyaan:\nBagaimana langkah adaptasi kritis Anda menyampaikan materi tersebut?",
     "options": [
       {
         "text": "Memaksa wali murid membelikan modem satelit portabel berbiaya mahal agar anak mereka dapat mempraktikkan cara berkirim email di kelas.",
@@ -731,7 +731,7 @@
   {
     "id": 28,
     "dim": "C5 - Critical Problem Solving",
-    "scenario": "Skenario:\nRencana Cadangan Saat Server Web Quizizz Tiba-tiba DownSaat Anda hendak memulai kuis interaktif Quizizz di depan dosen pembimbing, layar proyektor menampilkan pesan error: \"504 Gateway Timeout — Server Web Quizizz Down.\"\n\nPertanyaan:\nBagaimana tindakan darurat Anda menjaga keberlanjutan asesmen kelas?",
+    "scenario": "Skenario:\nRencana Cadangan Saat Server Web Quizizz Tiba-tiba Down\nSaat Anda hendak memulai kuis interaktif Quizizz di depan dosen pembimbing, layar proyektor menampilkan pesan error: \"504 Gateway Timeout — Server Web Quizizz Down.\"\n\nPertanyaan:\nBagaimana tindakan darurat Anda menjaga keberlanjutan asesmen kelas?",
     "options": [
       {
         "text": "Menuliskan soal-soal kuis tersebut di papan tulis kelas, lalu meminta siswa menuliskan jawaban di lembar kertas masing-masing pengawas.",
@@ -758,7 +758,7 @@
   {
     "id": 29,
     "dim": "C5 - Critical Problem Solving",
-    "scenario": "Skenario:\nSerangan Pop-Up Iklan Tak Senonoh saat Mengajar DaringSaat Anda melakukan share screen materi pelajaran di Zoom, mendadak muncul puluhan iklan pop-up tidak senonoh akibat malware di laptop Anda yang disaksikan seluruh siswa.\n\nPertanyaan:\nBagaimana langkah pemecahan masalah teknis dan pertolongan pertama yang Anda lakukan?",
+    "scenario": "Skenario:\nSerangan Pop-Up Iklan Tak Senonoh saat Mengajar Daring\nSaat Anda melakukan share screen materi pelajaran di Zoom, mendadak muncul puluhan iklan pop-up tidak senonoh akibat malware di laptop Anda yang disaksikan seluruh siswa.\n\nPertanyaan:\nBagaimana langkah pemecahan masalah teknis dan pertolongan pertama yang Anda lakukan?",
     "options": [
       {
         "text": "Memutus internet laptop, beralih login menggunakan HP untuk mengajar sementara, serta menjalankan pemindaian antivirus luring (Windows Defender offline scan) di laptop.",
@@ -785,7 +785,7 @@
   {
     "id": 30,
     "dim": "C5 - Critical Problem Solving",
-    "scenario": "Skenario:\nLaptop Dosen Penguji Tidak Kompatibel dengan File PresentasiSaat giliran Anda presentasi ujian proposal magang, laptop dosen penguji tidak bisa membuka file presentasi interaktif Canva Anda karena versi browser lama. ## PENUTUP Terima kasih atas kesediaan Anda mengisi instrumen ini. Partisipasi Anda sangat berarti bagi pengembangan asesmen literasi digital bagi calon guru.\n\nPertanyaan:\nBagaimana Anda mengatasi ketidaksesuaian perangkat lunak teknis ini?",
+    "scenario": "Skenario:\nLaptop Dosen Penguji Tidak Kompatibel dengan File Presentasi\nSaat giliran Anda presentasi ujian proposal magang, laptop dosen penguji tidak bisa membuka file presentasi interaktif Canva Anda karena versi browser lama.\n\nPertanyaan:\nBagaimana Anda mengatasi ketidaksesuaian perangkat lunak teknis ini?",
     "options": [
       {
         "text": "Membatalkan sesi presentasi proposal Anda hari ini dan meminta jadwal ulang ujian setelah dosen memperbarui sistem operasi laptopnya.",
