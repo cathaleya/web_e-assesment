@@ -599,50 +599,97 @@ export default function ThinkAloudArtPage() {
     }
   };
 
-  // UPLOAD AUDIO & TRANSCRIPT RESPONSE
-  const handleUploadAudio = async () => {
+  const resetRecordingState = () => {
+    setAudioBlob(null);
+    setAudioUrl(null);
+    setTranscriptText("");
+    setUploadSuccess(false);
+    setRecordingTime(0);
+    audioChunksRef.current = [];
+  };
+
+  // UPLOAD AUDIO & TRANSCRIPT DIRECTLY TO ADMIN PANEL (ALIGNED WITH S3 WORKFLOW)
+  const uploadAudioToServer = async () => {
+    const hasAudio = !!audioBlob || audioChunksRef.current.length > 0;
+    const hasText = transcriptText.trim().length > 0;
+
+    if (!hasAudio && !hasText) {
+      alert("⚠️ Silakan rekam suara Anda ATAU ketik teks elaborasi jawaban Anda pada kotak transkrip terlebih dahulu sebelum mengirim!");
+      return;
+    }
     if (!currentQ) return;
+
     setIsUploading(true);
-
     try {
-      const formData = new FormData();
-      if (audioBlob) {
-        formData.append("audio", audioBlob, `ThinkAloud_Art_S${activeSession}_Q${currentQ.code}_P${probingStep}.webm`);
-      } else {
-        // Fallback text response
-        const emptyBlob = new Blob([`[Respon Teks Tanpa Audio]: ${transcriptText}`], { type: "text/plain" });
-        formData.append("audio", emptyBlob, "text_response.txt");
-        formData.append("isTextOnly", "true");
-      }
+      const selectedOpt = selectedOptions[currentQ.id];
+      const selectedOptObj = currentQ.options.find((o) => o.label === selectedOpt);
+      const selectedOptText = selectedOpt && selectedOptObj
+        ? `${selectedOpt}. ${selectedOptObj.text}`
+        : selectedOpt || "Belum Memilih Opsi";
 
-      formData.append("userId", userNim || `art_${Date.now()}`);
+      const confidenceVal = confidenceRatings[currentQ.id];
+      const confidenceText = confidenceVal ? `${confidenceVal}/5` : "Belum dinilai";
+      const finalTranscript = transcriptText.trim()
+        ? `[Tingkat Keyakinan: ${confidenceText}] — ${transcriptText.trim()}`
+        : `[Tingkat Keyakinan: ${confidenceText}] — [Respon Suara Terkirim Langsung ke Panel Admin]`;
+
+      const fileToUpload = audioBlob
+        ? audioBlob
+        : audioChunksRef.current.length > 0
+        ? new Blob(audioChunksRef.current, { type: "audio/webm" })
+        : new Blob(["[Respon Teks Manual Tanpa Berkas Audio]"], { type: "audio/webm" });
+
+      const formData = new FormData();
+      formData.append("audio", fileToUpload, `ThinkAloud_Art_S${activeSession}_Q${currentQ.code}_P${probingStep}.webm`);
+      formData.append("isTextOnly", hasAudio ? "false" : "true");
+      formData.append("userId", userNim || `art_resp_${Date.now()}`);
       formData.append("userName", userName || "Calon Guru Seni PPG");
-      formData.append("userCampus", userCampus);
+      formData.append("userCampus", userCampus || "LPTK Universitas");
       formData.append("respondentLevel", "Mahasiswa PPG Pendidikan Seni");
-      formData.append("studyProgram", userStudyProgram);
+      formData.append("studyProgram", userStudyProgram || "Pendidikan Guru Sekolah Dasar (PGSD) / Seni");
       formData.append("sessionNo", activeSession.toString());
-      formData.append("itemNo", currentQ.id.toString());
+      formData.append("itemNo", (sessionItemIdx + 1).toString());
       formData.append("sjtId", currentQ.code);
       formData.append("probingStep", probingStep.toString());
-      formData.append("questionTitle", currentQ.title);
-      formData.append("selectedOption", selectedOptions[currentQ.id] || "Belum Memilih");
+      formData.append("questionTitle", activeProbing.title);
+      formData.append("selectedOption", selectedOptText);
       formData.append("duration", recordingTime.toString());
-      formData.append("transcript", transcriptText || "[Audio tersimpan tanpa transkrip otomatis]");
+      formData.append("transcript", finalTranscript);
 
       const res = await fetch("/api/think-aloud/audio", {
         method: "POST",
         body: formData,
       });
 
-      if (res.ok) {
+      const data = await res.json();
+      if (res.ok && data.success) {
         setUploadSuccess(true);
+        if (data.record?.transcript && !data.record.transcript.includes("[Respon Suara Terkirim")) {
+          setTranscriptText(data.record.transcript);
+        }
         markStepDone(currentQ.id, probingStep);
+
+        if (probingStep < 4) {
+          const nextStep = probingStep + 1;
+          alert(`✅ Respon Pertanyaan Probing ${probingStep} Berhasil Terkirim Langsung ke Panel Admin!\nOtomatis beralih ke Pertanyaan Probing ${nextStep}.`);
+          setProbingStep(nextStep);
+          resetRecordingState();
+        } else {
+          alert(`🎉 Selamat! Seluruh tahap probing untuk Butir #${sessionItemIdx + 1} (${currentQ.code}) telah lengkap terkirim ke Panel Admin!`);
+          if (sessionItemIdx < currentSessionQuestions.length - 1) {
+            setSessionItemIdx((idx) => idx + 1);
+            setProbingStep(1);
+            resetRecordingState();
+          } else {
+            checkSessionCompletion();
+          }
+        }
       } else {
-        alert("Gagal mengunggah data audio. Silakan coba lagi.");
+        alert("❌ Gagal mengirim respon ke server admin. Silakan coba lagi.");
       }
     } catch (err) {
-      console.error("Upload error:", err);
-      alert("Terjadi kesalahan jaringan saat mengunggah.");
+      console.error("Gagal mengirim respon:", err);
+      alert("❌ Terjadi kesalahan koneksi saat mengirim respon ke server admin.");
     } finally {
       setIsUploading(false);
     }
@@ -670,32 +717,28 @@ export default function ThinkAloudArtPage() {
   };
 
   // PROCEED TO NEXT ITEM OR NEXT STEP
-  const handleNextStep = () => {
+  const handleNextStep = async () => {
     stopSpeaking();
     if (!currentQ) return;
+
+    // Jika responden merekam audio atau mengisi transkrip tapi belum klik kirim, otomatis kirim ke admin
+    const hasUnsent = (audioBlob || audioChunksRef.current.length > 0 || transcriptText.trim().length > 0) && !uploadSuccess;
+    if (hasUnsent) {
+      await uploadAudioToServer();
+      return;
+    }
 
     markStepDone(currentQ.id, probingStep);
 
     if (probingStep < 4) {
       setProbingStep((s) => s + 1);
-      // Reset temporary recording state for next probing step
-      setAudioBlob(null);
-      setAudioUrl(null);
-      setTranscriptText("");
-      setUploadSuccess(false);
-      setRecordingTime(0);
+      resetRecordingState();
     } else {
-      // Completed all 4 steps of current item
       if (sessionItemIdx < currentSessionQuestions.length - 1) {
         setSessionItemIdx((idx) => idx + 1);
         setProbingStep(1);
-        setAudioBlob(null);
-        setAudioUrl(null);
-        setTranscriptText("");
-        setUploadSuccess(false);
-        setRecordingTime(0);
+        resetRecordingState();
       } else {
-        // Last item of this session
         checkSessionCompletion();
       }
     }
@@ -807,7 +850,7 @@ export default function ThinkAloudArtPage() {
               <div className="flex flex-col">
                 <div className="flex items-center gap-2">
                   <span className="text-base md:text-lg font-black tracking-tight bg-gradient-to-r from-lime-300 via-emerald-300 to-teal-200 bg-clip-text text-transparent">
-                    THIN A LOUD ART
+                    THINK A LOUD ART
                   </span>
                   <span className="px-2 py-0.5 rounded-full bg-lime-400 text-slate-950 text-[9px] font-black uppercase tracking-wider shadow-sm">
                     15 BUTIR SENI
@@ -1532,21 +1575,24 @@ export default function ThinkAloudArtPage() {
                       />
                     </div>
 
-                    {/* Upload / Save Button */}
-                    <div className="flex items-center justify-between gap-2 pt-1">
+                    {/* Tombol Kirim Langsung ke Panel Admin (Sesuai Alur Think-Aloud) */}
+                    <div className="pt-2">
                       <button
                         type="button"
-                        onClick={handleUploadAudio}
-                        disabled={isUploading || (!audioBlob && transcriptText.trim().length === 0)}
-                        className={`px-4 py-2.5 rounded-xl font-black text-xs transition flex items-center gap-2 ${
-                          audioBlob || transcriptText.trim().length > 0
-                            ? "bg-slate-800 hover:bg-slate-700 text-lime-300 border border-lime-400/40 active:scale-95"
-                            : "bg-slate-900 text-slate-600 border border-slate-800 cursor-not-allowed"
+                        onClick={uploadAudioToServer}
+                        disabled={isUploading}
+                        className={`w-full py-3.5 rounded-xl font-black text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-xl ${
+                          isUploading
+                            ? "bg-slate-800 text-slate-400 border border-slate-700 cursor-not-allowed"
+                            : "bg-gradient-to-r from-lime-400 via-emerald-400 to-teal-400 hover:from-lime-300 hover:to-emerald-300 text-slate-950 shadow-lime-500/25 active:scale-95 cursor-pointer"
                         }`}
                       >
-                        <i className={`fa-solid ${isUploading ? "fa-spinner fa-spin" : "fa-floppy-disk"}`}></i>
-                        <span>{isUploading ? "Menyimpan..." : uploadSuccess ? "Perbarui Simpanan" : "Simpan Respons Tahap Ini"}</span>
+                        <i className={`fa-solid ${isUploading ? "fa-spinner fa-spin" : "fa-paper-plane"}`}></i>
+                        <span>{isUploading ? "Mengirim ke Panel Admin..." : "Kirim Respon ke Panel Admin"}</span>
                       </button>
+                      <p className="text-[10px] text-slate-400 text-center mt-1.5 font-medium">
+                        Respon suara atau transkrip Anda akan dikirim langsung ke Panel Admin dan otomatis lanjut ke tahap probing berikutnya.
+                      </p>
                     </div>
                   </div>
 

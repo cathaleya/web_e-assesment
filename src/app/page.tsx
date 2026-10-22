@@ -105,12 +105,21 @@ export default function Home() {
           </a>
           <button
             onClick={() => router.push("/assessment/think-aloud-art")}
-            className="px-3.5 py-2 bg-gradient-to-r from-lime-400 via-emerald-400 to-lime-300 hover:from-lime-300 hover:to-emerald-300 text-slate-950 rounded-xl text-[10px] font-black uppercase tracking-wider shadow-lg shadow-lime-400/30 border-2 border-lime-300 border-b-2 border-b-lime-600 active:scale-95 transition-all flex items-center gap-1.5"
-            title="Wawancara Kognitif Think-Aloud Seni (15 Butir — 3 Sesi)"
+            className="px-3 py-2 bg-gradient-to-r from-lime-400 via-emerald-400 to-lime-300 hover:from-lime-300 hover:to-emerald-300 text-slate-950 rounded-xl text-[10px] font-black uppercase tracking-wider shadow-lg shadow-lime-400/30 border-2 border-lime-300 border-b-2 border-b-lime-600 active:scale-95 transition-all flex items-center gap-1.5"
+            title="Wawancara Kognitif Think-Aloud Mahasiswa PPG Seni (15 Butir — 3 Sesi)"
           >
             <i className="fa-solid fa-palette text-slate-950"></i>
-            <span>THIN A LOUD ART</span>
+            <span>THINK A LOUD ART (MHS)</span>
             <span className="px-1.5 py-0.5 rounded bg-slate-950 text-lime-400 text-[8px] font-black">15 BUTIR</span>
+          </button>
+          <button
+            onClick={() => router.push("/assessment/think-aloud-art-dosen")}
+            className="px-3 py-2 bg-gradient-to-r from-emerald-400 via-teal-300 to-lime-400 hover:from-emerald-300 hover:to-teal-200 text-slate-950 rounded-xl text-[10px] font-black uppercase tracking-wider shadow-lg shadow-emerald-400/30 border-2 border-emerald-300 border-b-2 border-b-emerald-600 active:scale-95 transition-all flex items-center gap-1.5"
+            title="Wawancara Kognitif Think-Aloud Dosen PPG Seni (10 Butir — 2 Sesi)"
+          >
+            <i className="fa-solid fa-chalkboard-user text-slate-950"></i>
+            <span>THINK A LOUD ART (DOSEN)</span>
+            <span className="px-1.5 py-0.5 rounded bg-slate-950 text-emerald-300 text-[8px] font-black">10 BUTIR</span>
           </button>
           <button
             onClick={() => router.push("/login/think-aloud-s3")}
@@ -130,14 +139,22 @@ export default function Home() {
         </div>
 
         {/* MOBILE VIEW ACTIONS */}
-        <div className="flex lg:hidden items-center gap-2">
+        <div className="flex lg:hidden items-center gap-1.5">
           <button
             onClick={() => router.push("/assessment/think-aloud-art")}
-            className="px-2.5 py-1.5 bg-gradient-to-r from-lime-400 to-emerald-400 text-slate-950 rounded-xl text-[9px] font-black uppercase tracking-tight flex items-center gap-1 shadow-md border-b-2 border-lime-600"
-            title="Thin A LOUD ART"
+            className="px-2 py-1.5 bg-gradient-to-r from-lime-400 to-emerald-400 text-slate-950 rounded-xl text-[9px] font-black uppercase tracking-tight flex items-center gap-1 shadow-md border-b-2 border-lime-600"
+            title="THINK A LOUD ART MAHASISWA"
           >
-            <i className="fa-solid fa-palette"></i>
-            <span>ART</span>
+            <i className="fa-solid fa-palette text-[10px]"></i>
+            <span>MHS</span>
+          </button>
+          <button
+            onClick={() => router.push("/assessment/think-aloud-art-dosen")}
+            className="px-2 py-1.5 bg-gradient-to-r from-emerald-400 to-teal-300 text-slate-950 rounded-xl text-[9px] font-black uppercase tracking-tight flex items-center gap-1 shadow-md border-b-2 border-emerald-600"
+            title="THINK A LOUD ART DOSEN"
+          >
+            <i className="fa-solid fa-chalkboard-user text-[10px]"></i>
+            <span>DOSEN</span>
           </button>
           <button
             onClick={() => router.push("/login/think-aloud-s3")}
@@ -283,29 +300,57 @@ export default function Home() {
                 </button>
               </div>
 
-              {/* FITUR KHUSUS: THIN A LOUD ART (WARNA KONTRAS HIJAU MUDA) */}
-              <div className="mt-3.5">
+              {/* FITUR KHUSUS: THINK A LOUD ART (WARNA KONTRAS HIJAU MUDA — MAHASISWA & DOSEN) */}
+              <div className="mt-4 flex flex-col gap-2.5">
+                {/* 1. THINK A LOUD ART — MAHASISWA */}
                 <button
                   onClick={() => router.push("/assessment/think-aloud-art")}
-                  className="w-full p-4 bg-gradient-to-r from-lime-400 via-emerald-400 to-lime-300 hover:from-lime-300 hover:to-emerald-300 text-slate-950 rounded-2xl font-black text-xs md:text-sm uppercase tracking-wider shadow-2xl shadow-lime-400/40 border-2 border-lime-300 border-b-4 border-b-lime-600 active:scale-95 transition-all flex items-center justify-between gap-3 text-left group"
+                  className="w-full p-3.5 md:p-4 bg-gradient-to-r from-lime-400 via-emerald-400 to-lime-300 hover:from-lime-300 hover:to-emerald-300 text-slate-950 rounded-2xl font-black text-xs md:text-sm uppercase tracking-wider shadow-xl shadow-lime-400/30 border-2 border-lime-300 border-b-4 border-b-lime-600 active:scale-95 transition-all flex items-center justify-between gap-3 text-left group"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-11 h-11 rounded-2xl bg-slate-950 text-lime-400 flex items-center justify-center font-black text-xl shadow-md group-hover:scale-110 transition-transform">
+                    <div className="w-10 h-10 md:w-11 md:h-11 rounded-2xl bg-slate-950 text-lime-400 flex items-center justify-center font-black text-lg md:text-xl shadow-md group-hover:scale-110 transition-transform shrink-0">
                       <i className="fa-solid fa-palette"></i>
                     </div>
                     <div className="flex flex-col leading-tight">
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm md:text-base font-black text-slate-950 tracking-tight">THIN A LOUD ART</span>
-                        <span className="px-2 py-0.5 rounded-full bg-slate-950 text-lime-400 text-[9px] font-black uppercase tracking-wider shadow-sm">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="text-xs md:text-sm font-black text-slate-950 tracking-tight">THINK A LOUD ART — MAHASISWA</span>
+                        <span className="px-2 py-0.5 rounded-full bg-slate-950 text-lime-400 text-[8px] md:text-[9px] font-black uppercase tracking-wider shadow-sm">
                           15 BUTIR — 3 SESI
                         </span>
                       </div>
                       <span className="text-[10px] md:text-[11px] font-bold text-slate-800">
-                        Wawancara Kognitif Think-Aloud Mahasiswa PPG Pendidikan Seni SD
+                        Wawancara Kognitif Think-Aloud Mahasiswa PPG Pendidikan Seni
                       </span>
                     </div>
                   </div>
-                  <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-950 text-lime-400 font-black text-xs uppercase tracking-wider shadow-sm group-hover:bg-slate-900 group-hover:translate-x-0.5 transition-all">
+                  <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-950 text-lime-400 font-black text-xs uppercase tracking-wider shadow-sm group-hover:bg-slate-900 group-hover:translate-x-0.5 transition-all shrink-0">
+                    <span>BUKA</span>
+                    <i className="fa-solid fa-arrow-right"></i>
+                  </div>
+                </button>
+
+                {/* 2. THINK A LOUD ART — DOSEN */}
+                <button
+                  onClick={() => router.push("/assessment/think-aloud-art-dosen")}
+                  className="w-full p-3.5 md:p-4 bg-gradient-to-r from-emerald-400 via-teal-300 to-lime-400 hover:from-emerald-300 hover:to-teal-200 text-slate-950 rounded-2xl font-black text-xs md:text-sm uppercase tracking-wider shadow-xl shadow-emerald-400/30 border-2 border-emerald-300 border-b-4 border-b-emerald-600 active:scale-95 transition-all flex items-center justify-between gap-3 text-left group"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 md:w-11 md:h-11 rounded-2xl bg-slate-950 text-emerald-300 flex items-center justify-center font-black text-lg md:text-xl shadow-md group-hover:scale-110 transition-transform shrink-0">
+                      <i className="fa-solid fa-chalkboard-user"></i>
+                    </div>
+                    <div className="flex flex-col leading-tight">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="text-xs md:text-sm font-black text-slate-950 tracking-tight">THINK A LOUD ART — DOSEN</span>
+                        <span className="px-2 py-0.5 rounded-full bg-slate-950 text-emerald-300 text-[8px] md:text-[9px] font-black uppercase tracking-wider shadow-sm">
+                          10 BUTIR — 2 SESI
+                        </span>
+                      </div>
+                      <span className="text-[10px] md:text-[11px] font-bold text-slate-800">
+                        Wawancara Kognitif Think-Aloud Dosen PPG Pendidikan Seni
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-950 text-emerald-300 font-black text-xs uppercase tracking-wider shadow-sm group-hover:bg-slate-900 group-hover:translate-x-0.5 transition-all shrink-0">
                     <span>BUKA</span>
                     <i className="fa-solid fa-arrow-right"></i>
                   </div>

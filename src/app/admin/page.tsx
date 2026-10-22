@@ -225,7 +225,7 @@ export default function AdminDashboard() {
   const [sysSettings, setSysSettings] = useState<any>({});
   const [settingsSaved, setSettingsSaved] = useState(false);
   const [audioRecordings, setAudioRecordings] = useState<any[]>([]);
-  const [thinkAloudFilter, setThinkAloudFilter] = useState<'all' | 's2s3' | 's1'>('all');
+  const [thinkAloudFilter, setThinkAloudFilter] = useState<'all' | 'art' | 's2s3' | 's1'>('all');
   const [consents, setConsents] = useState<any[]>([]);
   const [editingTranscriptId, setEditingTranscriptId] = useState<string | null>(null);
   const [editingTranscriptText, setEditingTranscriptText] = useState<string>("");
@@ -312,10 +312,12 @@ export default function AdminDashboard() {
       alert("Belum ada data rekaman suara untuk diekspor.");
       return;
     }
-    const target = filter === 's2s3' 
+    const target = filter === 'art'
+      ? audioRecordings.filter((r: any) => (r.respondentLevel && (r.respondentLevel.includes('Seni') || r.respondentLevel.includes('Art'))) || (r.sjtId && (r.sjtId.startsWith('M') || r.sjtId.startsWith('D'))))
+      : filter === 's2s3' 
       ? audioRecordings.filter((r: any) => r.respondentLevel && r.respondentLevel.includes('S2/S3'))
       : filter === 's1'
-      ? audioRecordings.filter((r: any) => !r.respondentLevel || !r.respondentLevel.includes('S2/S3'))
+      ? audioRecordings.filter((r: any) => (!r.respondentLevel || (!r.respondentLevel.includes('S2/S3') && !r.respondentLevel.includes('Seni') && !r.respondentLevel.includes('Art'))) && (!r.sjtId || (!r.sjtId.startsWith('M') && !r.sjtId.startsWith('D'))))
       : audioRecordings;
 
     const headers = ["No", "ID", "Nama Peserta", "Kampus", "Jenjang", "Program Studi", "Sesi", "Soal No", "SJT ID", "Step Probing", "Judul Pertanyaan", "Opsi Terpilih", "Durasi (detik)", "Transkrip Verbatim", "Audio URL", "Waktu Submit"];
@@ -3128,11 +3130,16 @@ ${rec.transcript || '[Tanpa Teks Verbatim]'}
                 </div>
               </div>
 
-              {/* CALCULATE COUNTS FOR PASCASARJANA VS S1 */}
+              {/* CALCULATE COUNTS FOR SENI (ART), PASCASARJANA VS S1 */}
               {(() => {
+                const artRecordings = audioRecordings.filter((r: any) => (r.respondentLevel && (r.respondentLevel.includes('Seni') || r.respondentLevel.includes('Art'))) || (r.sjtId && (r.sjtId.startsWith('M') || r.sjtId.startsWith('D'))));
+                const artMhsRecordings = artRecordings.filter((r: any) => !(r.respondentLevel && r.respondentLevel.includes('Dosen')) && !(r.sjtId && r.sjtId.startsWith('D')));
+                const artDosenRecordings = artRecordings.filter((r: any) => (r.respondentLevel && r.respondentLevel.includes('Dosen')) || (r.sjtId && r.sjtId.startsWith('D')));
                 const s2s3Recordings = audioRecordings.filter((r: any) => r.respondentLevel && r.respondentLevel.includes('S2/S3'));
-                const s1Recordings = audioRecordings.filter((r: any) => !r.respondentLevel || !r.respondentLevel.includes('S2/S3'));
-                const displayedRecordings = thinkAloudFilter === 's2s3' 
+                const s1Recordings = audioRecordings.filter((r: any) => (!r.respondentLevel || (!r.respondentLevel.includes('S2/S3') && !r.respondentLevel.includes('Seni') && !r.respondentLevel.includes('Art'))) && (!r.sjtId || (!r.sjtId.startsWith('M') && !r.sjtId.startsWith('D'))));
+                const displayedRecordings = thinkAloudFilter === 'art'
+                  ? artRecordings
+                  : thinkAloudFilter === 's2s3' 
                   ? s2s3Recordings 
                   : thinkAloudFilter === 's1' 
                   ? s1Recordings 
@@ -3140,10 +3147,11 @@ ${rec.transcript || '[Tanpa Teks Verbatim]'}
 
                 return (
                   <>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3">
                       <MetricCard label="Total Rekaman Audio" value={audioRecordings.length} sub="Format .webm (Semua)" icon="fa-microphone" accent="bg-rose-50 text-rose-600" />
+                      <MetricCard label="🎨 PPG Seni (Art)" value={artRecordings.length} sub={`Mhs: ${artMhsRecordings.length} | Dosen: ${artDosenRecordings.length}`} icon="fa-palette" accent="bg-lime-50 text-lime-700" />
                       <MetricCard label="🎓 S2/S3 Pascasarjana" value={s2s3Recordings.length} sub="15 Butir Strategis" icon="fa-graduation-cap" accent="bg-purple-50 text-purple-600" />
-                      <MetricCard label="👨‍🏫 S1 Calon Guru" value={s1Recordings.length} sub="30 Butir (3 Sesi)" icon="fa-chalkboard-user" accent="bg-emerald-50 text-emerald-600" />
+                      <MetricCard label="👨‍🏫 S1 Calon Guru" value={s1Recordings.length} sub="30 Butir MADEL5C" icon="fa-chalkboard-user" accent="bg-emerald-50 text-emerald-600" />
                       <MetricCard label="Partisipan Unik" value={new Set(audioRecordings.map(r => r.userId)).size} sub="Total Responden Terdata" icon="fa-users" accent="bg-blue-50 text-blue-600" />
                     </div>
 
@@ -3154,7 +3162,7 @@ ${rec.transcript || '[Tanpa Teks Verbatim]'}
                           <h3 className="text-xs font-black uppercase text-slate-800 tracking-wider">Daftar Berkas Rekaman Audio &amp; Transkrip Verbatim</h3>
                         </div>
 
-                        {/* FILTER BUTTONS: SEMUA / S2-S3 / S1 + TOMBOL UNDUH SEMUA */}
+                        {/* FILTER BUTTONS: SEMUA / SENI ART / S2-S3 / S1 + TOMBOL UNDUH SEMUA */}
                         <div className="flex flex-wrap items-center gap-2">
                           <span className="text-[10px] font-black uppercase text-slate-400 mr-1 hidden sm:inline">Filter Kategori:</span>
                           <button
@@ -3166,6 +3174,17 @@ ${rec.transcript || '[Tanpa Teks Verbatim]'}
                             }`}
                           >
                             Semua ({audioRecordings.length})
+                          </button>
+                          <button
+                            onClick={() => setThinkAloudFilter('art')}
+                            className={`px-3 py-1.5 rounded-lg text-xs font-black transition-all flex items-center gap-1.5 ${
+                              thinkAloudFilter === 'art'
+                                ? 'bg-lime-500 text-slate-950 font-black shadow'
+                                : 'bg-lime-50 border border-lime-300 text-lime-900 hover:bg-lime-100'
+                            }`}
+                          >
+                            <i className="fa-solid fa-palette text-xs"></i>
+                            PPG Seni ({artRecordings.length})
                           </button>
                           <button
                             onClick={() => setThinkAloudFilter('s2s3')}
@@ -3205,14 +3224,18 @@ ${rec.transcript || '[Tanpa Teks Verbatim]'}
                         <div className="p-12 text-center">
                           <i className="fa-solid fa-microphone-slash text-4xl text-slate-300 mb-3"></i>
                           <p className="text-sm font-bold text-slate-600">
-                            {thinkAloudFilter === 's2s3'
+                            {thinkAloudFilter === 'art'
+                              ? "Belum ada rekaman suara Think-Aloud dari PPG Pendidikan Seni (Mahasiswa / Dosen)."
+                              : thinkAloudFilter === 's2s3'
                               ? "Belum ada rekaman suara Think-Aloud dari Mahasiswa Pascasarjana (S2 & S3)."
                               : thinkAloudFilter === 's1'
                               ? "Belum ada rekaman suara Think-Aloud dari Mahasiswa S1 Calon Guru."
                               : "Belum ada rekaman suara Think-Aloud di database server."}
                           </p>
                           <p className="text-xs text-slate-400 mt-1">
-                            {thinkAloudFilter === 's2s3'
+                            {thinkAloudFilter === 'art'
+                              ? "Responden Mahasiswa & Dosen dapat mengakses instrumen Think-Aloud Art langsung dari tombol hijau muda di Landing Page."
+                              : thinkAloudFilter === 's2s3'
                               ? "Mahasiswa Pascasarjana dapat mengakses instrumen 15 butir langsung dari Landing Page."
                               : "Responden dapat melakukan rekam suara pada tahap Wawancara Think-Aloud MADEL5C."}
                           </p>
@@ -3236,7 +3259,15 @@ ${rec.transcript || '[Tanpa Teks Verbatim]'}
                                 <tr key={rec.id || idx} className="hover:bg-slate-50/80 transition-colors">
                                   <td className="p-3.5 font-bold text-slate-400">{idx + 1}</td>
                                   <td className="p-3.5">
-                                    {rec.respondentLevel && rec.respondentLevel.includes('S2/S3') ? (
+                                    {(rec.respondentLevel && rec.respondentLevel.includes('Dosen')) || (rec.sjtId && rec.sjtId.startsWith('D')) ? (
+                                      <span className="px-2 py-0.5 rounded-md text-[9px] font-black uppercase bg-emerald-100 text-emerald-950 border border-emerald-300 inline-block mb-1">
+                                        👨‍🏫 DOSEN PPG PENDIDIKAN SENI
+                                      </span>
+                                    ) : (rec.respondentLevel && (rec.respondentLevel.includes('Seni') || rec.respondentLevel.includes('Art'))) || (rec.sjtId && rec.sjtId.startsWith('M')) ? (
+                                      <span className="px-2 py-0.5 rounded-md text-[9px] font-black uppercase bg-lime-100 text-lime-900 border border-lime-300 inline-block mb-1">
+                                        🎨 MAHASISWA PPG PENDIDIKAN SENI
+                                      </span>
+                                    ) : rec.respondentLevel && rec.respondentLevel.includes('S2/S3') ? (
                                       <span className="px-2 py-0.5 rounded-md text-[9px] font-black uppercase bg-purple-100 text-purple-900 border border-purple-300 inline-block mb-1">
                                         🎓 {rec.respondentLevel}
                                       </span>
@@ -3253,7 +3284,15 @@ ${rec.transcript || '[Tanpa Teks Verbatim]'}
                                     <div className="text-[10px] text-slate-400 font-mono">ID: {rec.userId}</div>
                                   </td>
                                   <td className="p-3.5">
-                                    {rec.respondentLevel && rec.respondentLevel.includes('S2/S3') ? (
+                                    {(rec.respondentLevel && rec.respondentLevel.includes('Dosen')) || (rec.sjtId && rec.sjtId.startsWith('D')) ? (
+                                      <span className="px-2 py-0.5 bg-emerald-100 text-emerald-950 border border-emerald-300 rounded font-black text-[10px] uppercase block w-fit mb-1">
+                                        Sesi {rec.sessionNo || 1} • Butir #{rec.itemNo || 1} ({rec.sjtId})
+                                      </span>
+                                    ) : (rec.respondentLevel && (rec.respondentLevel.includes('Seni') || rec.respondentLevel.includes('Art'))) || (rec.sjtId && rec.sjtId.startsWith('M')) ? (
+                                      <span className="px-2 py-0.5 bg-lime-100 text-lime-900 border border-lime-300 rounded font-black text-[10px] uppercase block w-fit mb-1">
+                                        Sesi {rec.sessionNo || 1} • Butir #{rec.itemNo || 1} ({rec.sjtId})
+                                      </span>
+                                    ) : rec.respondentLevel && rec.respondentLevel.includes('S2/S3') ? (
                                       <span className="px-2 py-0.5 bg-purple-100 text-purple-900 border border-purple-200 rounded font-black text-[10px] uppercase block w-fit mb-1">
                                         Butir #{rec.itemNo || 1} ({rec.sjtId})
                                       </span>
@@ -3461,7 +3500,15 @@ ${rec.transcript || '[Tanpa Teks Verbatim]'}
                           <tr key={c.id || idx} className="hover:bg-slate-50/80 transition-colors">
                             <td className="p-3.5 font-bold text-slate-400">{idx + 1}</td>
                             <td className="p-3.5">
-                              {c.respondentLevel && c.respondentLevel.includes('S2/S3') ? (
+                              {c.respondentLevel && c.respondentLevel.includes('Dosen') ? (
+                                <span className="px-2 py-0.5 rounded-md text-[9px] font-black uppercase bg-emerald-100 text-emerald-950 border border-emerald-300 inline-block mb-1">
+                                  👨‍🏫 DOSEN PPG PENDIDIKAN SENI
+                                </span>
+                              ) : c.respondentLevel && (c.respondentLevel.includes('Seni') || c.respondentLevel.includes('Art')) ? (
+                                <span className="px-2 py-0.5 rounded-md text-[9px] font-black uppercase bg-lime-100 text-lime-900 border border-lime-300 inline-block mb-1">
+                                  🎨 MAHASISWA PPG PENDIDIKAN SENI
+                                </span>
+                              ) : c.respondentLevel && c.respondentLevel.includes('S2/S3') ? (
                                 <span className="px-2 py-0.5 rounded-md text-[9px] font-black uppercase bg-purple-100 text-purple-900 border border-purple-300 inline-block mb-1">
                                   🎓 {c.respondentLevel}
                                 </span>
@@ -3479,7 +3526,11 @@ ${rec.transcript || '[Tanpa Teks Verbatim]'}
                             </td>
                             <td className="p-3.5">
                               <span className="px-2.5 py-1 bg-amber-100 text-amber-900 rounded-lg font-black text-xs block w-fit">
-                                Sesi {c.sessionNo || 1} Think-Aloud
+                                {c.respondentLevel && c.respondentLevel.includes('Dosen')
+                                  ? `Sesi ${c.sessionNo || 1} — Think-Aloud Art Dosen`
+                                  : c.respondentLevel && (c.respondentLevel.includes('Seni') || c.respondentLevel.includes('Art'))
+                                  ? `Sesi ${c.sessionNo || 1} — Think-Aloud Art Mhs`
+                                  : `Sesi ${c.sessionNo || 1} Think-Aloud`}
                               </span>
                             </td>
                             <td className="p-3.5 text-slate-600">
