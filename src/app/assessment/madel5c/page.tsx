@@ -435,12 +435,21 @@ export default function Madel5cAssessment() {
               <p className="text-xs md:text-sm font-bold text-slate-600 leading-relaxed mb-8">
                 Anda telah berhasil menyelesaikan instrumen asesmen MADEL5C. Silakan melanjutkan untuk mengisi survey evaluasi sistem.
               </p>
-              <button
-                onClick={() => router.push("/survey")}
-                className="w-full py-4 md:py-5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-2xl font-black text-[11px] uppercase tracking-widest shadow-xl border-b-4 border-blue-900 transition-all active:scale-95"
-              >
-                LANJUT KE SURVEY KEPUASAN <i className="fa-solid fa-arrow-right ml-2"></i>
-              </button>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <button
+                  onClick={() => router.push("/dashboard")}
+                  className="flex-1 py-4 md:py-5 bg-gradient-to-r from-[#4B5320] to-emerald-700 hover:from-[#3B4119] hover:to-emerald-800 text-white rounded-2xl font-black text-[11px] uppercase tracking-widest shadow-xl border-b-4 border-emerald-950 transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <i className="fa-solid fa-chart-pie text-amber-300"></i>
+                  LIHAT 3 HALAMAN ANALISIS &amp; SPIDER CHART
+                </button>
+                <button
+                  onClick={() => router.push("/survey")}
+                  className="flex-1 py-4 md:py-5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-2xl font-black text-[11px] uppercase tracking-widest shadow-xl border-b-4 border-blue-900 transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  LANJUT KE SURVEY KEPUASAN <i className="fa-solid fa-arrow-right ml-1"></i>
+                </button>
+              </div>
             </motion.div>
           ) : showConsent ? (
             /* ─── KARTU INFORMED CONSENT TIMBUL RESMI ─── */
