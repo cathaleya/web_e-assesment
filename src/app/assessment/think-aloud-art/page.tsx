@@ -1286,6 +1286,7 @@ export default function ThinkAloudArtPage() {
                     );
                   })}
                 </div>
+              </div>
 
               {/* Progress Counters */}
               <div className="flex items-center gap-3 bg-slate-950/60 p-2.5 rounded-2xl border border-slate-800">
