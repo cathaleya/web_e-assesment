@@ -67,7 +67,8 @@ export async function POST(req: Request) {
 
     if (!isTextMock) {
       const sanitizeName = userName.replace(/[^a-zA-Z0-9]/g, "_");
-      filename = `ThinkAloud_Sesi${sessionNo}_Soal${itemNo}_P${probingStep}_${Date.now()}_${sanitizeName}.webm`;
+      const fileExt = (audioFile.type || "").includes("mp4") ? "m4a" : "webm";
+      filename = `ThinkAloud_Sesi${sessionNo}_Soal${itemNo}_P${probingStep}_${Date.now()}_${sanitizeName}.${fileExt}`;
       const filePath = path.join(uploadDir, filename);
       fs.writeFileSync(filePath, buffer);
 
@@ -86,16 +87,20 @@ export async function POST(req: Request) {
           const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
           const audioBase64 = buffer.toString("base64");
 
-          const aiRes = await model.generateContent([
-            {
-              inlineData: {
-                mimeType: audioFile.type || "audio/webm",
-                data: audioBase64,
+          const aiRes: any = await Promise.race([
+            model.generateContent([
+              {
+                inlineData: {
+                  mimeType: (audioFile.type || "audio/webm").split(";")[0],
+                  data: audioBase64,
+                },
               },
-            },
-            {
-              text: "Tolong buatkan transkrip verbatim kata-demi-kata secara persis dan lengkap dari ucapan Bahasa Indonesia pada rekaman audio ini. Tuliskan HANYA hasil teks verbatim tanpa kata pengantar atau penjelasan tambahan apapun.",
-            },
+              {
+                text: "Tolong buatkan transkrip verbatim kata-demi-kata secara persis dan lengkap dari ucapan Bahasa Indonesia pada rekaman audio ini. Tuliskan HANYA hasil teks verbatim tanpa kata pengantar atau penjelasan tambahan apapun.",
+              },
+            ]),
+            // Batas 20 detik agar pengiriman tidak menggantung hingga timeout proxy
+            new Promise((_, reject) => setTimeout(() => reject(new Error("Gemini timeout")), 20000)),
           ]);
 
           const aiText = aiRes.response.text()?.trim();

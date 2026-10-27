@@ -340,6 +340,7 @@ export default function ThinkAloudArtPage() {
 
   // REFS
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const recMimeRef = useRef<string>("audio/webm");
   const audioChunksRef = useRef<Blob[]>([]);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const recognitionRef = useRef<any>(null);
@@ -366,6 +367,11 @@ export default function ThinkAloudArtPage() {
       if (savedS2 === "true") setUnlockedSessions((prev) => ({ ...prev, 2: true }));
       const savedS3 = localStorage.getItem("art_session3_unlocked");
       if (savedS3 === "true") setUnlockedSessions((prev) => ({ ...prev, 3: true }));
+
+      try {
+        const savedSteps = localStorage.getItem("art_completedSteps");
+        if (savedSteps) setCompletedSteps(JSON.parse(savedSteps));
+      } catch (e) {}
     }
   }, []);
 
@@ -432,7 +438,11 @@ export default function ThinkAloudArtPage() {
     setCompletedSteps((prev) => {
       const existing = prev[qId] || [];
       if (!existing.includes(stepNum)) {
-        return { ...prev, [qId]: [...existing, stepNum] };
+        const updated = { ...prev, [qId]: [...existing, stepNum] };
+        try {
+          localStorage.setItem("art_completedSteps", JSON.stringify(updated));
+        } catch (e) {}
+        return updated;
       }
       return prev;
     });
@@ -444,7 +454,8 @@ export default function ThinkAloudArtPage() {
 
   const isQuestionComplete = (qId: number) => {
     const steps = completedSteps[qId] || [];
-    return steps.includes(1) && steps.includes(2);
+    // Butir dianggap tuntas jika sudah memilih opsi (step 1) atau menyelesaikan step apa pun
+    return steps.length > 0 || (selectedOptions[qId] !== undefined);
   };
 
   // CHECK ALL MANDATORY CONSENTS
@@ -527,15 +538,22 @@ export default function ThinkAloudArtPage() {
         console.warn("Analyser init error:", e);
       }
 
-      const mediaRecorder = new MediaRecorder(stream);
+      // MediaRecorder dengan mimeType yang didukung browser (sama seperti MADEL5C)
+      const options: MediaRecorderOptions =
+        MediaRecorder.isTypeSupported("audio/webm;codecs=opus") ? { mimeType: "audio/webm;codecs=opus" }
+        : MediaRecorder.isTypeSupported("audio/webm") ? { mimeType: "audio/webm" }
+        : MediaRecorder.isTypeSupported("audio/mp4") ? { mimeType: "audio/mp4" }
+        : {};
+      const mediaRecorder = new MediaRecorder(stream, options);
       mediaRecorderRef.current = mediaRecorder;
+      recMimeRef.current = mediaRecorder.mimeType || options.mimeType || "audio/webm";
 
       mediaRecorder.ondataavailable = (event) => {
-        if (event.data.size > 0) audioChunksRef.current.push(event.data);
+        if (event.data && event.data.size > 0) audioChunksRef.current.push(event.data);
       };
 
       mediaRecorder.onstop = () => {
-        const blob = new Blob(audioChunksRef.current, { type: "audio/webm" });
+        const blob = new Blob(audioChunksRef.current, { type: recMimeRef.current });
         setAudioBlob(blob);
         setAudioUrl(URL.createObjectURL(blob));
         stream.getTracks().forEach((track) => track.stop());
@@ -581,11 +599,13 @@ export default function ThinkAloudArtPage() {
   };
 
   const stopRecording = () => {
-    if (mediaRecorderRef.current && isRecording) {
-      mediaRecorderRef.current.stop();
-    }
+    try {
+      if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
+        mediaRecorderRef.current.stop();
+      }
+    } catch (e) {}
     if (recognitionRef.current) {
-      recognitionRef.current.stop();
+      try { recognitionRef.current.onend = null; recognitionRef.current.stop(); } catch (e) {}
     }
     if (timerRef.current) clearInterval(timerRef.current);
     if (audioContextRef.current) audioContextRef.current.close().catch(() => {});
@@ -593,10 +613,7 @@ export default function ThinkAloudArtPage() {
     setIsRecording(false);
     isRecordingRef.current = false;
     setAudioLevel(0);
-
-    if (currentQ) {
-      markStepDone(currentQ.id, probingStep);
-    }
+    // Tahap baru dianggap selesai setelah respon BERHASIL dikirim (seperti MADEL5C)
   };
 
   const resetRecordingState = () => {
@@ -610,7 +627,17 @@ export default function ThinkAloudArtPage() {
 
   // UPLOAD AUDIO & TRANSCRIPT DIRECTLY TO ADMIN PANEL (ALIGNED WITH S3 WORKFLOW)
   const uploadAudioToServer = async () => {
-    const hasAudio = !!audioBlob || audioChunksRef.current.length > 0;
+    // KUNCI: Pengiriman TIDAK BISA dilakukan jika rekaman masih berjalan
+    if (isRecording || (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive")) {
+      alert("⚠️ Rekaman masih aktif! Silakan klik tombol 'Hentikan Rekam' terlebih dahulu sebelum mengirim.");
+      return;
+    }
+
+    const recordedBlob: Blob | null =
+      audioChunksRef.current.length > 0
+        ? new Blob(audioChunksRef.current, { type: recMimeRef.current })
+        : audioBlob;
+    const hasAudio = !!recordedBlob && recordedBlob.size > 0;
     const hasText = transcriptText.trim().length > 0;
 
     if (!hasAudio && !hasText) {
@@ -633,14 +660,13 @@ export default function ThinkAloudArtPage() {
         ? `[Tingkat Keyakinan: ${confidenceText}] — ${transcriptText.trim()}`
         : `[Tingkat Keyakinan: ${confidenceText}] — [Respon Suara Terkirim Langsung ke Panel Admin]`;
 
-      const fileToUpload = audioBlob
-        ? audioBlob
-        : audioChunksRef.current.length > 0
-        ? new Blob(audioChunksRef.current, { type: "audio/webm" })
+      const fileToUpload = hasAudio && recordedBlob
+        ? recordedBlob
         : new Blob(["[Respon Teks Manual Tanpa Berkas Audio]"], { type: "audio/webm" });
+      const ext = recMimeRef.current.includes("mp4") ? "m4a" : "webm";
 
       const formData = new FormData();
-      formData.append("audio", fileToUpload, `ThinkAloud_Art_S${activeSession}_Q${currentQ.code}_P${probingStep}.webm`);
+      formData.append("audio", fileToUpload, `ThinkAloud_Art_S${activeSession}_Q${currentQ.code}_P${probingStep}.${ext}`);
       formData.append("isTextOnly", hasAudio ? "false" : "true");
       formData.append("userId", userNim || `art_resp_${Date.now()}`);
       formData.append("userName", userName || "Calon Guru Seni PPG");
@@ -661,35 +687,38 @@ export default function ThinkAloudArtPage() {
         body: formData,
       });
 
-      const data = await res.json();
-      if (res.ok && data.success) {
+      let data: any = null;
+      try { data = await res.json(); } catch { data = null; }
+      if (res.ok && data?.success) {
         setUploadSuccess(true);
-        if (data.record?.transcript && !data.record.transcript.includes("[Respon Suara Terkirim")) {
-          setTranscriptText(data.record.transcript);
-        }
         markStepDone(currentQ.id, probingStep);
+
+        // Langsung kosongkan transkrip, buffer ucapan, dan rekaman agar pertanyaan/tahap berikutnya bersih
+        finalTranscriptRef.current = "";
+        resetRecordingState();
 
         if (probingStep < 4) {
           const nextStep = probingStep + 1;
           alert(`✅ Respon Pertanyaan Probing ${probingStep} Berhasil Terkirim Langsung ke Panel Admin!\nOtomatis beralih ke Pertanyaan Probing ${nextStep}.`);
           setProbingStep(nextStep);
-          resetRecordingState();
         } else {
           alert(`🎉 Selamat! Seluruh tahap probing untuk Butir #${sessionItemIdx + 1} (${currentQ.code}) telah lengkap terkirim ke Panel Admin!`);
           if (sessionItemIdx < currentSessionQuestions.length - 1) {
             setSessionItemIdx((idx) => idx + 1);
             setProbingStep(1);
-            resetRecordingState();
           } else {
             checkSessionCompletion();
           }
         }
       } else {
-        alert("❌ Gagal mengirim respon ke server admin. Silakan coba lagi.");
+        const reason = res.status === 413
+          ? "Ukuran rekaman terlalu besar untuk server (batas upload Nginx)."
+          : data?.error || "Silakan coba lagi.";
+        alert(`❌ Gagal mengirim respon ke server admin (HTTP ${res.status}).\n${reason}`);
       }
     } catch (err) {
       console.error("Gagal mengirim respon:", err);
-      alert("❌ Terjadi kesalahan koneksi saat mengirim respon ke server admin.");
+      alert(`❌ Pengiriman terputus sebelum sampai ke server.\nKemungkinan ukuran rekaman melebihi batas upload server (Nginx).\nDetail: ${(err as any)?.message || err}`);
     } finally {
       setIsUploading(false);
     }
@@ -697,22 +726,17 @@ export default function ThinkAloudArtPage() {
 
   // CHECK SESSION COMPLETION & ADVANCE
   const checkSessionCompletion = () => {
-    // Check if all 5 questions in current session are complete
-    const currentSessionIds = currentSessionQuestions.map((q) => q.id);
-    const allDone = currentSessionIds.every((id) => isQuestionComplete(id));
-
-    if (allDone) {
-      if (activeSession === 1) {
-        localStorage.setItem("art_session2_unlocked", "true");
-        setUnlockedSessions((prev) => ({ ...prev, 2: true }));
-        setShowSessionTransitionModal({ fromSession: 1, toSession: 2 });
-      } else if (activeSession === 2) {
-        localStorage.setItem("art_session3_unlocked", "true");
-        setUnlockedSessions((prev) => ({ ...prev, 3: true }));
-        setShowSessionTransitionModal({ fromSession: 2, toSession: 3 });
-      } else if (activeSession === 3) {
-        setShowFinalCompletionModal(true);
-      }
+    // Ketika butir terakhir sesi selesai atau tombol Selesaikan Sesi ditekan:
+    if (activeSession === 1) {
+      localStorage.setItem("art_session2_unlocked", "true");
+      setUnlockedSessions((prev) => ({ ...prev, 2: true }));
+      setShowSessionTransitionModal({ fromSession: 1, toSession: 2 });
+    } else if (activeSession === 2) {
+      localStorage.setItem("art_session3_unlocked", "true");
+      setUnlockedSessions((prev) => ({ ...prev, 3: true }));
+      setShowSessionTransitionModal({ fromSession: 2, toSession: 3 });
+    } else if (activeSession === 3) {
+      setShowFinalCompletionModal(true);
     }
   };
 
@@ -1231,11 +1255,37 @@ export default function ThinkAloudArtPage() {
                     Butir ke-{sessionItemIdx + 1} dari 5
                   </span>
                 </div>
-                <h1 className="text-lg md:text-xl font-black text-white tracking-tight">
-                  {sessionConfig.title}
-                </h1>
-                <p className="text-xs text-slate-300/90">{sessionConfig.subtitle}</p>
-              </div>
+                <div className="flex items-center gap-1.5 pt-1">
+                  {[1, 2, 3].map((sNum) => {
+                    const isUnlocked = unlockedSessions[sNum];
+                    const isCurrent = activeSession === sNum;
+                    return (
+                      <button
+                        key={sNum}
+                        onClick={() => {
+                          if (isUnlocked) {
+                            setActiveSession(sNum as 1 | 2 | 3);
+                            setSessionItemIdx(0);
+                            setProbingStep(1);
+                            if (!consentApproved) setActiveTab("consent");
+                            else setActiveTab("session");
+                          }
+                        }}
+                        disabled={!isUnlocked}
+                        className={`px-2.5 py-1 rounded-lg text-[10px] font-black transition-all flex items-center gap-1 ${
+                          isCurrent
+                            ? "bg-lime-400 text-slate-950 font-black shadow-md"
+                            : isUnlocked
+                            ? "bg-slate-950/80 text-emerald-300 border border-emerald-500/40 hover:bg-slate-900"
+                            : "bg-slate-950/50 text-slate-600 border border-slate-800 cursor-not-allowed"
+                        }`}
+                      >
+                        <i className={`fa-solid ${isUnlocked ? (isCurrent ? "fa-circle-dot" : "fa-circle-check") : "fa-lock text-[8px]"}`}></i>
+                        <span>Sesi {sNum}</span>
+                      </button>
+                    );
+                  })}
+                </div>
 
               {/* Progress Counters */}
               <div className="flex items-center gap-3 bg-slate-950/60 p-2.5 rounded-2xl border border-slate-800">
@@ -1580,18 +1630,32 @@ export default function ThinkAloudArtPage() {
                       <button
                         type="button"
                         onClick={uploadAudioToServer}
-                        disabled={isUploading}
+                        disabled={isUploading || isRecording}
                         className={`w-full py-3.5 rounded-xl font-black text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-xl ${
-                          isUploading
+                          isRecording
+                            ? "bg-amber-950/80 text-amber-300 border border-amber-500/40 cursor-not-allowed opacity-90 shadow-amber-500/10"
+                            : isUploading
                             ? "bg-slate-800 text-slate-400 border border-slate-700 cursor-not-allowed"
                             : "bg-gradient-to-r from-lime-400 via-emerald-400 to-teal-400 hover:from-lime-300 hover:to-emerald-300 text-slate-950 shadow-lime-500/25 active:scale-95 cursor-pointer"
                         }`}
                       >
-                        <i className={`fa-solid ${isUploading ? "fa-spinner fa-spin" : "fa-paper-plane"}`}></i>
-                        <span>{isUploading ? "Mengirim ke Panel Admin..." : "Kirim Respon ke Panel Admin"}</span>
+                        <i className={`fa-solid ${isUploading ? "fa-spinner fa-spin" : isRecording ? "fa-lock" : "fa-paper-plane"}`}></i>
+                        <span>
+                          {isRecording
+                            ? "Hentikan Rekaman Dulu untuk Mengirim"
+                            : isUploading
+                            ? "Mengirim ke Panel Admin..."
+                            : "Kirim Respon ke Panel Admin"}
+                        </span>
                       </button>
                       <p className="text-[10px] text-slate-400 text-center mt-1.5 font-medium">
-                        Respon suara atau transkrip Anda akan dikirim langsung ke Panel Admin dan otomatis lanjut ke tahap probing berikutnya.
+                        {isRecording ? (
+                          <span className="text-amber-400 font-bold">
+                            🔒 Tombol kirim terkunci selama Anda merekam. Klik tombol merah di atas untuk menghentikan rekaman.
+                          </span>
+                        ) : (
+                          "Respon suara atau transkrip Anda akan dikirim langsung ke Panel Admin dan otomatis lanjut ke tahap probing berikutnya."
+                        )}
                       </p>
                     </div>
                   </div>
