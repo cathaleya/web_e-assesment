@@ -196,7 +196,7 @@ export default function Home() {
       {/* ════════════════════════════════════════
           HALAMAN 1 — HERO TIMBUL (BACKGROUND MOTIF BATIK PAPUA TANPA FILTER + LARGE 3D EMBOSSED ICONS)
       ════════════════════════════════════════ */}
-      <section className="relative min-h-screen flex items-center pt-28 pb-16 bg-[#FAF5EF] overflow-hidden border-b-4 border-amber-200">
+      <section className="relative min-h-screen lg:min-h-[calc(100vh-2rem)] flex items-center pt-24 pb-8 lg:pt-20 lg:pb-6 bg-[#FAF5EF] overflow-hidden border-b-4 border-amber-200">
         
         {/* BACKGROUND MOTIF BATIK PAPUA (UKIRAN ASMAT & SPIRAL PAPUA) TANPA FILTER */}
         <div className="absolute inset-0 z-0 opacity-[0.16] pointer-events-none overflow-hidden">
@@ -258,8 +258,8 @@ export default function Home() {
           </span>
         </div>
 
-        {/* Right Mid (Inward Offset): Wright Map Rasch */}
-        <div className="hidden xl:flex absolute top-[50%] right-[11%] z-10 flex-col items-center group float-anim">
+        {/* Right Mid (Offset to edge): Wright Map Rasch */}
+        <div className="hidden xl:flex absolute top-[50%] right-[3%] z-10 flex-col items-center group float-anim">
           <div className="w-13 h-13 md:w-15 md:h-15 rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-700 text-white flex items-center justify-center shadow-2xl border-2 border-white icon-timbul-3d">
             <i className="fa-solid fa-ruler-combined text-2xl text-teal-100"></i>
           </div>
@@ -278,42 +278,42 @@ export default function Home() {
 
 
         {/* MAIN CONTENT CONTAINER */}
-        <div className="relative z-20 w-full px-4 md:px-14 lg:px-20 max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-12">
+        <div className="relative z-20 w-full px-4 md:px-8 lg:px-12 max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-6 lg:gap-8">
           
           {/* ─── KIRI: HEADER BRANDING & KARTU ANIMASI MELAYANG (RADAR CHART 5D & PANEL PSIKOMETRI) ─── */}
           <div className="flex-1 max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-100 border border-amber-300 text-amber-900 text-[10px] md:text-xs font-black uppercase tracking-widest shadow-md mb-4">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-100 border border-amber-300 text-amber-900 text-[9px] md:text-[11px] font-black uppercase tracking-widest shadow-sm mb-2">
               <i className="fa-solid fa-square-poll-vertical text-blue-700 animate-bounce"></i> HYBRID-DIAGNOSTIC ASSESSMENT PLATFORM (HDAP)
             </div>
 
-            <h1 className="text-3xl md:text-5xl lg:text-[60px] xl:text-[70px] font-black italic uppercase tracking-tighter leading-[1.1] break-words">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-[44px] xl:text-[50px] font-black italic uppercase tracking-tighter leading-[1.08] break-words">
               <span className="text-slate-900 text-timbul-heavy">E-ASSESSMENT</span>{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-700 via-indigo-600 to-emerald-600 text-emboss-3d-title">LITERASI DIGITAL</span>
             </h1>
 
-            {/* KARTU ANIMASI MELAYANG DI BAWAH JUDUL WEB */}
-            <div className="mt-8 max-w-xl float-anim">
-              <div className="card-timbul p-6 rounded-[36px] bg-white backdrop-blur-xl border-2 border-slate-200 border-b-8 border-b-slate-400 shadow-2xl text-slate-900 relative overflow-hidden">
+            {/* KARTU ANIMASI MELAYANG DI BAWAH JUDUL WEB (UKURAN KOMPAK FIT TO SCREEN) */}
+            <div className="mt-4 max-w-lg float-anim">
+              <div className="card-timbul p-4 md:p-5 rounded-[26px] bg-white backdrop-blur-xl border-2 border-slate-200 border-b-6 border-b-slate-400 shadow-xl text-slate-900 relative overflow-hidden">
                 
                 {/* Header Card Panel */}
-                <div className="flex items-center justify-between pb-4 mb-4 border-b border-slate-100">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white flex items-center justify-center font-black text-base shadow-lg border-b-2 border-indigo-950">
+                <div className="flex items-center justify-between pb-2.5 mb-2.5 border-b border-slate-100">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white flex items-center justify-center font-black text-sm shadow-md border-b-2 border-indigo-950 shrink-0">
                       <i className="fa-solid fa-chart-pie"></i>
                     </div>
                     <div>
-                      <span className="text-[9px] font-black text-blue-700 uppercase tracking-widest block">PANEL USER & ADMIN</span>
-                      <span className="text-sm font-black text-slate-900 uppercase tracking-tight block">Radar Chart & Analisis Psikometri</span>
+                      <span className="text-[8px] font-black text-blue-700 uppercase tracking-widest block">PANEL USER & ADMIN</span>
+                      <span className="text-xs md:text-sm font-black text-slate-900 uppercase tracking-tight block">Radar Chart & Analisis Psikometri</span>
                     </div>
                   </div>
-                  <span className="px-2.5 py-1 bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-full text-[8px] font-black uppercase">
+                  <span className="px-2 py-0.5 bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-full text-[7.5px] font-black uppercase shrink-0">
                     ● Realtime Diagnostic
                   </span>
                 </div>
 
-                {/* VISUAL RADAR CHART 5 DIMENSI (SVG VECTOR INTERAKTIF) */}
-                <div className="relative w-full h-52 flex items-center justify-center bg-slate-50 rounded-2xl p-2 border border-slate-200">
-                  <svg className="w-full h-full" viewBox="0 0 200 200">
+                {/* VISUAL RADAR CHART 5 DIMENSI (SVG VECTOR INTERAKTIF KOMPAK) */}
+                <div className="relative w-full h-36 md:h-40 flex items-center justify-center bg-slate-50 rounded-xl p-1 border border-slate-200">
+                  <svg className="w-full h-full max-h-[150px]" viewBox="0 0 200 200">
                     {/* Grid Pentagon Radar */}
                     <polygon points="100,20 176,75 147,165 53,165 24,75" fill="none" stroke="#cbd5e1" strokeWidth="1" />
                     <polygon points="100,45 152,82 132,142 68,142 48,82" fill="none" stroke="#cbd5e1" strokeWidth="1" />
@@ -342,48 +342,48 @@ export default function Home() {
                   </svg>
 
                   {/* Radar Axis Labels */}
-                  <span className="absolute top-1 text-[8px] font-black text-blue-700 bg-white px-1.5 py-0.5 rounded border border-blue-200 shadow-sm">MADEL-5C</span>
-                  <span className="absolute top-14 right-2 text-[8px] font-black text-emerald-700 bg-white px-1.5 py-0.5 rounded border border-emerald-200 shadow-sm">MADEL-GO</span>
-                  <span className="absolute bottom-2 right-6 text-[8px] font-black text-amber-700 bg-white px-1.5 py-0.5 rounded border border-amber-200 shadow-sm">MADEL-PAK</span>
-                  <span className="absolute bottom-2 left-6 text-[8px] font-black text-purple-700 bg-white px-1.5 py-0.5 rounded border border-purple-200 shadow-sm">MADEL-ART</span>
-                  <span className="absolute top-14 left-2 text-[8px] font-black text-rose-700 bg-white px-1.5 py-0.5 rounded border border-rose-200 shadow-sm">MADEL-V</span>
+                  <span className="absolute top-1 text-[7.5px] font-black text-blue-700 bg-white px-1.5 py-0.5 rounded border border-blue-200 shadow-sm">MADEL-5C</span>
+                  <span className="absolute top-10 right-2 text-[7.5px] font-black text-emerald-700 bg-white px-1.5 py-0.5 rounded border border-emerald-200 shadow-sm">MADEL-GO</span>
+                  <span className="absolute bottom-1 right-6 text-[7.5px] font-black text-amber-700 bg-white px-1.5 py-0.5 rounded border border-amber-200 shadow-sm">MADEL-PAK</span>
+                  <span className="absolute bottom-1 left-6 text-[7.5px] font-black text-purple-700 bg-white px-1.5 py-0.5 rounded border border-purple-200 shadow-sm">MADEL-ART</span>
+                  <span className="absolute top-10 left-2 text-[7.5px] font-black text-rose-700 bg-white px-1.5 py-0.5 rounded border border-rose-200 shadow-sm">MADEL-V</span>
                 </div>
 
                 {/* ADMIN TOOLBAR BADGES (DIF, WRIGHT MAP, CTT, R-STUDIO) */}
-                <div className="grid grid-cols-4 gap-1.5 mt-3">
-                  <div className="bg-slate-50 p-1.5 rounded-xl border border-slate-200 text-center">
-                    <i className="fa-solid fa-scale-balanced text-blue-600 text-xs block mb-0.5"></i>
-                    <span className="text-[7px] font-black text-slate-800 uppercase block">DIF Bias</span>
+                <div className="grid grid-cols-4 gap-1.5 mt-2.5">
+                  <div className="bg-slate-50 p-1 rounded-lg border border-slate-200 text-center">
+                    <i className="fa-solid fa-scale-balanced text-blue-600 text-[10px] block mb-0.5"></i>
+                    <span className="text-[6.5px] font-black text-slate-800 uppercase block">DIF Bias</span>
                   </div>
-                  <div className="bg-slate-50 p-1.5 rounded-xl border border-slate-200 text-center">
-                    <i className="fa-solid fa-ruler-vertical text-emerald-600 text-xs block mb-0.5"></i>
-                    <span className="text-[7px] font-black text-slate-800 uppercase block">Wright Map</span>
+                  <div className="bg-slate-50 p-1 rounded-lg border border-slate-200 text-center">
+                    <i className="fa-solid fa-ruler-vertical text-emerald-600 text-[10px] block mb-0.5"></i>
+                    <span className="text-[6.5px] font-black text-slate-800 uppercase block">Wright Map</span>
                   </div>
-                  <div className="bg-slate-50 p-1.5 rounded-xl border border-slate-200 text-center">
-                    <i className="fa-solid fa-calculator text-amber-600 text-xs block mb-0.5"></i>
-                    <span className="text-[7px] font-black text-slate-800 uppercase block">CTT Engine</span>
+                  <div className="bg-slate-50 p-1 rounded-lg border border-slate-200 text-center">
+                    <i className="fa-solid fa-calculator text-amber-600 text-[10px] block mb-0.5"></i>
+                    <span className="text-[6.5px] font-black text-slate-800 uppercase block">CTT Engine</span>
                   </div>
-                  <div className="bg-slate-50 p-1.5 rounded-xl border border-slate-200 text-center">
-                    <i className="fa-solid fa-code text-purple-600 text-xs block mb-0.5"></i>
-                    <span className="text-[7px] font-black text-slate-800 uppercase block">R-Studio</span>
+                  <div className="bg-slate-50 p-1 rounded-lg border border-slate-200 text-center">
+                    <i className="fa-solid fa-code text-purple-600 text-[10px] block mb-0.5"></i>
+                    <span className="text-[6.5px] font-black text-slate-800 uppercase block">R-Studio</span>
                   </div>
                 </div>
 
                 {/* Metrics Bar inside Panel */}
-                <div className="grid grid-cols-2 gap-3 mt-3">
-                  <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-200 flex items-center justify-between">
+                <div className="grid grid-cols-2 gap-2 mt-2">
+                  <div className="bg-slate-50 p-2 rounded-lg border border-slate-200 flex items-center justify-between">
                     <div>
-                      <span className="text-[8px] font-black text-slate-500 uppercase block">SKOR THETA (IRT)</span>
-                      <span className="text-sm font-black text-blue-700 block">θ = +1.68</span>
+                      <span className="text-[7.5px] font-black text-slate-500 uppercase block">SKOR THETA (IRT)</span>
+                      <span className="text-xs font-black text-blue-700 block">θ = +1.68</span>
                     </div>
-                    <span className="text-[8px] font-black text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded border border-emerald-300">HIGH</span>
+                    <span className="text-[7px] font-black text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded border border-emerald-300">HIGH</span>
                   </div>
-                  <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-200 flex items-center justify-between">
+                  <div className="bg-slate-50 p-2 rounded-lg border border-slate-200 flex items-center justify-between">
                     <div>
-                      <span className="text-[8px] font-black text-slate-500 uppercase block">RELIABILITAS (α)</span>
-                      <span className="text-sm font-black text-amber-700 block">α = 0.94</span>
+                      <span className="text-[7.5px] font-black text-slate-500 uppercase block">RELIABILITAS (α)</span>
+                      <span className="text-xs font-black text-amber-700 block">α = 0.94</span>
                     </div>
-                    <span className="text-[8px] font-black text-amber-700 bg-amber-100 px-2 py-0.5 rounded border border-amber-300">VERY HIGH</span>
+                    <span className="text-[7px] font-black text-amber-700 bg-amber-100 px-2 py-0.5 rounded border border-amber-300">VERY HIGH</span>
                   </div>
                 </div>
 
@@ -391,118 +391,125 @@ export default function Home() {
             </div>
           </div>
 
-          {/* ─── KANAN: PORTAL ASESMEN & FITUR THINK-ALOUD ─── */}
-          <div className="w-full lg:w-[500px] xl:w-[520px] shrink-0">
-            <div className="card-timbul p-6 md:p-8 rounded-[32px] bg-white/95 backdrop-blur-md shadow-2xl border-t-4 border-t-blue-600 border-x-2 border-b-4 border-slate-200">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white flex items-center justify-center font-black text-sm shadow-md border-b-2 border-indigo-950">
+          {/* ─── KANAN: PORTAL ASESMEN & FITUR THINK-ALOUD (KOMPAK FIT TO SCREEN) ─── */}
+          <div className="w-full lg:w-[460px] xl:w-[480px] shrink-0">
+            <div className="card-timbul p-4 md:p-5 rounded-[26px] bg-white/95 backdrop-blur-md shadow-xl border-t-4 border-t-blue-600 border-x-2 border-b-6 border-b-slate-300">
+              
+              <div className="flex items-center gap-2.5 mb-2">
+                <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-700 text-white flex items-center justify-center font-black text-xs shadow-sm border-b-2 border-indigo-950 shrink-0">
                   <i className="fa-solid fa-microchip"></i>
                 </div>
-                <span className="text-[11px] font-black text-blue-800 uppercase tracking-widest">IRT & Generative AI Engine (Gemini & Claude)</span>
+                <span className="text-[10px] font-black text-blue-800 uppercase tracking-wider">IRT & Generative AI Engine (Gemini & Claude)</span>
               </div>
-              <p className="text-xs md:text-sm text-slate-800 font-bold leading-relaxed">
-                Integrasi Analisis Item Response Theory (IRT) dengan kecerdasan Generative AI (Google Gemini & Claude Code AI) untuk memetakan profil kompetensi Literasi Digital mahasiswa calon guru secara holistik, presisi, dan objektif.
+
+              <p className="text-[11px] md:text-xs text-slate-700 font-semibold leading-snug">
+                Integrasi Analisis IRT dengan Generative AI untuk memetakan kompetensi Literasi Digital mahasiswa secara holistik, presisi, dan objektif.
               </p>
-              <div className="mt-6 flex flex-col sm:flex-row items-center gap-3">
+
+              {/* ACTION BUTTONS UTAMA */}
+              <div className="mt-3 flex flex-row items-center gap-2">
                 <button 
                   onClick={() => router.push("/login")}
-                  className="w-full sm:flex-1 py-4 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white rounded-2xl font-black text-[11px] uppercase tracking-widest shadow-xl border-b-4 border-indigo-950 active:scale-95 transition-all text-center"
+                  className="flex-1 py-2.5 px-3 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white rounded-xl font-black text-[10px] uppercase tracking-wider shadow-md border-b-2 border-indigo-950 active:scale-95 transition-all text-center flex items-center justify-center gap-1"
                 >
-                  MULAI SEKARANG <i className="fa-solid fa-rocket ml-1"></i>
+                  <span>MULAI SEKARANG</span>
+                  <i className="fa-solid fa-rocket text-[9px]"></i>
                 </button>
                 <button 
                   onClick={() => router.push("/login/think-aloud-s3")}
-                  className="w-full sm:flex-1 py-4 bg-gradient-to-r from-purple-700 via-indigo-700 to-purple-900 hover:from-purple-800 hover:to-indigo-800 text-white rounded-2xl font-black text-[11px] uppercase tracking-widest shadow-xl border-b-4 border-purple-950 active:scale-95 transition-all flex items-center justify-center gap-1.5 text-center"
+                  className="flex-1 py-2.5 px-3 bg-gradient-to-r from-purple-700 via-indigo-700 to-purple-900 hover:from-purple-800 hover:to-indigo-800 text-white rounded-xl font-black text-[10px] uppercase tracking-wider shadow-md border-b-2 border-purple-950 active:scale-95 transition-all flex items-center justify-center gap-1 text-center"
                 >
-                  <i className="fa-solid fa-graduation-cap text-amber-300"></i>
-                  <span>THINK-ALOUD S2/S3</span>
-                  <span className="px-1.5 py-0.5 rounded bg-amber-400 text-slate-950 text-[8px] font-black">15 BUTIR</span>
+                  <i className="fa-solid fa-graduation-cap text-amber-300 text-[10px]"></i>
+                  <span>S2/S3</span>
+                  <span className="px-1 py-0.5 rounded bg-amber-400 text-slate-950 text-[7px] font-black">15 BUTIR</span>
                 </button>
               </div>
 
-              {/* FITUR KHUSUS: THINK A LOUD ART (WARNA KONTRAS HIJAU MUDA — MAHASISWA & DOSEN) */}
-              <div className="mt-4 flex flex-col gap-2.5">
+              {/* FITUR KHUSUS: THINK A LOUD ART & MAGER (KOMPAK, ELEGAN, FIT TO SCREEN) */}
+              <div className="mt-3 flex flex-col gap-2">
+                
                 {/* 1. THINK A LOUD ART — MAHASISWA */}
                 <button
                   onClick={() => router.push("/assessment/think-aloud-art")}
-                  className="w-full p-3.5 md:p-4 bg-gradient-to-r from-lime-400 via-emerald-400 to-lime-300 hover:from-lime-300 hover:to-emerald-300 text-slate-950 rounded-2xl font-black text-xs md:text-sm uppercase tracking-wider shadow-xl shadow-lime-400/30 border-2 border-lime-300 border-b-4 border-b-lime-600 active:scale-95 transition-all flex items-center justify-between gap-3 text-left group"
+                  className="w-full p-2.5 md:p-3 bg-gradient-to-r from-lime-400 via-emerald-400 to-lime-300 hover:from-lime-300 hover:to-emerald-300 text-slate-950 rounded-xl font-black shadow-md border-2 border-lime-300 border-b-3 border-b-lime-600 active:scale-95 transition-all flex items-center justify-between gap-2.5 text-left group"
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 md:w-11 md:h-11 rounded-2xl bg-slate-950 text-lime-400 flex items-center justify-center font-black text-lg md:text-xl shadow-md group-hover:scale-110 transition-transform shrink-0">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="w-8 h-8 rounded-xl bg-slate-950 text-lime-400 flex items-center justify-center font-black text-sm shadow-sm group-hover:scale-105 transition-transform shrink-0">
                       <i className="fa-solid fa-palette"></i>
                     </div>
-                    <div className="flex flex-col leading-tight">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className="text-xs md:text-sm font-black text-slate-950 tracking-tight">THINK A LOUD ART — MAHASISWA</span>
-                        <span className="px-2 py-0.5 rounded-full bg-slate-950 text-lime-400 text-[8px] md:text-[9px] font-black uppercase tracking-wider shadow-sm">
-                          15 BUTIR — 3 SESI
+                    <div className="flex flex-col leading-tight min-w-0">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span className="text-[11px] md:text-xs font-black text-slate-950 tracking-tight truncate">THINK A LOUD ART — MHS</span>
+                        <span className="px-1.5 py-0.5 rounded-full bg-slate-950 text-lime-400 text-[7.5px] font-black uppercase tracking-wider shrink-0">
+                          15 BUTIR
                         </span>
                       </div>
-                      <span className="text-[10px] md:text-[11px] font-bold text-slate-800">
-                        Wawancara Kognitif Think-Aloud Mahasiswa PPG Pendidikan Seni
+                      <span className="text-[9px] md:text-[9.5px] font-bold text-slate-800 truncate">
+                        Wawancara Kognitif Mahasiswa PPG Seni
                       </span>
                     </div>
                   </div>
-                  <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-950 text-lime-400 font-black text-xs uppercase tracking-wider shadow-sm group-hover:bg-slate-900 group-hover:translate-x-0.5 transition-all shrink-0">
+                  <div className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-950 text-lime-400 font-black text-[9px] uppercase tracking-wider shadow-sm group-hover:bg-slate-900 group-hover:translate-x-0.5 transition-all shrink-0">
                     <span>BUKA</span>
-                    <i className="fa-solid fa-arrow-right"></i>
+                    <i className="fa-solid fa-arrow-right text-[8px]"></i>
                   </div>
                 </button>
 
                 {/* 2. THINK A LOUD ART — DOSEN */}
                 <button
                   onClick={() => router.push("/assessment/think-aloud-art-dosen")}
-                  className="w-full p-3.5 md:p-4 bg-gradient-to-r from-emerald-400 via-teal-300 to-lime-400 hover:from-emerald-300 hover:to-teal-200 text-slate-950 rounded-2xl font-black text-xs md:text-sm uppercase tracking-wider shadow-xl shadow-emerald-400/30 border-2 border-emerald-300 border-b-4 border-b-emerald-600 active:scale-95 transition-all flex items-center justify-between gap-3 text-left group"
+                  className="w-full p-2.5 md:p-3 bg-gradient-to-r from-emerald-400 via-teal-300 to-lime-400 hover:from-emerald-300 hover:to-teal-200 text-slate-950 rounded-xl font-black shadow-md border-2 border-emerald-300 border-b-3 border-b-emerald-600 active:scale-95 transition-all flex items-center justify-between gap-2.5 text-left group"
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 md:w-11 md:h-11 rounded-2xl bg-slate-950 text-emerald-300 flex items-center justify-center font-black text-lg md:text-xl shadow-md group-hover:scale-110 transition-transform shrink-0">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="w-8 h-8 rounded-xl bg-slate-950 text-emerald-300 flex items-center justify-center font-black text-sm shadow-sm group-hover:scale-105 transition-transform shrink-0">
                       <i className="fa-solid fa-chalkboard-user"></i>
                     </div>
-                    <div className="flex flex-col leading-tight">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className="text-xs md:text-sm font-black text-slate-950 tracking-tight">THINK A LOUD ART — DOSEN</span>
-                        <span className="px-2 py-0.5 rounded-full bg-slate-950 text-emerald-300 text-[8px] md:text-[9px] font-black uppercase tracking-wider shadow-sm">
-                          10 BUTIR — 2 SESI
+                    <div className="flex flex-col leading-tight min-w-0">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span className="text-[11px] md:text-xs font-black text-slate-950 tracking-tight truncate">THINK A LOUD ART — DOSEN</span>
+                        <span className="px-1.5 py-0.5 rounded-full bg-slate-950 text-emerald-300 text-[7.5px] font-black uppercase tracking-wider shrink-0">
+                          10 BUTIR
                         </span>
                       </div>
-                      <span className="text-[10px] md:text-[11px] font-bold text-slate-800">
-                        Wawancara Kognitif Think-Aloud Dosen PPG Pendidikan Seni
+                      <span className="text-[9px] md:text-[9.5px] font-bold text-slate-800 truncate">
+                        Wawancara Kognitif Dosen PPG Seni
                       </span>
                     </div>
                   </div>
-                  <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-950 text-emerald-300 font-black text-xs uppercase tracking-wider shadow-sm group-hover:bg-slate-900 group-hover:translate-x-0.5 transition-all shrink-0">
+                  <div className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-950 text-emerald-300 font-black text-[9px] uppercase tracking-wider shadow-sm group-hover:bg-slate-900 group-hover:translate-x-0.5 transition-all shrink-0">
                     <span>BUKA</span>
-                    <i className="fa-solid fa-arrow-right"></i>
+                    <i className="fa-solid fa-arrow-right text-[8px]"></i>
                   </div>
                 </button>
 
                 {/* 3. THINK A LOUD MAGER — DOKTORAL S3 */}
                 <button
                   onClick={() => router.push("/assessment/think-aloud-mager")}
-                  className="w-full p-3.5 md:p-4 bg-gradient-to-r from-purple-950 via-indigo-950 to-slate-950 hover:from-purple-900 hover:to-indigo-900 text-white rounded-2xl font-black text-xs md:text-sm uppercase tracking-wider shadow-xl shadow-purple-950/40 border-2 border-purple-500/50 border-b-4 border-b-purple-400 active:scale-95 transition-all flex items-center justify-between gap-3 text-left group"
+                  className="w-full p-2.5 md:p-3 bg-gradient-to-r from-purple-950 via-indigo-950 to-slate-950 hover:from-purple-900 hover:to-indigo-900 text-white rounded-xl font-black shadow-md border-2 border-purple-500/50 border-b-3 border-b-purple-400 active:scale-95 transition-all flex items-center justify-between gap-2.5 text-left group"
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 md:w-11 md:h-11 rounded-2xl bg-gradient-to-br from-purple-600 to-indigo-600 text-white flex items-center justify-center font-black text-lg md:text-xl shadow-md group-hover:scale-110 transition-transform shrink-0 border border-purple-400/40">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-purple-600 to-indigo-600 text-white flex items-center justify-center font-black text-sm shadow-sm group-hover:scale-105 transition-transform shrink-0 border border-purple-400/40">
                       <i className="fa-solid fa-graduation-cap text-amber-300"></i>
                     </div>
-                    <div className="flex flex-col leading-tight">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className="text-xs md:text-sm font-black text-white tracking-tight">THINK A LOUD MAGER</span>
-                        <span className="px-2 py-0.5 rounded-full bg-amber-400 text-slate-950 text-[8px] md:text-[9px] font-black uppercase tracking-wider shadow-sm">
-                          30 BUTIR · 3 SESI 3-TIER
+                    <div className="flex flex-col leading-tight min-w-0">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span className="text-[11px] md:text-xs font-black text-white tracking-tight truncate">THINK A LOUD MAGER</span>
+                        <span className="px-1.5 py-0.5 rounded-full bg-amber-400 text-slate-950 text-[7.5px] font-black uppercase tracking-wider shrink-0">
+                          30 BUTIR · 3 SESI
                         </span>
                       </div>
-                      <span className="text-[10px] md:text-[11px] font-bold text-purple-200">
-                        Wawancara Kognitif Lingkungan Belajar Digital Doktoral (LBD-S3 / MADEL-S3)
+                      <span className="text-[9px] md:text-[9.5px] font-bold text-purple-200 truncate">
+                        Wawancara Doktoral (LBD-S3 / MADEL-S3)
                       </span>
                     </div>
                   </div>
-                  <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-black text-xs uppercase tracking-wider shadow-sm group-hover:translate-x-0.5 transition-all shrink-0">
+                  <div className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-purple-600 hover:bg-purple-500 text-white font-black text-[9px] uppercase tracking-wider shadow-sm group-hover:translate-x-0.5 transition-all shrink-0">
                     <span>BUKA</span>
-                    <i className="fa-solid fa-arrow-right"></i>
+                    <i className="fa-solid fa-arrow-right text-[8px]"></i>
                   </div>
                 </button>
               </div>
+
             </div>
           </div>
 
