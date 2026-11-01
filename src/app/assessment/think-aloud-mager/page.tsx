@@ -3,66 +3,50 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { MAGER_QUESTIONS, MagerQuestion, MagerOption } from "./mager_questions";
+import {
+  MAGER_QUESTIONS,
+  SESSION_DETAILS,
+  DIMENSION_LABELS,
+  MagerQuestion,
+} from "./mager_questions";
 
-export const dynamic = "force-dynamic";
-
-interface SessionInfo {
-  sessionNo: 1 | 2 | 3;
-  title: string;
-  subtitle: string;
-  themeDesc: string;
-  itemsRange: string;
-  colorHeader: string;
-  badgeBg: string;
-  accentBorder: string;
-  bgGlow: string;
-}
-
-const SESSION_DETAILS: Record<1 | 2 | 3, SessionInfo> = {
-  1: {
-    sessionNo: 1,
-    title: "SESI 1 — Dukungan Pedagogis & Kolaborasi Akademik Komunitas S3",
-    subtitle: "Eksplorasi Kemandirian Riset, Modul Panduan & Ruang Diskusi Doktoral",
-    themeDesc: "Fokus pada butir D1.1 s/d D2.5 (Peta jalan riset mandiri, kurasi basis data literatur, kebuntuan metodologi, beban administratif vs substansial, dan jejaring komunitas riset antar-kampus).",
-    itemsRange: "Butir 1 s/d 10 (D1.1 – D2.5)",
-    colorHeader: "from-indigo-950 via-slate-900 to-purple-950 border-purple-500/50 text-purple-200",
-    badgeBg: "bg-purple-500/20 text-purple-300 border-purple-400/40",
-    accentBorder: "border-purple-500/40",
-    bgGlow: "rgba(168, 85, 247, 0.15)",
+// PROTOKOL 3-TIER DESKRIPSI
+const TIER_DESCRIPTIONS = [
+  {
+    tier: 1,
+    name: "Tier 1: Semantic & Comprehension Clarity",
+    icon: "fa-book-open-reader",
+    color: "purple",
+    badgeBg: "bg-purple-100 text-purple-800 border-purple-200",
+    desc: "Mengevaluasi kejelasan makna kata, interpretasi istilah doktoral, dan apakah ada ambiguitas frasa dalam butir.",
+    target: "Apakah makna butir ini langsung dapat Anda pahami tanpa multitafsir?",
   },
-  2: {
-    sessionNo: 2,
-    title: "SESI 2 — Aksesibilitas Teknologi, Tata Kelola & Etika Digital/AI",
-    subtitle: "Eksplorasi Keandalan Platform, Keamanan Data Riset & Regulasi GenAI",
-    themeDesc: "Fokus pada butir D3.1 s/d D4.5 (Sinkronisasi cloud, akses basis data bereputasi, antarmuka inklusif, perlindungan data mentah, dan pedoman pemanfaatan AI yang transparan).",
-    itemsRange: "Butir 11 s/d 20 (D3.1 – D4.5)",
-    colorHeader: "from-slate-950 via-blue-950 to-indigo-950 border-cyan-500/50 text-cyan-200",
-    badgeBg: "bg-cyan-500/20 text-cyan-300 border-cyan-400/40",
-    accentBorder: "border-cyan-500/40",
-    bgGlow: "rgba(6, 182, 212, 0.15)",
+  {
+    tier: 2,
+    name: "Tier 2: Experiential Retrieval & Justification",
+    icon: "fa-clock-rotate-left",
+    color: "blue",
+    badgeBg: "bg-blue-100 text-blue-800 border-blue-200",
+    desc: "Menggali memori nyata, situasi riil riset disertasi, bimbingan promotor, dan penggunaan platform digital selama perkuliahan S3.",
+    target: "Pengalaman nyata apa selama kuliah doktoral yang melandasi skor pilihan Anda?",
   },
-  3: {
-    sessionNo: 3,
-    title: "SESI 3 — Tugas Autentik, Umpan Balik Formatif & Supervisi Pembimbingan",
-    subtitle: "Eksplorasi Akselerasi Disertasi, Publikasi Scopus & Kelancaran Bimbingan",
-    themeDesc: "Fokus pada butir D5.1 s/d D6.5 (Integrasi tugas perkuliahan ke draf disertasi, target publikasi Scopus/Sinta 1, transparansi rubrik kelayakan, riwayat revisi, dan mitigasi kemacetan bimbingan).",
-    itemsRange: "Butir 21 s/d 30 (D5.1 – D6.5)",
-    colorHeader: "from-zinc-950 via-purple-950 to-amber-950 border-amber-500/50 text-amber-200",
-    badgeBg: "bg-amber-500/20 text-amber-300 border-amber-400/40",
-    accentBorder: "border-amber-500/40",
-    bgGlow: "rgba(245, 158, 11, 0.15)",
+  {
+    tier: 3,
+    name: "Tier 3: Construct Representation & Confidence",
+    icon: "fa-certificate",
+    color: "amber",
+    badgeBg: "bg-amber-100 text-amber-900 border-amber-200",
+    desc: "Menilai sejauh mana butir mewakili dimensi lingkungan belajar digital doktoral dan tingkat keyakinan atas respon yang diberikan.",
+    target: "Seberapa yakin Anda bahwa butir ini esensial mengukur kompetensi/lingkungan doktoral Anda?",
   },
-};
+];
 
-// DIGITAL SIGNATURE CANVAS COMPONENT
-function MagerSignaturePad({
+// CANVAS TANDA TANGAN DIGITAL
+function SignatureCanvas({
   onSave,
-  onClear,
   currentSignature,
 }: {
   onSave: (dataUrl: string) => void;
-  onClear: () => void;
   currentSignature: string | null;
 }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -77,7 +61,7 @@ function MagerSignaturePad({
     if (!ctx) return;
     ctx.lineWidth = 2.5;
     ctx.lineCap = "round";
-    ctx.strokeStyle = "#a855f7"; // Vibrant Royal Purple
+    ctx.strokeStyle = "#581c87"; // Deep Regal Purple
   }, []);
 
   useEffect(() => {
@@ -164,57 +148,54 @@ function MagerSignaturePad({
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    onClear();
+    onSave("");
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const result = event.target?.result as string;
-        const img = new Image();
-        img.onload = () => {
-          const canvas = canvasRef.current;
-          if (!canvas) return;
-          const ctx = canvas.getContext("2d");
-          if (!ctx) return;
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-          const hRatio = canvas.width / img.width;
-          const vRatio = canvas.height / img.height;
-          const ratio = Math.min(hRatio, vRatio, 1);
-          const centerShiftX = (canvas.width - img.width * ratio) / 2;
-          const centerShiftY = (canvas.height - img.height * ratio) / 2;
-          ctx.drawImage(
-            img,
-            0,
-            0,
-            img.width,
-            img.height,
-            centerShiftX,
-            centerShiftY,
-            img.width * ratio,
-            img.height * ratio
-          );
-          const dataUrl = canvas.toDataURL("image/png");
-          isInternalDrawingRef.current = false;
-          onSave(dataUrl);
-        };
-        img.src = result;
-      };
-      reader.readAsDataURL(file);
-      e.target.value = "";
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      alert("Hanya file gambar (PNG/JPG) yang diperbolehkan.");
+      return;
     }
+
+    if (file.size > 2 * 1024 * 1024) {
+      alert("Ukuran gambar maksimal 2MB.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const dataUrl = event.target?.result as string;
+      if (dataUrl) {
+        const canvas = canvasRef.current;
+        if (canvas) {
+          const ctx = canvas.getContext("2d");
+          if (ctx) {
+            const img = new Image();
+            img.onload = () => {
+              ctx.clearRect(0, 0, canvas.width, canvas.height);
+              ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+              onSave(dataUrl);
+            };
+            img.src = dataUrl;
+          }
+        }
+      }
+    };
+    reader.readAsDataURL(file);
+    e.target.value = "";
   };
 
   return (
-    <div className="space-y-3">
-      <div className="relative border-2 border-dashed border-purple-400/50 rounded-2xl bg-slate-950/90 overflow-hidden shadow-inner">
+    <div className="space-y-2.5">
+      <div className="relative border-2 border-dashed border-purple-300 rounded-2xl bg-white overflow-hidden shadow-inner">
         <canvas
           ref={canvasRef}
           width={520}
-          height={160}
-          className="w-full h-36 touch-none cursor-crosshair relative z-10"
+          height={140}
+          className="w-full h-32 touch-none cursor-crosshair relative z-10"
           onMouseDown={startDrawing}
           onMouseMove={draw}
           onMouseUp={stopDrawing}
@@ -225,12 +206,12 @@ function MagerSignaturePad({
         />
         {!currentSignature && (
           <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-slate-400 text-xs font-semibold p-4 text-center z-0">
-            <i className="fa-solid fa-signature text-purple-400 text-2xl mb-1.5 animate-pulse"></i>
-            <span>✍️ Goreskan Tanda Tangan Anda di sini (Layar Sentuh HP / Mouse Komputer) atau Unggah Foto di Bawah</span>
+            <i className="fa-solid fa-signature text-purple-500 text-2xl mb-1"></i>
+            <span>✍️ Goreskan Tanda Tangan Anda di sini (Layar Sentuh HP / Mouse Komputer)</span>
           </div>
         )}
         {currentSignature && (
-          <div className="absolute top-2 right-2 z-20 px-2.5 py-1 rounded-full bg-purple-500/90 text-white text-[10px] font-bold flex items-center gap-1.5 shadow-md pointer-events-none">
+          <div className="absolute top-2 right-2 z-20 px-2 py-0.5 rounded-full bg-emerald-600 text-white text-[10px] font-bold flex items-center gap-1 shadow-sm pointer-events-none">
             <i className="fa-solid fa-circle-check"></i>
             <span>Tanda Tangan Siap</span>
           </div>
@@ -238,14 +219,14 @@ function MagerSignaturePad({
       </div>
 
       {currentSignature && (
-        <div className="p-2.5 bg-slate-900/90 border border-purple-500/30 rounded-xl flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2.5">
-            <div className="w-16 h-8 bg-slate-950 border border-purple-500/40 rounded-lg overflow-hidden flex items-center justify-center p-0.5">
+        <div className="p-2 bg-purple-50 border border-purple-200 rounded-xl flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <div className="w-14 h-7 bg-white border border-purple-200 rounded-lg overflow-hidden flex items-center justify-center p-0.5">
               <img src={currentSignature} alt="TTD Preview" className="max-w-full max-h-full object-contain" />
             </div>
-            <span className="text-xs font-medium text-purple-200">Tanda Tangan Digital Terverifikasi</span>
+            <span className="text-xs font-semibold text-purple-900">Tanda Tangan Digital Terpasang</span>
           </div>
-          <span className="text-[11px] text-purple-400 font-bold flex items-center gap-1">
+          <span className="text-[11px] text-emerald-700 font-bold flex items-center gap-1">
             <i className="fa-solid fa-check-double"></i> Sah
           </span>
         </div>
@@ -255,12 +236,12 @@ function MagerSignaturePad({
         <button
           type="button"
           onClick={clearCanvas}
-          className="px-3.5 py-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-rose-300 border border-slate-700 transition active:scale-95 flex items-center gap-1.5 font-bold"
+          className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-rose-700 border border-slate-300 transition active:scale-95 flex items-center gap-1.5 font-bold text-[11px]"
         >
           <i className="fa-solid fa-rotate-left"></i> Bersihkan
         </button>
-        <label className="px-3.5 py-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-purple-300 border border-purple-500/30 cursor-pointer transition active:scale-95 flex items-center gap-1.5 font-bold">
-          <i className="fa-solid fa-upload"></i> Unggah Gambar TTD (PNG/JPG)
+        <label className="px-3 py-1.5 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-800 border border-purple-200 cursor-pointer transition active:scale-95 flex items-center gap-1.5 font-bold text-[11px]">
+          <i className="fa-solid fa-upload"></i> Unggah TTD (PNG/JPG)
           <input
             ref={fileInputRef}
             type="file"
@@ -280,7 +261,7 @@ export default function ThinkAloudMagerPage() {
   // FLOW & NAVIGATION STATE
   const [activeSession, setActiveSession] = useState<1 | 2 | 3>(1);
   const [sessionItemIdx, setSessionItemIdx] = useState<number>(0); // 0 to 9 within current session (10 items)
-  const [probingStep, setProbingStep] = useState<number>(1); // 1: Menentukan Skor Likert & Verbalisasi, 2: Tier 1 Semantic, 3: Tier 2 Retrieval, 4: Tier 3 Construct & Confidence
+  const [probingStep, setProbingStep] = useState<number>(1); // 1: Likert & Verbalisasi, 2: Tier 1 Semantic, 3: Tier 2 Retrieval, 4: Tier 3 Construct
   const [activeTab, setActiveTab] = useState<"profile" | "guidance" | "consent" | "session">("profile");
 
   // SESSION UNLOCK & TRANSITION STATE
@@ -288,31 +269,28 @@ export default function ThinkAloudMagerPage() {
   const [showSessionTransitionModal, setShowSessionTransitionModal] = useState<null | { fromSession: 1 | 2; toSession: 2 | 3 }>(null);
   const [showFinalCompletionModal, setShowFinalCompletionModal] = useState<boolean>(false);
 
-  // PARTICIPANT PROFILE (S3 DOKTORAL)
-  const [userName, setUserName] = useState("Kandidat Doktor S3");
+  // PARTICIPANT PROFILE (S3 DOKTORAL) — HARUS BENAR-BENAR KOSONG
+  const [userName, setUserName] = useState("");
   const [userNim, setUserNim] = useState("");
-  const [userCampus, setUserCampus] = useState("Universitas Negeri Jakarta");
-  const [userStudyProgram, setUserStudyProgram] = useState("S3 Penelitian dan Evaluasi Pendidikan (PEP)");
-  const [userResearchTopic, setUserResearchTopic] = useState("Pengembangan Model Pengukuran Lingkungan Belajar Digital Doktoral");
+  const [userCampus, setUserCampus] = useState("");
+  const [userStudyProgram, setUserStudyProgram] = useState("");
+  const [userResearchTopic, setUserResearchTopic] = useState("");
 
-  // INFORMED CONSENT STATE
+  // INFORMED CONSENT STATE — HARUS TIDAK TERISI AWAL
   const [consentApproved, setConsentApproved] = useState(false);
   const [consentSignature, setConsentSignature] = useState<string | null>(null);
   const [mandatoryConsents, setMandatoryConsents] = useState<Record<number, boolean>>({
-    1: true,
-    2: true,
-    3: true,
-    4: true,
-    5: true,
-    6: true,
+    1: false,
+    2: false,
+    3: false,
+    4: false,
+    5: false,
+    6: false,
   });
 
   // PARTICIPANT ANSWERS & PROGRESS
-  // Option choice per question: { [qId]: '1' | '2' | '3' | '4' | '5' }
   const [selectedOptions, setSelectedOptions] = useState<Record<number, string>>({});
-  // Confidence scale 1-5 per question: { [qId]: 1..5 }
   const [confidenceRatings, setConfidenceRatings] = useState<Record<number, number>>({});
-  // Completed probing steps: { [qId]: [1, 2, 3, 4] }
   const [completedSteps, setCompletedSteps] = useState<Record<number, number[]>>({});
 
   // AUDIO & RECORDING STATE
@@ -363,15 +341,14 @@ export default function ThinkAloudMagerPage() {
       if (savedTopic) setUserResearchTopic(savedTopic);
       if (savedConsent) setConsentApproved(true);
     } catch (e) {
-      console.warn("Storage access notice:", e);
+      console.warn("Gagal membaca localStorage:", e);
     }
   }, []);
 
-  // CURRENT QUESTIONS FOR ACTIVE SESSION
+  // CURRENT QUESTIONS FILTERED BY ACTIVE SESSION
   const currentSessionQuestions = MAGER_QUESTIONS.filter((q) => q.session === activeSession);
   const currentQ: MagerQuestion | undefined = currentSessionQuestions[sessionItemIdx];
 
-  // ACTIVE PROBING DETAILS
   const getActiveProbingDetails = () => {
     if (!currentQ) return { title: "", text: "", badge: "", tier: 1 };
     switch (probingStep) {
@@ -410,20 +387,21 @@ export default function ThinkAloudMagerPage() {
 
   const activeProbing = getActiveProbingDetails();
 
-  // TTS UTILITY
+  // TTS SYNTHESIS
   const speakText = (text: string, type: "statement" | "probing") => {
     if (typeof window === "undefined" || !("speechSynthesis" in window)) {
-      alert("Browser ini belum mendukung sintesis suara Text-To-Speech.");
+      alert("Browser Anda tidak mendukung fitur sintesis suara (Text-to-Speech).");
       return;
     }
 
-    if (isSpeaking) {
+    if (isSpeaking && speakingType === type) {
       window.speechSynthesis.cancel();
       setIsSpeaking(false);
       setSpeakingType(null);
       return;
     }
 
+    window.speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = "id-ID";
     utterance.rate = 0.95;
@@ -433,12 +411,10 @@ export default function ThinkAloudMagerPage() {
       setIsSpeaking(true);
       setSpeakingType(type);
     };
-
     utterance.onend = () => {
       setIsSpeaking(false);
       setSpeakingType(null);
     };
-
     utterance.onerror = () => {
       setIsSpeaking(false);
       setSpeakingType(null);
@@ -450,17 +426,176 @@ export default function ThinkAloudMagerPage() {
   const stopSpeaking = () => {
     if (typeof window !== "undefined" && "speechSynthesis" in window) {
       window.speechSynthesis.cancel();
-      setIsSpeaking(false);
-      setSpeakingType(null);
+    }
+    setIsSpeaking(false);
+    setSpeakingType(null);
+  };
+
+  // WEB SPEECH RECOGNITION SETUP
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+      if (SpeechRecognition) {
+        const recognition = new SpeechRecognition();
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        recognition.lang = "id-ID";
+
+        recognition.onresult = (event: any) => {
+          let interimTranscript = "";
+          for (let i = event.resultIndex; i < event.results.length; i++) {
+            const transcript = event.results[i][0].transcript;
+            if (event.results[i].isFinal) {
+              finalTranscriptRef.current += transcript + " ";
+            } else {
+              interimTranscript += transcript;
+            }
+          }
+          const liveText = finalTranscriptRef.current + interimTranscript;
+          setTranscriptText(liveText.trim());
+        };
+
+        recognition.onerror = (event: any) => {
+          console.warn("Speech recognition notice:", event.error);
+        };
+
+        recognitionRef.current = recognition;
+      }
+    }
+  }, []);
+
+  // START RECORDING
+  const startRecording = async () => {
+    try {
+      stopSpeaking();
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
+        },
+      });
+
+      try {
+        const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+        if (AudioContextClass) {
+          const audioCtx = new AudioContextClass();
+          const analyser = audioCtx.createAnalyser();
+          analyser.fftSize = 64;
+          const source = audioCtx.createMediaStreamSource(stream);
+          source.connect(analyser);
+          audioContextRef.current = audioCtx;
+          analyserRef.current = analyser;
+
+          const dataArray = new Uint8Array(analyser.frequencyBinCount);
+          const updateAudioMeter = () => {
+            if (!isRecordingRef.current) return;
+            analyser.getByteFrequencyData(dataArray);
+            let sum = 0;
+            for (let i = 0; i < dataArray.length; i++) sum += dataArray[i];
+            const avg = sum / dataArray.length;
+            setAudioLevel(Math.min(100, Math.round((avg / 128) * 100)));
+            requestAnimationFrame(updateAudioMeter);
+          };
+          requestAnimationFrame(updateAudioMeter);
+        }
+      } catch (e) {
+        console.warn("Visualizer audio meter init optional skip:", e);
+      }
+
+      let mime = "audio/webm";
+      if (MediaRecorder.isTypeSupported("audio/webm;codecs=opus")) {
+        mime = "audio/webm;codecs=opus";
+      } else if (MediaRecorder.isTypeSupported("audio/mp4")) {
+        mime = "audio/mp4";
+      } else if (MediaRecorder.isTypeSupported("audio/ogg")) {
+        mime = "audio/ogg";
+      }
+      recMimeRef.current = mime;
+
+      const mediaRecorder = new MediaRecorder(stream, { mimeType: mime });
+      mediaRecorderRef.current = mediaRecorder;
+      audioChunksRef.current = [];
+
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data && event.data.size > 0) {
+          audioChunksRef.current.push(event.data);
+        }
+      };
+
+      mediaRecorder.onstop = () => {
+        const audioBlobGenerated = new Blob(audioChunksRef.current, { type: recMimeRef.current });
+        setAudioBlob(audioBlobGenerated);
+        if (audioUrl) URL.revokeObjectURL(audioUrl);
+        setAudioUrl(URL.createObjectURL(audioBlobGenerated));
+
+        stream.getTracks().forEach((track) => track.stop());
+        if (audioContextRef.current) {
+          audioContextRef.current.close().catch(() => {});
+          audioContextRef.current = null;
+        }
+        setAudioLevel(0);
+      };
+
+      mediaRecorder.start(250);
+      setIsRecording(true);
+      isRecordingRef.current = true;
+      setRecordingTime(0);
+      setUploadSuccess(false);
+
+      timerRef.current = setInterval(() => {
+        setRecordingTime((prev) => prev + 1);
+      }, 1000);
+
+      if (recognitionRef.current) {
+        finalTranscriptRef.current = transcriptText ? transcriptText + " " : "";
+        try {
+          recognitionRef.current.start();
+        } catch (e) {
+          console.warn("Speech recognition already active:", e);
+        }
+      }
+    } catch (err: any) {
+      console.error("Gagal mengakses mikrofon:", err);
+      alert("Tidak dapat mengakses mikrofon. Pastikan Anda telah memberikan izin mikrofon pada browser Anda.");
     }
   };
 
-  // STEP & QUESTION PROGRESS HELPERS
+  // STOP RECORDING
+  const stopRecording = () => {
+    if (mediaRecorderRef.current && isRecording) {
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
+      isRecordingRef.current = false;
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.stop();
+        } catch (e) {}
+      }
+    }
+  };
+
+  const resetRecordingState = () => {
+    stopRecording();
+    stopSpeaking();
+    setAudioBlob(null);
+    if (audioUrl) URL.revokeObjectURL(audioUrl);
+    setAudioUrl(null);
+    setTranscriptText("");
+    finalTranscriptRef.current = "";
+    setRecordingTime(0);
+    setUploadSuccess(false);
+  };
+
   const markStepDone = (qId: number, stepNum: number) => {
     setCompletedSteps((prev) => {
-      const current = prev[qId] || [];
-      if (!current.includes(stepNum)) {
-        return { ...prev, [qId]: [...current, stepNum] };
+      const existing = prev[qId] || [];
+      if (!existing.includes(stepNum)) {
+        return { ...prev, [qId]: [...existing, stepNum] };
       }
       return prev;
     });
@@ -470,234 +605,52 @@ export default function ThinkAloudMagerPage() {
     return (completedSteps[qId] || []).includes(stepNum);
   };
 
-  const isQuestionComplete = (qId: number) => {
-    const steps = completedSteps[qId] || [];
-    return steps.length > 0 || (selectedOptions[qId] !== undefined);
-  };
-
-  // CHECK ALL MANDATORY CONSENTS
-  const allMandatoryChecked = Object.values(mandatoryConsents).every((v) => v === true);
-
-  // APPROVE CONSENT
-  const handleApproveConsent = async () => {
-    if (!allMandatoryChecked) {
-      alert("Mohon centang seluruh butir persetujuan Informed Consent.");
-      return;
-    }
-    if (!consentSignature) {
-      alert("Mohon bubuhkan tanda tangan digital Anda terlebih dahulu.");
-      return;
-    }
-
-    try {
-      localStorage.setItem("mager_consentApproved", "true");
-      localStorage.setItem("mager_userName", userName);
-      localStorage.setItem("mager_userCampus", userCampus);
-      localStorage.setItem("mager_userNim", userNim);
-      localStorage.setItem("mager_userStudyProgram", userStudyProgram);
-      localStorage.setItem("mager_userResearchTopic", userResearchTopic);
-
-      // Save consent to server
-      await fetch("/api/consent", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userId: userNim || `mager_${Date.now()}`,
-          userName: userName || "Kandidat Doktor S3",
-          userCampus: userCampus,
-          userNim: userNim,
-          sessionNo: 1,
-          respondentLevel: "Mahasiswa Doktoral S3 (MAGER)",
-          studyProgram: userStudyProgram,
-          signatureDataUrl: consentSignature,
-        }),
-      });
-    } catch (err) {
-      console.warn("Gagal sinkron consent ke server:", err);
-    }
-
-    setConsentApproved(true);
-    setActiveTab("session");
-  };
-
-  // AUDIO RECORDING FUNCTIONS (EXACTLY ALIGNED WITH MADEL5C ENGINE)
-  const startRecording = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      audioChunksRef.current = [];
-      finalTranscriptRef.current = "";
-      setTranscriptText("");
-      setAudioBlob(null);
-      setAudioUrl(null);
-      setUploadSuccess(false);
-
-      // Audio Analyzer for Visualizer
-      try {
-        const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
-        const audioCtx = new AudioContextClass();
-        audioContextRef.current = audioCtx;
-        const source = audioCtx.createMediaStreamSource(stream);
-        const analyser = audioCtx.createAnalyser();
-        analyser.fftSize = 64;
-        source.connect(analyser);
-        analyserRef.current = analyser;
-
-        const dataArray = new Uint8Array(analyser.frequencyBinCount);
-        const updateLevel = () => {
-          if (!isRecordingRef.current) return;
-          analyser.getByteFrequencyData(dataArray);
-          let sum = 0;
-          for (let i = 0; i < dataArray.length; i++) sum += dataArray[i];
-          const avg = sum / dataArray.length;
-          setAudioLevel(Math.min(100, Math.round((avg / 255) * 100)));
-          requestAnimationFrame(updateLevel);
-        };
-        requestAnimationFrame(updateLevel);
-      } catch (e) {
-        console.warn("Analyser init error:", e);
-      }
-
-      // MediaRecorder dengan mimeType yang didukung browser
-      const options: MediaRecorderOptions =
-        MediaRecorder.isTypeSupported("audio/webm;codecs=opus") ? { mimeType: "audio/webm;codecs=opus" }
-        : MediaRecorder.isTypeSupported("audio/webm") ? { mimeType: "audio/webm" }
-        : MediaRecorder.isTypeSupported("audio/mp4") ? { mimeType: "audio/mp4" }
-        : {};
-      const mediaRecorder = new MediaRecorder(stream, options);
-      mediaRecorderRef.current = mediaRecorder;
-      recMimeRef.current = mediaRecorder.mimeType || options.mimeType || "audio/webm";
-
-      mediaRecorder.ondataavailable = (event) => {
-        if (event.data && event.data.size > 0) audioChunksRef.current.push(event.data);
-      };
-
-      mediaRecorder.onstop = () => {
-        const blob = new Blob(audioChunksRef.current, { type: recMimeRef.current });
-        setAudioBlob(blob);
-        setAudioUrl(URL.createObjectURL(blob));
-        stream.getTracks().forEach((track) => track.stop());
-      };
-
-      mediaRecorder.start(250);
-      setIsRecording(true);
-      isRecordingRef.current = true;
-      setRecordingTime(0);
-
-      timerRef.current = setInterval(() => {
-        setRecordingTime((t) => t + 1);
-      }, 1000);
-
-      // Web Speech API Live Voice-to-Text
-      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-      if (SpeechRecognition) {
-        const recognition = new SpeechRecognition();
-        recognition.continuous = true;
-        recognition.interimResults = true;
-        recognition.lang = "id-ID";
-
-        recognition.onresult = (event: any) => {
-          let interim = "";
-          for (let i = event.resultIndex; i < event.results.length; ++i) {
-            if (event.results[i].isFinal) {
-              finalTranscriptRef.current += event.results[i][0].transcript + " ";
-            } else {
-              interim += event.results[i][0].transcript;
-            }
-          }
-          setTranscriptText(finalTranscriptRef.current + interim);
-        };
-
-        recognition.onerror = (e: any) => console.warn("SpeechRec error:", e);
-        recognition.start();
-        recognitionRef.current = recognition;
-      }
-    } catch (err) {
-      console.error("Gagal akses mikrofon:", err);
-      alert("Izin akses mikrofon diperlukan untuk merekam respons verbal Think-Aloud. Anda juga dapat mengetikkan teks tanggapan secara manual pada kotak transkrip.");
-    }
-  };
-
-  const stopRecording = () => {
-    try {
-      if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
-        mediaRecorderRef.current.stop();
-      }
-    } catch (e) {}
-    if (recognitionRef.current) {
-      try { recognitionRef.current.onend = null; recognitionRef.current.stop(); } catch (e) {}
-    }
-    if (timerRef.current) clearInterval(timerRef.current);
-    if (audioContextRef.current) audioContextRef.current.close().catch(() => {});
-
-    setIsRecording(false);
-    isRecordingRef.current = false;
-    setAudioLevel(0);
-  };
-
-  const resetRecordingState = () => {
-    setAudioBlob(null);
-    setAudioUrl(null);
-    setTranscriptText("");
-    setUploadSuccess(false);
-    setRecordingTime(0);
-    audioChunksRef.current = [];
-  };
-
-  // UPLOAD AUDIO & TRANSCRIPT DIRECTLY TO ADMIN PANEL (SAFE & ROBUST)
+  // UPLOAD AUDIO / TRANSKRIP KE BACKEND
   const uploadAudioToServer = async () => {
-    // KUNCI KEAMANAN: Hentikan perekaman otomatis jika responden lupa klik stop sebelum submit
-    if (isRecording || (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive")) {
-      stopRecording();
-      // Berikan jeda 300ms agar event onstop selesai membentuk audio chunk
-      await new Promise((r) => setTimeout(r, 300));
-    }
-
-    const recordedBlob: Blob | null =
-      audioChunksRef.current.length > 0
-        ? new Blob(audioChunksRef.current, { type: recMimeRef.current })
-        : audioBlob;
-    const hasAudio = !!recordedBlob && recordedBlob.size > 0;
-    const hasText = transcriptText.trim().length > 0;
-
-    if (!hasAudio && !hasText) {
-      alert("⚠️ Silakan rekam suara Anda ATAU ketik teks tanggapan elaborasi pada kotak transkrip terlebih dahulu sebelum mengirim!");
-      return;
-    }
     if (!currentQ) return;
+    if (isRecording) stopRecording();
 
     setIsUploading(true);
     try {
-      const selectedOptVal = selectedOptions[currentQ.id];
-      const selectedOptObj = currentQ.options.find((o) => o.label === selectedOptVal);
-      const selectedOptText = selectedOptVal && selectedOptObj
-        ? `Skor ${selectedOptVal} — ${selectedOptObj.name} (${selectedOptObj.text})`
-        : selectedOptVal ? `Skor ${selectedOptVal}` : "Belum Memilih Skor";
+      await new Promise((resolve) => setTimeout(resolve, 350));
 
-      const confidenceVal = confidenceRatings[currentQ.id];
-      const confidenceText = confidenceVal ? `${confidenceVal}/5` : "Belum dinilai";
-      const finalTranscript = transcriptText.trim()
-        ? `[Tingkat Keyakinan: ${confidenceText}] — ${transcriptText.trim()}`
-        : `[Tingkat Keyakinan: ${confidenceText}] — [Respon Suara Terkirim Langsung ke Panel Admin]`;
+      let payloadBlob = audioBlob;
+      if (!payloadBlob && audioChunksRef.current.length > 0) {
+        payloadBlob = new Blob(audioChunksRef.current, { type: recMimeRef.current });
+      }
 
-      const fileToUpload = hasAudio && recordedBlob
-        ? recordedBlob
-        : new Blob(["[Respon Teks Manual Tanpa Berkas Audio]"], { type: "audio/webm" });
-      const ext = recMimeRef.current.includes("mp4") ? "m4a" : "webm";
+      const finalTranscript = transcriptText.trim() || finalTranscriptRef.current.trim();
 
+      if (!payloadBlob || payloadBlob.size === 0) {
+        if (!finalTranscript) {
+          alert("Mohon rekam suara terlebih dahulu atau ketik transkrip pemikiran Anda sebelum mengirim.");
+          setIsUploading(false);
+          return;
+        }
+        payloadBlob = new Blob([finalTranscript], { type: "text/plain" });
+      }
+
+      const userId = userNim.trim() || userName.trim().toLowerCase().replace(/\s+/g, "_") || "mhs_doktor_s3";
       const formData = new FormData();
-      formData.append("audio", fileToUpload, `ThinkAloud_MAGER_S${activeSession}_${currentQ.code}_P${probingStep}.${ext}`);
-      formData.append("isTextOnly", hasAudio ? "false" : "true");
-      formData.append("userId", userNim || `mager_resp_${Date.now()}`);
-      formData.append("userName", userName || "Kandidat Doktor S3");
-      formData.append("userCampus", userCampus || "LPTK Universitas");
+      const extension = payloadBlob.type.includes("webm")
+        ? "webm"
+        : payloadBlob.type.includes("mp4")
+        ? "mp4"
+        : payloadBlob.type.includes("ogg")
+        ? "ogg"
+        : "txt";
+
+      formData.append("audio", payloadBlob, `think_aloud_mager_${userId}_item${currentQ.id}_step${probingStep}.${extension}`);
+      formData.append("userId", userId);
+      formData.append("userName", userName.trim() || "Kandidat Doktor S3");
+      formData.append("userCampus", userCampus.trim() || "Universitas Doktoral");
+      formData.append("studyProgram", userStudyProgram.trim() || "Doktoral S3");
       formData.append("respondentLevel", "Mahasiswa Doktoral S3 (MAGER)");
-      formData.append("studyProgram", userStudyProgram || "S3 Penelitian dan Evaluasi Pendidikan (PEP)");
       formData.append("sessionNo", activeSession.toString());
-      formData.append("itemNo", (sessionItemIdx + 1).toString());
+      formData.append("itemNo", currentQ.id.toString());
       formData.append("sjtId", currentQ.code);
       formData.append("probingStep", probingStep.toString());
-      formData.append("questionTitle", activeProbing.title);
-      formData.append("selectedOption", selectedOptText);
+      formData.append("selectedOption", selectedOptions[currentQ.id] || "-");
       formData.append("duration", recordingTime.toString());
       formData.append("transcript", finalTranscript);
 
@@ -712,13 +665,12 @@ export default function ThinkAloudMagerPage() {
         setUploadSuccess(true);
         markStepDone(currentQ.id, probingStep);
 
-        // Kosongkan buffer rekaman agar pertanyaan probing berikutnya bersih
         finalTranscriptRef.current = "";
         resetRecordingState();
 
         if (probingStep < 4) {
           const nextStep = probingStep + 1;
-          alert(`✅ Respon Pertanyaan Probing ${probingStep} Berhasil Terkirim Langsung ke Panel Admin!\nOtomatis beralih ke Pertanyaan Probing ${nextStep}.`);
+          alert(`✅ Respon Pertanyaan Probing ${probingStep} Berhasil Terkirim ke Panel Admin!\nOtomatis beralih ke Pertanyaan Probing ${nextStep}.`);
           setProbingStep(nextStep);
         } else {
           alert(`🎉 Selamat! Seluruh tahap probing untuk Butir #${sessionItemIdx + 1} (${currentQ.code}) telah lengkap terkirim ke Panel Admin!`);
@@ -758,10 +710,70 @@ export default function ThinkAloudMagerPage() {
     }
   };
 
+  // VALIDASI KETAT PENGUNCIAN LANGKAH (TIDAK BOLEH MELOMPAT)
+  const validateCurrentStepCompleted = (): boolean => {
+    if (!currentQ) return false;
+
+    // STEP 1: Wajib memilih skor Likert (1-5) dan wajib ada respon suara/transkrip
+    if (probingStep === 1) {
+      if (!selectedOptions[currentQ.id]) {
+        alert("⚠️ Langkah Terkunci: Anda wajib menentukan skor pilihan Anda (1: Sangat Tidak Setuju s.d. 5: Sangat Setuju) terlebih dahulu!");
+        return false;
+      }
+      const hasResponse = isStepDone(currentQ.id, 1) || uploadSuccess || audioBlob || transcriptText.trim().length > 0;
+      if (!hasResponse) {
+        alert("⚠️ Langkah Terkunci: Anda wajib menyuarakan (rekam suara) atau mengetikkan pertimbangan kognitif yang melandasi pilihan skor Anda sebelum melanjutkan!");
+        return false;
+      }
+      return true;
+    }
+
+    // STEP 2: Wajib ada respon Tier 1
+    if (probingStep === 2) {
+      const hasResponse = isStepDone(currentQ.id, 2) || uploadSuccess || audioBlob || transcriptText.trim().length > 0;
+      if (!hasResponse) {
+        alert("⚠️ Langkah Terkunci: Silakan suarakan pemahaman makna dan kejelasan istilah (Tier 1) sebelum melanjutkan ke langkah berikutnya!");
+        return false;
+      }
+      return true;
+    }
+
+    // STEP 3: Wajib ada respon Tier 2
+    if (probingStep === 3) {
+      const hasResponse = isStepDone(currentQ.id, 3) || uploadSuccess || audioBlob || transcriptText.trim().length > 0;
+      if (!hasResponse) {
+        alert("⚠️ Langkah Terkunci: Silakan ceritakan pengalaman nyata situasi perkuliahan S3 Anda (Tier 2) sebelum melanjutkan ke langkah berikutnya!");
+        return false;
+      }
+      return true;
+    }
+
+    // STEP 4: Wajib memilih tingkat keyakinan (1-5) dan ada respon Tier 3
+    if (probingStep === 4) {
+      if (!confidenceRatings[currentQ.id]) {
+        alert("⚠️ Langkah Terkunci: Silakan tentukan rating keyakinan Anda (1 s.d. 5 Bintang) pada butir ini!");
+        return false;
+      }
+      const hasResponse = isStepDone(currentQ.id, 4) || uploadSuccess || audioBlob || transcriptText.trim().length > 0;
+      if (!hasResponse) {
+        alert("⚠️ Langkah Terkunci: Silakan suarakan justifikasi representasi konstruk dan keyakinan Anda (Tier 3) sebelum menyelesaikan butir ini!");
+        return false;
+      }
+      return true;
+    }
+
+    return true;
+  };
+
   // PROCEED TO NEXT ITEM OR NEXT STEP
   const handleNextStep = async () => {
     stopSpeaking();
     if (!currentQ) return;
+
+    // KUNCI: Validasi langkah tidak boleh dilompati
+    if (!validateCurrentStepCompleted()) {
+      return;
+    }
 
     const hasUnsent = (audioBlob || audioChunksRef.current.length > 0 || transcriptText.trim().length > 0) && !uploadSuccess;
     if (hasUnsent) {
@@ -771,6 +783,8 @@ export default function ThinkAloudMagerPage() {
         return;
       }
     }
+
+    markStepDone(currentQ.id, probingStep);
 
     if (probingStep < 4) {
       setProbingStep((s) => s + 1);
@@ -796,207 +810,259 @@ export default function ThinkAloudMagerPage() {
     }
   };
 
+  // NAVIGASI STEP LANGSUNG (DENGAN KUNCI PENGAMAN)
+  const handleSelectProbingStep = (stepNum: number) => {
+    if (!currentQ) return;
+    // Boleh kembali ke langkah yang sudah pernah dilalui
+    if (stepNum <= probingStep) {
+      stopSpeaking();
+      setProbingStep(stepNum);
+      resetRecordingState();
+      return;
+    }
+    // Jika ingin maju ke langkah berikutnya, wajib validasi langkah saat ini selesai
+    if (stepNum === probingStep + 1) {
+      if (validateCurrentStepCompleted()) {
+        stopSpeaking();
+        markStepDone(currentQ.id, probingStep);
+        setProbingStep(stepNum);
+        resetRecordingState();
+      }
+      return;
+    }
+    // Melompati lebih dari 1 langkah dilarang keras
+    alert(`⚠️ Langkah Terkunci: Selesaikan terlebih dahulu Tahap ${probingStep} secara berurutan!`);
+  };
+
+  const allMandatoryChecked = Object.values(mandatoryConsents).every(Boolean);
   const activeSessionDetail = SESSION_DETAILS[activeSession];
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-purple-600 selection:text-white pb-20">
-      {/* ── TOP NAVBAR ── */}
-      <header className="sticky top-0 z-40 bg-slate-950/85 backdrop-blur-md border-b border-purple-500/20 px-4 lg:px-8 py-3.5 flex items-center justify-between shadow-2xl">
-        <div className="flex items-center gap-3">
+    <div className="min-h-screen bg-[#F8F9FA] text-slate-800 flex flex-col font-sans selection:bg-purple-600 selection:text-white pb-12">
+      
+      {/* ── TOP NAVBAR (SLIM & FIT TO SCREEN) ── */}
+      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 px-4 lg:px-8 py-2.5 flex items-center justify-between shadow-sm">
+        <div className="flex items-center gap-2.5">
           <button
             onClick={() => router.push("/")}
-            className="w-9 h-9 rounded-xl bg-purple-950/60 border border-purple-500/40 hover:bg-purple-900/80 text-purple-300 flex items-center justify-center transition active:scale-95 shadow-md"
+            className="w-8 h-8 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-700 flex items-center justify-center transition border border-purple-200"
             title="Kembali ke Beranda"
           >
-            <i className="fa-solid fa-arrow-left text-sm"></i>
+            <i className="fa-solid fa-arrow-left text-xs"></i>
           </button>
           <div>
             <div className="flex items-center gap-2">
-              <span className="px-2 py-0.5 rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-black text-[9px] uppercase tracking-wider shadow-sm">
-                S3 Doktoral
+              <span className="text-xs md:text-sm font-black text-slate-900 uppercase tracking-tight">
+                THINK A LOUD MAGER
               </span>
-              <span className="text-[11px] font-black text-purple-300 uppercase tracking-widest hidden sm:inline">
-                Fase 2 Pembakuan Disertasi
+              <span className="px-2 py-0.5 rounded-full bg-purple-100 text-purple-800 border border-purple-300 text-[8px] md:text-[9px] font-black uppercase">
+                DOKTORAL S3 · 3-TIER
               </span>
             </div>
-            <h1 className="text-sm sm:text-base font-black text-white tracking-tight flex items-center gap-1.5">
-              <span>THINK A LOUD MAGER</span>
-              <span className="text-purple-400 font-extrabold text-xs hidden md:inline">
-                · Skala Lingkungan Belajar Digital Doktoral (LBD-S3)
-              </span>
-            </h1>
+            <span className="text-[10px] text-slate-500 font-semibold hidden sm:block">
+              Instrumen Lingkungan Belajar Digital Doktoral (LBD-S3 / MADEL-S3)
+            </span>
           </div>
         </div>
 
-        {/* TOP STATUS TABS */}
-        <div className="flex items-center gap-1.5 bg-slate-900/90 p-1 rounded-2xl border border-purple-500/30 text-xs">
+        {/* TAB STEPPER HEADER */}
+        <div className="flex items-center gap-1.5 text-xs">
           <button
             onClick={() => setActiveTab("profile")}
-            className={`px-3 py-1.5 rounded-xl font-bold transition flex items-center gap-1.5 ${
+            className={`px-2.5 py-1.5 rounded-lg font-bold transition flex items-center gap-1.5 text-[11px] ${
               activeTab === "profile"
-                ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md font-black"
-                : "text-slate-400 hover:text-white"
+                ? "bg-purple-700 text-white shadow-sm font-black"
+                : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
             }`}
           >
-            <i className="fa-solid fa-user-graduate text-[11px]"></i>
-            <span className="hidden sm:inline">Profil</span>
-          </button>
-          <button
-            onClick={() => setActiveTab("guidance")}
-            className={`px-3 py-1.5 rounded-xl font-bold transition flex items-center gap-1.5 ${
-              activeTab === "guidance"
-                ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md font-black"
-                : "text-slate-400 hover:text-white"
-            }`}
-          >
-            <i className="fa-solid fa-book-open-reader text-[11px]"></i>
-            <span className="hidden sm:inline">Panduan</span>
-          </button>
-          <button
-            onClick={() => setActiveTab("consent")}
-            className={`px-3 py-1.5 rounded-xl font-bold transition flex items-center gap-1.5 ${
-              activeTab === "consent"
-                ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md font-black"
-                : "text-slate-400 hover:text-white"
-            }`}
-          >
-            <i className="fa-solid fa-file-signature text-[11px]"></i>
-            <span className="hidden sm:inline">Informed Consent</span>
-            {consentApproved && <i className="fa-solid fa-circle-check text-emerald-400 text-[10px]"></i>}
+            <i className="fa-solid fa-id-card text-[10px]"></i>
+            <span className="hidden sm:inline">1. Profil S3</span>
+            {userName.trim() && userCampus.trim() && <i className="fa-solid fa-circle-check text-emerald-400 text-[9px]"></i>}
           </button>
           <button
             onClick={() => {
-              if (!consentApproved) {
-                alert("Mohon setujui dan tanda tangani Informed Consent terlebih dahulu sebelum memulai sesi wawancara.");
+              if (!userName.trim() || !userCampus.trim() || !userStudyProgram.trim()) {
+                alert("Mohon lengkapi data profil Nama, Universitas, dan Program Studi terlebih dahulu!");
+                setActiveTab("profile");
+                return;
+              }
+              setActiveTab("guidance");
+            }}
+            className={`px-2.5 py-1.5 rounded-lg font-bold transition flex items-center gap-1.5 text-[11px] ${
+              activeTab === "guidance"
+                ? "bg-purple-700 text-white shadow-sm font-black"
+                : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+            }`}
+          >
+            <i className="fa-solid fa-book text-[10px]"></i>
+            <span className="hidden sm:inline">2. Panduan</span>
+          </button>
+          <button
+            onClick={() => {
+              if (!userName.trim() || !userCampus.trim() || !userStudyProgram.trim()) {
+                alert("Mohon lengkapi data profil terlebih dahulu!");
+                setActiveTab("profile");
+                return;
+              }
+              setActiveTab("consent");
+            }}
+            className={`px-2.5 py-1.5 rounded-lg font-bold transition flex items-center gap-1.5 text-[11px] ${
+              activeTab === "consent"
+                ? "bg-purple-700 text-white shadow-sm font-black"
+                : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+            }`}
+          >
+            <i className="fa-solid fa-file-signature text-[10px]"></i>
+            <span className="hidden sm:inline">3. Persetujuan</span>
+            {consentApproved && <i className="fa-solid fa-circle-check text-emerald-400 text-[9px]"></i>}
+          </button>
+          <button
+            onClick={() => {
+              if (!consentApproved || !consentSignature) {
+                alert("Mohon setujui dan bubuhkan tanda tangan Informed Consent terlebih dahulu sebelum memulai sesi wawancara.");
                 setActiveTab("consent");
                 return;
               }
               setActiveTab("session");
             }}
-            className={`px-3.5 py-1.5 rounded-xl font-bold transition flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-lg font-bold transition flex items-center gap-1.5 text-[11px] ${
               activeTab === "session"
-                ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md font-black"
-                : "text-slate-400 hover:text-white"
+                ? "bg-gradient-to-r from-purple-700 to-indigo-700 text-white shadow-sm font-black"
+                : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
             }`}
           >
-            <i className="fa-solid fa-microphone-lines text-[11px]"></i>
-            <span>Mulai Sesi</span>
+            <i className="fa-solid fa-microphone-lines text-[10px]"></i>
+            <span>4. Sesi Wawancara</span>
           </button>
         </div>
       </header>
 
-      {/* ── MAIN CONTENT CONTAINER ── */}
-      <main className="flex-1 max-w-6xl w-full mx-auto px-4 py-6">
+      {/* ── MAIN CONTENT CONTAINER (COMPACT & FIT TO SCREEN) ── */}
+      <main className="flex-1 max-w-6xl w-full mx-auto px-3 sm:px-4 py-4">
         <AnimatePresence mode="wait">
-          {/* TAB 1: PARTICIPANT PROFILE */}
+          
+          {/* ══════════════════════════════════════════════════════════
+              TAB 1: PROFIL MAHASISWA DOKTORAL S3 (FORM BERSIH TANPA ISI AWAL)
+          ══════════════════════════════════════════════════════════ */}
           {activeTab === "profile" && (
             <motion.div
               key="profile"
-              initial={{ opacity: 0, y: 15 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
-              className="space-y-6"
+              exit={{ opacity: 0, y: -10 }}
+              className="space-y-4"
             >
-              <div className="p-6 md:p-8 rounded-3xl bg-gradient-to-br from-indigo-950/70 via-slate-900 to-slate-950 border border-purple-500/30 shadow-2xl relative overflow-hidden">
-                <div className="max-w-2xl">
-                  <span className="px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 border border-purple-400/30 text-xs font-black uppercase tracking-wider inline-flex items-center gap-1.5 mb-3">
+              <div className="p-4 md:p-5 rounded-2xl bg-white border border-purple-200 shadow-sm relative overflow-hidden">
+                <div className="max-w-3xl">
+                  <span className="px-2.5 py-0.5 rounded-full bg-purple-100 text-purple-900 border border-purple-300 text-[10px] font-black uppercase tracking-wider inline-flex items-center gap-1.5 mb-2">
                     <i className="fa-solid fa-id-card"></i> Identitas Responden Wawancara Doktoral (S3)
                   </span>
-                  <h2 className="text-xl md:text-2xl font-black text-white tracking-tight">
+                  <h2 className="text-lg md:text-xl font-black text-slate-900 tracking-tight">
                     Pengisian Data Partisipan Think-Aloud Protocol MAGER
                   </h2>
-                  <p className="text-slate-300 text-xs md:text-sm mt-2 leading-relaxed">
-                    Data identitas ini digunakan untuk pemetaan demografis dan verifikasi proses wawancara kognitif kualitatif pada instrumen <b>Lingkungan Belajar Digital Doktoral (LBD-S3 / MADEL-S3)</b>. Seluruh data dijamin kerahasiaannya sesuai kode etik penelitian akademik.
+                  <p className="text-slate-600 text-xs mt-1 leading-relaxed">
+                    Data identitas ini digunakan untuk pemetaan demografis dan verifikasi wawancara kognitif pada instrumen <b>Lingkungan Belajar Digital Doktoral (LBD-S3 / MADEL-S3)</b>. Seluruh data dijamin kerahasiaannya.
                   </p>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <div className="p-5 md:p-6 rounded-2xl bg-slate-900/90 border border-purple-500/20 shadow-xl space-y-4">
-                  <h3 className="text-sm font-black text-purple-300 uppercase tracking-wider flex items-center gap-2">
-                    <i className="fa-solid fa-user-tie"></i> Data Akademik Mahasiswa
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="p-4 md:p-5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-3">
+                  <h3 className="text-xs font-black text-purple-900 uppercase tracking-wider flex items-center gap-1.5 border-b pb-2">
+                    <i className="fa-solid fa-user-graduate text-purple-700"></i> Data Akademik Mahasiswa S3
                   </h3>
 
                   <div>
-                    <label className="block text-xs font-bold text-slate-300 mb-1.5">
-                      Nama Lengkap & Gelar (jika ada):
+                    <label className="block text-xs font-bold text-slate-700 mb-1">
+                      Nama Lengkap & Gelar: <span className="text-rose-500">*</span>
                     </label>
                     <input
                       type="text"
                       value={userName}
                       onChange={(e) => setUserName(e.target.value)}
-                      placeholder="Contoh: Bima Ardiansyah, S.Pd., M.Pd."
-                      className="w-full px-4 py-2.5 bg-slate-950 border border-purple-500/30 focus:border-purple-400 rounded-xl text-sm font-medium text-white placeholder-slate-500 outline-none transition"
+                      placeholder="Masukkan nama lengkap Anda..."
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-300 focus:bg-white focus:border-purple-600 rounded-xl text-xs md:text-sm font-medium text-slate-900 placeholder-slate-400 outline-none transition"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-slate-300 mb-1.5">
-                      NIM / NPM / ID Mahasiswa S3:
+                    <label className="block text-xs font-bold text-slate-700 mb-1">
+                      Nomor Induk Mahasiswa (NIM / NPM):
                     </label>
                     <input
                       type="text"
                       value={userNim}
                       onChange={(e) => setUserNim(e.target.value)}
-                      placeholder="Contoh: 1107722001"
-                      className="w-full px-4 py-2.5 bg-slate-950 border border-purple-500/30 focus:border-purple-400 rounded-xl text-sm font-medium text-white placeholder-slate-500 outline-none transition"
+                      placeholder="Masukkan NIM doktoral Anda (opsional)..."
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-300 focus:bg-white focus:border-purple-600 rounded-xl text-xs md:text-sm font-medium text-slate-900 placeholder-slate-400 outline-none transition"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-slate-300 mb-1.5">
-                      Universitas / Perguruan Tinggi Penyelenggara S3:
+                    <label className="block text-xs font-bold text-slate-700 mb-1">
+                      Nama Universitas / Pascasarjana: <span className="text-rose-500">*</span>
                     </label>
                     <input
                       type="text"
                       value={userCampus}
                       onChange={(e) => setUserCampus(e.target.value)}
-                      placeholder="Contoh: Universitas Negeri Jakarta (UNJ)"
-                      className="w-full px-4 py-2.5 bg-slate-950 border border-purple-500/30 focus:border-purple-400 rounded-xl text-sm font-medium text-white placeholder-slate-500 outline-none transition"
+                      placeholder="Contoh: Universitas Negeri Jakarta / Universitas Indonesia..."
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-300 focus:bg-white focus:border-purple-600 rounded-xl text-xs md:text-sm font-medium text-slate-900 placeholder-slate-400 outline-none transition"
                     />
                   </div>
                 </div>
 
-                <div className="p-5 md:p-6 rounded-2xl bg-slate-900/90 border border-purple-500/20 shadow-xl space-y-4 flex flex-col justify-between">
-                  <div className="space-y-4">
-                    <h3 className="text-sm font-black text-purple-300 uppercase tracking-wider flex items-center gap-2">
-                      <i className="fa-solid fa-graduation-cap"></i> Program Studi & Fokus Disertasi
-                    </h3>
+                <div className="p-4 md:p-5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-3">
+                  <h3 className="text-xs font-black text-purple-900 uppercase tracking-wider flex items-center gap-1.5 border-b pb-2">
+                    <i className="fa-solid fa-graduation-cap text-purple-700"></i> Fokus Riset & Program Studi
+                  </h3>
 
-                    <div>
-                      <label className="block text-xs font-bold text-slate-300 mb-1.5">
-                        Program Studi S3:
-                      </label>
-                      <input
-                        type="text"
-                        value={userStudyProgram}
-                        onChange={(e) => setUserStudyProgram(e.target.value)}
-                        placeholder="Contoh: S3 Penelitian dan Evaluasi Pendidikan (PEP)"
-                        className="w-full px-4 py-2.5 bg-slate-950 border border-purple-500/30 focus:border-purple-400 rounded-xl text-sm font-medium text-white placeholder-slate-500 outline-none transition"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-bold text-slate-300 mb-1.5">
-                        Topik / Judul Sementara Disertasi:
-                      </label>
-                      <textarea
-                        rows={3}
-                        value={userResearchTopic}
-                        onChange={(e) => setUserResearchTopic(e.target.value)}
-                        placeholder="Contoh: Pengembangan Instrumen Lingkungan Belajar Digital Doktoral..."
-                        className="w-full px-4 py-2 bg-slate-950 border border-purple-500/30 focus:border-purple-400 rounded-xl text-xs md:text-sm font-medium text-white placeholder-slate-500 outline-none transition resize-none"
-                      />
-                    </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">
+                      Program Studi Doktoral: <span className="text-rose-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={userStudyProgram}
+                      onChange={(e) => setUserStudyProgram(e.target.value)}
+                      placeholder="Contoh: S3 Penelitian & Evaluasi Pendidikan / S3 Ilmu Komputer..."
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-300 focus:bg-white focus:border-purple-600 rounded-xl text-xs md:text-sm font-medium text-slate-900 placeholder-slate-400 outline-none transition"
+                    />
                   </div>
 
-                  <div className="pt-4 border-t border-slate-800 flex justify-end">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">
+                      Topik Disertasi / Bidang Fokus Riset:
+                    </label>
+                    <textarea
+                      rows={3}
+                      value={userResearchTopic}
+                      onChange={(e) => setUserResearchTopic(e.target.value)}
+                      placeholder="Tuliskan gambaran singkat topik disertasi yang sedang Anda teliti..."
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-300 focus:bg-white focus:border-purple-600 rounded-xl text-xs font-medium text-slate-900 placeholder-slate-400 outline-none transition resize-none"
+                    />
+                  </div>
+
+                  <div className="pt-2">
                     <button
-                      onClick={() => setActiveTab("guidance")}
-                      className="px-6 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white rounded-xl font-black text-xs uppercase tracking-wider shadow-lg shadow-purple-900/40 transition active:scale-95 flex items-center gap-2"
+                      onClick={() => {
+                        if (!userName.trim() || !userCampus.trim() || !userStudyProgram.trim()) {
+                          alert("Mohon isi Nama, Universitas, dan Program Studi terlebih dahulu sebelum melanjutkan!");
+                          return;
+                        }
+                        try {
+                          localStorage.setItem("mager_userName", userName.trim());
+                          localStorage.setItem("mager_userCampus", userCampus.trim());
+                          localStorage.setItem("mager_userNim", userNim.trim());
+                          localStorage.setItem("mager_userStudyProgram", userStudyProgram.trim());
+                          localStorage.setItem("mager_userResearchTopic", userResearchTopic.trim());
+                        } catch (e) {}
+                        setActiveTab("guidance");
+                      }}
+                      className="w-full py-2.5 rounded-xl bg-purple-700 hover:bg-purple-800 text-white font-black text-xs uppercase tracking-wider shadow-sm transition active:scale-95 flex items-center justify-center gap-1.5"
                     >
                       <span>Simpan &amp; Lanjut ke Panduan</span>
-                      <i className="fa-solid fa-arrow-right"></i>
+                      <i className="fa-solid fa-arrow-right text-[10px]"></i>
                     </button>
                   </div>
                 </div>
@@ -1004,305 +1070,336 @@ export default function ThinkAloudMagerPage() {
             </motion.div>
           )}
 
-          {/* TAB 2: GUIDANCE / PROTOCOL BRIEF */}
+          {/* ══════════════════════════════════════════════════════════
+              TAB 2: PANDUAN PROTOKOL THINK-ALOUD & 3-TIER
+          ══════════════════════════════════════════════════════════ */}
           {activeTab === "guidance" && (
             <motion.div
               key="guidance"
-              initial={{ opacity: 0, y: 15 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
-              className="space-y-6"
+              exit={{ opacity: 0, y: -10 }}
+              className="space-y-4"
             >
-              <div className="p-6 md:p-8 rounded-3xl bg-gradient-to-br from-indigo-950/70 via-slate-900 to-slate-950 border border-purple-500/30 shadow-2xl">
-                <span className="px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 border border-purple-400/30 text-xs font-black uppercase tracking-wider inline-flex items-center gap-1.5 mb-3">
-                  <i className="fa-solid fa-compass"></i> Panduan Protokol Wawancara Think-Aloud &amp; 3-Tier Probing
+              <div className="p-4 md:p-5 rounded-2xl bg-white border border-slate-200 shadow-sm">
+                <span className="px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-900 border border-blue-300 text-[10px] font-black uppercase tracking-wider inline-flex items-center gap-1 mb-2">
+                  <i className="fa-solid fa-book-open"></i> Petunjuk Pelaksanaan
                 </span>
-                <h2 className="text-xl md:text-2xl font-black text-white tracking-tight">
-                  Tata Cara Pelaksanaan Think-Aloud Protocol Doktoral (LBD-S3 / MAGER)
+                <h2 className="text-lg md:text-xl font-black text-slate-900 tracking-tight">
+                  Prosedur Wawancara Kognitif Think-Aloud 3-Tier
                 </h2>
-                <p className="text-slate-300 text-xs md:text-sm mt-2 leading-relaxed">
-                  Metode ini bertujuan menelusuri proses mental (*cognitive processing*) kandidat doktor saat merespons butir-butir instrumen evaluasi lingkungan belajar digital doktoral.
+                <p className="text-slate-600 text-xs mt-1 leading-relaxed">
+                  Dalam wawancara kognitif ini, Anda diminta untuk <b>menyuarakan secara spontan (berpikir nyaring)</b> segala pemikiran, pertimbangan, dan asosiasi pengalaman yang muncul saat merespon 30 butir instrumen.
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                <div className="p-5 rounded-2xl bg-slate-900/90 border border-purple-500/20 space-y-3">
-                  <div className="w-10 h-10 rounded-xl bg-purple-600/30 border border-purple-400/40 text-purple-300 flex items-center justify-center font-black text-lg">
-                    1
+              {/* 3 TIERS CARDS */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                {TIER_DESCRIPTIONS.map((t) => (
+                  <div key={t.tier} className="p-4 rounded-xl bg-white border border-slate-200 shadow-sm flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase border ${t.badgeBg}`}>
+                          Tier {t.tier}
+                        </span>
+                        <i className={`fa-solid ${t.icon} text-purple-700 text-sm`}></i>
+                      </div>
+                      <h4 className="font-bold text-xs text-slate-900">{t.name}</h4>
+                      <p className="text-[11px] text-slate-600 mt-1 leading-relaxed">{t.desc}</p>
+                    </div>
+                    <div className="mt-3 pt-2.5 border-t border-slate-100 text-[10px] text-purple-900 font-semibold italic bg-purple-50/50 p-2 rounded-lg">
+                      "{t.target}"
+                    </div>
                   </div>
-                  <h3 className="font-bold text-sm text-white">Prinsip Berpikir Nyaring</h3>
-                  <p className="text-xs text-slate-300 leading-relaxed">
-                    Bacalah pernyataan dengan suara lantang dan suarakan apa pun yang muncul di benak Anda secara spontan, tanpa perlu ragu atau menyaring kata-kata.
-                  </p>
-                </div>
-
-                <div className="p-5 rounded-2xl bg-slate-900/90 border border-purple-500/20 space-y-3">
-                  <div className="w-10 h-10 rounded-xl bg-indigo-600/30 border border-indigo-400/40 text-indigo-300 flex items-center justify-center font-black text-lg">
-                    2
-                  </div>
-                  <h3 className="font-bold text-sm text-white">Arsitektur Probing 3-Tier</h3>
-                  <p className="text-xs text-slate-300 leading-relaxed">
-                    Setiap butir dieksplorasi melalui 3 lapis pertanyaan mendalam: <b>Tier 1</b> (Kejelasan Semantik), <b>Tier 2</b> (Pengalaman Empiris S3), dan <b>Tier 3</b> (Kecukupan Skala &amp; Keyakinan).
-                  </p>
-                </div>
-
-                <div className="p-5 rounded-2xl bg-slate-900/90 border border-purple-500/20 space-y-3">
-                  <div className="w-10 h-10 rounded-xl bg-cyan-600/30 border border-cyan-400/40 text-cyan-300 flex items-center justify-center font-black text-lg">
-                    3
-                  </div>
-                  <h3 className="font-bold text-sm text-white">Fleksibilitas Rekam &amp; Teks</h3>
-                  <p className="text-xs text-slate-300 leading-relaxed">
-                    Sistem dilengkapi perekam suara otomatis, transkripsi live AI, serta kotak teks manual yang dapat diedit langsung bila perangkat Anda tidak memiliki mikrofon aktif.
-                  </p>
-                </div>
+                ))}
               </div>
 
-              <div className="p-5 rounded-2xl bg-purple-950/40 border border-purple-500/30 flex items-center justify-between flex-wrap gap-4">
-                <div className="flex items-center gap-3">
-                  <i className="fa-solid fa-shield-halved text-purple-400 text-2xl"></i>
-                  <div>
-                    <h4 className="text-sm font-bold text-white">Kerahasiaan &amp; Hak Partisipan</h4>
-                    <p className="text-xs text-slate-300">Seluruh rekaman suara dan transkrip hanya digunakan untuk pembakuan instrumen disertasi doktoral.</p>
-                  </div>
-                </div>
+              {/* ATURAN PELAKSANAAN */}
+              <div className="p-4 rounded-xl bg-amber-50/90 border border-amber-300 shadow-sm text-amber-950 space-y-2">
+                <h4 className="font-black text-xs uppercase tracking-wide flex items-center gap-1.5 text-amber-900">
+                  <i className="fa-solid fa-triangle-exclamation"></i> 4 Aturan Emas Berpikir Nyaring:
+                </h4>
+                <ul className="text-xs space-y-1 font-medium list-disc list-inside">
+                  <li><b>Jangan Menahan Pikiran:</b> Katakan apa saja yang Anda pikirkan, termasuk keraguan atau ketidaksesuaian kalimat.</li>
+                  <li><b>Gunakan Fitur Suara:</b> Tekan tombol mikrofon untuk merekam suara, atau ketikkan transkrip jika mikrofon terkendala.</li>
+                  <li><b>Berurutan Tanpa Melewatkan:</b> Setiap butir memiliki 4 tahap pertanyaan probing yang wajib dijawab secara runut.</li>
+                  <li><b>Kirim Respon per Tahap:</b> Tekan tombol "Kirim Respon ke Panel Admin" agar data terekam aman di server.</li>
+                </ul>
+              </div>
+
+              <div className="flex justify-end">
                 <button
                   onClick={() => setActiveTab("consent")}
-                  className="px-6 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white rounded-xl font-black text-xs uppercase tracking-wider transition active:scale-95 flex items-center gap-2 shadow-lg shadow-purple-900/40"
+                  className="px-6 py-2.5 rounded-xl bg-purple-700 hover:bg-purple-800 text-white font-black text-xs uppercase tracking-wider shadow-sm transition active:scale-95 flex items-center gap-1.5"
                 >
-                  <span>Lanjut ke Informed Consent</span>
-                  <i className="fa-solid fa-arrow-right"></i>
+                  <span>Lanjut ke Lembar Persetujuan (Informed Consent)</span>
+                  <i className="fa-solid fa-arrow-right text-[10px]"></i>
                 </button>
               </div>
             </motion.div>
           )}
 
-          {/* TAB 3: INFORMED CONSENT & DIGITAL SIGNATURE */}
+          {/* ══════════════════════════════════════════════════════════
+              TAB 3: INFORMED CONSENT & TANDA TANGAN (KOSONG AWAL)
+          ══════════════════════════════════════════════════════════ */}
           {activeTab === "consent" && (
             <motion.div
               key="consent"
-              initial={{ opacity: 0, y: 15 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
-              className="space-y-6"
+              exit={{ opacity: 0, y: -10 }}
+              className="space-y-4"
             >
-              <div className="p-6 md:p-8 rounded-3xl bg-gradient-to-br from-indigo-950/70 via-slate-900 to-slate-950 border border-purple-500/30 shadow-2xl">
-                <span className="px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 border border-purple-400/30 text-xs font-black uppercase tracking-wider inline-flex items-center gap-1.5 mb-3">
-                  <i className="fa-solid fa-certificate"></i> Dokumen Legal Penelitian Disertasi Doktoral
+              <div className="p-4 md:p-5 rounded-2xl bg-white border border-slate-200 shadow-sm">
+                <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-300 text-[10px] font-black uppercase tracking-wider inline-flex items-center gap-1 mb-2">
+                  <i className="fa-solid fa-file-contract"></i> Hak Asasi &amp; Etika Partisipan
                 </span>
-                <h2 className="text-xl md:text-2xl font-black text-white tracking-tight">
-                  LEMBAR PERSETUJUAN PARTISIPASI (INFORMED CONSENT)
+                <h2 className="text-lg md:text-xl font-black text-slate-900 tracking-tight">
+                  Lembar Persetujuan Partisipasi Riset (Informed Consent)
                 </h2>
-                <p className="text-slate-300 text-xs md:text-sm mt-2 leading-relaxed">
-                  Judul Riset: <b>Pengembangan Skala Pengukuran Lingkungan Belajar Digital Doktoral (LBD-S3 / MADEL-S3) Berbasis Website</b><br />
-                  Peneliti: Tim Pengembang Disertasi Doktor Pascasarjana Universitas Negeri Jakarta (UNJ).
+                <p className="text-slate-600 text-xs mt-1 leading-relaxed">
+                  Sesuai standar etika penelitian, partisipasi Anda bersifat sukarela. Silakan baca dan centang 6 poin persetujuan di bawah ini, kemudian bubuhkan tanda tangan digital Anda.
                 </p>
               </div>
 
-              <div className="p-6 rounded-2xl bg-slate-900/90 border border-purple-500/20 space-y-4">
-                <h3 className="text-sm font-black text-purple-300 uppercase tracking-wider">
-                  Butir Persetujuan Partisipan:
-                </h3>
+              {/* 6 MANDATORY CONSENTS (SEMUA AWAL HARUS CENTANG MANUAL) */}
+              <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-2.5">
+                <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider mb-2">
+                  Pernyataan Persetujuan Partisipan:
+                </h4>
 
-                <div className="space-y-3">
-                  {[
-                    { id: 1, text: "Saya memahami bahwa penelitian ini bertujuan menguji keterbacaan, kejelasan semantik, dan validitas proses kognitif butir instrumen LBD-S3 / MADEL-S3." },
-                    { id: 2, text: "Saya bersedia berpartisipasi secara sukarela dan menyuarakan apa yang saya pikirkan (Think-Aloud Protocol) saat membaca dan menjawab butir-butir instrumen." },
-                    { id: 3, text: "Saya memberikan izin kepada peneliti untuk merekam suara dan mencatat respons verbal saya selama proses wawancara kognitif 3 sesi berlangsung." },
-                    { id: 4, text: "Saya mengetahui bahwa identitas personal dan institusi saya akan disamarkan (anonim) dalam laporan akhir disertasi dan publikasi artikel ilmiah." },
-                    { id: 5, text: "Saya berhak mengajukan pertanyaan, memberikan masukan kritis, atau meminta jeda istirahat kapan saja bila mengalami kelelahan kognitif." },
-                    { id: 6, text: "Data rekaman audio dan transkrip disimpan dalam repositori server terenkripsi dan hanya diakses oleh tim peneliti disertasi." },
-                  ].map((item) => (
-                    <label
-                      key={item.id}
-                      className="flex items-start gap-3 p-3 rounded-xl bg-slate-950/70 border border-slate-800 hover:border-purple-500/40 cursor-pointer transition"
-                    >
-                      <input
-                        type="checkbox"
-                        checked={mandatoryConsents[item.id] || false}
-                        onChange={(e) =>
-                          setMandatoryConsents((prev) => ({ ...prev, [item.id]: e.target.checked }))
-                        }
-                        className="mt-0.5 accent-purple-600 rounded w-4 h-4 cursor-pointer"
-                      />
-                      <span className="text-xs text-slate-300 font-medium leading-relaxed">
-                        {item.text}
-                      </span>
-                    </label>
-                  ))}
-                </div>
-
-                <div className="pt-4 border-t border-slate-800 space-y-3">
-                  <h4 className="text-xs font-black text-purple-300 uppercase tracking-wider flex items-center gap-2">
-                    <i className="fa-solid fa-pen-nib"></i> Tanda Tangan Digital Partisipan
-                  </h4>
-                  <p className="text-xs text-slate-400">
-                    Bubuhkan tanda tangan digital Anda pada bidang kanvas di bawah ini menggunakan sentuhan jari (di HP) atau kursor mouse (di laptop), atau unggah foto tanda tangan Anda.
-                  </p>
-
-                  <MagerSignaturePad
-                    onSave={(dataUrl) => setConsentSignature(dataUrl)}
-                    onClear={() => setConsentSignature(null)}
-                    currentSignature={consentSignature}
-                  />
-                </div>
-
-                <div className="pt-4 border-t border-slate-800 flex justify-end">
-                  <button
-                    onClick={handleApproveConsent}
-                    className="px-6 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-xl font-black text-xs uppercase tracking-wider shadow-lg shadow-emerald-900/40 transition active:scale-95 flex items-center gap-2"
+                {[
+                  { id: 1, text: "Saya menyatakan bahwa data profil doktoral (S3) yang saya isikan adalah benar dan dapat dipertanggungjawabkan." },
+                  { id: 2, text: "Saya bersedia menyuarakan seluruh pertimbangan kognitif (berpikir nyaring) selama proses telaah butir instrumen." },
+                  { id: 3, text: "Saya mengizinkan rekaman suara dan transkrip verbatim saya disimpan secara aman dan dianalisis untuk keperluan riset doktoral." },
+                  { id: 4, text: "Saya memahami bahwa kerahasiaan identitas dan data pribadi saya dijamin sepenuhnya (anonymized) dalam publikasi ilmiah." },
+                  { id: 5, text: "Saya berpartisipasi secara sukarela dan berhak mengajukan keberatan jika terdapat hal yang bertentangan dengan etika." },
+                  { id: 6, text: "Saya memahami bahwa instrumen ini terdiri dari 3 sesi (30 butir) dengan masing-masing 4 tahap probing terstruktur." },
+                ].map((item) => (
+                  <label
+                    key={item.id}
+                    className="flex items-start gap-2.5 p-2.5 rounded-xl bg-slate-50 border border-slate-200 hover:border-purple-300 cursor-pointer transition"
                   >
-                    <i className="fa-solid fa-circle-check"></i>
-                    <span>Setujui Informed Consent &amp; Mulai Sesi 1</span>
+                    <input
+                      type="checkbox"
+                      checked={mandatoryConsents[item.id] || false}
+                      onChange={(e) =>
+                        setMandatoryConsents((prev) => ({ ...prev, [item.id]: e.target.checked }))
+                      }
+                      className="mt-0.5 w-4 h-4 rounded text-purple-600 border-slate-300 focus:ring-purple-500 shrink-0"
+                    />
+                    <span className="text-xs text-slate-700 font-medium leading-snug">
+                      {item.text}
+                    </span>
+                  </label>
+                ))}
+              </div>
+
+              {/* CANVAS TANDA TANGAN */}
+              <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
+                    <i className="fa-solid fa-signature text-purple-700"></i>
+                    <span>Tanda Tangan Digital Partisipan: <span className="text-rose-500">*</span></span>
+                  </h4>
+                  <span className="text-[10px] text-slate-500 font-bold">Wajib diisi</span>
+                </div>
+
+                <SignatureCanvas
+                  onSave={(sigUrl) => setConsentSignature(sigUrl || null)}
+                  currentSignature={consentSignature}
+                />
+              </div>
+
+              {/* CHECKBOX KONFIRMASI FINAL & SUBMIT */}
+              <div className="p-4 rounded-2xl bg-purple-50 border border-purple-200 shadow-sm space-y-3">
+                <label className="flex items-start gap-2.5 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={consentApproved}
+                    onChange={(e) => setConsentApproved(e.target.checked)}
+                    className="mt-0.5 w-4 h-4 rounded text-purple-600 border-slate-300 focus:ring-purple-500 shrink-0"
+                  />
+                  <span className="text-xs font-bold text-purple-950 leading-snug">
+                    Dengan mencentang kotak ini, saya menyetujui seluruh ketentuan di atas dan menyatakan kesiapan untuk melaksanakan Wawancara Think-Aloud Doktoral S3 MAGER.
+                  </span>
+                </label>
+
+                <div className="flex justify-end pt-1">
+                  <button
+                    disabled={!allMandatoryChecked || !consentApproved || !consentSignature}
+                    onClick={async () => {
+                      if (!allMandatoryChecked || !consentApproved || !consentSignature) {
+                        alert("Mohon centang seluruh 6 pernyataan persetujuan, centang konfirmasi, dan bubuhkan tanda tangan Anda!");
+                        return;
+                      }
+
+                      // Kirim data consent ke server
+                      try {
+                        await fetch("/api/consent", {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({
+                            userId: userNim.trim() || userName.trim().toLowerCase().replace(/\s+/g, "_") || "mhs_doktor_s3",
+                            userName: userName.trim() || "Kandidat Doktor S3",
+                            userCampus: userCampus.trim(),
+                            userNim: userNim.trim(),
+                            studyProgram: userStudyProgram.trim(),
+                            respondentLevel: "Mahasiswa Doktoral S3 (MAGER)",
+                            sessionNo: activeSession,
+                            signatureDataUrl: consentSignature,
+                            agreedAt: new Date().toISOString(),
+                          }),
+                        });
+                      } catch (e) {
+                        console.warn("Gagal menyimpan consent ke server:", e);
+                      }
+
+                      try {
+                        localStorage.setItem("mager_consentApproved", "true");
+                      } catch (e) {}
+
+                      alert("✅ Lembar Informed Consent Berhasil Disetujui! Selamat datang di Sesi 1 Wawancara Think-Aloud.");
+                      setActiveTab("session");
+                    }}
+                    className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-purple-700 hover:bg-purple-800 disabled:opacity-40 disabled:cursor-not-allowed text-white font-black text-xs uppercase tracking-wider shadow-sm transition active:scale-95 flex items-center justify-center gap-1.5"
+                  >
+                    <span>Setujui &amp; Buka Sesi 1 Wawancara</span>
+                    <i className="fa-solid fa-chevron-right text-[10px]"></i>
                   </button>
                 </div>
               </div>
             </motion.div>
           )}
 
-          {/* TAB 4: THINK-ALOUD ASSESSMENT SESSION */}
-          {activeTab === "session" && (
+          {/* ══════════════════════════════════════════════════════════
+              TAB 4: SESI WAWANCARA INSTRUMEN (FIT TO SCREEN 2-COLUMN GRID)
+          ══════════════════════════════════════════════════════════ */}
+          {activeTab === "session" && currentQ && (
             <motion.div
               key="session"
-              initial={{ opacity: 0, y: 15 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
-              className="space-y-6"
+              exit={{ opacity: 0, y: -10 }}
+              className="space-y-3"
             >
-              {/* SESSION SELECTOR BAR */}
-              <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 rounded-2xl bg-slate-900/90 border border-purple-500/20 shadow-xl">
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-black text-purple-300 uppercase tracking-wider px-2">
-                    Pilih Sesi:
-                  </span>
-                  {[1, 2, 3].map((sNum) => {
-                    const isUnlocked = unlockedSessions[sNum];
-                    const isActive = activeSession === sNum;
+              {/* TOP SESSION SELECTOR TABS (KOMPAK) */}
+              <div className="bg-white p-2.5 rounded-2xl border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-2">
+                <div className="flex items-center gap-1.5 overflow-x-auto">
+                  {[1, 2, 3].map((sessNum) => {
+                    const isCurrent = activeSession === sessNum;
+                    const isUnlocked = unlockedSessions[sessNum];
                     return (
                       <button
-                        key={sNum}
+                        key={sessNum}
                         onClick={() => {
                           if (!isUnlocked) {
-                            alert(`Sesi ${sNum} masih terkunci. Mohon selesaikan Sesi ${sNum - 1} terlebih dahulu untuk membuka sesi ini.`);
+                            alert(`Sesi ${sessNum} masih terkunci. Anda wajib menyelesaikan seluruh butir pada Sesi sebelumnya terlebih dahulu.`);
                             return;
                           }
                           stopSpeaking();
-                          setActiveSession(sNum as 1 | 2 | 3);
+                          resetRecordingState();
+                          setActiveSession(sessNum as 1 | 2 | 3);
                           setSessionItemIdx(0);
                           setProbingStep(1);
-                          resetRecordingState();
                         }}
-                        className={`px-3.5 py-1.5 rounded-xl font-black text-xs uppercase tracking-wider transition flex items-center gap-1.5 ${
-                          isActive
-                            ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md border border-purple-400"
+                        disabled={!isUnlocked}
+                        className={`px-3 py-1.5 rounded-xl text-xs font-black uppercase tracking-wider transition flex items-center gap-1.5 ${
+                          isCurrent
+                            ? "bg-purple-700 text-white shadow-sm"
                             : isUnlocked
-                            ? "bg-slate-800 text-purple-200 hover:bg-slate-700"
-                            : "bg-slate-950 text-slate-600 border border-slate-800 cursor-not-allowed"
+                            ? "bg-slate-100 hover:bg-slate-200 text-slate-700"
+                            : "bg-slate-50 text-slate-400 cursor-not-allowed opacity-60"
                         }`}
                       >
-                        {isUnlocked ? (
-                          <i className="fa-solid fa-unlock-keyhole text-[10px]"></i>
-                        ) : (
-                          <i className="fa-solid fa-lock text-[10px]"></i>
-                        )}
-                        <span>Sesi {sNum}</span>
-                        <span className="text-[9px] opacity-80">(10 Butir)</span>
+                        <i className={`fa-solid ${isUnlocked ? "fa-folder-open" : "fa-lock"} text-[10px]`}></i>
+                        <span>Sesi {sessNum}</span>
+                        <span className="text-[9px] opacity-75">(10 Butir)</span>
                       </button>
                     );
                   })}
                 </div>
 
-                <div className="flex items-center gap-2 text-xs text-slate-300 font-bold">
-                  <span>Progres Sesi {activeSession}:</span>
-                  <span className="px-2.5 py-1 rounded-lg bg-purple-950 text-purple-300 border border-purple-500/30 font-black">
-                    Butir {sessionItemIdx + 1} / {currentSessionQuestions.length}
+                {/* PROGRESS COUNTER */}
+                <div className="flex items-center gap-2 text-xs font-bold text-slate-600">
+                  <span className="px-2 py-0.5 rounded-md bg-purple-50 text-purple-900 border border-purple-200 font-mono text-[11px]">
+                    Butir #{sessionItemIdx + 1} / {currentSessionQuestions.length}
+                  </span>
+                  <span className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 border border-slate-200 font-mono text-[11px]">
+                    Probing {probingStep}/4
                   </span>
                 </div>
               </div>
 
-              {/* SESSION BANNER */}
-              <div
-                className={`p-5 rounded-2xl bg-gradient-to-r ${activeSessionDetail.colorHeader} border shadow-lg relative overflow-hidden`}
-              >
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div>
-                    <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider border ${activeSessionDetail.badgeBg} inline-block mb-1`}>
-                      {activeSessionDetail.itemsRange}
-                    </span>
-                    <h3 className="text-base md:text-lg font-black text-white tracking-tight">
-                      {activeSessionDetail.title}
-                    </h3>
-                    <p className="text-xs text-purple-100/90 mt-0.5 font-medium">
-                      {activeSessionDetail.subtitle}
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    <span className="text-[10px] font-bold text-purple-200 block">Kandidat Doktor:</span>
-                    <span className="text-xs font-black text-white">{userName}</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* QUESTION CARD */}
-              {currentQ && (
-                <div className="p-6 md:p-8 rounded-3xl bg-slate-900/95 border border-purple-500/30 shadow-2xl space-y-6">
-                  {/* QUESTION HEADER & METADATA */}
-                  <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-800">
-                    <div className="flex items-center gap-2.5">
-                      <span className="px-3 py-1 rounded-xl bg-purple-600 text-white font-black text-xs tracking-wider shadow-md">
-                        {currentQ.code}
+              {/* ── SPLIT 2-COLUMN GRID (LEFT: STATEMENT & LIKERT; RIGHT: PROBING & RECORDER) ── */}
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-3.5 items-start">
+                
+                {/* ══ KOLOM KIRI (COL-SPAN-6): STIMULUS & SKALA LIKERT ══ */}
+                <div className="lg:col-span-6 space-y-3">
+                  
+                  {/* INSTRUCTION BANNER KHUSUS TAHAP 1 */}
+                  <div className="p-3 rounded-xl bg-amber-50 border border-amber-300 text-amber-950 shadow-sm flex items-start gap-2.5">
+                    <i className="fa-solid fa-bullhorn text-amber-700 text-sm mt-0.5 shrink-0"></i>
+                    <div className="text-[11px] md:text-xs font-medium leading-relaxed">
+                      <span className="font-black text-amber-900 block mb-0.5 uppercase tracking-wide text-[10px]">
+                        Instruksi Berpikir Nyaring (Think-Aloud):
                       </span>
-                      <span className="px-2.5 py-1 rounded-lg bg-slate-800 text-purple-300 border border-purple-500/20 text-xs font-bold">
-                        {currentQ.dimensi}
-                      </span>
-                      <span
-                        className={`px-2 py-0.5 rounded-full text-[10px] font-black uppercase ${
-                          currentQ.isReversed
-                            ? "bg-rose-950 text-rose-300 border border-rose-500/40"
-                            : "bg-emerald-950 text-emerald-300 border border-emerald-500/40"
-                        }`}
-                      >
-                        {currentQ.polarity}
-                      </span>
+                      Bacalah pernyataan berikut dengan suara lantang dan beriakn jawaban anda, lalu tentukan skor pilihan Anda (1: Sangat Tidak Setuju s.d. 5: Sangat Setuju). Suarakan seluruh pertimbangan kognitif yang melandasi pilihan skor Anda.
                     </div>
+                  </div>
 
-                    <div className="flex items-center gap-2">
+                  {/* KARTU BUTIR PERNYATAAN */}
+                  <div className="p-4 rounded-2xl bg-white border border-purple-200 shadow-sm space-y-2.5">
+                    <div className="flex items-center justify-between gap-2 border-b border-slate-100 pb-2">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span className="px-2 py-0.5 rounded-md bg-purple-100 text-purple-900 font-black text-xs font-mono">
+                          {currentQ.code}
+                        </span>
+                        <span className="text-[11px] font-bold text-slate-700">
+                          {DIMENSION_LABELS[currentQ.dimensi] || currentQ.dimensi}
+                        </span>
+                      </div>
+
+                      {/* TTS TOMBOL DENGARKAN BUTIR */}
                       <button
+                        type="button"
                         onClick={() => speakText(currentQ.statement, "statement")}
-                        className={`px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 border ${
+                        className={`px-2.5 py-1 rounded-lg text-[10px] font-bold transition flex items-center gap-1 ${
                           isSpeaking && speakingType === "statement"
-                            ? "bg-amber-400 text-slate-950 border-amber-300 animate-pulse font-black"
-                            : "bg-slate-800 text-purple-200 border-purple-500/30 hover:bg-slate-700"
+                            ? "bg-rose-600 text-white animate-pulse"
+                            : "bg-slate-100 hover:bg-slate-200 text-purple-800"
                         }`}
-                        title="Dengarkan pembacaan teks pernyataan via suara robot Bahasa Indonesia"
                       >
-                        <i className={`fa-solid ${isSpeaking && speakingType === "statement" ? "fa-volume-xmark" : "fa-volume-high"}`}></i>
-                        <span>{isSpeaking && speakingType === "statement" ? "Hentikan Suara" : "Dengarkan Pernyataan"}</span>
+                        <i className={`fa-solid ${isSpeaking && speakingType === "statement" ? "fa-stop" : "fa-volume-high"}`}></i>
+                        <span>{isSpeaking && speakingType === "statement" ? "Hentikan" : "Dengarkan"}</span>
                       </button>
                     </div>
-                  </div>
 
-                  {/* STATEMENT DISPLAY */}
-                  <div className="p-5 md:p-6 rounded-2xl bg-gradient-to-br from-indigo-950/40 to-slate-950 border border-purple-500/30 relative">
-                    <span className="text-[10px] font-black text-purple-400 uppercase tracking-widest block mb-2">
-                      Teks Pernyataan Butir Instrumen:
-                    </span>
-                    <blockquote className="text-base md:text-lg font-extrabold text-white leading-relaxed">
+                    <blockquote className="text-xs md:text-sm font-bold text-slate-900 leading-snug italic bg-slate-50 p-3 rounded-xl border-l-4 border-purple-600">
                       "{currentQ.statement}"
                     </blockquote>
-                    <div className="mt-3 pt-3 border-t border-purple-500/20 flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-400">
-                      <span><b>Rujukan Stimulus:</b> {currentQ.contextRef}</span>
-                      <span className="text-purple-300 font-bold">Skala Likert: 1 (STS) s.d. 5 (SS)</span>
+
+                    <div className="pt-1 flex flex-wrap items-center justify-between gap-2 text-[10px] text-slate-500">
+                      <span><b>Konteks:</b> {currentQ.contextRef}</span>
+                      <span className="text-purple-700 font-bold">Skala: 1 (STS) - 5 (SS)</span>
                     </div>
                   </div>
 
-                  {/* LIKERT OPTION SELECTOR (1 to 5) */}
-                  <div className="space-y-2.5">
-                    <span className="text-xs font-black text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
-                      <i className="fa-solid fa-list-check text-purple-400"></i>
-                      <span>Pilih Respons Skor Likert Anda:</span>
-                    </span>
+                  {/* LIKERT 1-5 SELECTOR (BUTTONS HORIZONTAL) */}
+                  <div className="p-3 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[11px] font-black text-slate-800 uppercase tracking-wider flex items-center gap-1">
+                        <i className="fa-solid fa-list-check text-purple-600"></i>
+                        <span>Pilih Skor Likert: <span className="text-rose-500">*</span></span>
+                      </span>
+                      {selectedOptions[currentQ.id] && (
+                        <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                          Skor Terpilih: {selectedOptions[currentQ.id]}
+                        </span>
+                      )}
+                    </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-5 gap-2.5">
+                    <div className="grid grid-cols-5 gap-1.5">
                       {currentQ.options.map((opt) => {
                         const isSelected = selectedOptions[currentQ.id] === opt.label;
                         return (
@@ -1313,339 +1410,365 @@ export default function ThinkAloudMagerPage() {
                               setSelectedOptions((prev) => ({ ...prev, [currentQ.id]: opt.label }));
                               markStepDone(currentQ.id, 1);
                             }}
-                            className={`p-3 rounded-2xl border text-center transition active:scale-95 flex flex-col items-center justify-center gap-1 ${
+                            className={`p-2 rounded-xl border text-center transition active:scale-95 flex flex-col items-center justify-center gap-0.5 ${
                               isSelected
-                                ? "bg-gradient-to-br from-purple-600 to-indigo-600 text-white border-purple-300 shadow-xl shadow-purple-900/50 scale-[1.02]"
-                                : "bg-slate-950/80 hover:bg-slate-800 text-slate-200 border-slate-800 hover:border-purple-500/40"
+                                ? "bg-purple-700 text-white border-purple-800 shadow-md font-bold scale-[1.02]"
+                                : "bg-slate-50 hover:bg-purple-50 text-slate-700 border-slate-200 hover:border-purple-300"
                             }`}
                           >
-                            <span className="w-8 h-8 rounded-full bg-slate-900/80 flex items-center justify-center font-black text-sm border border-purple-400/40 text-purple-200">
+                            <span className={`w-6 h-6 rounded-full flex items-center justify-center font-black text-xs ${
+                              isSelected ? "bg-white text-purple-900" : "bg-white text-slate-800 border"
+                            }`}>
                               {opt.label}
                             </span>
-                            <span className="font-black text-xs tracking-wider">{opt.name}</span>
-                            <span className="text-[10px] opacity-80 leading-tight">{opt.text}</span>
+                            <span className="text-[9px] font-bold leading-tight">{opt.name}</span>
                           </button>
                         );
                       })}
                     </div>
                   </div>
 
-                  {/* PROBING 4 STEPS PROGRESS INDICATOR */}
-                  <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-2">
-                    <div className="flex items-center justify-between text-xs font-bold text-slate-400">
-                      <span>Tahap Probing Berjalan:</span>
-                      <span className="text-purple-300 font-black">{activeProbing.title}</span>
+                  {/* ITEM PAGINATION DOTS (1 TO 10) */}
+                  <div className="p-2.5 rounded-xl bg-white border border-slate-200 shadow-sm flex items-center justify-between gap-1">
+                    <span className="text-[10px] font-bold text-slate-500 shrink-0">Butir Sesi {activeSession}:</span>
+                    <div className="flex items-center gap-1 overflow-x-auto">
+                      {currentSessionQuestions.map((q, idx) => {
+                        const isCur = idx === sessionItemIdx;
+                        const isAnswered = Boolean(selectedOptions[q.id]);
+                        return (
+                          <button
+                            key={q.id}
+                            onClick={() => {
+                              // Validasi jika ingin berpindah butir, pastikan langkah saat ini aman
+                              stopSpeaking();
+                              resetRecordingState();
+                              setSessionItemIdx(idx);
+                              setProbingStep(1);
+                            }}
+                            className={`w-6 h-6 rounded-lg text-[10px] font-bold flex items-center justify-center transition ${
+                              isCur
+                                ? "bg-purple-700 text-white font-black shadow-sm"
+                                : isAnswered
+                                ? "bg-emerald-100 text-emerald-800 border border-emerald-300"
+                                : "bg-slate-100 hover:bg-slate-200 text-slate-600"
+                            }`}
+                          >
+                            {idx + 1}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                </div>
+
+                {/* ══ KOLOM KANAN (COL-SPAN-6): PROBING TIER & AUDIO RECORDER ══ */}
+                <div className="lg:col-span-6 space-y-3">
+                  
+                  {/* 4 PROBING STEPS SELECTOR (DENGAN PENGUNCIAN KETAT) */}
+                  <div className="p-2.5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-1.5">
+                    <div className="flex items-center justify-between text-[11px] font-bold text-slate-600">
+                      <span>Tahap Probing:</span>
+                      <span className="text-purple-800 font-black">{activeProbing.badge}</span>
                     </div>
 
-                    <div className="grid grid-cols-4 gap-2">
+                    <div className="grid grid-cols-4 gap-1.5">
                       {[1, 2, 3, 4].map((stepNum) => {
                         const isActive = probingStep === stepNum;
                         const isDone = isStepDone(currentQ.id, stepNum);
+                        const isAccessible = stepNum <= probingStep || isDone;
                         const labels = ["1. Pilihan Skor", "2. Tier 1 Semantic", "3. Tier 2 Retrieval", "4. Tier 3 Construct"];
+                        
                         return (
                           <button
                             key={stepNum}
-                            onClick={() => {
-                              stopSpeaking();
-                              setProbingStep(stepNum);
-                              resetRecordingState();
-                            }}
-                            className={`py-2 px-2.5 rounded-xl text-center text-[10px] md:text-xs font-black uppercase tracking-wider transition border ${
+                            onClick={() => handleSelectProbingStep(stepNum)}
+                            className={`py-1.5 px-1 rounded-xl text-center text-[9px] md:text-[10px] font-black uppercase tracking-tight transition border flex flex-col items-center justify-center gap-0.5 ${
                               isActive
-                                ? "bg-purple-600 text-white border-purple-300 shadow-md"
+                                ? "bg-purple-700 text-white border-purple-800 shadow-sm"
                                 : isDone
-                                ? "bg-emerald-950/70 text-emerald-300 border-emerald-500/40"
-                                : "bg-slate-900 text-slate-500 border-slate-800 hover:text-slate-300"
+                                ? "bg-emerald-50 text-emerald-800 border-emerald-300"
+                                : isAccessible
+                                ? "bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200"
+                                : "bg-slate-50 text-slate-400 border-slate-200 cursor-not-allowed opacity-50"
                             }`}
                           >
-                            <div className="flex items-center justify-center gap-1">
-                              {isDone ? <i className="fa-solid fa-circle-check text-emerald-400"></i> : null}
-                              <span>{labels[stepNum - 1]}</span>
-                            </div>
+                            <span className="truncate w-full">{labels[stepNum - 1]}</span>
+                            {isDone && <i className="fa-solid fa-check text-[8px] text-emerald-600"></i>}
+                            {!isAccessible && <i className="fa-solid fa-lock text-[8px] text-slate-400"></i>}
                           </button>
                         );
                       })}
                     </div>
                   </div>
 
-                  {/* ACTIVE PROBING QUESTION BOX */}
-                  <div className="p-5 md:p-6 rounded-2xl bg-purple-950/40 border-2 border-purple-500/40 shadow-inner space-y-3">
-                    <div className="flex flex-wrap items-center justify-between gap-2">
-                      <span className="px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 border border-purple-400/40 text-xs font-black uppercase tracking-wider">
-                        {activeProbing.badge}
-                      </span>
+                  {/* ACTIVE PROBING QUESTION PROMPT */}
+                  <div className="p-3.5 rounded-2xl bg-purple-50/70 border border-purple-200 shadow-sm space-y-2">
+                    <div className="flex items-center justify-between gap-2 border-b border-purple-200/60 pb-1.5">
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-5 h-5 rounded-full bg-purple-700 text-white text-[10px] font-black flex items-center justify-center">
+                          {probingStep}
+                        </span>
+                        <h4 className="text-xs font-black text-purple-950 uppercase tracking-tight">
+                          {activeProbing.title}
+                        </h4>
+                      </div>
+
                       <button
+                        type="button"
                         onClick={() => speakText(activeProbing.text, "probing")}
-                        className={`px-3 py-1 rounded-xl text-xs font-bold transition flex items-center gap-1.5 border ${
+                        className={`px-2 py-0.5 rounded-lg text-[9px] font-bold transition flex items-center gap-1 ${
                           isSpeaking && speakingType === "probing"
-                            ? "bg-amber-400 text-slate-950 border-amber-300 animate-pulse font-black"
-                            : "bg-slate-900 text-purple-200 border-purple-500/30 hover:bg-slate-800"
+                            ? "bg-rose-600 text-white animate-pulse"
+                            : "bg-white hover:bg-slate-100 text-purple-800 border border-purple-200"
                         }`}
                       >
-                        <i className={`fa-solid ${isSpeaking && speakingType === "probing" ? "fa-volume-xmark" : "fa-volume-high"}`}></i>
-                        <span>{isSpeaking && speakingType === "probing" ? "Hentikan Suara" : "Dengarkan Pertanyaan"}</span>
+                        <i className={`fa-solid ${isSpeaking && speakingType === "probing" ? "fa-stop" : "fa-volume-high"}`}></i>
+                        <span>{isSpeaking && speakingType === "probing" ? "Hentikan" : "Dengarkan"}</span>
                       </button>
                     </div>
 
-                    <p className="text-sm md:text-base font-extrabold text-white leading-relaxed">
+                    <div className="text-xs font-bold text-slate-800 leading-snug">
                       "{activeProbing.text}"
-                    </p>
+                    </div>
 
-                    {/* CONFIDENCE RATING FOR STEP 4 */}
+                    {/* JIKA STEP 4: TAMPILKAN CONFIDENCE RATING 1-5 BINTANG */}
                     {probingStep === 4 && (
-                      <div className="pt-3 border-t border-purple-500/20 flex flex-wrap items-center gap-3">
-                        <span className="text-xs font-bold text-slate-300">
-                          Derajat Keyakinan Skor (1=Sangat Ragu s.d. 5=Sangat Yakin):
+                      <div className="mt-2 pt-2 border-t border-purple-200/60 flex items-center justify-between gap-2 flex-wrap">
+                        <span className="text-[10px] font-bold text-purple-900">
+                          Tingkat Keyakinan atas Butir: <span className="text-rose-500">*</span>
                         </span>
-                        <div className="flex items-center gap-1.5">
-                          {[1, 2, 3, 4, 5].map((star) => (
-                            <button
-                              key={star}
-                              type="button"
-                              onClick={() => setConfidenceRatings((prev) => ({ ...prev, [currentQ.id]: star }))}
-                              className={`w-8 h-8 rounded-lg font-black text-xs transition ${
-                                (confidenceRatings[currentQ.id] || 0) >= star
-                                  ? "bg-amber-400 text-slate-950 shadow-md scale-105"
-                                  : "bg-slate-800 text-slate-400 hover:text-white"
-                              }`}
-                            >
-                              {star}★
-                            </button>
-                          ))}
+                        <div className="flex items-center gap-1">
+                          {[1, 2, 3, 4, 5].map((star) => {
+                            const isRated = (confidenceRatings[currentQ.id] || 0) >= star;
+                            return (
+                              <button
+                                key={star}
+                                type="button"
+                                onClick={() => setConfidenceRatings((prev) => ({ ...prev, [currentQ.id]: star }))}
+                                className="p-1 text-sm transition hover:scale-125"
+                                title={`Rating ${star} dari 5`}
+                              >
+                                <i className={`fa-star ${isRated ? "fa-solid text-amber-500" : "fa-regular text-slate-300"}`}></i>
+                              </button>
+                            );
+                          })}
                         </div>
                       </div>
                     )}
                   </div>
 
-                  {/* AUDIO RECORDER & LIVE TRANSCRIPT BOX */}
-                  <div className="p-5 md:p-6 rounded-2xl bg-slate-950 border border-slate-800 space-y-4">
-                    <div className="flex flex-wrap items-center justify-between gap-3">
+                  {/* AUDIO RECORDER & VERBATIM TRANSCRIPT (KOMPAK) */}
+                  <div className="p-3.5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-2.5">
+                    
+                    {/* TOP CONTROLS & STATUS */}
+                    <div className="flex items-center justify-between gap-2">
                       <div className="flex items-center gap-2">
-                        <i className="fa-solid fa-microphone text-purple-400"></i>
-                        <span className="text-xs font-black text-slate-200 uppercase tracking-wider">
-                          Perekam Suara Verbal &amp; Transkrip Jawaban
-                        </span>
+                        {!isRecording ? (
+                          <button
+                            type="button"
+                            onClick={startRecording}
+                            className="px-3 py-1.5 rounded-xl bg-purple-700 hover:bg-purple-800 text-white font-black text-xs uppercase tracking-wider shadow-sm transition active:scale-95 flex items-center gap-1.5"
+                          >
+                            <i className="fa-solid fa-microphone text-xs"></i>
+                            <span>Rekam Suara</span>
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={stopRecording}
+                            className="px-3 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-black text-xs uppercase tracking-wider shadow-sm transition active:scale-95 flex items-center gap-1.5 animate-pulse"
+                          >
+                            <i className="fa-solid fa-stop text-xs"></i>
+                            <span>Selesai Rekam</span>
+                          </button>
+                        )}
+
+                        {/* TIMER */}
+                        {isRecording && (
+                          <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 font-mono text-xs font-bold">
+                            <span className="w-2 h-2 rounded-full bg-rose-600 animate-ping"></span>
+                            <span>{Math.floor(recordingTime / 60)}:{(recordingTime % 60).toString().padStart(2, "0")}</span>
+                          </div>
+                        )}
                       </div>
 
-                      {isRecording && (
-                        <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/40 text-xs font-black animate-pulse">
-                          <span className="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
-                          <span>Merekam: {Math.floor(recordingTime / 60)}:{(recordingTime % 60).toString().padStart(2, "0")}</span>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* DECIBEL LEVEL BAR */}
-                    {isRecording && (
-                      <div className="w-full bg-slate-900 h-2 rounded-full overflow-hidden border border-slate-800">
-                        <div
-                          className="bg-gradient-to-r from-emerald-500 via-amber-400 to-rose-500 h-full transition-all duration-75"
-                          style={{ width: `${Math.max(5, audioLevel)}%` }}
-                        ></div>
-                      </div>
-                    )}
-
-                    {/* RECORDING CONTROLS */}
-                    <div className="flex flex-wrap items-center gap-3">
-                      {!isRecording ? (
-                        <button
-                          type="button"
-                          onClick={startRecording}
-                          className="px-5 py-2.5 bg-gradient-to-r from-rose-600 to-rose-700 hover:from-rose-500 hover:to-rose-600 text-white rounded-xl font-black text-xs uppercase tracking-wider shadow-lg shadow-rose-900/30 flex items-center gap-2 active:scale-95 transition"
-                        >
-                          <i className="fa-solid fa-microphone"></i>
-                          <span>Mulai Bicara (Rekam)</span>
-                        </button>
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={stopRecording}
-                          className="px-5 py-2.5 bg-gradient-to-r from-amber-500 to-rose-600 hover:from-amber-400 hover:to-rose-500 text-white rounded-xl font-black text-xs uppercase tracking-wider shadow-lg shadow-rose-900/30 flex items-center gap-2 active:scale-95 transition animate-pulse"
-                        >
-                          <i className="fa-solid fa-stop"></i>
-                          <span>Selesai Bicara (Stop)</span>
-                        </button>
-                      )}
-
+                      {/* AUDIO PLAYBACK JIKA ADA */}
                       {audioUrl && !isRecording && (
-                        <div className="flex items-center gap-2 flex-1 min-w-[240px]">
-                          <audio src={audioUrl} controls className="h-9 w-full max-w-sm rounded-lg" />
+                        <div className="flex items-center gap-1">
+                          <audio src={audioUrl} controls className="h-7 max-w-[170px]" />
+                          <button
+                            type="button"
+                            onClick={resetRecordingState}
+                            className="w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center text-xs"
+                            title="Hapus Rekaman"
+                          >
+                            <i className="fa-solid fa-trash text-[10px]"></i>
+                          </button>
                         </div>
                       )}
                     </div>
 
-                    {/* TRANSCRIPT TEXTAREA (CAN BE EDITED / MANUALLY TYPED) */}
+                    {/* LIVE TRANSKRIP / EDITABLE TEXTAREA */}
                     <div>
-                      <div className="flex items-center justify-between text-xs text-slate-400 mb-1.5 font-bold">
-                        <span>Transkrip Verbatim (Bisa diedit atau diketik manual):</span>
-                        <span className="text-[10px] text-slate-500">Live Voice-to-Text didukung Google Web Speech API</span>
+                      <div className="flex items-center justify-between mb-1 text-[10px] text-slate-500 font-bold">
+                        <span>Transkrip Suara (Bisa diedit/diketik langsung):</span>
+                        {isRecording && <span className="text-purple-700 animate-pulse">● Mendengarkan...</span>}
                       </div>
                       <textarea
                         rows={3}
                         value={transcriptText}
                         onChange={(e) => setTranscriptText(e.target.value)}
-                        placeholder="Hasil rekaman suara akan otomatis tertranskripsi di sini. Anda juga dapat mengetikkan atau melengkapi teks jawaban Anda secara manual bila mikrofon tidak tersedia..."
-                        className="w-full px-4 py-2.5 bg-slate-900 border border-purple-500/30 focus:border-purple-400 rounded-xl text-xs md:text-sm font-medium text-white placeholder-slate-500 outline-none transition resize-none"
+                        placeholder="Hasil rekaman suara akan tertulis otomatis di sini. Anda juga bisa mengetikkan pertimbangan kognitif Anda secara manual..."
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-300 focus:bg-white focus:border-purple-600 rounded-xl text-xs font-medium text-slate-800 placeholder-slate-400 outline-none transition resize-none leading-relaxed"
                       />
                     </div>
 
-                    {/* SUBMIT BUTTON ROW */}
-                    <div className="pt-2 flex flex-wrap items-center justify-between gap-3">
-                      <div className="text-xs text-slate-400">
-                        {uploadSuccess && (
-                          <span className="text-emerald-400 font-bold flex items-center gap-1.5">
-                            <i className="fa-solid fa-circle-check"></i>
-                            <span>Respon tahap ini telah berhasil tersimpan di panel admin!</span>
-                          </span>
-                        )}
-                      </div>
+                    {/* TOMBOL KIRIM RESPON KE PANEL ADMIN */}
+                    <div className="flex items-center justify-between gap-2 pt-1 border-t border-slate-100">
+                      <span className="text-[10px] text-slate-500">
+                        {uploadSuccess ? "✅ Respon tersimpan di Admin" : "Wajib kirim sebelum lanjut"}
+                      </span>
 
                       <button
                         type="button"
                         onClick={uploadAudioToServer}
                         disabled={isUploading}
-                        className={`px-6 py-3 rounded-xl font-black text-xs uppercase tracking-wider transition active:scale-95 flex items-center gap-2 shadow-lg ${
+                        className={`px-4 py-2 rounded-xl font-black text-xs uppercase tracking-wider transition active:scale-95 flex items-center gap-1.5 shadow-sm ${
                           uploadSuccess
-                            ? "bg-slate-800 text-emerald-300 border border-emerald-500/40"
-                            : "bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white shadow-purple-900/40"
+                            ? "bg-emerald-600 text-white"
+                            : "bg-purple-700 hover:bg-purple-800 text-white"
                         } disabled:opacity-50`}
                       >
                         {isUploading ? (
                           <>
-                            <i className="fa-solid fa-spinner animate-spin"></i>
-                            <span>Mengirim ke Server Admin...</span>
+                            <i className="fa-solid fa-spinner animate-spin text-[10px]"></i>
+                            <span>Mengirim...</span>
                           </>
                         ) : uploadSuccess ? (
                           <>
-                            <i className="fa-solid fa-arrow-rotate-right"></i>
-                            <span>Kirim Ulang Pembaruan</span>
+                            <i className="fa-solid fa-check text-[10px]"></i>
+                            <span>Terkirim (Perbarui)</span>
                           </>
                         ) : (
                           <>
-                            <i className="fa-solid fa-paper-plane"></i>
-                            <span>Kirim Respon ke Panel Admin</span>
+                            <i className="fa-solid fa-paper-plane text-[10px]"></i>
+                            <span>Kirim ke Admin</span>
                           </>
                         )}
                       </button>
                     </div>
+
                   </div>
 
-                  {/* BOTTOM STEP NAVIGATION (PREV & NEXT) */}
-                  <div className="pt-4 border-t border-slate-800 flex items-center justify-between gap-3">
-                    <button
-                      onClick={handlePrevStep}
-                      disabled={sessionItemIdx === 0 && probingStep === 1}
-                      className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed text-slate-200 font-bold text-xs uppercase tracking-wider transition flex items-center gap-2"
-                    >
-                      <i className="fa-solid fa-chevron-left text-[10px]"></i>
-                      <span>Sebelumnya</span>
-                    </button>
-
-                    <div className="text-center text-xs text-slate-400 font-bold hidden sm:block">
-                      Butir {sessionItemIdx + 1} dari {currentSessionQuestions.length} · Probing Step {probingStep}/4
-                    </div>
-
-                    <button
-                      onClick={handleNextStep}
-                      className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-black text-xs uppercase tracking-wider shadow-lg shadow-purple-900/40 transition active:scale-95 flex items-center gap-2"
-                    >
-                      <span>
-                        {probingStep < 4
-                          ? `Lanjut ke Probing ${probingStep + 1}`
-                          : sessionItemIdx < currentSessionQuestions.length - 1
-                          ? `Lanjut ke Butir #${sessionItemIdx + 2}`
-                          : activeSession < 3
-                          ? `Selesaikan Sesi ${activeSession}`
-                          : "Selesaikan Keseluruhan Wawancara"}
-                      </span>
-                      <i className="fa-solid fa-chevron-right text-[10px]"></i>
-                    </button>
-                  </div>
                 </div>
-              )}
+
+              </div>
+
+              {/* ── BOTTOM STEP NAVIGATION (PREV & NEXT) ── */}
+              <div className="pt-2 border-t border-slate-200 flex items-center justify-between gap-3 bg-white p-3 rounded-2xl shadow-sm">
+                <button
+                  onClick={handlePrevStep}
+                  disabled={sessionItemIdx === 0 && probingStep === 1}
+                  className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 disabled:opacity-30 disabled:cursor-not-allowed text-slate-700 font-bold text-xs uppercase tracking-wider transition flex items-center gap-1.5"
+                >
+                  <i className="fa-solid fa-chevron-left text-[10px]"></i>
+                  <span>Sebelumnya</span>
+                </button>
+
+                <div className="text-center text-xs text-slate-500 font-bold hidden sm:block">
+                  Sesi {activeSession} · Butir {sessionItemIdx + 1} dari {currentSessionQuestions.length} · Probing Step {probingStep}/4
+                </div>
+
+                <button
+                  onClick={handleNextStep}
+                  className="px-5 py-2 rounded-xl bg-purple-700 hover:bg-purple-800 text-white font-black text-xs uppercase tracking-wider shadow-sm transition active:scale-95 flex items-center gap-1.5"
+                >
+                  <span>
+                    {probingStep < 4
+                      ? `Lanjut ke Probing ${probingStep + 1}`
+                      : sessionItemIdx < currentSessionQuestions.length - 1
+                      ? `Lanjut ke Butir #${sessionItemIdx + 2}`
+                      : activeSession < 3
+                      ? `Selesaikan Sesi ${activeSession}`
+                      : "Selesaikan Keseluruhan Wawancara"}
+                  </span>
+                  <i className="fa-solid fa-chevron-right text-[10px]"></i>
+                </button>
+              </div>
+
             </motion.div>
           )}
+
         </AnimatePresence>
       </main>
 
-      {/* ── MODAL: SESSION TRANSITION MODAL (1 -> 2 or 2 -> 3) ── */}
+      {/* ── MODAL TRANSISI ANTAR SESI ── */}
       {showSessionTransitionModal && (
-        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            className="max-w-md w-full p-6 md:p-8 rounded-3xl bg-slate-900 border border-purple-500/40 shadow-2xl text-center space-y-4"
-          >
-            <div className="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-400/40 flex items-center justify-center font-black text-2xl mx-auto shadow-lg">
-              <i className="fa-solid fa-trophy"></i>
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl p-6 md:p-8 max-w-md w-full border border-purple-200 shadow-2xl space-y-4 text-center">
+            <div className="w-14 h-14 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-black text-2xl mx-auto shadow-sm">
+              <i className="fa-solid fa-trophy text-emerald-600"></i>
             </div>
-
-            <h3 className="text-xl font-black text-white">
-              Sesi {showSessionTransitionModal.fromSession} Selesai!
-            </h3>
-
-            <p className="text-xs md:text-sm text-slate-300 leading-relaxed">
-              Seluruh 10 butir pada Sesi {showSessionTransitionModal.fromSession} telah berhasil Anda respons dan tersimpan di database admin. Sesi {showSessionTransitionModal.toSession} kini telah terbuka secara otomatis.
-            </p>
-
-            <div className="pt-2 flex flex-col gap-2.5">
-              <button
-                onClick={() => {
-                  const nextSession = showSessionTransitionModal.toSession;
-                  setShowSessionTransitionModal(null);
-                  setActiveSession(nextSession);
-                  setSessionItemIdx(0);
-                  setProbingStep(1);
-                  resetRecordingState();
-                }}
-                className="w-full py-3 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white rounded-xl font-black text-xs uppercase tracking-wider shadow-lg shadow-purple-900/50 transition active:scale-95"
-              >
-                <span>Mulai Sesi {showSessionTransitionModal.toSession} Sekarang</span>
-              </button>
-
-              <button
-                onClick={() => setShowSessionTransitionModal(null)}
-                className="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl font-bold text-xs uppercase transition"
-              >
-                <span>Istirahat Sejenak</span>
-              </button>
+            <div>
+              <h3 className="text-lg md:text-xl font-black text-slate-900">
+                Sesi {showSessionTransitionModal.fromSession} Selesai!
+              </h3>
+              <p className="text-xs text-slate-600 mt-1 leading-relaxed">
+                Luar biasa! Anda telah menyelesaikan 10 butir dan 40 tahap probing pada Sesi {showSessionTransitionModal.fromSession}. Sesi {showSessionTransitionModal.toSession} telah terbuka secara otomatis.
+              </p>
             </div>
-          </motion.div>
+            <button
+              onClick={() => {
+                setActiveSession(showSessionTransitionModal.toSession);
+                setSessionItemIdx(0);
+                setProbingStep(1);
+                setShowSessionTransitionModal(null);
+                resetRecordingState();
+              }}
+              className="w-full py-3 rounded-xl bg-purple-700 hover:bg-purple-800 text-white font-black text-xs uppercase tracking-wider shadow-md transition active:scale-95 flex items-center justify-center gap-2"
+            >
+              <span>Mulai Sesi {showSessionTransitionModal.toSession} Sekarang</span>
+              <i className="fa-solid fa-arrow-right"></i>
+            </button>
+          </div>
         </div>
       )}
 
-      {/* ── MODAL: FINAL COMPLETION MODAL ── */}
+      {/* ── MODAL KELULUSAN / SELESAI SELURUH SESI ── */}
       {showFinalCompletionModal && (
-        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            className="max-w-md w-full p-6 md:p-8 rounded-3xl bg-slate-900 border border-emerald-500/40 shadow-2xl text-center space-y-4"
-          >
-            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 text-white flex items-center justify-center font-black text-2xl mx-auto shadow-xl">
-              <i className="fa-solid fa-graduation-cap"></i>
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl p-6 md:p-8 max-w-lg w-full border border-purple-200 shadow-2xl space-y-4 text-center">
+            <div className="w-16 h-16 rounded-2xl bg-purple-100 text-purple-800 flex items-center justify-center font-black text-3xl mx-auto shadow-sm">
+              <i className="fa-solid fa-graduation-cap text-purple-700"></i>
             </div>
-
-            <h3 className="text-xl font-black text-white">
-              Selamat, Seluruh Sesi Selesai!
-            </h3>
-
-            <p className="text-xs md:text-sm text-slate-300 leading-relaxed">
-              Terima kasih atas dedikasi dan waktu Anda, <b>{userName}</b>. Seluruh rekaman suara verbal, transkrip verbatim, dan persetujuan informed consent telah tersimpan secara permanen di database server admin untuk keperluan pembakuan disertasi doktoral LBD-S3 / MADEL-S3.
-            </p>
-
-            <div className="pt-2 flex flex-col gap-2">
-              <button
-                onClick={() => router.push("/")}
-                className="w-full py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-xl font-black text-xs uppercase tracking-wider shadow-lg shadow-emerald-900/50 transition active:scale-95"
-              >
-                <span>Kembali ke Beranda</span>
-              </button>
+            <div>
+              <span className="px-3 py-1 rounded-full bg-purple-100 text-purple-900 text-[10px] font-black uppercase tracking-wider inline-block mb-2">
+                Doktoral S3 MAGER Complete
+              </span>
+              <h3 className="text-xl md:text-2xl font-black text-slate-900">
+                Terima Kasih atas Partisipasi Anda!
+              </h3>
+              <p className="text-xs text-slate-600 mt-2 leading-relaxed">
+                Seluruh 30 butir instrumen (120 tahap probing kognitif) telah berhasil Anda selesaikan dan tersimpan utuh di Panel Admin. Kontribusi Anda sangat berharga bagi pengembangan model pengukuran lingkungan belajar digital doktoral.
+              </p>
             </div>
-          </motion.div>
+            <div className="p-3 bg-purple-50 rounded-xl border border-purple-200 text-left text-xs space-y-1">
+              <div className="text-slate-500 font-medium">Partisipan: <b className="text-slate-900">{userName || "-"}</b></div>
+              <div className="text-slate-500 font-medium">Universitas: <b className="text-slate-900">{userCampus || "-"}</b></div>
+              <div className="text-slate-500 font-medium">Total Rekaman Suara: <b className="text-purple-800">120 Respon Kognitif Selesai</b></div>
+            </div>
+            <button
+              onClick={() => router.push("/")}
+              className="w-full py-3 rounded-xl bg-purple-700 hover:bg-purple-800 text-white font-black text-xs uppercase tracking-wider shadow-md transition active:scale-95 flex items-center justify-center gap-2"
+            >
+              <i className="fa-solid fa-house"></i>
+              <span>Kembali ke Beranda Utama</span>
+            </button>
+          </div>
         </div>
       )}
+
     </div>
   );
 }
-

@@ -30,6 +30,21 @@ export interface MagerQuestion {
   probings: MagerProbings;
 }
 
+export const DIMENSION_LABELS: Record<string, string> = {
+  D1: "D1: Infrastruktur & Aksesibilitas Riset Digital",
+  D2: "D2: Bimbingan & Komunikasi Ilmiah Promotor",
+  D3: "D3: Integrasi AI & Piranti Analisis Akademik",
+  D4: "D4: Manajemen Disertasi & Publikasi Reputasi",
+  D5: "D5: Kolaborasi & Jaringan Peneliti Doktoral",
+  D6: "D6: Etika, Integritas, & Wellbeing Akademik",
+};
+
+export const SESSION_DETAILS: Record<number, { title: string; subtitle: string }> = {
+  1: { title: "Sesi 1: Dimensi D1 & D2", subtitle: "Infrastruktur Digital & Bimbingan Promotor" },
+  2: { title: "Sesi 2: Dimensi D3 & D4", subtitle: "Integrasi AI & Manajemen Disertasi" },
+  3: { title: "Sesi 3: Dimensi D5 & D6", subtitle: "Kolaborasi Riset & Etika Publikasi" },
+};
+
 export const MAGER_QUESTIONS: MagerQuestion[] = [
   {
     "id": 1,
