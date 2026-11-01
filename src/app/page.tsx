@@ -280,7 +280,8 @@ export default function Home() {
         {/* MAIN CONTENT CONTAINER */}
         <div className="relative z-20 w-full px-4 md:px-14 lg:px-20 max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-12">
           
-          <div className="max-w-2xl">
+          {/* ─── KIRI: HEADER BRANDING & KARTU ANIMASI MELAYANG (RADAR CHART 5D & PANEL PSIKOMETRI) ─── */}
+          <div className="flex-1 max-w-2xl">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-100 border border-amber-300 text-amber-900 text-[10px] md:text-xs font-black uppercase tracking-widest shadow-md mb-4">
               <i className="fa-solid fa-square-poll-vertical text-blue-700 animate-bounce"></i> HYBRID-DIAGNOSTIC ASSESSMENT PLATFORM (HDAP)
             </div>
@@ -290,7 +291,109 @@ export default function Home() {
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-700 via-indigo-600 to-emerald-600 text-emboss-3d-title">LITERASI DIGITAL</span>
             </h1>
 
-            <div className="mt-8 max-w-xl card-timbul p-6 md:p-8 rounded-[32px] bg-white/95 backdrop-blur-md shadow-2xl border-t-4 border-t-blue-600 border-x-2 border-b-4 border-slate-200">
+            {/* KARTU ANIMASI MELAYANG DI BAWAH JUDUL WEB */}
+            <div className="mt-8 max-w-xl float-anim">
+              <div className="card-timbul p-6 rounded-[36px] bg-white backdrop-blur-xl border-2 border-slate-200 border-b-8 border-b-slate-400 shadow-2xl text-slate-900 relative overflow-hidden">
+                
+                {/* Header Card Panel */}
+                <div className="flex items-center justify-between pb-4 mb-4 border-b border-slate-100">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white flex items-center justify-center font-black text-base shadow-lg border-b-2 border-indigo-950">
+                      <i className="fa-solid fa-chart-pie"></i>
+                    </div>
+                    <div>
+                      <span className="text-[9px] font-black text-blue-700 uppercase tracking-widest block">PANEL USER & ADMIN</span>
+                      <span className="text-sm font-black text-slate-900 uppercase tracking-tight block">Radar Chart & Analisis Psikometri</span>
+                    </div>
+                  </div>
+                  <span className="px-2.5 py-1 bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-full text-[8px] font-black uppercase">
+                    ● Realtime Diagnostic
+                  </span>
+                </div>
+
+                {/* VISUAL RADAR CHART 5 DIMENSI (SVG VECTOR INTERAKTIF) */}
+                <div className="relative w-full h-52 flex items-center justify-center bg-slate-50 rounded-2xl p-2 border border-slate-200">
+                  <svg className="w-full h-full" viewBox="0 0 200 200">
+                    {/* Grid Pentagon Radar */}
+                    <polygon points="100,20 176,75 147,165 53,165 24,75" fill="none" stroke="#cbd5e1" strokeWidth="1" />
+                    <polygon points="100,45 152,82 132,142 68,142 48,82" fill="none" stroke="#cbd5e1" strokeWidth="1" />
+                    <polygon points="100,70 128,90 118,120 82,120 72,90" fill="none" stroke="#e2e8f0" strokeWidth="1" />
+                    
+                    {/* Radar Axes */}
+                    <line x1="100" y1="100" x2="100" y2="20" stroke="#cbd5e1" strokeWidth="1" />
+                    <line x1="100" y1="100" x2="176" y2="75" stroke="#cbd5e1" strokeWidth="1" />
+                    <line x1="100" y1="100" x2="147" y2="165" stroke="#cbd5e1" strokeWidth="1" />
+                    <line x1="100" y1="100" x2="53" y2="165" stroke="#cbd5e1" strokeWidth="1" />
+                    <line x1="100" y1="100" x2="24" y2="75" stroke="#cbd5e1" strokeWidth="1" />
+
+                    {/* Dynamic Radar Score Polygon */}
+                    <polygon 
+                      points="100,32 165,80 138,155 60,150 35,78" 
+                      fill="rgba(37, 99, 235, 0.25)" 
+                      stroke="#2563eb" 
+                      strokeWidth="2.5" 
+                    />
+                    {/* Radar Vertex Dots */}
+                    <circle cx="100" cy="32" r="4" fill="#2563eb" />
+                    <circle cx="165" cy="80" r="4" fill="#059669" />
+                    <circle cx="138" cy="155" r="4" fill="#d97706" />
+                    <circle cx="60" cy="150" r="4" fill="#7c3aed" />
+                    <circle cx="35" cy="78" r="4" fill="#e11d48" />
+                  </svg>
+
+                  {/* Radar Axis Labels */}
+                  <span className="absolute top-1 text-[8px] font-black text-blue-700 bg-white px-1.5 py-0.5 rounded border border-blue-200 shadow-sm">MADEL-5C</span>
+                  <span className="absolute top-14 right-2 text-[8px] font-black text-emerald-700 bg-white px-1.5 py-0.5 rounded border border-emerald-200 shadow-sm">MADEL-GO</span>
+                  <span className="absolute bottom-2 right-6 text-[8px] font-black text-amber-700 bg-white px-1.5 py-0.5 rounded border border-amber-200 shadow-sm">MADEL-PAK</span>
+                  <span className="absolute bottom-2 left-6 text-[8px] font-black text-purple-700 bg-white px-1.5 py-0.5 rounded border border-purple-200 shadow-sm">MADEL-ART</span>
+                  <span className="absolute top-14 left-2 text-[8px] font-black text-rose-700 bg-white px-1.5 py-0.5 rounded border border-rose-200 shadow-sm">MADEL-V</span>
+                </div>
+
+                {/* ADMIN TOOLBAR BADGES (DIF, WRIGHT MAP, CTT, R-STUDIO) */}
+                <div className="grid grid-cols-4 gap-1.5 mt-3">
+                  <div className="bg-slate-50 p-1.5 rounded-xl border border-slate-200 text-center">
+                    <i className="fa-solid fa-scale-balanced text-blue-600 text-xs block mb-0.5"></i>
+                    <span className="text-[7px] font-black text-slate-800 uppercase block">DIF Bias</span>
+                  </div>
+                  <div className="bg-slate-50 p-1.5 rounded-xl border border-slate-200 text-center">
+                    <i className="fa-solid fa-ruler-vertical text-emerald-600 text-xs block mb-0.5"></i>
+                    <span className="text-[7px] font-black text-slate-800 uppercase block">Wright Map</span>
+                  </div>
+                  <div className="bg-slate-50 p-1.5 rounded-xl border border-slate-200 text-center">
+                    <i className="fa-solid fa-calculator text-amber-600 text-xs block mb-0.5"></i>
+                    <span className="text-[7px] font-black text-slate-800 uppercase block">CTT Engine</span>
+                  </div>
+                  <div className="bg-slate-50 p-1.5 rounded-xl border border-slate-200 text-center">
+                    <i className="fa-solid fa-code text-purple-600 text-xs block mb-0.5"></i>
+                    <span className="text-[7px] font-black text-slate-800 uppercase block">R-Studio</span>
+                  </div>
+                </div>
+
+                {/* Metrics Bar inside Panel */}
+                <div className="grid grid-cols-2 gap-3 mt-3">
+                  <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-200 flex items-center justify-between">
+                    <div>
+                      <span className="text-[8px] font-black text-slate-500 uppercase block">SKOR THETA (IRT)</span>
+                      <span className="text-sm font-black text-blue-700 block">θ = +1.68</span>
+                    </div>
+                    <span className="text-[8px] font-black text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded border border-emerald-300">HIGH</span>
+                  </div>
+                  <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-200 flex items-center justify-between">
+                    <div>
+                      <span className="text-[8px] font-black text-slate-500 uppercase block">RELIABILITAS (α)</span>
+                      <span className="text-sm font-black text-amber-700 block">α = 0.94</span>
+                    </div>
+                    <span className="text-[8px] font-black text-amber-700 bg-amber-100 px-2 py-0.5 rounded border border-amber-300">VERY HIGH</span>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          {/* ─── KANAN: PORTAL ASESMEN & FITUR THINK-ALOUD ─── */}
+          <div className="w-full lg:w-[500px] xl:w-[520px] shrink-0">
+            <div className="card-timbul p-6 md:p-8 rounded-[32px] bg-white/95 backdrop-blur-md shadow-2xl border-t-4 border-t-blue-600 border-x-2 border-b-4 border-slate-200">
               <div className="flex items-center gap-3 mb-3">
                 <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white flex items-center justify-center font-black text-sm shadow-md border-b-2 border-indigo-950">
                   <i className="fa-solid fa-microchip"></i>
@@ -400,105 +503,6 @@ export default function Home() {
                   </div>
                 </button>
               </div>
-            </div>
-          </div>
-
-          {/* ─── SHOWCASE PANEL DASHBOARD USER & ADMIN (RADAR CHART 5D, DIF, WRIGHT MAP, CTT, R-STUDIO) ─── */}
-          <div className="w-full lg:w-[480px] shrink-0 float-anim">
-            <div className="card-timbul p-6 rounded-[36px] bg-white backdrop-blur-xl border-2 border-slate-200 border-b-8 border-b-slate-400 shadow-2xl text-slate-900 relative overflow-hidden">
-              
-              {/* Header Card Panel */}
-              <div className="flex items-center justify-between pb-4 mb-4 border-b border-slate-100">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white flex items-center justify-center font-black text-base shadow-lg border-b-2 border-indigo-950">
-                    <i className="fa-solid fa-chart-pie"></i>
-                  </div>
-                  <div>
-                    <span className="text-[9px] font-black text-blue-700 uppercase tracking-widest block">PANEL USER & ADMIN</span>
-                    <span className="text-sm font-black text-slate-900 uppercase tracking-tight block">Radar Chart & Analisis Psikometri</span>
-                  </div>
-                </div>
-                <span className="px-2.5 py-1 bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-full text-[8px] font-black uppercase">
-                  ● Realtime Diagnostic
-                </span>
-              </div>
-
-              {/* VISUAL RADAR CHART 5 DIMENSI (SVG VECTOR INTERAKTIF) */}
-              <div className="relative w-full h-52 flex items-center justify-center bg-slate-50 rounded-2xl p-2 border border-slate-200">
-                <svg className="w-full h-full" viewBox="0 0 200 200">
-                  {/* Grid Pentagon Radar */}
-                  <polygon points="100,20 176,75 147,165 53,165 24,75" fill="none" stroke="#cbd5e1" strokeWidth="1" />
-                  <polygon points="100,45 152,82 132,142 68,142 48,82" fill="none" stroke="#cbd5e1" strokeWidth="1" />
-                  <polygon points="100,70 128,90 118,120 82,120 72,90" fill="none" stroke="#e2e8f0" strokeWidth="1" />
-                  
-                  {/* Radar Axes */}
-                  <line x1="100" y1="100" x2="100" y2="20" stroke="#cbd5e1" strokeWidth="1" />
-                  <line x1="100" y1="100" x2="176" y2="75" stroke="#cbd5e1" strokeWidth="1" />
-                  <line x1="100" y1="100" x2="147" y2="165" stroke="#cbd5e1" strokeWidth="1" />
-                  <line x1="100" y1="100" x2="53" y2="165" stroke="#cbd5e1" strokeWidth="1" />
-                  <line x1="100" y1="100" x2="24" y2="75" stroke="#cbd5e1" strokeWidth="1" />
-
-                  {/* Dynamic Radar Score Polygon */}
-                  <polygon 
-                    points="100,32 165,80 138,155 60,150 35,78" 
-                    fill="rgba(37, 99, 235, 0.25)" 
-                    stroke="#2563eb" 
-                    strokeWidth="2.5" 
-                  />
-                  {/* Radar Vertex Dots */}
-                  <circle cx="100" cy="32" r="4" fill="#2563eb" />
-                  <circle cx="165" cy="80" r="4" fill="#059669" />
-                  <circle cx="138" cy="155" r="4" fill="#d97706" />
-                  <circle cx="60" cy="150" r="4" fill="#7c3aed" />
-                  <circle cx="35" cy="78" r="4" fill="#e11d48" />
-                </svg>
-
-                {/* Radar Axis Labels */}
-                <span className="absolute top-1 text-[8px] font-black text-blue-700 bg-white px-1.5 py-0.5 rounded border border-blue-200 shadow-sm">MADEL-5C</span>
-                <span className="absolute top-14 right-2 text-[8px] font-black text-emerald-700 bg-white px-1.5 py-0.5 rounded border border-emerald-200 shadow-sm">MADEL-GO</span>
-                <span className="absolute bottom-2 right-6 text-[8px] font-black text-amber-700 bg-white px-1.5 py-0.5 rounded border border-amber-200 shadow-sm">MADEL-PAK</span>
-                <span className="absolute bottom-2 left-6 text-[8px] font-black text-purple-700 bg-white px-1.5 py-0.5 rounded border border-purple-200 shadow-sm">MADEL-ART</span>
-                <span className="absolute top-14 left-2 text-[8px] font-black text-rose-700 bg-white px-1.5 py-0.5 rounded border border-rose-200 shadow-sm">MADEL-V</span>
-              </div>
-
-              {/* ADMIN TOOLBAR BADGES (DIF, WRIGHT MAP, CTT, R-STUDIO) */}
-              <div className="grid grid-cols-4 gap-1.5 mt-3">
-                <div className="bg-slate-50 p-1.5 rounded-xl border border-slate-200 text-center">
-                  <i className="fa-solid fa-scale-balanced text-blue-600 text-xs block mb-0.5"></i>
-                  <span className="text-[7px] font-black text-slate-800 uppercase block">DIF Bias</span>
-                </div>
-                <div className="bg-slate-50 p-1.5 rounded-xl border border-slate-200 text-center">
-                  <i className="fa-solid fa-ruler-vertical text-emerald-600 text-xs block mb-0.5"></i>
-                  <span className="text-[7px] font-black text-slate-800 uppercase block">Wright Map</span>
-                </div>
-                <div className="bg-slate-50 p-1.5 rounded-xl border border-slate-200 text-center">
-                  <i className="fa-solid fa-calculator text-amber-600 text-xs block mb-0.5"></i>
-                  <span className="text-[7px] font-black text-slate-800 uppercase block">CTT Engine</span>
-                </div>
-                <div className="bg-slate-50 p-1.5 rounded-xl border border-slate-200 text-center">
-                  <i className="fa-solid fa-code text-purple-600 text-xs block mb-0.5"></i>
-                  <span className="text-[7px] font-black text-slate-800 uppercase block">R-Studio</span>
-                </div>
-              </div>
-
-              {/* Metrics Bar inside Panel */}
-              <div className="grid grid-cols-2 gap-3 mt-3">
-                <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-200 flex items-center justify-between">
-                  <div>
-                    <span className="text-[8px] font-black text-slate-500 uppercase block">SKOR THETA (IRT)</span>
-                    <span className="text-sm font-black text-blue-700 block">θ = +1.68</span>
-                  </div>
-                  <span className="text-[8px] font-black text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded border border-emerald-300">HIGH</span>
-                </div>
-                <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-200 flex items-center justify-between">
-                  <div>
-                    <span className="text-[8px] font-black text-slate-500 uppercase block">RELIABILITAS (α)</span>
-                    <span className="text-sm font-black text-amber-700 block">α = 0.94</span>
-                  </div>
-                  <span className="text-[8px] font-black text-amber-700 bg-amber-100 px-2 py-0.5 rounded border border-amber-300">VERY HIGH</span>
-                </div>
-              </div>
-
             </div>
           </div>
 
