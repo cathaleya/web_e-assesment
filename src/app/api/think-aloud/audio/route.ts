@@ -176,12 +176,20 @@ export async function GET(req: Request) {
       const filterLevel = url.searchParams.get("level"); // 's2s3' | 's1' | 'all'
 
       let targetRecordings = recordings;
-      if (filterLevel === "art") {
-        targetRecordings = recordings.filter((r: any) => (r.respondentLevel && (r.respondentLevel.includes("Seni") || r.respondentLevel.includes("Art"))) || (r.sjtId && (r.sjtId.startsWith("M") || r.sjtId.startsWith("D"))));
+      if (filterLevel === "mager") {
+        targetRecordings = recordings.filter((r: any) => 
+          (r.respondentLevel && (r.respondentLevel.includes("MAGER") || r.respondentLevel.includes("Doktoral") || r.respondentLevel.includes("LBD-S3"))) ||
+          (r.sjtId && /^D[1-6]\./i.test(r.sjtId))
+        );
+      } else if (filterLevel === "art") {
+        targetRecordings = recordings.filter((r: any) => 
+          (r.respondentLevel && (r.respondentLevel.includes("Seni") || r.respondentLevel.includes("Art"))) || 
+          (r.sjtId && (r.sjtId.startsWith("M") || (r.sjtId.startsWith("D") && !/^D[1-6]\./i.test(r.sjtId))))
+        );
       } else if (filterLevel === "s2s3") {
-        targetRecordings = recordings.filter((r: any) => r.respondentLevel && r.respondentLevel.includes("S2/S3"));
+        targetRecordings = recordings.filter((r: any) => r.respondentLevel && r.respondentLevel.includes("S2/S3") && !r.respondentLevel.includes("MAGER"));
       } else if (filterLevel === "s1") {
-        targetRecordings = recordings.filter((r: any) => (!r.respondentLevel || (!r.respondentLevel.includes("S2/S3") && !r.respondentLevel.includes("Seni") && !r.respondentLevel.includes("Art"))) && (!r.sjtId || (!r.sjtId.startsWith("M") && !r.sjtId.startsWith("D"))));
+        targetRecordings = recordings.filter((r: any) => (!r.respondentLevel || (!r.respondentLevel.includes("S2/S3") && !r.respondentLevel.includes("Seni") && !r.respondentLevel.includes("Art") && !r.respondentLevel.includes("MAGER") && !r.respondentLevel.includes("Doktoral"))) && (!r.sjtId || (!r.sjtId.startsWith("M") && !r.sjtId.startsWith("D"))));
       }
 
       let addedAudioCount = 0;
@@ -252,7 +260,7 @@ export async function GET(req: Request) {
       }
 
       const zipBuffer = zip.toBuffer();
-      const levelLabel = filterLevel === "art" ? "PPG_Pendidikan_Seni" : filterLevel === "s2s3" ? "Pascasarjana_S2_S3" : filterLevel === "s1" ? "S1_Calon_Guru" : "Semua";
+      const levelLabel = filterLevel === "mager" ? "Doktoral_S3_MAGER" : filterLevel === "art" ? "PPG_Pendidikan_Seni" : filterLevel === "s2s3" ? "Pascasarjana_S2_S3" : filterLevel === "s1" ? "S1_Calon_Guru" : "Semua";
       const zipFilename = `Rekaman_Audio_ThinkAloud_${levelLabel}_${new Date().toISOString().slice(0, 10)}.zip`;
 
       return new NextResponse(zipBuffer, {

@@ -122,6 +122,15 @@ export default function Home() {
             <span className="px-1.5 py-0.5 rounded bg-slate-950 text-emerald-300 text-[8px] font-black">10 BUTIR</span>
           </button>
           <button
+            onClick={() => router.push("/assessment/think-aloud-mager")}
+            className="px-3.5 py-2 bg-gradient-to-r from-purple-900 via-indigo-900 to-slate-900 hover:from-purple-800 hover:to-indigo-800 text-white rounded-xl text-[10px] font-black uppercase tracking-wider shadow-md border-2 border-purple-500/50 border-b-2 border-b-purple-400 active:scale-95 transition-all flex items-center gap-1.5"
+            title="Wawancara Kognitif Think-Aloud Doktoral S3 MAGER (30 Butir — 3 Sesi 3-Tier)"
+          >
+            <i className="fa-solid fa-graduation-cap text-amber-300"></i>
+            <span>THINK A LOUD MAGER</span>
+            <span className="px-1.5 py-0.5 rounded bg-amber-400 text-slate-950 text-[8px] font-black">30 BUTIR</span>
+          </button>
+          <button
             onClick={() => router.push("/login/think-aloud-s3")}
             className="px-3.5 py-2 bg-gradient-to-r from-purple-700 via-indigo-700 to-purple-800 hover:from-purple-800 hover:to-indigo-800 text-white rounded-xl text-[10px] font-black uppercase tracking-wider shadow-md border-b-2 border-purple-950 active:scale-95 transition-all flex items-center gap-1.5"
             title="Wawancara Kognitif Think-Aloud Khusus Mahasiswa S2 & S3 (15 Butir)"
@@ -155,6 +164,14 @@ export default function Home() {
           >
             <i className="fa-solid fa-chalkboard-user text-[10px]"></i>
             <span>DOSEN</span>
+          </button>
+          <button
+            onClick={() => router.push("/assessment/think-aloud-mager")}
+            className="px-2.5 py-1.5 bg-gradient-to-r from-purple-900 to-indigo-950 text-white rounded-xl text-[9px] font-black uppercase tracking-tight flex items-center gap-1 shadow-md border-b-2 border-purple-500"
+            title="THINK A LOUD MAGER DOKTORAL S3"
+          >
+            <i className="fa-solid fa-graduation-cap text-amber-300 text-[10px]"></i>
+            <span>MAGER</span>
           </button>
           <button
             onClick={() => router.push("/login/think-aloud-s3")}
@@ -351,6 +368,33 @@ export default function Home() {
                     </div>
                   </div>
                   <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-950 text-emerald-300 font-black text-xs uppercase tracking-wider shadow-sm group-hover:bg-slate-900 group-hover:translate-x-0.5 transition-all shrink-0">
+                    <span>BUKA</span>
+                    <i className="fa-solid fa-arrow-right"></i>
+                  </div>
+                </button>
+
+                {/* 3. THINK A LOUD MAGER — DOKTORAL S3 */}
+                <button
+                  onClick={() => router.push("/assessment/think-aloud-mager")}
+                  className="w-full p-3.5 md:p-4 bg-gradient-to-r from-purple-950 via-indigo-950 to-slate-950 hover:from-purple-900 hover:to-indigo-900 text-white rounded-2xl font-black text-xs md:text-sm uppercase tracking-wider shadow-xl shadow-purple-950/40 border-2 border-purple-500/50 border-b-4 border-b-purple-400 active:scale-95 transition-all flex items-center justify-between gap-3 text-left group"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 md:w-11 md:h-11 rounded-2xl bg-gradient-to-br from-purple-600 to-indigo-600 text-white flex items-center justify-center font-black text-lg md:text-xl shadow-md group-hover:scale-110 transition-transform shrink-0 border border-purple-400/40">
+                      <i className="fa-solid fa-graduation-cap text-amber-300"></i>
+                    </div>
+                    <div className="flex flex-col leading-tight">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="text-xs md:text-sm font-black text-white tracking-tight">THINK A LOUD MAGER</span>
+                        <span className="px-2 py-0.5 rounded-full bg-amber-400 text-slate-950 text-[8px] md:text-[9px] font-black uppercase tracking-wider shadow-sm">
+                          30 BUTIR · 3 SESI 3-TIER
+                        </span>
+                      </div>
+                      <span className="text-[10px] md:text-[11px] font-bold text-purple-200">
+                        Wawancara Kognitif Lingkungan Belajar Digital Doktoral (LBD-S3 / MADEL-S3)
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-black text-xs uppercase tracking-wider shadow-sm group-hover:translate-x-0.5 transition-all shrink-0">
                     <span>BUKA</span>
                     <i className="fa-solid fa-arrow-right"></i>
                   </div>

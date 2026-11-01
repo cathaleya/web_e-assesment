@@ -212,3 +212,7 @@ Pembersihan database dapat dilakukan langsung secara aman lewat:
 ```bash
 docker exec -it hdap-db psql -U postgres -d hdap -c 'TRUNCATE TABLE "Assessment", "Survey", "User" RESTART IDENTITY CASCADE;'
 ```
+cd /var/www/risetku
+git pull origin main
+docker compose build --no-cache
+docker compose up -d
