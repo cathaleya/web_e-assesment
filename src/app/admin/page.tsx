@@ -327,11 +327,12 @@ export default function AdminDashboard() {
       ? audioRecordings.filter((r: any) => (!r.respondentLevel || (!r.respondentLevel.includes('S2/S3') && !r.respondentLevel.includes('Seni') && !r.respondentLevel.includes('Art'))) && (!r.sjtId || (!r.sjtId.startsWith('M') && !r.sjtId.startsWith('D'))))
       : audioRecordings;
 
-    const headers = ["No", "ID", "Nama Peserta", "Kampus", "Jenjang", "Program Studi", "Sesi", "Soal No", "SJT ID", "Step Probing", "Judul Pertanyaan", "Opsi Terpilih", "Durasi (detik)", "Transkrip Verbatim", "Audio URL", "Waktu Submit"];
+    const headers = ["No", "ID", "Nama Peserta", "Jenis Kelamin", "Kampus", "Jenjang", "Program Studi", "Sesi", "Soal No", "SJT ID", "Step Probing", "Judul Pertanyaan", "Opsi Terpilih", "Durasi (detik)", "Transkrip Verbatim", "Audio URL", "Waktu Submit"];
     const rows = target.map((rec: any, idx: number) => [
       idx + 1,
       `"${rec.id || ''}"`,
       `"${(rec.userName || '').replace(/"/g, '""')}"`,
+      `"${(rec.userGender || rec.gender || '').replace(/"/g, '""')}"`,
       `"${(rec.userCampus || '').replace(/"/g, '""')}"`,
       `"${(rec.respondentLevel || 'S1 Calon Guru').replace(/"/g, '""')}"`,
       `"${(rec.studyProgram || '').replace(/"/g, '""')}"`,
@@ -460,6 +461,7 @@ export default function AdminDashboard() {
         <p style="font-size: 10.5pt;">Data Responden Penelitian Disertasi:</p>
         <table class="table-meta">
           <tr><td width="32%" class="bold">Nama Lengkap Partisipan</td><td>: <strong>${consent.userName}</strong></td></tr>
+          ${consent.userGender || consent.gender ? `<tr><td class="bold">Jenis Kelamin</td><td>: ${consent.userGender || consent.gender}</td></tr>` : ''}
           <tr><td class="bold">Jenjang Responden</td><td>: ${consent.respondentLevel || 'S1 Calon Guru'}</td></tr>
           ${consent.studyProgram ? `<tr><td class="bold">Program Studi</td><td>: ${consent.studyProgram}</td></tr>` : ''}
           <tr><td class="bold">NIM / NPM / ID</td><td>: ${consent.userNim || '-'}</td></tr>
@@ -525,6 +527,7 @@ export default function AdminDashboard() {
         <p style="font-size: 10.5pt; margin-bottom: 10px;">Saya yang bertanda tangan di bawah ini:</p>
         <table class="table-meta">
           <tr><td width="32%" class="bold">Nama Lengkap Partisipan</td><td>: <strong>${consent.userName}</strong></td></tr>
+          ${consent.userGender || consent.gender ? `<tr><td class="bold">Jenis Kelamin</td><td>: ${consent.userGender || consent.gender}</td></tr>` : ''}
           <tr><td class="bold">Jenjang Responden</td><td>: ${consent.respondentLevel || 'S1 Calon Guru'}</td></tr>
           ${consent.studyProgram ? `<tr><td class="bold">Program Studi</td><td>: ${consent.studyProgram}</td></tr>` : ''}
           <tr><td class="bold">NIM / NPM / ID</td><td>: ${consent.userNim || '-'}</td></tr>
@@ -3451,7 +3454,14 @@ ${rec.transcript || '[Tanpa Teks Verbatim]'}
                                         👨‍🏫 S1 CALON GURU
                                       </span>
                                     )}
-                                    <div className="font-bold text-slate-900">{rec.userName}</div>
+                                    <div className="font-bold text-slate-900 flex items-center gap-1.5 flex-wrap">
+                                      <span>{rec.userName}</span>
+                                      {(rec.userGender || rec.gender) && (
+                                        <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-300">
+                                          {rec.userGender === "Laki-Laki" || rec.gender === "Laki-Laki" ? "♂ L" : rec.userGender === "Perempuan" || rec.gender === "Perempuan" ? "♀ P" : (rec.userGender || rec.gender)}
+                                        </span>
+                                      )}
+                                    </div>
                                     {rec.studyProgram && (
                                       <div className="text-[10px] text-purple-800 font-semibold">{rec.studyProgram}</div>
                                     )}
@@ -3700,7 +3710,14 @@ ${rec.transcript || '[Tanpa Teks Verbatim]'}
                                   👨‍🏫 S1 CALON GURU
                                 </span>
                               )}
-                              <div className="font-bold text-slate-900 text-sm">{c.userName}</div>
+                              <div className="font-bold text-slate-900 text-sm flex items-center gap-1.5 flex-wrap">
+                                <span>{c.userName}</span>
+                                {(c.userGender || c.gender) && (
+                                  <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-300">
+                                    {c.userGender === "Laki-Laki" || c.gender === "Laki-Laki" ? "♂ L" : c.userGender === "Perempuan" || c.gender === "Perempuan" ? "♀ P" : (c.userGender || c.gender)}
+                                  </span>
+                                )}
+                              </div>
                               {c.studyProgram && (
                                 <div className="text-[10px] text-purple-800 font-semibold">{c.studyProgram}</div>
                               )}

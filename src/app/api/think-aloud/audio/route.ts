@@ -42,6 +42,7 @@ export async function POST(req: Request) {
     const userCampus = (formData.get("userCampus") as string) || "LPTK";
     const respondentLevel = (formData.get("respondentLevel") as string) || "S1 Calon Guru";
     const studyProgram = (formData.get("studyProgram") as string) || "";
+    const userGender = (formData.get("gender") as string) || (formData.get("userGender") as string) || "";
     const sessionNo = parseInt((formData.get("sessionNo") as string) || "1", 10);
     const itemNo = parseInt((formData.get("itemNo") as string) || "1", 10);
     const sjtId = (formData.get("sjtId") as string) || `SJT_${itemNo.toString().padStart(2, "0")}`;
@@ -124,6 +125,7 @@ export async function POST(req: Request) {
       userCampus,
       respondentLevel,
       studyProgram,
+      userGender,
       sessionNo,
       itemNo,
       sjtId,

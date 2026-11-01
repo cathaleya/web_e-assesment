@@ -272,6 +272,7 @@ export default function ThinkAloudMagerPage() {
   // PARTICIPANT PROFILE (S3 DOKTORAL) — HARUS BENAR-BENAR KOSONG
   const [userName, setUserName] = useState("");
   const [userNim, setUserNim] = useState("");
+  const [userGender, setUserGender] = useState("");
   const [userCampus, setUserCampus] = useState("");
   const [userStudyProgram, setUserStudyProgram] = useState("");
   const [userResearchTopic, setUserResearchTopic] = useState("");
@@ -318,30 +319,25 @@ export default function ThinkAloudMagerPage() {
   const analyserRef = useRef<AnalyserNode | null>(null);
   const finalTranscriptRef = useRef<string>("");
 
-  // RESTORE SESSION UNLOCKS FROM LOCALSTORAGE
+  // RESTORE SESSION UNLOCKS & BERSIHKAN DATA DUMMY DARI LOCALSTORAGE
   useEffect(() => {
     try {
+      // Bersihkan seluruh data dummy / test masa lalu agar form 100% kosong
+      localStorage.removeItem("mager_userName");
+      localStorage.removeItem("mager_userCampus");
+      localStorage.removeItem("mager_userNim");
+      localStorage.removeItem("mager_userStudyProgram");
+      localStorage.removeItem("mager_userResearchTopic");
+      localStorage.removeItem("mager_userGender");
+      localStorage.removeItem("mager_consentApproved");
+
       const s2 = localStorage.getItem("mager_session2_unlocked") === "true";
       const s3 = localStorage.getItem("mager_session3_unlocked") === "true";
       if (s2 || s3) {
         setUnlockedSessions({ 1: true, 2: s2, 3: s3 });
       }
-
-      const savedName = localStorage.getItem("mager_userName");
-      const savedCampus = localStorage.getItem("mager_userCampus");
-      const savedNim = localStorage.getItem("mager_userNim");
-      const savedProgram = localStorage.getItem("mager_userStudyProgram");
-      const savedTopic = localStorage.getItem("mager_userResearchTopic");
-      const savedConsent = localStorage.getItem("mager_consentApproved") === "true";
-
-      if (savedName) setUserName(savedName);
-      if (savedCampus) setUserCampus(savedCampus);
-      if (savedNim) setUserNim(savedNim);
-      if (savedProgram) setUserStudyProgram(savedProgram);
-      if (savedTopic) setUserResearchTopic(savedTopic);
-      if (savedConsent) setConsentApproved(true);
     } catch (e) {
-      console.warn("Gagal membaca localStorage:", e);
+      console.warn("Storage notice:", e);
     }
   }, []);
 
@@ -645,6 +641,7 @@ export default function ThinkAloudMagerPage() {
       formData.append("userName", userName.trim() || "Kandidat Doktor S3");
       formData.append("userCampus", userCampus.trim() || "Universitas Doktoral");
       formData.append("studyProgram", userStudyProgram.trim() || "Doktoral S3");
+      formData.append("gender", userGender);
       formData.append("respondentLevel", "Mahasiswa Doktoral S3 (MAGER)");
       formData.append("sessionNo", activeSession.toString());
       formData.append("itemNo", currentQ.id.toString());
@@ -881,8 +878,8 @@ export default function ThinkAloudMagerPage() {
           </button>
           <button
             onClick={() => {
-              if (!userName.trim() || !userCampus.trim() || !userStudyProgram.trim()) {
-                alert("Mohon lengkapi data profil Nama, Universitas, dan Program Studi terlebih dahulu!");
+              if (!userName.trim() || !userGender.trim() || !userCampus.trim() || !userStudyProgram.trim()) {
+                alert("Mohon lengkapi data profil Nama, Jenis Kelamin, Universitas, dan Program Studi terlebih dahulu!");
                 setActiveTab("profile");
                 return;
               }
@@ -899,7 +896,7 @@ export default function ThinkAloudMagerPage() {
           </button>
           <button
             onClick={() => {
-              if (!userName.trim() || !userCampus.trim() || !userStudyProgram.trim()) {
+              if (!userName.trim() || !userGender.trim() || !userCampus.trim() || !userStudyProgram.trim()) {
                 alert("Mohon lengkapi data profil terlebih dahulu!");
                 setActiveTab("profile");
                 return;
@@ -987,6 +984,21 @@ export default function ThinkAloudMagerPage() {
 
                   <div>
                     <label className="block text-xs font-bold text-slate-700 mb-1">
+                      Jenis Kelamin: <span className="text-rose-500">*</span>
+                    </label>
+                    <select
+                      value={userGender}
+                      onChange={(e) => setUserGender(e.target.value)}
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-300 focus:bg-white focus:border-purple-600 rounded-xl text-xs md:text-sm font-medium text-slate-900 outline-none transition cursor-pointer"
+                    >
+                      <option value="">-- Pilih Jenis Kelamin --</option>
+                      <option value="Laki-Laki">Laki-Laki</option>
+                      <option value="Perempuan">Perempuan</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">
                       Nomor Induk Mahasiswa (NIM / NPM):
                     </label>
                     <input
@@ -1046,17 +1058,10 @@ export default function ThinkAloudMagerPage() {
                   <div className="pt-2">
                     <button
                       onClick={() => {
-                        if (!userName.trim() || !userCampus.trim() || !userStudyProgram.trim()) {
-                          alert("Mohon isi Nama, Universitas, dan Program Studi terlebih dahulu sebelum melanjutkan!");
+                        if (!userName.trim() || !userGender.trim() || !userCampus.trim() || !userStudyProgram.trim()) {
+                          alert("Mohon lengkapi Nama, Jenis Kelamin, Universitas, dan Program Studi terlebih dahulu sebelum melanjutkan!");
                           return;
                         }
-                        try {
-                          localStorage.setItem("mager_userName", userName.trim());
-                          localStorage.setItem("mager_userCampus", userCampus.trim());
-                          localStorage.setItem("mager_userNim", userNim.trim());
-                          localStorage.setItem("mager_userStudyProgram", userStudyProgram.trim());
-                          localStorage.setItem("mager_userResearchTopic", userResearchTopic.trim());
-                        } catch (e) {}
                         setActiveTab("guidance");
                       }}
                       className="w-full py-2.5 rounded-xl bg-purple-700 hover:bg-purple-800 text-white font-black text-xs uppercase tracking-wider shadow-sm transition active:scale-95 flex items-center justify-center gap-1.5"
@@ -1244,6 +1249,7 @@ export default function ThinkAloudMagerPage() {
                             userName: userName.trim() || "Kandidat Doktor S3",
                             userCampus: userCampus.trim(),
                             userNim: userNim.trim(),
+                            gender: userGender,
                             studyProgram: userStudyProgram.trim(),
                             respondentLevel: "Mahasiswa Doktoral S3 (MAGER)",
                             sessionNo: activeSession,
