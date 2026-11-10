@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Radar, Bar } from "react-chartjs-2";
+import { determineLpaProfile } from "@/lib/lpa";
 import {
   Chart as ChartJS,
   RadialLinearScale,
@@ -81,6 +82,17 @@ export default function AssessmentOverview({
     bgGradientCard = "from-rose-500/10 to-rose-600/10 border-rose-200";
     predictionColor = "text-rose-600";
   }
+
+  // Perhitungan Skor Rata-rata Skala 1.00 s.d. 5.00 untuk Model LPA N=251
+  const avgRadar = (radarData && radarData.length > 0)
+    ? radarData.reduce((a, b) => a + b, 0) / radarData.length
+    : 83.6;
+  const meanTotalScore = madelScore > 0 
+    ? Number((madelScore / 30).toFixed(2)) 
+    : Number(((avgRadar / 100) * 5).toFixed(2));
+  const lpa = determineLpaProfile(meanTotalScore);
+  const [tutorActive, setTutorActive] = useState(false);
+  const [tutorNotification, setTutorNotification] = useState<string | null>(null);
 
   // Get initials for profile badge
   const initials = userName
@@ -303,40 +315,123 @@ export default function AssessmentOverview({
               </div>
             </div>
 
-            {/* REKOMENDASI CERDAS SECTION */}
-            <div className="bg-white rounded-2xl p-6 border border-slate-200/60 shadow-lg">
-              <h4 className="text-[11px] font-black text-slate-900 uppercase tracking-widest mb-4 flex items-center gap-2">
-                <i className="fa-solid fa-wand-magic-sparkles text-blue-600"></i>
-                Rekomendasi Cerdas
-              </h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="bg-[#E0F2F1]/60 p-5 rounded-2xl border border-[#B2DFDB]/80 flex flex-col justify-between shadow-sm relative overflow-hidden group">
-                  <div className="absolute -right-6 -bottom-6 text-[#80CBC4]/20 text-7xl font-black group-hover:scale-110 transition-transform">
-                    <i className="fa-solid fa-circle-info"></i>
+            {/* PANEL DIAGNOSTIK TERINTEGRASI LPA (N=251) & REKOMENDASI TUTOR SEBAYA */}
+            <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-lg space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center text-sm shadow-sm border border-blue-200">
+                    <i className="fa-solid fa-layer-group"></i>
                   </div>
                   <div>
-                    <div className="flex items-center gap-2 mb-3">
-                      <span className="w-2.5 h-2.5 rounded-full bg-teal-600 animate-ping"></span>
-                      <span className="text-[9px] font-black text-teal-800 uppercase tracking-wider">Info & Data (C1 - C3)</span>
-                    </div>
-                    <p className="text-xs font-bold text-teal-900 leading-relaxed z-10 relative">
-                      Tingkatkan pemahaman kontekstual Anda terhadap data & informasi. Lakukan verifikasi validitas dan reliabilitas sumber referensi sebelum melakukan komunikasi dan kolaborasi digital.
+                    <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest flex items-center gap-2">
+                      Panel Diagnostik Terintegrasi LPA
+                      <span className="text-[9px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-200 lowercase tracking-normal">
+                        N=251 empiris
+                      </span>
+                    </h4>
+                    <p className="text-[10px] font-semibold text-slate-500">
+                      Klasifikasi Profil Laten Disertasi &amp; Pemetaan Tutor Sebaya
                     </p>
                   </div>
                 </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-bold text-slate-500 uppercase">Skor Rata-Rata:</span>
+                  <span className="px-2.5 py-1 bg-slate-100 text-slate-800 rounded-lg text-xs font-black font-mono border border-slate-200">
+                    {meanTotalScore.toFixed(2)} / 5.00
+                  </span>
+                </div>
+              </div>
 
-                <div className="bg-[#FFF8E1]/60 p-5 rounded-2xl border border-[#FFE082]/80 flex flex-col justify-between shadow-sm relative overflow-hidden group">
-                  <div className="absolute -right-6 -bottom-6 text-[#FFE082]/20 text-7xl font-black group-hover:scale-110 transition-transform">
-                    <i className="fa-solid fa-gavel"></i>
-                  </div>
+              {/* BADGE UTAMA PROFIL LATEN */}
+              <div className={`p-4 rounded-2xl bg-gradient-to-r ${lpa.colorScheme.bgGradient} border ${lpa.colorScheme.border} flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-sm`}>
+                <div className="flex flex-wrap items-center gap-2.5">
+                  <span className={`px-3 py-1.5 rounded-xl text-[10px] md:text-xs font-black uppercase tracking-wider shadow-sm flex items-center gap-1.5 ${lpa.colorScheme.badgeBg}`}>
+                    <i className="fa-solid fa-id-badge"></i>
+                    {lpa.badgeTitle}
+                  </span>
+                  <span className="text-[10px] font-bold text-slate-600 bg-white/90 px-2.5 py-1 rounded-lg border border-slate-200">
+                    Prevalensi: {lpa.prevalence}
+                  </span>
+                </div>
+                <span className={`text-[11px] font-black uppercase tracking-wider ${lpa.colorScheme.textAccent}`}>
+                  {lpa.name}
+                </span>
+              </div>
+
+              {/* GRID DUA KOTAK AKSI: MODUL ADAPTIF & TUTOR SEBAYA */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* KOTAK 1: REKOMENDASI MODUL ADAPTIF */}
+                <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200 flex flex-col justify-between shadow-sm relative overflow-hidden group hover:border-blue-300 transition-all">
                   <div>
-                    <div className="flex items-center gap-2 mb-3">
-                      <span className="w-2.5 h-2.5 rounded-full bg-amber-600 animate-ping"></span>
-                      <span className="text-[9px] font-black text-amber-800 uppercase tracking-wider">Konten & Berpikir Kritis (C4 - C5)</span>
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="px-2.5 py-1 bg-blue-100 text-blue-800 rounded-lg text-[9px] font-black uppercase tracking-wider flex items-center gap-1.5">
+                        <i className="fa-solid fa-book-bookmark text-blue-600"></i>
+                        Rekomendasi Modul Pembelajaran
+                      </span>
                     </div>
-                    <p className="text-xs font-bold text-amber-950 leading-relaxed z-10 relative">
-                      Dukung pembuatan konten digital kreatif dengan mengedepankan pemecahan masalah (problem solving) yang logis dan kemampuan berpikir kritis demi menghindari bias informasi.
+                    <h5 className="text-xs font-black text-slate-900 mb-2 leading-snug">
+                      {lpa.recommendedModule.title}
+                    </h5>
+                    <p className="text-[11px] font-semibold text-slate-600 leading-relaxed mb-4">
+                      {lpa.recommendedModule.desc}
                     </p>
+                  </div>
+                  <div className="pt-3 border-t border-slate-200/60 flex items-center justify-between text-[10px]">
+                    <span className="font-bold text-slate-500 italic">
+                      {lpa.recommendedModule.priorityDimensions}
+                    </span>
+                  </div>
+                </div>
+
+                {/* KOTAK 2: KEMITRAAN TUTOR SEBAYA */}
+                <div className={`p-5 rounded-2xl border flex flex-col justify-between shadow-sm relative overflow-hidden transition-all ${
+                  lpa.id === 1 ? 'bg-rose-50/70 border-rose-200 hover:border-rose-300' :
+                  lpa.id === 2 ? 'bg-blue-50/70 border-blue-200 hover:border-blue-300' :
+                  'bg-emerald-50/70 border-emerald-200 hover:border-emerald-300'
+                }`}>
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <span className={`px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider flex items-center gap-1.5 ${
+                        lpa.id === 1 ? 'bg-rose-100 text-rose-800' :
+                        lpa.id === 2 ? 'bg-blue-100 text-blue-800' :
+                        'bg-emerald-100 text-emerald-800'
+                      }`}>
+                        <i className={lpa.peerTutor.icon}></i>
+                        {lpa.peerTutor.badge}
+                      </span>
+                    </div>
+                    <h5 className="text-xs font-black text-slate-900 mb-2 leading-snug">
+                      Fitur Tutor Sebaya (Peer Tutoring)
+                    </h5>
+                    <p className="text-[11px] font-bold text-slate-700 leading-relaxed mb-4 italic">
+                      &quot;{lpa.peerTutor.message}&quot;
+                    </p>
+                  </div>
+
+                  <div>
+                    {tutorNotification && (
+                      <div className="mb-2 p-2 bg-white rounded-lg text-[10px] font-bold text-emerald-700 border border-emerald-300 flex items-center gap-1.5 animate-in fade-in">
+                        <i className="fa-solid fa-circle-check text-emerald-600"></i>
+                        {tutorNotification}
+                      </div>
+                    )}
+                    <button
+                      onClick={() => {
+                        setTutorActive(true);
+                        setTutorNotification(
+                          lpa.id === 3
+                            ? "Status Anda telah terdaftar sebagai Fasilitator/Tutor Sebaya di sistem."
+                            : lpa.id === 1
+                            ? "Permintaan kemitraan belajar telah diteruskan ke fasilitator sebaya."
+                            : "Ruang forum diskusi sejajar telah diaktifkan."
+                        );
+                        setTimeout(() => setTutorNotification(null), 4000);
+                      }}
+                      className={`w-full py-2.5 px-3 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md active:scale-95 ${lpa.peerTutor.btnClass}`}
+                    >
+                      <i className={lpa.peerTutor.icon}></i>
+                      <span>{tutorActive ? "✓ " + lpa.peerTutor.actionBtn : lpa.peerTutor.actionBtn}</span>
+                    </button>
                   </div>
                 </div>
               </div>

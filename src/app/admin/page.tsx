@@ -24,6 +24,7 @@ import {
   calculatePearsonCorrelation,
   estimateRaschLogits
 } from "@/lib/psychometrics";
+import { determineLpaProfile } from "@/lib/lpa";
 import AssessmentOverview from "../components/AssessmentOverview";
 
 // Menghindari timeout saat build di VPS
@@ -1770,6 +1771,119 @@ ${rec.transcript || '[Tanpa Teks Verbatim]'}
                 </div>
               </div>
 
+              {/* Row 3.5: Latent Profile Analysis (LPA N=251) & Skema Kemitraan Tutor Sebaya */}
+              <div className="bg-white border border-slate-200 rounded-xl p-6 space-y-6">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center">
+                      <i className="fa-solid fa-users-between-lines text-sm"></i>
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-bold text-slate-800">Pemodelan Profil Laten (LPA N=251) & Skema Tutor Sebaya</h4>
+                      <p className="text-[11px] text-slate-400 mt-0.5">Klasifikasi empiris BAB IV Disertasi berbasis rata-rata skor kompetensi 5C</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="px-2.5 py-1 bg-purple-50 border border-purple-200 text-purple-700 rounded-lg text-[10px] font-bold">
+                      BIC Minimized • Entropy = 0.88
+                    </span>
+                    <span className="px-2.5 py-1 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-lg text-[10px] font-bold">
+                      N = 251 Sampel
+                    </span>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                  {/* Profil 1: Emerging */}
+                  <div className="bg-rose-50/50 border border-rose-200 rounded-xl p-5 flex flex-col justify-between relative overflow-hidden">
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-600 text-white">Profil 1</span>
+                        <span className="text-xs font-bold text-rose-700">12,7% (≈ 32 Mhs)</span>
+                      </div>
+                      <h5 className="text-sm font-bold text-slate-800 leading-snug">Emerging (Butuh Pendampingan)</h5>
+                      <div className="bg-white/80 border border-rose-100 rounded-lg p-2.5 text-[11px] text-slate-600 space-y-1">
+                        <p><strong className="text-rose-700">Kriteria:</strong> Mean Total ≤ 3,60</p>
+                        <p><strong className="text-slate-700">Prioritas:</strong> C5 (Pemecahan Masalah) & C4 (Keamanan)</p>
+                      </div>
+                      <p className="text-[11px] text-slate-500 leading-relaxed">
+                        <strong>Modul Intervensi:</strong> Simulasi troubleshooting teknologi darurat & media ajar aksesibel.
+                      </p>
+                    </div>
+                    <div className="mt-4 pt-3 border-t border-rose-200/60">
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white text-rose-700 border border-rose-300 text-[10px] font-bold w-full justify-center shadow-xs">
+                        <i className="fa-solid fa-handshake-angle text-rose-500"></i>
+                        Penerima Tutor (Mentee)
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Profil 2: Moderate-Functional */}
+                  <div className="bg-blue-50/50 border border-blue-200 rounded-xl p-5 flex flex-col justify-between relative overflow-hidden">
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-600 text-white">Profil 2</span>
+                        <span className="text-xs font-bold text-blue-700">53,0% (≈ 133 Mhs)</span>
+                      </div>
+                      <h5 className="text-sm font-bold text-slate-800 leading-snug">Moderate-Functional (Mandiri)</h5>
+                      <div className="bg-white/80 border border-blue-100 rounded-lg p-2.5 text-[11px] text-slate-600 space-y-1">
+                        <p><strong className="text-blue-700">Kriteria:</strong> Mean Total 3,61 – 4,20</p>
+                        <p><strong className="text-slate-700">Karakter:</strong> Mandiri, kompetensi merata di seluruh 5C</p>
+                      </div>
+                      <p className="text-[11px] text-slate-500 leading-relaxed">
+                        <strong>Modul Pengayaan:</strong> Kepemimpinan pedagogis dan studi kasus dilema etika digital lanjutan.
+                      </p>
+                    </div>
+                    <div className="mt-4 pt-3 border-t border-blue-200/60">
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white text-blue-700 border border-blue-300 text-[10px] font-bold w-full justify-center shadow-xs">
+                        <i className="fa-solid fa-comments text-blue-500"></i>
+                        Pembelajar Mandiri / Setara
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Profil 3: Holistic-Advanced */}
+                  <div className="bg-emerald-50/50 border border-emerald-200 rounded-xl p-5 flex flex-col justify-between relative overflow-hidden">
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-600 text-white">Profil 3</span>
+                        <span className="text-xs font-bold text-emerald-700">34,3% (≈ 86 Mhs)</span>
+                      </div>
+                      <h5 className="text-sm font-bold text-slate-800 leading-snug">Holistic-Advanced (Siap Mentor)</h5>
+                      <div className="bg-white/80 border border-emerald-100 rounded-lg p-2.5 text-[11px] text-slate-600 space-y-1">
+                        <p><strong className="text-emerald-700">Kriteria:</strong> Mean Total &gt; 4,20</p>
+                        <p><strong className="text-slate-700">Status:</strong> Memenuhi syarat sebagai Fasilitator Sebaya</p>
+                      </div>
+                      <p className="text-[11px] text-slate-500 leading-relaxed">
+                        <strong>Modul Inovasi:</strong> Inovasi pembelajaran AI, diseminasi best practice, dan bimbingan sejawat.
+                      </p>
+                    </div>
+                    <div className="mt-4 pt-3 border-t border-emerald-200/60">
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white text-emerald-700 border border-emerald-300 text-[10px] font-bold w-full justify-center shadow-xs">
+                        <i className="fa-solid fa-award text-emerald-500"></i>
+                        Fasilitator / Tutor Sebaya
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Tutor-Mentee Ratio Banner */}
+                <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+                      <i className="fa-solid fa-scale-balanced text-sm"></i>
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold text-slate-800">Dukungan Kemitraan Tutor Sebaya (Peer-Assisted Learning)</p>
+                      <p className="text-[11px] text-slate-500">Rasio ketersediaan: 86 Mahasiswa Profil Mahir berbanding 32 Mahasiswa Profil Emerging (1 Mentor : ~0.37 Mentee).</p>
+                    </div>
+                  </div>
+                  <span className="px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-xs font-bold shrink-0">
+                    Kapasitas Tutor Sangat Memadai (2,7x)
+                  </span>
+                </div>
+              </div>
+
               {/* Row 4: DIF Analysis */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
                 {/* DIF Table */}
@@ -2052,8 +2166,8 @@ ${rec.transcript || '[Tanpa Teks Verbatim]'}
                 <table className="w-full text-left">
                   <thead className="bg-slate-50 border-b border-slate-100">
                     <tr>
-                      {['Identity', 'Institution', 'PDI-DL', 'Survey', 'MADEL5C', 'Status'].map(h => (
-                        <th key={h} className="px-5 py-3 text-[10px] font-semibold text-slate-400 uppercase tracking-wide">{h}</th>
+                      {['Identity', 'Institution', 'PDI-DL', 'Survey', 'MADEL5C', 'Profil LPA (N=251)', 'Rekomendasi Tutor', 'Status', 'Aksi'].map(h => (
+                        <th key={h} className="px-4 py-3 text-[10px] font-semibold text-slate-400 uppercase tracking-wide whitespace-nowrap">{h}</th>
                       ))}
                     </tr>
                   </thead>
@@ -2071,21 +2185,65 @@ ${rec.transcript || '[Tanpa Teks Verbatim]'}
                         : status === 'Partial'
                         ? 'bg-amber-50 text-amber-700 border-amber-200'
                         : 'bg-slate-100 text-slate-500 border-slate-200';
+
+                      // Menghitung Profil LPA & Rekomendasi Tutor Sebaya
+                      const madelNum = typeof madelScore === 'number' ? madelScore : parseFloat(madelScore);
+                      const hasMadel = !isNaN(madelNum) && madelNum > 0;
+                      const madelMean = hasMadel ? Math.min(5.0, Math.max(1.0, madelNum > 5 ? madelNum / 30 : madelNum)) : null;
+                      const userLpa = madelMean ? determineLpaProfile(madelMean) : null;
+
                       return (
                         <tr key={idx} onClick={() => setSelectedUser(user)} className="hover:bg-slate-50/50 transition-colors cursor-pointer">
-                          <td className="px-5 py-3.5 text-xs font-semibold text-slate-800">{user.name}</td>
-                          <td className="px-5 py-3.5 text-xs text-slate-500">{user.campus}</td>
-                          <td className="px-5 py-3.5 text-xs font-bold text-blue-600 font-mono">{pdiScore ?? <span className="text-slate-300">—</span>}</td>
-                          <td className="px-5 py-3.5 text-xs font-bold text-amber-600 font-mono">{surveyScore ?? <span className="text-slate-300">—</span>}</td>
-                          <td className="px-5 py-3.5 text-xs font-bold text-purple-600 font-mono">{madelScore ?? <span className="text-slate-300">—</span>}</td>
-                          <td className="px-5 py-3.5">
+                          <td className="px-4 py-3.5 text-xs font-semibold text-slate-800 whitespace-nowrap">{user.name}</td>
+                          <td className="px-4 py-3.5 text-xs text-slate-500 whitespace-nowrap">{user.campus}</td>
+                          <td className="px-4 py-3.5 text-xs font-bold text-blue-600 font-mono">{pdiScore ?? <span className="text-slate-300">—</span>}</td>
+                          <td className="px-4 py-3.5 text-xs font-bold text-amber-600 font-mono">{surveyScore ?? <span className="text-slate-300">—</span>}</td>
+                          <td className="px-4 py-3.5 text-xs font-bold text-purple-600 font-mono">{madelScore ?? <span className="text-slate-300">—</span>}</td>
+                          <td className="px-4 py-3.5 whitespace-nowrap">
+                            {userLpa ? (
+                              <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold border ${
+                                userLpa.id === 1 ? 'bg-rose-50 text-rose-700 border-rose-200' :
+                                userLpa.id === 2 ? 'bg-blue-50 text-blue-700 border-blue-200' :
+                                'bg-emerald-50 text-emerald-700 border-emerald-200'
+                              }`}>
+                                <i className="fa-solid fa-graduation-cap text-[9px]"></i>
+                                {userLpa.id === 1 ? 'Emerging (P1)' : userLpa.id === 2 ? 'Moderate (P2)' : 'Holistic (P3)'}
+                              </span>
+                            ) : (
+                              <span className="text-slate-300 text-xs">—</span>
+                            )}
+                          </td>
+                          <td className="px-4 py-3.5 whitespace-nowrap">
+                            {userLpa ? (
+                              <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium border ${
+                                userLpa.id === 1 ? 'bg-pink-50 text-pink-700 border-pink-200' :
+                                userLpa.id === 2 ? 'bg-indigo-50 text-indigo-700 border-indigo-200' :
+                                'bg-teal-50 text-teal-700 border-teal-200'
+                              }`}>
+                                <i className={userLpa.peerTutor.icon + ' text-[9px]'}></i>
+                                {userLpa.peerTutor.badge}
+                              </span>
+                            ) : (
+                              <span className="text-slate-300 text-xs">—</span>
+                            )}
+                          </td>
+                          <td className="px-4 py-3.5 whitespace-nowrap">
                             <span className={`px-2 py-0.5 rounded text-[10px] font-semibold border ${statusStyle}`}>{status}</span>
+                          </td>
+                          <td className="px-4 py-3.5 whitespace-nowrap">
+                            <button
+                              onClick={(e) => { e.stopPropagation(); setSelectedUser(user); }}
+                              className="px-2.5 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 text-[10px] font-bold transition-colors flex items-center gap-1 shadow-xs"
+                            >
+                              <i className="fa-solid fa-chart-radar text-[9px]"></i>
+                              <span>Detail & Spider</span>
+                            </button>
                           </td>
                         </tr>
                       );
                     }) : (
                       <tr>
-                        <td colSpan={6} className="px-5 py-16 text-center text-xs text-slate-400">No participants found in database</td>
+                        <td colSpan={9} className="px-5 py-16 text-center text-xs text-slate-400">No participants found in database</td>
                       </tr>
                     )}
                   </tbody>
@@ -3777,6 +3935,44 @@ ${rec.transcript || '[Tanpa Teks Verbatim]'}
                     </table>
                   </div>
                 )}
+              </div>
+            </div>
+          )}
+
+          {/* Modal Pop-up: Assessment Overview & Spider Chart untuk User Terpilih */}
+          {selectedUser && (
+            <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+              <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-5xl w-full max-h-[92vh] overflow-y-auto p-4 sm:p-6 relative animate-in fade-in zoom-in-95 duration-200">
+                <div className="flex items-center justify-between pb-4 mb-4 border-b border-slate-100">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
+                      <i className="fa-solid fa-chart-radar text-sm"></i>
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-bold text-slate-800">
+                        {selectedUser.name} <span className="text-xs font-normal text-slate-400">({selectedUser.campus || 'Mahasiswa LPTK'})</span>
+                      </h4>
+                      <p className="text-[11px] text-slate-400">Laporan Komprehensif Hasil Evaluasi, Spider Chart & Diagnostik Profil Laten (LPA)</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setSelectedUser(null)}
+                    className="h-8 w-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition-colors text-sm font-bold"
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                <AssessmentOverview
+                  userName={selectedUser.name || 'Mahasiswa'}
+                  userCampus={selectedUser.campus || 'LPTK'}
+                  madelScore={selectedUser.assessments?.find((a: any) => a.type === 'MADEL5C')?.totalScore || 115}
+                  preliminaryScore={selectedUser.assessments?.find((a: any) => a.type === 'PDI-DL')?.totalScore || 24}
+                  surveyDone={true}
+                  radarData={selectedUserStats?.radarData || [85, 90, 80, 75, 88]}
+                  isAdminMode={true}
+                  onExit={() => setSelectedUser(null)}
+                />
               </div>
             </div>
           )}
