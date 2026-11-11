@@ -1794,16 +1794,16 @@ ${rec.transcript || '[Tanpa Teks Verbatim]'}
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                  {/* Profil 1: Emerging */}
+                  {/* Profil 1: Berkembang */}
                   <div className="bg-rose-50/50 border border-rose-200 rounded-xl p-5 flex flex-col justify-between relative overflow-hidden">
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
                         <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-600 text-white">Profil 1</span>
-                        <span className="text-xs font-bold text-rose-700">12,7% (≈ 32 Mhs)</span>
+                        <span className="text-xs font-bold text-rose-700">23,0% (Model EEI)</span>
                       </div>
-                      <h5 className="text-sm font-bold text-slate-800 leading-snug">Emerging (Butuh Pendampingan)</h5>
+                      <h5 className="text-sm font-bold text-slate-800 leading-snug">Berkembang (P1)</h5>
                       <div className="bg-white/80 border border-rose-100 rounded-lg p-2.5 text-[11px] text-slate-600 space-y-1">
-                        <p><strong className="text-rose-700">Kriteria:</strong> Mean Total ≤ 3,60</p>
+                        <p><strong className="text-rose-700">Rerata Dimensi:</strong> μ = [3.17, 3.21, 3.34, 3.17, 2.98]</p>
                         <p><strong className="text-slate-700">Prioritas:</strong> C5 (Pemecahan Masalah) & C4 (Keamanan)</p>
                       </div>
                       <p className="text-[11px] text-slate-500 leading-relaxed">
@@ -1818,17 +1818,17 @@ ${rec.transcript || '[Tanpa Teks Verbatim]'}
                     </div>
                   </div>
 
-                  {/* Profil 2: Moderate-Functional */}
+                  {/* Profil 2: Menengah-Fungsional */}
                   <div className="bg-blue-50/50 border border-blue-200 rounded-xl p-5 flex flex-col justify-between relative overflow-hidden">
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
                         <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-600 text-white">Profil 2</span>
-                        <span className="text-xs font-bold text-blue-700">53,0% (≈ 133 Mhs)</span>
+                        <span className="text-xs font-bold text-blue-700">51,0% (Model EEI)</span>
                       </div>
-                      <h5 className="text-sm font-bold text-slate-800 leading-snug">Moderate-Functional (Mandiri)</h5>
+                      <h5 className="text-sm font-bold text-slate-800 leading-snug">Menengah-Fungsional (P2)</h5>
                       <div className="bg-white/80 border border-blue-100 rounded-lg p-2.5 text-[11px] text-slate-600 space-y-1">
-                        <p><strong className="text-blue-700">Kriteria:</strong> Mean Total 3,61 – 4,20</p>
-                        <p><strong className="text-slate-700">Karakter:</strong> Mandiri, kompetensi merata di seluruh 5C</p>
+                        <p><strong className="text-blue-700">Rerata Dimensi:</strong> μ = [3.76, 3.74, 3.77, 3.72, 3.75]</p>
+                        <p><strong className="text-slate-700">Karakter:</strong> Mandiri, kompetensi fungsional merata</p>
                       </div>
                       <p className="text-[11px] text-slate-500 leading-relaxed">
                         <strong>Modul Pengayaan:</strong> Kepemimpinan pedagogis dan studi kasus dilema etika digital lanjutan.
@@ -1842,16 +1842,16 @@ ${rec.transcript || '[Tanpa Teks Verbatim]'}
                     </div>
                   </div>
 
-                  {/* Profil 3: Holistic-Advanced */}
+                  {/* Profil 3: Mahir-Holistik */}
                   <div className="bg-emerald-50/50 border border-emerald-200 rounded-xl p-5 flex flex-col justify-between relative overflow-hidden">
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
                         <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-600 text-white">Profil 3</span>
-                        <span className="text-xs font-bold text-emerald-700">34,3% (≈ 86 Mhs)</span>
+                        <span className="text-xs font-bold text-emerald-700">26,0% (Model EEI)</span>
                       </div>
-                      <h5 className="text-sm font-bold text-slate-800 leading-snug">Holistic-Advanced (Siap Mentor)</h5>
+                      <h5 className="text-sm font-bold text-slate-800 leading-snug">Mahir-Holistik (P3)</h5>
                       <div className="bg-white/80 border border-emerald-100 rounded-lg p-2.5 text-[11px] text-slate-600 space-y-1">
-                        <p><strong className="text-emerald-700">Kriteria:</strong> Mean Total &gt; 4,20</p>
+                        <p><strong className="text-emerald-700">Rerata Dimensi:</strong> μ = [4.19, 4.22, 4.19, 4.34, 4.36]</p>
                         <p><strong className="text-slate-700">Status:</strong> Memenuhi syarat sebagai Fasilitator Sebaya</p>
                       </div>
                       <p className="text-[11px] text-slate-500 leading-relaxed">
@@ -2202,12 +2202,13 @@ ${rec.transcript || '[Tanpa Teks Verbatim]'}
                           <td className="px-4 py-3.5 whitespace-nowrap">
                             {userLpa ? (
                               <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold border ${
-                                userLpa.id === 1 ? 'bg-rose-50 text-rose-700 border-rose-200' :
-                                userLpa.id === 2 ? 'bg-blue-50 text-blue-700 border-blue-200' :
+                                userLpa.profil === 1 ? 'bg-rose-50 text-rose-700 border-rose-200' :
+                                userLpa.profil === 2 ? 'bg-blue-50 text-blue-700 border-blue-200' :
                                 'bg-emerald-50 text-emerald-700 border-emerald-200'
                               }`}>
                                 <i className="fa-solid fa-graduation-cap text-[9px]"></i>
-                                {userLpa.id === 1 ? 'Emerging (P1)' : userLpa.id === 2 ? 'Moderate (P2)' : 'Holistic (P3)'}
+                                {userLpa.profil === 1 ? 'Berkembang (P1)' : userLpa.profil === 2 ? 'Menengah (P2)' : 'Mahir (P3)'}
+                                <span className="opacity-70 font-mono text-[9px]">({(userLpa.peluang[userLpa.profil - 1] * 100).toFixed(0)}%)</span>
                               </span>
                             ) : (
                               <span className="text-slate-300 text-xs">—</span>

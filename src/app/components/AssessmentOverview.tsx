@@ -83,14 +83,17 @@ export default function AssessmentOverview({
     predictionColor = "text-rose-600";
   }
 
-  // Perhitungan Skor Rata-rata Skala 1.00 s.d. 5.00 untuk Model LPA N=251
+  // Perhitungan Vektor 5 Dimensi [C1..C5] (skala 1-5) untuk Model LPA EEI
+  const dimScores = (radarData && radarData.length === 5)
+    ? radarData.map(v => (v > 5 ? v / 20 : v))
+    : [4.25, 4.50, 4.00, 3.75, 4.40];
   const avgRadar = (radarData && radarData.length > 0)
     ? radarData.reduce((a, b) => a + b, 0) / radarData.length
     : 83.6;
   const meanTotalScore = madelScore > 0 
     ? Number((madelScore / 30).toFixed(2)) 
     : Number(((avgRadar / 100) * 5).toFixed(2));
-  const lpa = determineLpaProfile(meanTotalScore);
+  const lpa = determineLpaProfile(dimScores);
   const [tutorActive, setTutorActive] = useState(false);
   const [tutorNotification, setTutorNotification] = useState<string | null>(null);
 
@@ -357,6 +360,28 @@ export default function AssessmentOverview({
                   {lpa.name}
                 </span>
               </div>
+
+              {/* ESTIMASI PELUANG POSTERIOR MODEL EEI */}
+              {lpa.peluang && (
+                <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl flex flex-wrap items-center justify-between gap-2 text-[10px]">
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-slate-500 uppercase tracking-wider text-[9px]">Peluang Posterior:</span>
+                    <span className={`px-2 py-0.5 rounded font-mono font-bold ${lpa.profil === 1 ? 'bg-rose-100 text-rose-800' : 'bg-white text-slate-600 border border-slate-200'}`}>
+                      P1: {(lpa.peluang[0] * 100).toFixed(1)}%
+                    </span>
+                    <span className={`px-2 py-0.5 rounded font-mono font-bold ${lpa.profil === 2 ? 'bg-blue-100 text-blue-800' : 'bg-white text-slate-600 border border-slate-200'}`}>
+                      P2: {(lpa.peluang[1] * 100).toFixed(1)}%
+                    </span>
+                    <span className={`px-2 py-0.5 rounded font-mono font-bold ${lpa.profil === 3 ? 'bg-emerald-100 text-emerald-800' : 'bg-white text-slate-600 border border-slate-200'}`}>
+                      P3: {(lpa.peluang[2] * 100).toFixed(1)}%
+                    </span>
+                  </div>
+                  <span className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider ${lpa.tegas ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-amber-50 text-amber-700 border border-amber-200'}`}>
+                    <i className={`fa-solid ${lpa.tegas ? 'fa-circle-check text-emerald-600' : 'fa-triangle-exclamation text-amber-600'} mr-1`}></i>
+                    {lpa.tegas ? 'Klasifikasi Tegas (P ≥ 70%)' : 'Klasifikasi Moderat'}
+                  </span>
+                </div>
+              )}
 
               {/* GRID DUA KOTAK AKSI: MODUL ADAPTIF & TUTOR SEBAYA */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
